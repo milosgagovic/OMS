@@ -1,0 +1,10 @@
+C:\Users\Nemanja\Desktop\Projekat\ModelLabsProjekat\bin64\FTN.Common.dll
+C:\Users\Nemanja\Desktop\Projekat\ModelLabsProjekat\bin64\FTN.Common.pdb
+C:\Users\Nemanja\Desktop\Projekat\ModelLabsProjekat\Common\obj\x64\Debug\FTN.Common.dll
+C:\Users\Nemanja\Desktop\Projekat\ModelLabsProjekat\Common\obj\x64\Debug\FTN.Common.pdb
+C:\Users\Windows10_SSD\Desktop\New folder (3)\OMS\bin64\FTN.Common.dll
+C:\Users\Windows10_SSD\Desktop\New folder (3)\OMS\bin64\FTN.Common.pdb
+C:\Users\Windows10_SSD\Desktop\New folder (3)\OMS\Common\obj\x64\Debug\Common.csprojResolveAssemblyReference.cache
+C:\Users\Windows10_SSD\Desktop\New folder (3)\OMS\Common\obj\x64\Debug\Common.csproj.CoreCompileInputs.cache
+C:\Users\Windows10_SSD\Desktop\New folder (3)\OMS\Common\obj\x64\Debug\FTN.Common.dll
+C:\Users\Windows10_SSD\Desktop\New folder (3)\OMS\Common\obj\x64\Debug\FTN.Common.pdb
