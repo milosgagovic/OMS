@@ -9,82 +9,82 @@ namespace FTN.Common
 	{		
 		MASK_TYPE							= unchecked((short)0xFFFF),
 
-        CONNECTNODECONT = 0x0001,       // ConnectivityNodeContainer
-        CONNECTNODE = 0x0002,       // ConnectivityNode
-        ENERGSOURCE = 0x0003,          // EnergySource
-        ACLINESEGMENT = 0x0004,
-        BREAKER = 0x0005,       
-        ENERGCONSUMER = 0x0006,        // EnergyConsumer
-        TERMINAL = 0x0007,
-        DISCRETE = 0x0008,
-        ANALOG = 0x0009,
-        
-
+        CONNECTNODECONT                 = 0x0001,       // ConnectivityNodeContainer
+        CONNECTNODE                     = 0x0002,       // ConnectivityNode
+        ENERGSOURCE                     = 0x0003,          // EnergySource
+        ACLINESEGMENT                   = 0x0004,
+        BREAKER                         = 0x0005,       
+        ENERGCONSUMER                   = 0x0006,        // EnergyConsumer
+        TERMINAL                        = 0x0007,
+        DISCRETE                        = 0x0008,
+        ANALOG                          = 0x0009,
 	}
 
     [Flags]
 	public enum ModelCode : long
 	{
-        IDOBJ = 0x1000000000000000,
-        IDOBJ_GID = 0x1000000000000104,
-        IDOBJ_MRID = 0x1000000000000207,
-        IDOBJ_NAME = 0x1000000000000307,
+        IDOBJ                           = 0x1000000000000000,
+        IDOBJ_GID                       = 0x1000000000000104,
+        IDOBJ_MRID                      = 0x1000000000000207,
+        IDOBJ_NAME                      = 0x1000000000000307,
 
-        PSR = 0x1100000000000000,
+        PSR                             = 0x1100000000000000,
+        PSR_MEASUREMENTS                = 0x1100000000000119,
 
-        MEASUREMENT = 0x1200000000000000,
-        MEASUREMENT_DIRECTION = 0x120000000000010a,
-        MEASUREMENT_TYPE = 0x1200000000000207,
-        MEASUREMENT_UNITSYMB = 0x120000000000031a,
+        MEASUREMENT                     = 0x1200000000000000,
+        MEASUREMENT_DIRECTION           = 0x120000000000010a,
+        MEASUREMENT_TYPE                = 0x1200000000000207,
+        MEASUREMENT_UNITSYMB            = 0x120000000000031a,
+        MEASUREMENT_PSR                 = 0x1200000000000409,
 
-        TERMINAL = 0x1300000000030000,
-        TERMINAL_CONDEQUIP = 0x1300000000030109,       // Terminal.ConductingEquipment
-        TERMINAL_CONNECTNODE = 0x1300000000030209,       // Terminal.ConnectivityNode
+        TERMINAL                        = 0x1300000000030000,
+        TERMINAL_CONDEQUIP              = 0x1300000000030109,       // Terminal.ConductingEquipment
+        TERMINAL_CONNECTNODE            = 0x1300000000030209,       // Terminal.ConnectivityNode
 
-        CONNECTNODE = 0x1400000000020000,
-        CONNECTNODE_CONNECTNODECONT = 0x1400000000020109,
-        CONNECTNODE_TERMINALS = 0x1400000000020219,
+        CONNECTNODE                     = 0x1400000000020000,
+        CONNECTNODE_CONNECTNODECONT     = 0x1400000000020109,
+        CONNECTNODE_TERMINALS           = 0x1400000000020219,
 
-        EQUIPMENT = 0x1110000000000000,
-        EQUIPMENT_NORMINSERV = 0x1110000000000101,       // Equipment.normallyInService
+        EQUIPMENT                       = 0x1110000000000000,
+        EQUIPMENT_NORMINSERV            = 0x1110000000000101,       // Equipment.normallyInService
 
-        CONNECTNODECONT = 0x1120000000010000,
-        CONNECTNODECONT_CONNECTNODES = 0x1120000000010119,
+        CONNECTNODECONT                 = 0x1120000000010000,
+        CONNECTNODECONT_CONNECTNODES    = 0x1120000000010119,
 
-        DISCRETE = 0x1210000000040000,
-        DISCRETE_MINVAL = 0x1210000000040103,
-        DISCRETE_MAXVAL = 0x1210000000040203,
-        DISCRETE_NORMVAL = 0x1210000000040303,
+        DISCRETE                        = 0x1210000000040000,
+        DISCRETE_MINVAL                 = 0x1210000000040103,
+        DISCRETE_MAXVAL                 = 0x1210000000040203,
+        DISCRETE_NORMVAL                = 0x1210000000040303,
 
         ANALOG = 0x1220000000050000,
-        ANALOG_MINVAL = 0x1220000000050105,
-        ANALOG_MAXVAL = 0x1220000000050205,
-        ANALOG_NORMVAL = 0x1220000000050305,
+        ANALOG_MINVAL                   = 0x1220000000050105,
+        ANALOG_MAXVAL                   = 0x1220000000050205,
+        ANALOG_NORMVAL                  = 0x1220000000050305,
 
-        CONDUCTEQUIP = 0x1111000000000000,       // ConductingEquipment
-        CONDUCTEQUIP_TERMINALS = 0x1111000000000119,
+        CONDUCTEQUIP                    = 0x1111000000000000,       // ConductingEquipment
+        CONDUCTEQUIP_TERMINALS          = 0x1111000000000119,
 
-        SWITCH = 0x1111100000000000,
-        SWITCH_NORMOPEN = 0x1111100000000101,
-        SWITCH_ONCOUNT = 0x1111100000000203,
-        SWITCH_ONDATE = 0x1111100000000308,
+        SWITCH                          = 0x1111100000000000,
+        SWITCH_NORMOPEN                 = 0x1111100000000101,
+        SWITCH_ONCOUNT                  = 0x1111100000000203,
+        SWITCH_ONDATE                   = 0x1111100000000308,
 
-        CONDUCTOR = 0x1111200000000000,
-        CONDUCTOR_LEN = 0x1111200000000105,
+        CONDUCTOR                       = 0x1111200000000000,
+        CONDUCTOR_LEN                   = 0x1111200000000105,
 
-        ENERGSOURCE = 0x1111300000080000,
-        ENERGSOURCE_ACTPOW = 0x1111300000080105,       // EnergySource.ActivePower
-        ENERGSOURCE_NOMVOLT = 0x1111300000080205,       // EnergySource.NominalVoltage
+        ENERGSOURCE                     = 0x1111300000080000,
+        ENERGSOURCE_ACTPOW              = 0x1111300000080105,       // EnergySource.ActivePower
+        ENERGSOURCE_NOMVOLT             = 0x1111300000080205,       // EnergySource.NominalVoltage
 
-        ENERGCONSUMER = 0x1111400000090000,
-        ENERGCONSUMER_QFIXED = 0x1111400000090105,
-        ENERGCONSUMER_PFIXED = 0x1111400000090205,
+        ENERGCONSUMER                   = 0x1111400000090000,
+        ENERGCONSUMER_QFIXED            = 0x1111400000090105,
+        ENERGCONSUMER_PFIXED            = 0x1111400000090205,
 
-        PROTSWITCH = 0x1111110000000000,       // ProtectedSwitch
+        PROTSWITCH                      = 0x1111110000000000,       // ProtectedSwitch
 
-        ACLINESEGMENT = 0x1111210000090000,
+        ACLINESEGMENT                   = 0x1111210000090000,
 
-        BREAKER = 0x1111111000080000,
+        BREAKER                         = 0x1111111000080000,
 
         //      IDOBJ								= 0x1000000000000000,
         //IDOBJ_GID							= 0x1000000000000104,

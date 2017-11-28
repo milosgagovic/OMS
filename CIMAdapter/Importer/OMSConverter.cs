@@ -6,7 +6,7 @@
 	/// PowerTransformerConverter has methods for populating
 	/// ResourceDescription objects using PowerTransformerCIMProfile_Labs objects.
 	/// </summary>
-	public static class PowerTransformerConverter
+	public static class OMSConverter
 	{
 
 		#region Populate ResourceDescription
@@ -34,7 +34,7 @@
 		{
 			if ((cimPowerSystemResource != null) && (rd != null))
 			{
-				PowerTransformerConverter.PopulateIdentifiedObjectProperties(cimPowerSystemResource, rd);
+				OMSConverter.PopulateIdentifiedObjectProperties(cimPowerSystemResource, rd);
 				
 			}
 		}
@@ -43,7 +43,7 @@
 		{
 			if ((cimEquipment != null) && (rd != null))
 			{
-				PowerTransformerConverter.PopulatePowerSystemResourceProperties(cimEquipment, rd, importHelper, report);
+				OMSConverter.PopulatePowerSystemResourceProperties(cimEquipment, rd, importHelper, report);
 
 				if (cimEquipment.NormallyInServiceHasValue)
 				{
@@ -56,7 +56,7 @@
 		{
 			if ((cimConductingEquipment != null) && (rd != null))
 			{
-				PowerTransformerConverter.PopulateEquipmentProperties(cimConductingEquipment, rd, importHelper, report);
+				OMSConverter.PopulateEquipmentProperties(cimConductingEquipment, rd, importHelper, report);
 			}
 		}
 
@@ -64,7 +64,7 @@
 		{
 			if ((cimConnNCon != null) && (rd != null))
 			{
-				PowerTransformerConverter.PopulatePowerSystemResourceProperties(cimConnNCon, rd, importHelper, report);
+				OMSConverter.PopulatePowerSystemResourceProperties(cimConnNCon, rd, importHelper, report);
 				
 			}
 		}
@@ -73,7 +73,7 @@
 		{
 			if ((cimConnecNode != null) && (rd != null))
 			{
-                PowerTransformerConverter.PopulateIdentifiedObjectProperties(cimConnecNode, rd);
+                OMSConverter.PopulateIdentifiedObjectProperties(cimConnecNode, rd);
 
 				if (cimConnecNode.ConnectivityNodeContainerHasValue)
 				{
@@ -92,7 +92,7 @@
 		{
 			if ((cimTerminal != null) && (rd != null))
 			{
-				PowerTransformerConverter.PopulateIdentifiedObjectProperties(cimTerminal, rd);
+				OMSConverter.PopulateIdentifiedObjectProperties(cimTerminal, rd);
 
 				if (cimTerminal.ConnectivityNodeHasValue)
 				{
@@ -121,7 +121,7 @@
         {
             if ((cimSwitch != null) && (rd != null))
             {
-                PowerTransformerConverter.PopulateConductingEquipmentProperties(cimSwitch, rd,importHelper,report);
+                OMSConverter.PopulateConductingEquipmentProperties(cimSwitch, rd,importHelper,report);
 
                 if (cimSwitch.NormalOpenHasValue)
                 {
@@ -144,7 +144,7 @@
         {
             if ((cimProtSwitch != null) && (rd != null))
             {
-                PowerTransformerConverter.PopulateSwitchProperties(cimProtSwitch, rd, importHelper, report);
+                OMSConverter.PopulateSwitchProperties(cimProtSwitch, rd, importHelper, report);
             }
         }
 
@@ -152,7 +152,7 @@
         {
             if ((cimBreaker != null) && (rd != null))
             {
-                PowerTransformerConverter.PopulateProtectedSwitchProperties(cimBreaker, rd, importHelper, report);
+                OMSConverter.PopulateProtectedSwitchProperties(cimBreaker, rd, importHelper, report);
             }
         }
 
@@ -160,7 +160,7 @@
         {
             if ((cimConductor != null) && (rd != null))
             {
-                PowerTransformerConverter.PopulateConductingEquipmentProperties(cimConductor, rd, importHelper, report);
+                OMSConverter.PopulateConductingEquipmentProperties(cimConductor, rd, importHelper, report);
 
                 if (cimConductor.LengthHasValue)
                 {
@@ -174,7 +174,7 @@
         {
             if ((cimACLineSeg != null) && (rd != null))
             {
-                PowerTransformerConverter.PopulateConductorProperties(cimACLineSeg, rd, importHelper, report);
+                OMSConverter.PopulateConductorProperties(cimACLineSeg, rd, importHelper, report);
             }
         }
 
@@ -182,7 +182,7 @@
         {
             if ((cimEnergySource != null) && (rd != null))
             {
-                PowerTransformerConverter.PopulateConductingEquipmentProperties(cimEnergySource, rd, importHelper, report);
+                OMSConverter.PopulateConductingEquipmentProperties(cimEnergySource, rd, importHelper, report);
 
                 if (cimEnergySource.ActivePowerHasValue)
                 {
@@ -200,7 +200,7 @@
         {
             if ((cimEnergyConsumer != null) && (rd != null))
             {
-                PowerTransformerConverter.PopulateConductingEquipmentProperties(cimEnergyConsumer, rd, importHelper, report);
+                OMSConverter.PopulateConductingEquipmentProperties(cimEnergyConsumer, rd, importHelper, report);
 
                 if (cimEnergyConsumer.PfixedHasValue)
                 {
@@ -218,7 +218,7 @@
         {
             if ((cimMeasurment != null) && (rd != null))
             {
-                PowerTransformerConverter.PopulateIdentifiedObjectProperties(cimMeasurment, rd);
+                OMSConverter.PopulateIdentifiedObjectProperties(cimMeasurment, rd);
 
                 if (cimMeasurment.DirectionHasValue)
                 {
@@ -232,6 +232,16 @@
                 {
                     rd.AddProperty(new Property(ModelCode.MEASUREMENT_UNITSYMB, (short)cimMeasurment.UnitSymbol));
                 }
+                if (cimMeasurment.PowerSystemResourceHasValue)
+                {
+                    long gid = importHelper.GetMappedGID(cimMeasurment.PowerSystemResource.ID);
+                    if (gid < 0)
+                    {
+                        report.Report.Append("WARNING: Convert ").Append(cimMeasurment.GetType().ToString()).Append(" rdfID = \"").Append(cimMeasurment.ID);
+                        report.Report.Append("\" - Failed to set reference to TransformerWinding: rdfID \"").Append(cimMeasurment.PowerSystemResource.ID).AppendLine(" \" is not mapped to GID!");
+                    }
+                    rd.AddProperty(new Property(ModelCode.MEASUREMENT_PSR, gid));
+                }
 
             }
         }
@@ -240,7 +250,7 @@
         {
             if ((cimAnalog != null) && (rd != null))
             {
-                PowerTransformerConverter.PopulateMeasurmentProperties(cimAnalog, rd,importHelper,report);
+                OMSConverter.PopulateMeasurmentProperties(cimAnalog, rd,importHelper,report);
 
                 if (cimAnalog.MinValueHasValue)
                 {
@@ -262,7 +272,7 @@
         {
             if ((cimDiscrete != null) && (rd != null))
             {
-                PowerTransformerConverter.PopulateMeasurmentProperties(cimDiscrete, rd, importHelper, report);
+                OMSConverter.PopulateMeasurmentProperties(cimDiscrete, rd, importHelper, report);
 
                 if (cimDiscrete.MinValueHasValue)
                 {
