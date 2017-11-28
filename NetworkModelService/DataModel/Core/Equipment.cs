@@ -9,111 +9,86 @@ using FTN.Common;
 
 namespace FTN.Services.NetworkModelService.DataModel.Core
 {
-	public class Equipment : PowerSystemResource
-	{		
-		private bool isUnderground;
-		private bool isPrivate;
-						
-		public Equipment(long globalId) : base(globalId) 
-		{
-		}
-	
-		public bool IsUnderground
-		{
-			get
-			{
-				return isUnderground;
-			}
+    public class Equipment : PowerSystemResource
+    {
+        private bool normallyinservice;
 
-			set
-			{
-				isUnderground = value;
-			}
-		}
+        public bool Normallyinservice
+        {
+            get
+            {
+                return this.normallyinservice;
+            }
+            set
+            {
+                this.normallyinservice = value;
+            }
+        }
 
-		public bool IsPrivate
-		{
-			get 
-			{
-				return isPrivate; 
-			}
-			
-			set
-			{ 
-				isPrivate = value; 
-			}
-		}
+        public Equipment(long globalId) : base(globalId)
+        {
+        }
 
-		public override bool Equals(object obj)
-		{
-			if (base.Equals(obj))
-			{
-				Equipment x = (Equipment)obj;
-				return ((x.isUnderground == this.isUnderground) &&
-						(x.isPrivate == this.isPrivate));
-			}
-			else
-			{
-				return false;
-			}
-		}
 
-		public override int GetHashCode()
-		{
-			return base.GetHashCode();
-		}
+        public override bool Equals(object obj)
+        {
+            if (base.Equals(obj))
+            {
+                Equipment x = (Equipment)obj;
+                return ((x.normallyinservice == this.normallyinservice));
+            }
+            else
+            {
+                return false;
+            }
+        }
 
-		#region IAccess implementation
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
 
-		public override bool HasProperty(ModelCode property)
-		{
-			switch (property)
-			{
-				case ModelCode.EQUIPMENT_ISUNDERGROUND:
-				case ModelCode.EQUIPMENT_ISPRIVATE:
-		
-					return true;
-				default:
-					return base.HasProperty(property);
-			}
-		}
+        #region IAccess implementation
 
-		public override void GetProperty(Property property)
-		{
-			switch (property.Id)
-			{
-				case ModelCode.EQUIPMENT_ISUNDERGROUND:
-					property.SetValue(isUnderground);
-					break;
+        public override bool HasProperty(ModelCode property)
+        {
+            switch (property)
+            {
+                case ModelCode.EQUIPMENT_NORMINSERV:
+                    return true;
+                default:
+                    return base.HasProperty(property);
+            }
+        }
 
-				case ModelCode.EQUIPMENT_ISPRIVATE:
-					property.SetValue(isPrivate);
-					break;			
+        public override void GetProperty(Property property)
+        {
+            switch (property.Id)
+            {
+                case ModelCode.EQUIPMENT_NORMINSERV:
+                    property.SetValue(normallyinservice);
+                    break;
 
-				default:
-					base.GetProperty(property);
-					break;
-			}
-		}
+                default:
+                    base.GetProperty(property);
+                    break;
+            }
+        }
 
-		public override void SetProperty(Property property)
-		{
-			switch (property.Id)
-			{
-				case ModelCode.EQUIPMENT_ISUNDERGROUND:					
-					isUnderground = property.AsBool();
-					break;
+        public override void SetProperty(Property property)
+        {
+            switch (property.Id)
+            {
+                case ModelCode.EQUIPMENT_NORMINSERV:
+                    normallyinservice = property.AsBool();
+                    break;
 
-				case ModelCode.EQUIPMENT_ISPRIVATE:
-					isPrivate = property.AsBool();
-					break;
-			
-				default:
-					base.SetProperty(property);
-					break;
-			}
-		}		
+                default:
+                    base.SetProperty(property);
+                    break;
+            }
+        }
 
-		#endregion IAccess implementation
-	}
+        #endregion IAccess implementation
+    }
 }

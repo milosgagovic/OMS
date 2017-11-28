@@ -1,42 +1,51 @@
-﻿using System;
+﻿using FTN.Common;
+using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Runtime.Serialization;
 using System.Text;
-using System.Xml;
-using FTN.Common;
 
 namespace FTN.Services.NetworkModelService.DataModel.Core
 {
-    public class ConductingEquipment : Equipment
+    public class ConnectivityNodeContainer : PowerSystemResource
     {
-        private List<long> terminals = new List<long>();
 
-        public List<long> Terminals
+        private List<long> connectivityNodes = new List<long>();
+       
+
+        public ConnectivityNodeContainer(long globalId):base(globalId)
+        {
+        }
+       
+
+        public List<long> ConnectivityNodes
         {
             get
             {
-                return this.terminals;
+                return this.connectivityNodes;
             }
             set
             {
-                this.terminals = value;
+                this.connectivityNodes = value;
             }
         }
 
-        public ConductingEquipment(long globalId) : base(globalId)
+
+        public override bool IsReferenced
         {
+            get
+            {
+                return
+                     (ConnectivityNodes.Count > 0) ||
+                base.IsReferenced;
+            }
         }
-
-
 
         public override bool Equals(object obj)
         {
-            if (base.Equals(obj))
+            if ((true && base.Equals(obj)))
             {
-                ConductingEquipment x = (ConductingEquipment)obj;
-                return ((CompareHelper.CompareLists(x.Terminals, this.Terminals, true)));
+                ConnectivityNodeContainer x = (ConnectivityNodeContainer)obj;
+                return ((CompareHelper.CompareLists(x.ConnectivityNodes, this.connectivityNodes, true)));
             }
             else
             {
@@ -49,30 +58,27 @@ namespace FTN.Services.NetworkModelService.DataModel.Core
             return base.GetHashCode();
         }
 
-        #region IAccess implementation
+        public override void GetProperty(Property property)
+        {
+            switch (property.Id)
+            {
+                case ModelCode.CONNECTNODECONT_CONNECTNODES:
+                    property.SetValue(ConnectivityNodes);
+                    break;
+                default:
+                    base.GetProperty(property);
+                    break;
+            }
+        }
 
         public override bool HasProperty(ModelCode property)
         {
             switch (property)
             {
-                case ModelCode.CONDUCTEQUIP_TERMINALS:
+                case ModelCode.CONNECTNODECONT_CONNECTNODES:
                     return true;
-
                 default:
                     return base.HasProperty(property);
-            }
-        }
-
-        public override void GetProperty(Property property)
-        {
-            switch (property.Id)
-            {
-                case ModelCode.CONDUCTEQUIP_TERMINALS:
-                    property.SetValue(Terminals);
-                    break;
-                default:
-                    base.GetProperty(property);
-                    break;
             }
         }
 
@@ -86,26 +92,12 @@ namespace FTN.Services.NetworkModelService.DataModel.Core
             }
         }
 
-        #endregion IAccess implementation
-
-        #region IReference implementation
-        public override bool IsReferenced
-        {
-            get
-            {
-                return
-                     (Terminals.Count > 0) || base.IsReferenced;
-            }
-
-        }
-
         public override void GetReferences(Dictionary<ModelCode, List<long>> references, TypeOfReference refType)
         {
-            if (Terminals != null && Terminals.Count > 0 && (refType == TypeOfReference.Target || refType == TypeOfReference.Both))
+            if (ConnectivityNodes != null && ConnectivityNodes.Count > 0 && (refType == TypeOfReference.Target || refType == TypeOfReference.Both))
             {
-                references[ModelCode.CONDUCTEQUIP_TERMINALS] = Terminals.GetRange(0, Terminals.Count);
+                references[ModelCode.CONNECTNODECONT_CONNECTNODES] = ConnectivityNodes.GetRange(0, ConnectivityNodes.Count);
             }
-
             base.GetReferences(references, refType);
         }
 
@@ -113,8 +105,8 @@ namespace FTN.Services.NetworkModelService.DataModel.Core
         {
             switch (referenceId)
             {
-                case ModelCode.TERMINAL_CONDEQUIP:
-                    Terminals.Add(globalId);
+                case ModelCode.CONNECTNODE_CONNECTNODECONT:
+                    ConnectivityNodes.Add(globalId);
                     break;
                 default:
                     base.AddReference(referenceId, globalId);
@@ -126,10 +118,10 @@ namespace FTN.Services.NetworkModelService.DataModel.Core
         {
             switch (referenceId)
             {
-                case ModelCode.TERMINAL_CONDEQUIP:
-                    if (Terminals.Contains(globalId))
+                case ModelCode.CONNECTNODE_CONNECTNODECONT:
+                    if (ConnectivityNodes.Contains(globalId))
                     {
-                        Terminals.Remove(globalId);
+                        ConnectivityNodes.Remove(globalId);
                     }
                     else
                     {
@@ -141,7 +133,5 @@ namespace FTN.Services.NetworkModelService.DataModel.Core
                     break;
             }
         }
-
-        #endregion IReference implementation
     }
 }

@@ -16,3 +16,10 @@ C:\Users\Nemanja\Desktop\Projekat\ModelLabsProjekat\bin64\NMSTestClient.pdb
 C:\Users\Nemanja\Desktop\Projekat\ModelLabsProjekat\NetworkModelService\Test\NMSTestClient\obj\x64\Debug\NMSTestClient.csprojResolveAssemblyReference.cache
 C:\Users\Nemanja\Desktop\Projekat\ModelLabsProjekat\NetworkModelService\Test\NMSTestClient\obj\x64\Debug\NMSTestClient.exe
 C:\Users\Nemanja\Desktop\Projekat\ModelLabsProjekat\NetworkModelService\Test\NMSTestClient\obj\x64\Debug\NMSTestClient.pdb
+C:\Users\Windows10_SSD\Desktop\New folder (3)\OMS\NetworkModelService\Test\NMSTestClient\obj\x64\Debug\NMSTestClient.csprojResolveAssemblyReference.cache
+C:\Users\Windows10_SSD\Desktop\New folder (3)\OMS\NetworkModelService\Test\NMSTestClient\obj\x64\Debug\NMSTestClient.csproj.CoreCompileInputs.cache
+C:\Users\Windows10_SSD\Desktop\New folder (3)\OMS\NetworkModelService\Test\NMSTestClient\obj\x64\Debug\NMSTestClient.exe
+C:\Users\Windows10_SSD\Desktop\New folder (3)\OMS\NetworkModelService\Test\NMSTestClient\obj\x64\Debug\NMSTestClient.pdb
+C:\Users\Windows10_SSD\Desktop\New folder (3)\OMS\bin64\NMSTestClient.exe.config
+C:\Users\Windows10_SSD\Desktop\New folder (3)\OMS\bin64\NMSTestClient.exe
+C:\Users\Windows10_SSD\Desktop\New folder (3)\OMS\bin64\NMSTestClient.pdb

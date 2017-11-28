@@ -25,3 +25,10 @@ C:\Users\Nemanja\Desktop\Projekat\ModelLabsProjekat\bin64\FTN_NetworkModelServic
 C:\Users\Nemanja\Desktop\Projekat\ModelLabsProjekat\NetworkModelService\ServiceHost\NetworkModelServiceSelfHost\obj\x64\Debug\NetworkModelServiceSelfHost.csprojResolveAssemblyReference.cache
 C:\Users\Nemanja\Desktop\Projekat\ModelLabsProjekat\NetworkModelService\ServiceHost\NetworkModelServiceSelfHost\obj\x64\Debug\FTN_NetworkModelService.exe
 C:\Users\Nemanja\Desktop\Projekat\ModelLabsProjekat\NetworkModelService\ServiceHost\NetworkModelServiceSelfHost\obj\x64\Debug\FTN_NetworkModelService.pdb
+C:\Users\Windows10_SSD\Desktop\New folder (3)\OMS\NetworkModelService\ServiceHost\NetworkModelServiceSelfHost\obj\x64\Debug\NetworkModelServiceSelfHost.csprojResolveAssemblyReference.cache
+C:\Users\Windows10_SSD\Desktop\New folder (3)\OMS\NetworkModelService\ServiceHost\NetworkModelServiceSelfHost\obj\x64\Debug\NetworkModelServiceSelfHost.csproj.CoreCompileInputs.cache
+C:\Users\Windows10_SSD\Desktop\New folder (3)\OMS\NetworkModelService\ServiceHost\NetworkModelServiceSelfHost\obj\x64\Debug\FTN_NetworkModelService.exe
+C:\Users\Windows10_SSD\Desktop\New folder (3)\OMS\NetworkModelService\ServiceHost\NetworkModelServiceSelfHost\obj\x64\Debug\FTN_NetworkModelService.pdb
+C:\Users\Windows10_SSD\Desktop\New folder (3)\OMS\bin64\FTN_NetworkModelService.exe.config
+C:\Users\Windows10_SSD\Desktop\New folder (3)\OMS\bin64\FTN_NetworkModelService.exe
+C:\Users\Windows10_SSD\Desktop\New folder (3)\OMS\bin64\FTN_NetworkModelService.pdb

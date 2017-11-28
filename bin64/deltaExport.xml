@@ -1,0 +1,54 @@
+﻿<delta id="0">
+  <operations>
+    <operation type="insert">
+      <ResourceDescriptions count="6">
+        <ResourceDescription>
+          <id gid="0x00000001ffffffff" type="CONNECTNODECONT" />
+          <Properties>
+            <Property id="IDOBJ_MRID" value="123" />
+            <Property id="IDOBJ_NAME" value="CNC1" />
+          </Properties>
+        </ResourceDescription>
+        <ResourceDescription>
+          <id gid="0x00000001fffffffe" type="CONNECTNODECONT" />
+          <Properties>
+            <Property id="IDOBJ_MRID" value="124" />
+            <Property id="IDOBJ_NAME" value="CNC2" />
+          </Properties>
+        </ResourceDescription>
+        <ResourceDescription>
+          <id gid="0x00000001fffffffd" type="CONNECTNODECONT" />
+          <Properties>
+            <Property id="IDOBJ_MRID" value="125" />
+            <Property id="IDOBJ_NAME" value="CNC3" />
+          </Properties>
+        </ResourceDescription>
+        <ResourceDescription>
+          <id gid="0x00000001fffffffc" type="CONNECTNODECONT" />
+          <Properties>
+            <Property id="IDOBJ_MRID" value="126" />
+            <Property id="IDOBJ_NAME" value="CNC4" />
+          </Properties>
+        </ResourceDescription>
+        <ResourceDescription>
+          <id gid="0x00000002ffffffff" type="CONNECTNODE" />
+          <Properties>
+            <Property id="IDOBJ_MRID" value="1" />
+            <Property id="IDOBJ_NAME" value="Confgf34" />
+          </Properties>
+        </ResourceDescription>
+        <ResourceDescription>
+          <id gid="0x00000009ffffffff" type="ANALOG" />
+          <Properties>
+            <Property id="IDOBJ_MRID" value="1" />
+            <Property id="IDOBJ_NAME" value="Analog1" />
+            <Property id="MEASUREMENT_DIRECTION" value="Read" />
+            <Property id="MEASUREMENT_TYPE" value="fdsf" />
+            <Property id="ANALOG_MINVAL" value="12" />
+            <Property id="ANALOG_MAXVAL" value="250" />
+          </Properties>
+        </ResourceDescription>
+      </ResourceDescriptions>
+    </operation>
+  </operations>
+</delta>
