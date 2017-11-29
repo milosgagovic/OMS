@@ -23,11 +23,11 @@ namespace FTN.Services.NetworkModelService.DataModel.Core
         {
             get
             {
-                return this.Terminals;
+                return this.terminals;
             }
             set
             {
-                this.Terminals = value;
+                this.terminals = value;
             }
         }
 

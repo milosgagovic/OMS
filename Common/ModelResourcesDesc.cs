@@ -883,6 +883,7 @@ namespace FTN.Common
 			notSettablePropertyIds.Add(ModelCode.CONNECTNODECONT_CONNECTNODES);
 			notSettablePropertyIds.Add(ModelCode.CONDUCTEQUIP_TERMINALS);
 			notSettablePropertyIds.Add(ModelCode.CONNECTNODE_TERMINALS);
+            NotSettablePropertyIds.Add(ModelCode.PSR_MEASUREMENTS);
 		}
 	
 		# endregion Initialization of metadata

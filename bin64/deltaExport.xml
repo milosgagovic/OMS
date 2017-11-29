@@ -1,51 +1,91 @@
 ﻿<delta id="0">
   <operations>
     <operation type="insert">
-      <ResourceDescriptions count="6">
+      <ResourceDescriptions count="10">
         <ResourceDescription>
           <id gid="0x00000001ffffffff" type="CONNECTNODECONT" />
           <Properties>
-            <Property id="IDOBJ_MRID" value="123" />
+            <Property id="IDOBJ_MRID" value="c123" />
             <Property id="IDOBJ_NAME" value="CNC1" />
           </Properties>
         </ResourceDescription>
         <ResourceDescription>
           <id gid="0x00000001fffffffe" type="CONNECTNODECONT" />
           <Properties>
-            <Property id="IDOBJ_MRID" value="124" />
+            <Property id="IDOBJ_MRID" value="c124" />
             <Property id="IDOBJ_NAME" value="CNC2" />
           </Properties>
         </ResourceDescription>
         <ResourceDescription>
           <id gid="0x00000001fffffffd" type="CONNECTNODECONT" />
           <Properties>
-            <Property id="IDOBJ_MRID" value="125" />
+            <Property id="IDOBJ_MRID" value="c125" />
             <Property id="IDOBJ_NAME" value="CNC3" />
           </Properties>
         </ResourceDescription>
         <ResourceDescription>
           <id gid="0x00000001fffffffc" type="CONNECTNODECONT" />
           <Properties>
-            <Property id="IDOBJ_MRID" value="126" />
+            <Property id="IDOBJ_MRID" value="c126" />
             <Property id="IDOBJ_NAME" value="CNC4" />
           </Properties>
         </ResourceDescription>
         <ResourceDescription>
           <id gid="0x00000002ffffffff" type="CONNECTNODE" />
           <Properties>
-            <Property id="IDOBJ_MRID" value="1" />
+            <Property id="IDOBJ_MRID" value="co1" />
             <Property id="IDOBJ_NAME" value="Confgf34" />
+            <Property id="CONNECTNODE_CONNECTNODECONT" value="0x00000001fffffffc" />
+          </Properties>
+        </ResourceDescription>
+        <ResourceDescription>
+          <id gid="0x00000003ffffffff" type="ENERGSOURCE" />
+          <Properties>
+            <Property id="IDOBJ_MRID" value="ES1" />
+            <Property id="IDOBJ_NAME" value="ES1" />
+            <Property id="EQUIPMENT_NORMINSERV" value="1" />
+            <Property id="ENERGSOURCE_ACTPOW" value="365.2" />
+            <Property id="ENERGSOURCE_NOMVOLT" value="250" />
+          </Properties>
+        </ResourceDescription>
+        <ResourceDescription>
+          <id gid="0x00000004ffffffff" type="ACLINESEGMENT" />
+          <Properties>
+            <Property id="IDOBJ_MRID" value="ac1" />
+            <Property id="IDOBJ_NAME" value="Acline" />
+            <Property id="EQUIPMENT_NORMINSERV" value="1" />
+            <Property id="CONDUCTOR_LEN" value="456.36" />
+          </Properties>
+        </ResourceDescription>
+        <ResourceDescription>
+          <id gid="0x00000007ffffffff" type="TERMINAL" />
+          <Properties>
+            <Property id="IDOBJ_MRID" value="T1" />
+            <Property id="IDOBJ_NAME" value="T1" />
+            <Property id="TERMINAL_CONNECTNODE" value="0x00000002ffffffff" />
+            <Property id="TERMINAL_CONDEQUIP" value="0x00000003ffffffff" />
+          </Properties>
+        </ResourceDescription>
+        <ResourceDescription>
+          <id gid="0x00000007fffffffe" type="TERMINAL" />
+          <Properties>
+            <Property id="IDOBJ_MRID" value="T2" />
+            <Property id="IDOBJ_NAME" value="T2" />
+            <Property id="TERMINAL_CONNECTNODE" value="0x00000002ffffffff" />
+            <Property id="TERMINAL_CONDEQUIP" value="0x00000004ffffffff" />
           </Properties>
         </ResourceDescription>
         <ResourceDescription>
           <id gid="0x00000009ffffffff" type="ANALOG" />
           <Properties>
-            <Property id="IDOBJ_MRID" value="1" />
-            <Property id="IDOBJ_NAME" value="Analog1" />
+            <Property id="IDOBJ_MRID" value="Analog1" />
+            <Property id="IDOBJ_NAME" value="analog" />
             <Property id="MEASUREMENT_DIRECTION" value="Read" />
-            <Property id="MEASUREMENT_TYPE" value="fdsf" />
-            <Property id="ANALOG_MINVAL" value="12" />
-            <Property id="ANALOG_MAXVAL" value="250" />
+            <Property id="MEASUREMENT_UNITSYMB" value="none" />
+            <Property id="MEASUREMENT_PSR" value="0x00000004ffffffff" />
+            <Property id="ANALOG_MINVAL" value="25" />
+            <Property id="ANALOG_MAXVAL" value="526" />
+            <Property id="ANALOG_NORMVAL" value="200" />
           </Properties>
         </ResourceDescription>
       </ResourceDescriptions>

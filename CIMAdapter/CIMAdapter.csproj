@@ -67,9 +67,9 @@
     <CodeAnalysisFailOnMissingRules>false</CodeAnalysisFailOnMissingRules>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="OMSCIMProfile_Labs, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="OMSCIMProfile, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Lib\OMSCIMProfile_Labs.dll</HintPath>
+      <HintPath>..\..\..\New folder (3)\OMS\CIMAdapter\Lib\OMSCIMProfile.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -83,8 +83,8 @@
   <ItemGroup>
     <Compile Include="CIMAdapter.cs" />
     <Compile Include="Importer\ImportHelper.cs" />
-    <Compile Include="Importer\PowerTransformerConverter.cs" />
-    <Compile Include="Importer\PowerTransformerImporter.cs" />
+    <Compile Include="Importer\OMSConverter.cs" />
+    <Compile Include="Importer\OMSImporter.cs" />
     <Compile Include="Manager\LogManager.cs" />
     <Compile Include="Manager\ProfileManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -105,7 +105,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Lib\OMSCIMProfile_Labs.dll" />
+    <Content Include="Lib\OMSCIMProfile.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -32,3 +32,10 @@ C:\Users\Windows10_SSD\Desktop\New folder (3)\OMS\NetworkModelService\ServiceHos
 C:\Users\Windows10_SSD\Desktop\New folder (3)\OMS\bin64\FTN_NetworkModelService.exe.config
 C:\Users\Windows10_SSD\Desktop\New folder (3)\OMS\bin64\FTN_NetworkModelService.exe
 C:\Users\Windows10_SSD\Desktop\New folder (3)\OMS\bin64\FTN_NetworkModelService.pdb
+C:\Users\Windows10_SSD\Desktop\New folder (4)\OMS\bin64\FTN_NetworkModelService.exe.config
+C:\Users\Windows10_SSD\Desktop\New folder (4)\OMS\bin64\FTN_NetworkModelService.exe
+C:\Users\Windows10_SSD\Desktop\New folder (4)\OMS\bin64\FTN_NetworkModelService.pdb
+C:\Users\Windows10_SSD\Desktop\New folder (4)\OMS\NetworkModelService\ServiceHost\NetworkModelServiceSelfHost\obj\x64\Debug\NetworkModelServiceSelfHost.csprojResolveAssemblyReference.cache
+C:\Users\Windows10_SSD\Desktop\New folder (4)\OMS\NetworkModelService\ServiceHost\NetworkModelServiceSelfHost\obj\x64\Debug\NetworkModelServiceSelfHost.csproj.CoreCompileInputs.cache
+C:\Users\Windows10_SSD\Desktop\New folder (4)\OMS\NetworkModelService\ServiceHost\NetworkModelServiceSelfHost\obj\x64\Debug\FTN_NetworkModelService.exe
+C:\Users\Windows10_SSD\Desktop\New folder (4)\OMS\NetworkModelService\ServiceHost\NetworkModelServiceSelfHost\obj\x64\Debug\FTN_NetworkModelService.pdb

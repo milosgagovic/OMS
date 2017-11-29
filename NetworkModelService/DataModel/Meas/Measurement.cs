@@ -18,6 +18,8 @@ namespace FTN.Services.NetworkModelService.DataModel.Meas
 
         private DirectionType direction;
 
+        private long psr = 0;
+
         public Measurement(long globalId) :
                 base(globalId)
         {
@@ -59,6 +61,18 @@ namespace FTN.Services.NetworkModelService.DataModel.Meas
             }
         }
 
+        public long PowerSystemResource
+        {
+            get
+            {
+                return this.psr;
+            }
+            set
+            {
+                this.psr = value;
+            }
+        }
+
         
         public override bool IsReferenced
         {
@@ -77,7 +91,8 @@ namespace FTN.Services.NetworkModelService.DataModel.Meas
                 return (
                 (x.measurementType == this.measurementType) &&
                 (x.unitSymbol == this.unitSymbol) &&
-                (x.direction == this.direction));
+                (x.direction == this.direction)) &&
+                (x.psr == this.psr);
                
             }
             else
@@ -104,6 +119,9 @@ namespace FTN.Services.NetworkModelService.DataModel.Meas
                 case ModelCode.MEASUREMENT_DIRECTION:
                     property.SetValue((short)direction);
                     break;
+                case ModelCode.MEASUREMENT_PSR:
+                    property.SetValue(PowerSystemResource);
+                    break;
                 default:
                     base.GetProperty(property);
                     break;
@@ -117,6 +135,7 @@ namespace FTN.Services.NetworkModelService.DataModel.Meas
                 case ModelCode.MEASUREMENT_TYPE:
                 case ModelCode.MEASUREMENT_UNITSYMB:
                 case ModelCode.MEASUREMENT_DIRECTION:
+                case ModelCode.MEASUREMENT_PSR:
                     return true;
                 default:
                     return base.HasProperty(property);
@@ -136,6 +155,9 @@ namespace FTN.Services.NetworkModelService.DataModel.Meas
                 case ModelCode.MEASUREMENT_DIRECTION:
                     direction = (DirectionType)property.AsEnum();
                     break;
+                case ModelCode.MEASUREMENT_PSR:
+                    PowerSystemResource = property.AsReference();
+                    break;
                 default:
                     base.SetProperty(property);
                     break;
@@ -144,7 +166,11 @@ namespace FTN.Services.NetworkModelService.DataModel.Meas
 
         public override void GetReferences(Dictionary<ModelCode, List<long>> references, TypeOfReference refType)
         {
-           
+            if (PowerSystemResource != 0 && (refType == TypeOfReference.Reference || refType == TypeOfReference.Both))
+            {
+                references[ModelCode.MEASUREMENT_PSR] = new List<long>();
+                references[ModelCode.MEASUREMENT_PSR].Add(PowerSystemResource);
+            }
             base.GetReferences(references, refType);
         }
 

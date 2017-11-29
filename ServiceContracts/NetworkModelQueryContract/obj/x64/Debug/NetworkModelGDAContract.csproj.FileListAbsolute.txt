@@ -9,3 +9,9 @@ C:\Users\Windows10_SSD\Desktop\New folder (3)\OMS\ServiceContracts\NetworkModelQ
 C:\Users\Windows10_SSD\Desktop\New folder (3)\OMS\ServiceContracts\NetworkModelQueryContract\obj\x64\Debug\NetworkModelGDAContract.csproj.CoreCompileInputs.cache
 C:\Users\Windows10_SSD\Desktop\New folder (3)\OMS\ServiceContracts\NetworkModelQueryContract\obj\x64\Debug\FTN.ServiceContracts.ServiceContracts.NetworkModelQueryContract.dll
 C:\Users\Windows10_SSD\Desktop\New folder (3)\OMS\ServiceContracts\NetworkModelQueryContract\obj\x64\Debug\FTN.ServiceContracts.ServiceContracts.NetworkModelQueryContract.pdb
+C:\Users\Windows10_SSD\Desktop\New folder (4)\OMS\bin64\FTN.ServiceContracts.ServiceContracts.NetworkModelQueryContract.dll
+C:\Users\Windows10_SSD\Desktop\New folder (4)\OMS\bin64\FTN.ServiceContracts.ServiceContracts.NetworkModelQueryContract.pdb
+C:\Users\Windows10_SSD\Desktop\New folder (4)\OMS\ServiceContracts\NetworkModelQueryContract\obj\x64\Debug\NetworkModelGDAContract.csprojResolveAssemblyReference.cache
+C:\Users\Windows10_SSD\Desktop\New folder (4)\OMS\ServiceContracts\NetworkModelQueryContract\obj\x64\Debug\NetworkModelGDAContract.csproj.CoreCompileInputs.cache
+C:\Users\Windows10_SSD\Desktop\New folder (4)\OMS\ServiceContracts\NetworkModelQueryContract\obj\x64\Debug\FTN.ServiceContracts.ServiceContracts.NetworkModelQueryContract.dll
+C:\Users\Windows10_SSD\Desktop\New folder (4)\OMS\ServiceContracts\NetworkModelQueryContract\obj\x64\Debug\FTN.ServiceContracts.ServiceContracts.NetworkModelQueryContract.pdb

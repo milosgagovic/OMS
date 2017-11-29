@@ -8,3 +8,8 @@ C:\Users\Windows10_SSD\Desktop\New folder (3)\OMS\CIMParser\obj\x64\Debug\CIMPar
 C:\Users\Windows10_SSD\Desktop\New folder (3)\OMS\CIMParser\obj\x64\Debug\CIMParser.dll
 C:\Users\Windows10_SSD\Desktop\New folder (3)\OMS\CIMParser\obj\x64\Debug\CIMParser.pdb
 C:\Users\Windows10_SSD\Desktop\New folder (3)\OMS\CIMParser\obj\x64\Debug\CIMParser.csprojResolveAssemblyReference.cache
+C:\Users\Windows10_SSD\Desktop\New folder (4)\OMS\bin64\CIMParser.dll
+C:\Users\Windows10_SSD\Desktop\New folder (4)\OMS\bin64\CIMParser.pdb
+C:\Users\Windows10_SSD\Desktop\New folder (4)\OMS\CIMParser\obj\x64\Debug\CIMParser.csproj.CoreCompileInputs.cache
+C:\Users\Windows10_SSD\Desktop\New folder (4)\OMS\CIMParser\obj\x64\Debug\CIMParser.dll
+C:\Users\Windows10_SSD\Desktop\New folder (4)\OMS\CIMParser\obj\x64\Debug\CIMParser.pdb

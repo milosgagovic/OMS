@@ -29,7 +29,7 @@ namespace FTN.ESI.SIMES.CIM.CIMAdapter.Manager
 		/// <returns>name of profile + "CIMProfile_Labs"</returns>
 		public static string GetProfileName(SupportedProfiles profile)
 		{
-			return string.Format("{0}CIMProfile_Labs", profile.ToString());
+			return string.Format("{0}CIMProfile", profile.ToString());
 		}
 
 		/// <summary>
@@ -39,7 +39,7 @@ namespace FTN.ESI.SIMES.CIM.CIMAdapter.Manager
 		/// <returns>name of profile + "CIMProfile_Labs.DLL"</returns>
 		public static string GetProfileDLLName(SupportedProfiles profile)
 		{
-			return string.Format("{0}CIMProfile_Labs.DLL", profile.ToString());
+			return string.Format("{0}CIMProfile.DLL", profile.ToString());
 		}
 
 		public static bool LoadAssembly(SupportedProfiles profile, out Assembly assembly)
