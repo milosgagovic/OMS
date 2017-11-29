@@ -31,3 +31,4 @@ C:\Users\Windows10_SSD\Desktop\New folder (4)\OMS\CIMProfileCreator\obj\x64\Debu
 C:\Users\Windows10_SSD\Desktop\New folder (4)\OMS\CIMProfileCreator\obj\x64\Debug\CIMProfileCreator.csproj.CoreCompileInputs.cache
 C:\Users\Windows10_SSD\Desktop\New folder (4)\OMS\CIMProfileCreator\obj\x64\Debug\FTN.ESI.SIMES.CIM.CIMProfileCreator.exe
 C:\Users\Windows10_SSD\Desktop\New folder (4)\OMS\CIMProfileCreator\obj\x64\Debug\FTN.ESI.SIMES.CIM.CIMProfileCreator.pdb
+C:\Users\Windows10_SSD\Desktop\New folder (4)\OMS\CIMProfileCreator\obj\x64\Debug\CIMProfileCreator.csprojResolveAssemblyReference.cache

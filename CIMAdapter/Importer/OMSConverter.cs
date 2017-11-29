@@ -88,22 +88,22 @@
             }
         }
 
-        public static void PopulateTerminalProperties(FTN.Terminal cimTerminal, ResourceDescription rd, ImportHelper importHelper, TransformAndLoadReport report)
-        {
-            if ((cimTerminal != null) && (rd != null))
-            {
-                OMSConverter.PopulateIdentifiedObjectProperties(cimTerminal, rd);
+		public static void PopulateTerminalProperties(FTN.Terminal cimTerminal, ResourceDescription rd, ImportHelper importHelper, TransformAndLoadReport report)
+		{
+			if ((cimTerminal != null) && (rd != null))
+			{
+				OMSConverter.PopulateIdentifiedObjectProperties(cimTerminal, rd);
 
-                if (cimTerminal.ConnectivityNodeHasValue)
-                {
-                    long gid = importHelper.GetMappedGID(cimTerminal.ConnectivityNode.ID);
-                    if (gid < 0)
-                    {
-                        report.Report.Append("WARNING: Convert ").Append(cimTerminal.GetType().ToString()).Append(" rdfID = \"").Append(cimTerminal.ID);
-                        report.Report.Append("\" - Failed to set reference to TransformerWinding: rdfID \"").Append(cimTerminal.ConnectivityNode.ID).AppendLine(" \" is not mapped to GID!");
-                    }
-                    rd.AddProperty(new Property(ModelCode.TERMINAL_CONNECTNODE, gid));
-                }
+				if (cimTerminal.ConnectivityNodeHasValue)
+				{
+					long gid = importHelper.GetMappedGID(cimTerminal.ConnectivityNode.ID);
+					if (gid < 0)
+					{
+						report.Report.Append("WARNING: Convert ").Append(cimTerminal.GetType().ToString()).Append(" rdfID = \"").Append(cimTerminal.ID);
+						report.Report.Append("\" - Failed to set reference to TransformerWinding: rdfID \"").Append(cimTerminal.ConnectivityNode.ID).AppendLine(" \" is not mapped to GID!");
+					}
+					rd.AddProperty(new Property(ModelCode.TERMINAL_CONNECTNODE, gid));
+				}
                 if (cimTerminal.ConductingEquipmentHasValue)
                 {
                     long gid = importHelper.GetMappedGID(cimTerminal.ConductingEquipment.ID);

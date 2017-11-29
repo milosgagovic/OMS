@@ -11,7 +11,7 @@ namespace FTN.Common
 
         CONNECTNODECONT                 = 0x0001,       // ConnectivityNodeContainer
         CONNECTNODE                     = 0x0002,       // ConnectivityNode
-        ENERGSOURCE                     = 0x0003,          // EnergySource
+        ENERGSOURCE                     = 0x0003,       // EnergySource
         ACLINESEGMENT                   = 0x0004,
         BREAKER                         = 0x0005,       
         ENERGCONSUMER                   = 0x0006,        // EnergyConsumer
