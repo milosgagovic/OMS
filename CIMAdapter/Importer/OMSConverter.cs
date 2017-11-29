@@ -83,7 +83,7 @@
 						report.Report.Append("WARNING: Convert ").Append(cimConnecNode.GetType().ToString()).Append(" rdfID = \"").Append(cimConnecNode.ID);
 						report.Report.Append("\" - Failed to set reference to PowerTransformer: rdfID \"").Append(cimConnecNode.ConnectivityNodeContainer.ID).AppendLine(" \" is not mapped to GID!");
 					}
-					rd.AddProperty(new Property(ModelCode.CONNECTNODECONT, gid));
+					rd.AddProperty(new Property(ModelCode.CONNECTNODE_CONNECTNODECONT, gid));
 				}
 			}
 		}

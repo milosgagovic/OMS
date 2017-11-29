@@ -11,7 +11,7 @@ namespace FTN.Common
 
         CONNECTNODECONT                 = 0x0001,       // ConnectivityNodeContainer
         CONNECTNODE                     = 0x0002,       // ConnectivityNode
-        ENERGSOURCE                     = 0x0003,          // EnergySource
+        ENERGSOURCE                     = 0x0003,       // EnergySource
         ACLINESEGMENT                   = 0x0004,
         BREAKER                         = 0x0005,       
         ENERGCONSUMER                   = 0x0006,        // EnergyConsumer
@@ -37,9 +37,9 @@ namespace FTN.Common
         MEASUREMENT_UNITSYMB            = 0x120000000000031a,
         MEASUREMENT_PSR                 = 0x1200000000000409,
 
-        TERMINAL                        = 0x1300000000030000,
-        TERMINAL_CONDEQUIP              = 0x1300000000030109,       // Terminal.ConductingEquipment
-        TERMINAL_CONNECTNODE            = 0x1300000000030209,       // Terminal.ConnectivityNode
+        TERMINAL                        = 0x1300000000070000,
+        TERMINAL_CONDEQUIP              = 0x1300000000070109,       // Terminal.ConductingEquipment
+        TERMINAL_CONNECTNODE            = 0x1300000000070209,       // Terminal.ConnectivityNode
 
         CONNECTNODE                     = 0x1400000000020000,
         CONNECTNODE_CONNECTNODECONT     = 0x1400000000020109,
@@ -51,15 +51,15 @@ namespace FTN.Common
         CONNECTNODECONT                 = 0x1120000000010000,
         CONNECTNODECONT_CONNECTNODES    = 0x1120000000010119,
 
-        DISCRETE                        = 0x1210000000040000,
-        DISCRETE_MINVAL                 = 0x1210000000040103,
-        DISCRETE_MAXVAL                 = 0x1210000000040203,
-        DISCRETE_NORMVAL                = 0x1210000000040303,
+        DISCRETE                        = 0x1210000000080000,
+        DISCRETE_MINVAL                 = 0x1210000000080103,
+        DISCRETE_MAXVAL                 = 0x1210000000080203,
+        DISCRETE_NORMVAL                = 0x1210000000080303,
 
-        ANALOG = 0x1220000000050000,
-        ANALOG_MINVAL                   = 0x1220000000050105,
-        ANALOG_MAXVAL                   = 0x1220000000050205,
-        ANALOG_NORMVAL                  = 0x1220000000050305,
+        ANALOG                          = 0x1220000000050000,
+        ANALOG_MINVAL                   = 0x1220000000090105,
+        ANALOG_MAXVAL                   = 0x1220000000090205,
+        ANALOG_NORMVAL                  = 0x1220000000090305,
 
         CONDUCTEQUIP                    = 0x1111000000000000,       // ConductingEquipment
         CONDUCTEQUIP_TERMINALS          = 0x1111000000000119,
@@ -72,19 +72,19 @@ namespace FTN.Common
         CONDUCTOR                       = 0x1111200000000000,
         CONDUCTOR_LEN                   = 0x1111200000000105,
 
-        ENERGSOURCE                     = 0x1111300000080000,
-        ENERGSOURCE_ACTPOW              = 0x1111300000080105,       // EnergySource.ActivePower
-        ENERGSOURCE_NOMVOLT             = 0x1111300000080205,       // EnergySource.NominalVoltage
+        ENERGSOURCE                     = 0x1111300000030000,
+        ENERGSOURCE_ACTPOW              = 0x1111300000030105,       // EnergySource.ActivePower
+        ENERGSOURCE_NOMVOLT             = 0x1111300000030205,       // EnergySource.NominalVoltage
 
-        ENERGCONSUMER                   = 0x1111400000090000,
-        ENERGCONSUMER_QFIXED            = 0x1111400000090105,
-        ENERGCONSUMER_PFIXED            = 0x1111400000090205,
+        ENERGCONSUMER                   = 0x1111400000060000,
+        ENERGCONSUMER_QFIXED            = 0x1111400000060105,
+        ENERGCONSUMER_PFIXED            = 0x1111400000060205,
 
         PROTSWITCH                      = 0x1111110000000000,       // ProtectedSwitch
 
-        ACLINESEGMENT                   = 0x1111210000090000,
+        ACLINESEGMENT                   = 0x1111210000040000,
 
-        BREAKER                         = 0x1111111000080000,
+        BREAKER                         = 0x1111111000050000,
 
         //      IDOBJ								= 0x1000000000000000,
         //IDOBJ_GID							= 0x1000000000000104,
