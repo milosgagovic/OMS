@@ -28,7 +28,7 @@ namespace ModelLabsApp
 			buttonApplyDelta.Enabled = false;
 
 			comboBoxProfile.DataSource = Enum.GetValues(typeof(SupportedProfiles));
-			comboBoxProfile.SelectedItem = SupportedProfiles.PowerTransformer;
+			comboBoxProfile.SelectedItem = SupportedProfiles.OMS;
 			//comboBoxProfile.Enabled = false; //// other profiles are not supported
 		}
 
