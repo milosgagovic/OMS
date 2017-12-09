@@ -28,3 +28,13 @@ C:\Users\Windows10_SSD\Desktop\New folder (4)\OMS\ModelLabsApp\obj\x64\Debug\Mod
 C:\Users\Windows10_SSD\Desktop\New folder (4)\OMS\ModelLabsApp\obj\x64\Debug\ModelLabsApp.csproj.CoreCompileInputs.cache
 C:\Users\Windows10_SSD\Desktop\New folder (4)\OMS\ModelLabsApp\obj\x64\Debug\ModelLabsApp.exe
 C:\Users\Windows10_SSD\Desktop\New folder (4)\OMS\ModelLabsApp\obj\x64\Debug\ModelLabsApp.pdb
+D:\WorkingDir\OMS projekat\OMS\NetworkModelService\bin64\ModelLabsApp.exe.config
+D:\WorkingDir\OMS projekat\OMS\NetworkModelService\bin64\ModelLabsApp.exe
+D:\WorkingDir\OMS projekat\OMS\NetworkModelService\bin64\ModelLabsApp.pdb
+D:\WorkingDir\OMS projekat\OMS\NetworkModelService\ModelLabsApp\obj\x64\Debug\ModelLabsApp.csprojResolveAssemblyReference.cache
+D:\WorkingDir\OMS projekat\OMS\NetworkModelService\ModelLabsApp\obj\x64\Debug\ModelLabsApp.ModelLabsAppForm.resources
+D:\WorkingDir\OMS projekat\OMS\NetworkModelService\ModelLabsApp\obj\x64\Debug\ModelLabsApp.Properties.Resources.resources
+D:\WorkingDir\OMS projekat\OMS\NetworkModelService\ModelLabsApp\obj\x64\Debug\ModelLabsApp.csproj.GenerateResource.Cache
+D:\WorkingDir\OMS projekat\OMS\NetworkModelService\ModelLabsApp\obj\x64\Debug\ModelLabsApp.csproj.CoreCompileInputs.cache
+D:\WorkingDir\OMS projekat\OMS\NetworkModelService\ModelLabsApp\obj\x64\Debug\ModelLabsApp.exe
+D:\WorkingDir\OMS projekat\OMS\NetworkModelService\ModelLabsApp\obj\x64\Debug\ModelLabsApp.pdb

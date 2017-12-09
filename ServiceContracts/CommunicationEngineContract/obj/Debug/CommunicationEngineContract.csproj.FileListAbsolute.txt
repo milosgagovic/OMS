@@ -4,3 +4,9 @@ C:\Users\Windows10_SSD\Desktop\OMS\CommunicationEngineContract\obj\Debug\Communi
 C:\Users\Windows10_SSD\Desktop\OMS\CommunicationEngineContract\obj\Debug\CommunicationEngineContract.dll
 C:\Users\Windows10_SSD\Desktop\OMS\CommunicationEngineContract\obj\Debug\CommunicationEngineContract.pdb
 C:\Users\Windows10_SSD\Desktop\OMS\CommunicationEngineContract\obj\Debug\CommunicationEngineContract.csprojResolveAssemblyReference.cache
+D:\WorkingDir\OMS projekat\OMS\ServiceContracts\CommunicationEngineContract\bin\Debug\CommunicationEngineContract.dll
+D:\WorkingDir\OMS projekat\OMS\ServiceContracts\CommunicationEngineContract\bin\Debug\CommunicationEngineContract.pdb
+D:\WorkingDir\OMS projekat\OMS\ServiceContracts\CommunicationEngineContract\obj\Debug\CommunicationEngineContract.csprojResolveAssemblyReference.cache
+D:\WorkingDir\OMS projekat\OMS\ServiceContracts\CommunicationEngineContract\obj\Debug\CommunicationEngineContract.csproj.CoreCompileInputs.cache
+D:\WorkingDir\OMS projekat\OMS\ServiceContracts\CommunicationEngineContract\obj\Debug\CommunicationEngineContract.dll
+D:\WorkingDir\OMS projekat\OMS\ServiceContracts\CommunicationEngineContract\obj\Debug\CommunicationEngineContract.pdb

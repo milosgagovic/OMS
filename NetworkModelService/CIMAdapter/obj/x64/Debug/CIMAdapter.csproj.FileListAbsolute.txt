@@ -15,3 +15,9 @@ C:\Users\Windows10_SSD\Desktop\New folder (4)\OMS\CIMAdapter\obj\x64\Debug\CIMAd
 C:\Users\Windows10_SSD\Desktop\New folder (4)\OMS\CIMAdapter\obj\x64\Debug\CIMAdapter.csproj.CoreCompileInputs.cache
 C:\Users\Windows10_SSD\Desktop\New folder (4)\OMS\CIMAdapter\obj\x64\Debug\FTN.ESI.SIMES.CIM.CIMAdapter.dll
 C:\Users\Windows10_SSD\Desktop\New folder (4)\OMS\CIMAdapter\obj\x64\Debug\FTN.ESI.SIMES.CIM.CIMAdapter.pdb
+D:\WorkingDir\OMS projekat\OMS\NetworkModelService\bin64\FTN.ESI.SIMES.CIM.CIMAdapter.dll
+D:\WorkingDir\OMS projekat\OMS\NetworkModelService\bin64\FTN.ESI.SIMES.CIM.CIMAdapter.pdb
+D:\WorkingDir\OMS projekat\OMS\NetworkModelService\CIMAdapter\obj\x64\Debug\CIMAdapter.csprojResolveAssemblyReference.cache
+D:\WorkingDir\OMS projekat\OMS\NetworkModelService\CIMAdapter\obj\x64\Debug\CIMAdapter.csproj.CoreCompileInputs.cache
+D:\WorkingDir\OMS projekat\OMS\NetworkModelService\CIMAdapter\obj\x64\Debug\FTN.ESI.SIMES.CIM.CIMAdapter.dll
+D:\WorkingDir\OMS projekat\OMS\NetworkModelService\CIMAdapter\obj\x64\Debug\FTN.ESI.SIMES.CIM.CIMAdapter.pdb

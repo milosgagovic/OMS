@@ -30,3 +30,10 @@ C:\Users\Windows10_SSD\Desktop\New folder (4)\OMS\NetworkModelService\Test\NMSTe
 C:\Users\Windows10_SSD\Desktop\New folder (4)\OMS\NetworkModelService\Test\NMSTestClient\obj\x64\Debug\NMSTestClient.csproj.CoreCompileInputs.cache
 C:\Users\Windows10_SSD\Desktop\New folder (4)\OMS\NetworkModelService\Test\NMSTestClient\obj\x64\Debug\NMSTestClient.exe
 C:\Users\Windows10_SSD\Desktop\New folder (4)\OMS\NetworkModelService\Test\NMSTestClient\obj\x64\Debug\NMSTestClient.pdb
+D:\WorkingDir\OMS projekat\OMS\bin64\NMSTestClient.exe.config
+D:\WorkingDir\OMS projekat\OMS\bin64\NMSTestClient.exe
+D:\WorkingDir\OMS projekat\OMS\bin64\NMSTestClient.pdb
+D:\WorkingDir\OMS projekat\OMS\NetworkModelService\Test\NMSTestClient\obj\x64\Debug\NMSTestClient.csproj.CoreCompileInputs.cache
+D:\WorkingDir\OMS projekat\OMS\NetworkModelService\Test\NMSTestClient\obj\x64\Debug\NMSTestClient.exe
+D:\WorkingDir\OMS projekat\OMS\NetworkModelService\Test\NMSTestClient\obj\x64\Debug\NMSTestClient.pdb
+D:\WorkingDir\OMS projekat\OMS\NetworkModelService\Test\NMSTestClient\obj\x64\Debug\NMSTestClient.csprojResolveAssemblyReference.cache

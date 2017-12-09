@@ -40,3 +40,8 @@ C:\Users\Windows10_SSD\Desktop\New folder (4)\OMS\NetworkModelService\DataModel\
 C:\Users\Windows10_SSD\Desktop\New folder (4)\OMS\NetworkModelService\DataModel\obj\x64\Debug\DataModel.csproj.CoreCompileInputs.cache
 C:\Users\Windows10_SSD\Desktop\New folder (4)\OMS\NetworkModelService\DataModel\obj\x64\Debug\FTN.DataModel.dll
 C:\Users\Windows10_SSD\Desktop\New folder (4)\OMS\NetworkModelService\DataModel\obj\x64\Debug\FTN.DataModel.pdb
+D:\WorkingDir\OMS projekat\OMS\bin64\FTN.DataModel.dll
+D:\WorkingDir\OMS projekat\OMS\bin64\FTN.DataModel.pdb
+D:\WorkingDir\OMS projekat\OMS\NetworkModelService\DataModel\obj\x64\Debug\DataModel.csproj.CoreCompileInputs.cache
+D:\WorkingDir\OMS projekat\OMS\NetworkModelService\DataModel\obj\x64\Debug\FTN.DataModel.dll
+D:\WorkingDir\OMS projekat\OMS\NetworkModelService\DataModel\obj\x64\Debug\FTN.DataModel.pdb

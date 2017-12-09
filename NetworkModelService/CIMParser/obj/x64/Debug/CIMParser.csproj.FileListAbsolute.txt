@@ -14,3 +14,9 @@ C:\Users\Windows10_SSD\Desktop\New folder (4)\OMS\CIMParser\obj\x64\Debug\CIMPar
 C:\Users\Windows10_SSD\Desktop\New folder (4)\OMS\CIMParser\obj\x64\Debug\CIMParser.dll
 C:\Users\Windows10_SSD\Desktop\New folder (4)\OMS\CIMParser\obj\x64\Debug\CIMParser.pdb
 C:\Users\Windows10_SSD\Desktop\New folder (4)\OMS\CIMParser\obj\x64\Debug\CIMParser.csprojResolveAssemblyReference.cache
+D:\WorkingDir\OMS projekat\OMS\NetworkModelService\bin64\CIMParser.dll
+D:\WorkingDir\OMS projekat\OMS\NetworkModelService\bin64\CIMParser.pdb
+D:\WorkingDir\OMS projekat\OMS\NetworkModelService\CIMParser\obj\x64\Debug\CIMParser.csprojResolveAssemblyReference.cache
+D:\WorkingDir\OMS projekat\OMS\NetworkModelService\CIMParser\obj\x64\Debug\CIMParser.csproj.CoreCompileInputs.cache
+D:\WorkingDir\OMS projekat\OMS\NetworkModelService\CIMParser\obj\x64\Debug\CIMParser.dll
+D:\WorkingDir\OMS projekat\OMS\NetworkModelService\CIMParser\obj\x64\Debug\CIMParser.pdb

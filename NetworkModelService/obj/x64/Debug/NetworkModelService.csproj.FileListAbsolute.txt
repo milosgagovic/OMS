@@ -15,3 +15,9 @@ C:\Users\Windows10_SSD\Desktop\New folder (4)\OMS\NetworkModelService\obj\x64\De
 C:\Users\Windows10_SSD\Desktop\New folder (4)\OMS\NetworkModelService\obj\x64\Debug\NetworkModelService.csproj.CoreCompileInputs.cache
 C:\Users\Windows10_SSD\Desktop\New folder (4)\OMS\NetworkModelService\obj\x64\Debug\FTN.Services.NetworkModelService.dll
 C:\Users\Windows10_SSD\Desktop\New folder (4)\OMS\NetworkModelService\obj\x64\Debug\FTN.Services.NetworkModelService.pdb
+D:\WorkingDir\OMS projekat\OMS\bin64\FTN.Services.NetworkModelService.dll
+D:\WorkingDir\OMS projekat\OMS\bin64\FTN.Services.NetworkModelService.pdb
+D:\WorkingDir\OMS projekat\OMS\NetworkModelService\obj\x64\Debug\NetworkModelService.csprojResolveAssemblyReference.cache
+D:\WorkingDir\OMS projekat\OMS\NetworkModelService\obj\x64\Debug\NetworkModelService.csproj.CoreCompileInputs.cache
+D:\WorkingDir\OMS projekat\OMS\NetworkModelService\obj\x64\Debug\FTN.Services.NetworkModelService.dll
+D:\WorkingDir\OMS projekat\OMS\NetworkModelService\obj\x64\Debug\FTN.Services.NetworkModelService.pdb
