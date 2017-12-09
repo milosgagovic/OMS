@@ -1,0 +1,5 @@
+D:\WorkingDir\OMS projekat\OMS\SCADA\ModbusTCPDriver\bin\Debug\ModbusTCPDriver.dll
+D:\WorkingDir\OMS projekat\OMS\SCADA\ModbusTCPDriver\bin\Debug\ModbusTCPDriver.pdb
+D:\WorkingDir\OMS projekat\OMS\SCADA\ModbusTCPDriver\obj\Debug\ModbusTCPDriver.csproj.CoreCompileInputs.cache
+D:\WorkingDir\OMS projekat\OMS\SCADA\ModbusTCPDriver\obj\Debug\ModbusTCPDriver.dll
+D:\WorkingDir\OMS projekat\OMS\SCADA\ModbusTCPDriver\obj\Debug\ModbusTCPDriver.pdb

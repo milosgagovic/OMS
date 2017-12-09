@@ -1,0 +1,6 @@
+D:\WorkingDir\OMS projekat\OMS\SCADA\SCADA\bin\Debug\SCADA.exe.config
+D:\WorkingDir\OMS projekat\OMS\SCADA\SCADA\bin\Debug\SCADA.exe
+D:\WorkingDir\OMS projekat\OMS\SCADA\SCADA\bin\Debug\SCADA.pdb
+D:\WorkingDir\OMS projekat\OMS\SCADA\SCADA\obj\Debug\SCADA.csproj.CoreCompileInputs.cache
+D:\WorkingDir\OMS projekat\OMS\SCADA\SCADA\obj\Debug\SCADA.exe
+D:\WorkingDir\OMS projekat\OMS\SCADA\SCADA\obj\Debug\SCADA.pdb

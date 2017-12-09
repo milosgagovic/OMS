@@ -1,0 +1,9 @@
+D:\WorkingDir\OMS projekat\OMS\ComunicationEngine\CommunicationEngine\bin\Debug\CommunicationEngine.exe.config
+D:\WorkingDir\OMS projekat\OMS\ComunicationEngine\CommunicationEngine\bin\Debug\CommunicationEngine.exe
+D:\WorkingDir\OMS projekat\OMS\ComunicationEngine\CommunicationEngine\bin\Debug\CommunicationEngine.pdb
+D:\WorkingDir\OMS projekat\OMS\ComunicationEngine\CommunicationEngine\bin\Debug\CommunicationEngineContract.dll
+D:\WorkingDir\OMS projekat\OMS\ComunicationEngine\CommunicationEngine\bin\Debug\CommunicationEngineContract.pdb
+D:\WorkingDir\OMS projekat\OMS\ComunicationEngine\CommunicationEngine\obj\Debug\CommunicationEngine.csprojResolveAssemblyReference.cache
+D:\WorkingDir\OMS projekat\OMS\ComunicationEngine\CommunicationEngine\obj\Debug\CommunicationEngine.csproj.CoreCompileInputs.cache
+D:\WorkingDir\OMS projekat\OMS\ComunicationEngine\CommunicationEngine\obj\Debug\CommunicationEngine.exe
+D:\WorkingDir\OMS projekat\OMS\ComunicationEngine\CommunicationEngine\obj\Debug\CommunicationEngine.pdb
