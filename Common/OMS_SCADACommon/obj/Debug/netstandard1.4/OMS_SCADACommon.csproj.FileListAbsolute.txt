@@ -1,0 +1,8 @@
+E:\Downloads\Fakultet\Master\Projekat\OMS\OMS_SCADACommon\bin\Debug\netstandard1.4\OMS_SCADACommon.deps.json
+E:\Downloads\Fakultet\Master\Projekat\OMS\OMS_SCADACommon\bin\Debug\netstandard1.4\OMS_SCADACommon.dll
+E:\Downloads\Fakultet\Master\Projekat\OMS\OMS_SCADACommon\bin\Debug\netstandard1.4\OMS_SCADACommon.pdb
+E:\Downloads\Fakultet\Master\Projekat\OMS\OMS_SCADACommon\obj\Debug\netstandard1.4\OMS_SCADACommon.csprojResolveAssemblyReference.cache
+E:\Downloads\Fakultet\Master\Projekat\OMS\OMS_SCADACommon\obj\Debug\netstandard1.4\OMS_SCADACommon.csproj.CoreCompileInputs.cache
+E:\Downloads\Fakultet\Master\Projekat\OMS\OMS_SCADACommon\obj\Debug\netstandard1.4\OMS_SCADACommon.AssemblyInfo.cs
+E:\Downloads\Fakultet\Master\Projekat\OMS\OMS_SCADACommon\obj\Debug\netstandard1.4\OMS_SCADACommon.dll
+E:\Downloads\Fakultet\Master\Projekat\OMS\OMS_SCADACommon\obj\Debug\netstandard1.4\OMS_SCADACommon.pdb
