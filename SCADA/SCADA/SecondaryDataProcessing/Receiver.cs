@@ -1,4 +1,7 @@
-﻿using OMS_SCADACommon;
+﻿using OMSSCADACommon;
+using SCADA.RealtimeDatabase;
+using SCADA.RealtimeDatabase.Catalogs;
+using SCADA.RealtimeDatabase.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,17 +12,19 @@ namespace SCADA.SecondaryDataProcessing
 {
     public class Receiver : IReceiver
     {
-        public void ReadAllAnalog(VariableTypes type)
+        DBContext db = new DBContext();
+
+        public void ReadAllAnalog(OMSSCADACommon.DeviceTypes type)
         {
             throw new NotImplementedException();
         }
 
-        public void ReadAllCounter(VariableTypes type)
+        public void ReadAllCounter(OMSSCADACommon.DeviceTypes type)
         {
             throw new NotImplementedException();
         }
 
-        public void ReadAllDigital(VariableTypes type)
+        public void ReadAllDigital(OMSSCADACommon.DeviceTypes type)
         {
             throw new NotImplementedException();
         }
@@ -49,14 +54,23 @@ namespace SCADA.SecondaryDataProcessing
             throw new NotImplementedException();
         }
 
-        public void WriteSingleCounter(string id, long value)
+        public void WriteSingleDigital(string id, CommandTypes command)
         {
-            throw new NotImplementedException();
-        }
+            Digital digital = db.GetSingleDigital(id);
 
-        public void WriteSingleDigital(string id, DigitalStates state)
-        {
-            throw new NotImplementedException();
+            if (digital == null)
+            {
+                return;
+            }
+
+            if (!CommandValidator.ValidateDigitalCommand(digital, command))
+            {
+                return;
+            }
+
+            // send to mdbsim
+
+            CommandValidator.CheckCommandExecution();
         }
     }
 }

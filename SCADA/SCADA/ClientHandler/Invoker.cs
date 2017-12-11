@@ -1,4 +1,4 @@
-﻿using OMS_SCADACommon;
+﻿using OMSSCADACommon;
 using SCADA.SecondaryDataProcessing;
 using SCADAContracts;
 using System;

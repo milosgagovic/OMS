@@ -20,8 +20,6 @@ namespace SCADA
 
             // start polling thread
 
-            // start client thread
-
             try
             {
                 SCADAService ss = new SCADAService();

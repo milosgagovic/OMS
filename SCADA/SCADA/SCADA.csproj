@@ -49,9 +49,20 @@
     <Compile Include="ClientHandler\SCADAService.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RealtimeDatabase\Catalogs\DigitalDeviceClasses.cs" />
+    <Compile Include="RealtimeDatabase\Catalogs\States.cs" />
     <Compile Include="RealtimeDatabase\Database.cs" />
     <Compile Include="RealtimeDatabase\DBContext.cs" />
+    <Compile Include="RealtimeDatabase\Model\AnalogIn.cs" />
+    <Compile Include="RealtimeDatabase\Model\AnalogOut.cs" />
+    <Compile Include="RealtimeDatabase\Model\Counter.cs" />
+    <Compile Include="RealtimeDatabase\Model\Digital.cs" />
+    <Compile Include="RealtimeDatabase\Model\Object.cs" />
     <Compile Include="RealtimeDatabase\Model\ProcessVariable.cs" />
+    <Compile Include="RealtimeDatabase\Catalogs\VariableTypes.cs" />
+    <Compile Include="RealtimeDatabase\Model\RTU.cs" />
+    <Compile Include="RealtimeDatabase\PVID.cs" />
+    <Compile Include="SecondaryDataProcessing\CommandValidator.cs" />
     <Compile Include="SecondaryDataProcessing\Receiver.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -59,9 +70,9 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <ProjectReference Include="..\..\Common\OMS_SCADACommon\OMS_SCADACommon.csproj">
-      <Project>{4ffefeda-cb00-4cf5-857e-839a3bf8274f}</Project>
-      <Name>OMS_SCADACommon</Name>
+    <ProjectReference Include="..\..\Common\OMSSCADACommon\OMSSCADACommon.csproj">
+      <Project>{a7f86ca6-39f1-4b61-bf71-c01e327fa861}</Project>
+      <Name>OMSSCADACommon</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\ServiceContracts\SCADAContracts\SCADAContracts.csproj">
       <Project>{91FA4DB9-E3E0-4A3C-B0AB-29DCEC746770}</Project>

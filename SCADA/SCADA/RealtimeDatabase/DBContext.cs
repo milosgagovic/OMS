@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SCADA.RealtimeDatabase.Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,7 +13,15 @@ namespace SCADA.RealtimeDatabase
 
         public DBContext()
         {
-            database = new Database();
+            database = Database.Instance;
+        }
+
+        public Digital GetSingleDigital(string name)
+        {
+            ProcessVariable digital = null;
+            Database.Instance.ProcessVariables.TryGetValue(name, out digital);
+
+            return (Digital)digital;
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using OMS_SCADACommon;
+﻿using OMSSCADACommon;
 using System;
 using System.Collections.Generic;
 using System.Linq;

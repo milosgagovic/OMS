@@ -45,9 +45,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Common\OMS_SCADACommon\OMS_SCADACommon.csproj">
-      <Project>{4FFEFEDA-CB00-4CF5-857E-839A3BF8274F}</Project>
-      <Name>OMS_SCADACommon</Name>
+    <ProjectReference Include="..\..\Common\OMSSCADACommon\OMSSCADACommon.csproj">
+      <Project>{a7f86ca6-39f1-4b61-bf71-c01e327fa861}</Project>
+      <Name>OMSSCADACommon</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
