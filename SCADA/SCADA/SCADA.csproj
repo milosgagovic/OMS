@@ -47,6 +47,14 @@
   <ItemGroup>
     <Compile Include="ClientHandler\Invoker.cs" />
     <Compile Include="ClientHandler\SCADAService.cs" />
+    <Compile Include="CommAcqEngine\ACQEngine.cs" />
+    <Compile Include="CommAcqEngine\Channel.cs" />
+    <Compile Include="CommAcqEngine\CommunicationPort.cs" />
+    <Compile Include="CommAcqEngine\IORequestsQueue.cs" />
+    <Compile Include="CommAcqEngine\PCCommunicationEngine.cs" />
+    <Compile Include="CommAcqEngine\IORequestBlock.cs" />
+    <Compile Include="CommAcqEngine\IndustryProtocols.cs" />
+    <Compile Include="CommAcqEngine\TCPClientChannel.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RealtimeDatabase\Catalogs\DigitalDeviceClasses.cs" />

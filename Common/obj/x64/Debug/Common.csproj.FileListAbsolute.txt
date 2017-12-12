@@ -19,3 +19,9 @@ D:\WorkingDir\OMS projekat\OMS\Common\obj\x64\Debug\Common.csproj.CoreCompileInp
 D:\WorkingDir\OMS projekat\OMS\Common\obj\x64\Debug\FTN.Common.dll
 D:\WorkingDir\OMS projekat\OMS\Common\obj\x64\Debug\FTN.Common.pdb
 D:\WorkingDir\OMS projekat\OMS\Common\obj\x64\Debug\Common.csprojResolveAssemblyReference.cache
+D:\WorkingDir\OMS projekat\Code\OMS\bin64\FTN.Common.dll
+D:\WorkingDir\OMS projekat\Code\OMS\bin64\FTN.Common.pdb
+D:\WorkingDir\OMS projekat\Code\OMS\Common\obj\x64\Debug\Common.csprojResolveAssemblyReference.cache
+D:\WorkingDir\OMS projekat\Code\OMS\Common\obj\x64\Debug\Common.csproj.CoreCompileInputs.cache
+D:\WorkingDir\OMS projekat\Code\OMS\Common\obj\x64\Debug\FTN.Common.dll
+D:\WorkingDir\OMS projekat\Code\OMS\Common\obj\x64\Debug\FTN.Common.pdb

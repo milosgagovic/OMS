@@ -3,3 +3,9 @@ E:\Downloads\Fakultet\Master\Projekat\OMS\Common\OMS_SCADACommon\OMSSCADACommon\
 E:\Downloads\Fakultet\Master\Projekat\OMS\Common\OMS_SCADACommon\OMSSCADACommon\obj\Debug\OMSSCADACommon.csproj.CoreCompileInputs.cache
 E:\Downloads\Fakultet\Master\Projekat\OMS\Common\OMS_SCADACommon\OMSSCADACommon\obj\Debug\OMSSCADACommon.dll
 E:\Downloads\Fakultet\Master\Projekat\OMS\Common\OMS_SCADACommon\OMSSCADACommon\obj\Debug\OMSSCADACommon.pdb
+D:\WorkingDir\OMS projekat\Code\OMS\Common\OMSSCADACommon\bin\Debug\OMSSCADACommon.dll
+D:\WorkingDir\OMS projekat\Code\OMS\Common\OMSSCADACommon\bin\Debug\OMSSCADACommon.pdb
+D:\WorkingDir\OMS projekat\Code\OMS\Common\OMSSCADACommon\obj\Debug\OMSSCADACommon.csprojResolveAssemblyReference.cache
+D:\WorkingDir\OMS projekat\Code\OMS\Common\OMSSCADACommon\obj\Debug\OMSSCADACommon.csproj.CoreCompileInputs.cache
+D:\WorkingDir\OMS projekat\Code\OMS\Common\OMSSCADACommon\obj\Debug\OMSSCADACommon.dll
+D:\WorkingDir\OMS projekat\Code\OMS\Common\OMSSCADACommon\obj\Debug\OMSSCADACommon.pdb

@@ -12,13 +12,18 @@ namespace SCADA.RealtimeDatabase.Model
 
         public string Name { get; set; }
 
-        public RTU RTU { get; set; }
+        public int RtuId { get; set; }
+
+        //public RTU RTU { get; set; }
 
         public VariableTypes type { get; set; }
 
         public ProcessVariable()
         {
-            RTU = new RTU();
+            // sklonila sam ovo da se "instancira" novi RTU svaki put kad se napravi PV.
+            // nema mi smisla, necemo imati xxx RTUova...
+
+            //RTU = new RTU();
         }
         
     }

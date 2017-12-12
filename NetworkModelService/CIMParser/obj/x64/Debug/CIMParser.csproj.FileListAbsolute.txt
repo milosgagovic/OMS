@@ -20,3 +20,9 @@ D:\WorkingDir\OMS projekat\OMS\NetworkModelService\CIMParser\obj\x64\Debug\CIMPa
 D:\WorkingDir\OMS projekat\OMS\NetworkModelService\CIMParser\obj\x64\Debug\CIMParser.csproj.CoreCompileInputs.cache
 D:\WorkingDir\OMS projekat\OMS\NetworkModelService\CIMParser\obj\x64\Debug\CIMParser.dll
 D:\WorkingDir\OMS projekat\OMS\NetworkModelService\CIMParser\obj\x64\Debug\CIMParser.pdb
+D:\WorkingDir\OMS projekat\Code\OMS\NetworkModelService\bin64\CIMParser.dll
+D:\WorkingDir\OMS projekat\Code\OMS\NetworkModelService\bin64\CIMParser.pdb
+D:\WorkingDir\OMS projekat\Code\OMS\NetworkModelService\CIMParser\obj\x64\Debug\CIMParser.csprojResolveAssemblyReference.cache
+D:\WorkingDir\OMS projekat\Code\OMS\NetworkModelService\CIMParser\obj\x64\Debug\CIMParser.csproj.CoreCompileInputs.cache
+D:\WorkingDir\OMS projekat\Code\OMS\NetworkModelService\CIMParser\obj\x64\Debug\CIMParser.dll
+D:\WorkingDir\OMS projekat\Code\OMS\NetworkModelService\CIMParser\obj\x64\Debug\CIMParser.pdb

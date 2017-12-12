@@ -1,4 +1,5 @@
-﻿using SCADAContracts;
+﻿using SCADA.CommAcqEngine;
+using SCADAContracts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,6 +16,7 @@ namespace SCADA.ClientHandler
         public SCADAService()
         {
             host = new ServiceHost(typeof(Invoker));
+            
         }
 
         public void Start()
@@ -32,7 +34,9 @@ namespace SCADA.ClientHandler
             host.Open();
 
             message = "SCADA service is up and running.";
+
             Console.WriteLine("\n{0}", message);
+            
         }
 
         public void Dispose()

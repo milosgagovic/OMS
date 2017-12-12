@@ -1,4 +1,5 @@
 ﻿using SCADA.ClientHandler;
+using SCADA.CommAcqEngine;
 using SCADA.RealtimeDatabase;
 using System;
 using System.Collections.Generic;
@@ -19,9 +20,21 @@ namespace SCADA
             // fill database
 
             // start polling thread
+            
+            // komentar za aleksandru posto ce ona ovo gledati, a nedovrseno je:
+            // ako budes htela da radis scada service ostavi ovo zakomentarisi dok ja odradim sve sto trebam...
+            /*Ovo moraju biti taskovi-threadovi, da bi se izvrsavali konkuretno
+             ovako samo PCCommEng vrti...To cu odraditi cim iscitam kako se radi sa taskovima*/
+            PCCommunicationEngine PCCommEng = new PCCommunicationEngine();
+            PCCommEng.StartProcessing();
+
+
+            ACQEngine AcqEngine = new ACQEngine();
+            AcqEngine.StartAcquisition();
 
             try
             {
+                Console.WriteLine("\n....");
                 SCADAService ss = new SCADAService();
                 ss.Start();
             }
