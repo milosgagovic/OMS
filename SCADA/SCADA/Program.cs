@@ -21,9 +21,10 @@ namespace SCADA
 
             // start polling thread
             
-            // komentar za aleksandru posto ce ona ovo gledati, a nedovrseno je:
+            // komentar za aleksandru posto ce ona ovo gledati, a nedovrseno je:      
             // ako budes htela da radis scada service ostavi ovo zakomentarisi dok ja odradim sve sto trebam...
-            /*Ovo moraju biti taskovi-threadovi, da bi se izvrsavali konkuretno
+            
+            /*Ovo moraju biti taskovi-threadovi, da bi se izvrsavali konkuretno i asinhrono
              ovako samo PCCommEng vrti...To cu odraditi cim iscitam kako se radi sa taskovima*/
             PCCommunicationEngine PCCommEng = new PCCommunicationEngine();
             PCCommEng.StartProcessing();

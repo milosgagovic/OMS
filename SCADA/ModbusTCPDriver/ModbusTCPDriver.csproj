@@ -41,7 +41,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ModbusApplicationHeader.cs" />
+    <Compile Include="ModbusHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\PCCommon\PCCommon.csproj">
+      <Project>{852a18f8-fa8d-4d82-ac6a-845f2c1de7b1}</Project>
+      <Name>PCCommon</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

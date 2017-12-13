@@ -53,7 +53,6 @@
     <Compile Include="CommAcqEngine\IORequestsQueue.cs" />
     <Compile Include="CommAcqEngine\PCCommunicationEngine.cs" />
     <Compile Include="CommAcqEngine\IORequestBlock.cs" />
-    <Compile Include="CommAcqEngine\IndustryProtocols.cs" />
     <Compile Include="CommAcqEngine\TCPClientChannel.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -82,9 +81,17 @@
       <Project>{a7f86ca6-39f1-4b61-bf71-c01e327fa861}</Project>
       <Name>OMSSCADACommon</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\PCCommon\PCCommon.csproj">
+      <Project>{852a18f8-fa8d-4d82-ac6a-845f2c1de7b1}</Project>
+      <Name>PCCommon</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\ServiceContracts\SCADAContracts\SCADAContracts.csproj">
       <Project>{91FA4DB9-E3E0-4A3C-B0AB-29DCEC746770}</Project>
       <Name>SCADAContracts</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ModbusTCPDriver\ModbusTCPDriver.csproj">
+      <Project>{6bd692a7-28ac-432b-a316-deb277ede45a}</Project>
+      <Name>ModbusTCPDriver</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

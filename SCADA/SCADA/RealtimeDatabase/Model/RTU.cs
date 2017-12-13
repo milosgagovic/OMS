@@ -6,18 +6,25 @@ using System.Threading.Tasks;
 
 namespace SCADA.RealtimeDatabase.Model
 {
-    public class RTU
+    // Generic description of Process Controller
+    // deo koji je fixan deo napraviti da bude static, const ili nesto
+    // koji je genericki, i u RTU imamo samo niz interfejsa...
+    public class RTU 
     {
         public int ID { get; set; }
 
         public string HostName { get; set; }
         public short HostPort { get; set; }
 
+        // vezano za ModbusTCPdriver, ne konkretan RTU
+        // value in range 1 - 247 (0 - broadcast)
         public Byte RTUAddress { get; set; }
 
         public int channelId { get; set; } // associtad channel Id
-        public string Name { get; set; }  // ovo je kao id tog rtu-a?  odnosno jedinstveno ime u sistemu? 
+        public string Name { get; set; }  // ovo je kao id tog rtu-a,  odnosno jedinstveno ime u sistemu. videti da li string ili int ostaviti, ili oba
 
+
+        // ovo nekako treba izmestiti u RTU genericku definicije...
         // counts of pI/O
         public int DInNum { get; set; }
         public int DOutNum { get; set; }
@@ -31,6 +38,7 @@ namespace SCADA.RealtimeDatabase.Model
         byte[] AOTable = null;
         byte[] CNTTable = null;
 
+        
         public Dictionary<VariableTypes, ProcessVariable[]> ProcessVariables = null;
 
         public RTU(int DINum, int DONum, int AINum, int AONum, int CntNum)
