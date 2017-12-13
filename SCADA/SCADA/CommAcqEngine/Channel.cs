@@ -10,7 +10,7 @@ using PCCommon;
 namespace SCADA.CommAcqEngine
 {
     // maybe this should be interface
-    class Channel
+    class Channel : IChannel
     {
         public int channelId { get; set; }
 

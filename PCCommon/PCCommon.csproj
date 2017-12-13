@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{852A18F8-FA8D-4D82-AC6A-845F2C1DE7B1}</ProjectGuid>
+    <ProjectGuid>{5BC05BE9-6F8A-428D-83E7-C406D6736401}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>PCCommon</RootNamespace>
@@ -46,9 +46,6 @@
     <Compile Include="IORequestBlock.cs" />
     <Compile Include="ISlaveDevice.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Readme.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

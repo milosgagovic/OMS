@@ -22,6 +22,7 @@ namespace SCADA.RealtimeDatabase.Model
         {
             // sklonila sam ovo da se "instancira" novi RTU svaki put kad se napravi PV.
             // nema mi smisla, necemo imati xxx RTUova...
+            // nego RTUove napravimo ranije, i onda kad pravimo PV, asocijacijom preko IDa ih povezemo sa odgovarajucim RTUom
 
             //RTU = new RTU();
         }

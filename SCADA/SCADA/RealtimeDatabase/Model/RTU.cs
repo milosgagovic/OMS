@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PCCommon;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,9 +8,7 @@ using System.Threading.Tasks;
 namespace SCADA.RealtimeDatabase.Model
 {
     // Generic description of Process Controller
-    // deo koji je fixan deo napraviti da bude static, const ili nesto
-    // koji je genericki, i u RTU imamo samo niz interfejsa...
-    public class RTU 
+    public class RTU  : ISlaveDevice
     {
         public int ID { get; set; }
 
@@ -21,10 +20,14 @@ namespace SCADA.RealtimeDatabase.Model
         public Byte RTUAddress { get; set; }
 
         public int channelId { get; set; } // associtad channel Id
-        public string Name { get; set; }  // ovo je kao id tog rtu-a,  odnosno jedinstveno ime u sistemu. videti da li string ili int ostaviti, ili oba
+
+        // ovo je kao id tog rtu-a,  odnosno jedinstveno ime u sistemu. videti da li string ili int ostaviti, ili oba
+        public string Name { get; set; }  
 
 
-        // ovo nekako treba izmestiti u RTU genericku definicije...
+        // ovo  treba izmestiti u RTU parent klasu ili interfejs, to je ono sto je potrebno da komunikacioni sloj zna da 
+        // bi ubacivao podatke. komunikacioni sloj koji koristi RTU ne treba nista da zna o ProcessVariable promenljivim...
+
         // counts of pI/O
         public int DInNum { get; set; }
         public int DOutNum { get; set; }
@@ -32,6 +35,7 @@ namespace SCADA.RealtimeDatabase.Model
         public int AOutNum { get; set; }
         public int CntNum { get; set; }
 
+        // raw data tables
         byte[] DITable = null;
         byte[] DOTable = null;
         byte[] AITable = null;
@@ -51,7 +55,7 @@ namespace SCADA.RealtimeDatabase.Model
 
             ProcessVariables = new Dictionary<VariableTypes, ProcessVariable[]>();
 
-            // stavila brojeve tek tako
+            // stavila brojeve tek tako, da bih mogla da testiram sto god xD 
             DITable = new byte[10]; // 8*10 dI
             DOTable = new byte[10];
             AITable = new byte[100];

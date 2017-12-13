@@ -25,7 +25,7 @@ namespace SCADA
             // ako budes htela da radis scada service ostavi ovo zakomentarisi dok ja odradim sve sto trebam...
             
             /*Ovo moraju biti taskovi-threadovi, da bi se izvrsavali konkuretno i asinhrono
-             ovako samo PCCommEng vrti...To cu odraditi cim iscitam kako se radi sa taskovima*/
+             ovako samo PCCommEng vrti...to cu veceras odraditi*/
             PCCommunicationEngine PCCommEng = new PCCommunicationEngine();
             PCCommEng.StartProcessing();
 

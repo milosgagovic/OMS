@@ -82,7 +82,7 @@
       <Name>OMSSCADACommon</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\PCCommon\PCCommon.csproj">
-      <Project>{852a18f8-fa8d-4d82-ac6a-845f2c1de7b1}</Project>
+      <Project>{5bc05be9-6f8a-428d-83e7-c406d6736401}</Project>
       <Name>PCCommon</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\ServiceContracts\SCADAContracts\SCADAContracts.csproj">
