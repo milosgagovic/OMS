@@ -69,6 +69,7 @@
     <Compile Include="RealtimeDatabase\Catalogs\VariableTypes.cs" />
     <Compile Include="RealtimeDatabase\Model\RTU.cs" />
     <Compile Include="RealtimeDatabase\PVID.cs" />
+    <Compile Include="SCADACommuncEngineService.cs" />
     <Compile Include="SecondaryDataProcessing\CommandValidator.cs" />
     <Compile Include="SecondaryDataProcessing\Receiver.cs" />
   </ItemGroup>
@@ -84,6 +85,10 @@
     <ProjectReference Include="..\..\PCCommon\PCCommon.csproj">
       <Project>{5bc05be9-6f8a-428d-83e7-c406d6736401}</Project>
       <Name>PCCommon</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ServiceContracts\CommunicationEngineContract\CommunicationEngineContract.csproj">
+      <Project>{F4F76A34-3088-41D6-ACEF-47D2DDC94441}</Project>
+      <Name>CommunicationEngineContract</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\ServiceContracts\SCADAContracts\SCADAContracts.csproj">
       <Project>{91FA4DB9-E3E0-4A3C-B0AB-29DCEC746770}</Project>

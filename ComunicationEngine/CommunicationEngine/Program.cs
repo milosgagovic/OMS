@@ -14,12 +14,12 @@ namespace CommunicationEngine
             string message = "";
             try
             {
-                   CommunicEngineService ces = new CommunicEngineService();
-                    ces.Start();
-                    message = "Press <Enter> to stop the service.";
-                    Console.WriteLine(message);
-                    Console.ReadLine();
-          
+                CommunicEngineService ces = new CommunicEngineService();
+                ces.Start();
+                message = "Press <Enter> to stop the service.";
+                Console.WriteLine(message);
+                Console.ReadLine();
+
             }
             catch (Exception ex)
             {
@@ -32,5 +32,5 @@ namespace CommunicationEngine
         }
 
 
-}
+    }
 }

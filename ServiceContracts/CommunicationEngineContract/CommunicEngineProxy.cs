@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OMSSCADACommon;
+using System;
 using System.ServiceModel;
 
 namespace CommunicationEngineContract
@@ -43,16 +44,6 @@ namespace CommunicationEngineContract
             }
         }
 
-        public void SendCommand()
-        {
-            try
-            {
-                factory.ReceiveValue();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-            }
-        }
+       
     }
 }
