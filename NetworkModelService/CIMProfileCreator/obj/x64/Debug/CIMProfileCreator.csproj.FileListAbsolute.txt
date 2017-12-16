@@ -43,6 +43,7 @@ D:\WorkingDir\OMS projekat\OMS\NetworkModelService\CIMProfileCreator\obj\x64\Deb
 D:\WorkingDir\OMS projekat\OMS\NetworkModelService\CIMProfileCreator\obj\x64\Debug\CIMProfileCreator.csproj.CoreCompileInputs.cache
 D:\WorkingDir\OMS projekat\OMS\NetworkModelService\CIMProfileCreator\obj\x64\Debug\FTN.ESI.SIMES.CIM.CIMProfileCreator.exe
 D:\WorkingDir\OMS projekat\OMS\NetworkModelService\CIMProfileCreator\obj\x64\Debug\FTN.ESI.SIMES.CIM.CIMProfileCreator.pdb
+<<<<<<< HEAD
 C:\Users\Nebojsa\Desktop\Repo\OMS\NetworkModelService\bin64\Predefined\PredefinedClasses.xml
 C:\Users\Nebojsa\Desktop\Repo\OMS\NetworkModelService\bin64\Predefined\PredefinedEnumerations.xml
 C:\Users\Nebojsa\Desktop\Repo\OMS\NetworkModelService\bin64\Predefined\PredefinedPackages.xml
@@ -54,3 +55,17 @@ C:\Users\Nebojsa\Desktop\Repo\OMS\NetworkModelService\CIMProfileCreator\obj\x64\
 C:\Users\Nebojsa\Desktop\Repo\OMS\NetworkModelService\CIMProfileCreator\obj\x64\Debug\CIMProfileCreator.csproj.GenerateResource.Cache
 C:\Users\Nebojsa\Desktop\Repo\OMS\NetworkModelService\CIMProfileCreator\obj\x64\Debug\FTN.ESI.SIMES.CIM.CIMProfileCreator.exe
 C:\Users\Nebojsa\Desktop\Repo\OMS\NetworkModelService\CIMProfileCreator\obj\x64\Debug\FTN.ESI.SIMES.CIM.CIMProfileCreator.pdb
+=======
+D:\WorkingDir\OMS projekat\Code\OMS\NetworkModelService\bin64\Predefined\PredefinedClasses.xml
+D:\WorkingDir\OMS projekat\Code\OMS\NetworkModelService\bin64\Predefined\PredefinedEnumerations.xml
+D:\WorkingDir\OMS projekat\Code\OMS\NetworkModelService\bin64\Predefined\PredefinedPackages.xml
+D:\WorkingDir\OMS projekat\Code\OMS\NetworkModelService\bin64\FTN.ESI.SIMES.CIM.CIMProfileCreator.exe
+D:\WorkingDir\OMS projekat\Code\OMS\NetworkModelService\bin64\FTN.ESI.SIMES.CIM.CIMProfileCreator.pdb
+D:\WorkingDir\OMS projekat\Code\OMS\NetworkModelService\CIMProfileCreator\obj\x64\Debug\CIMProfileCreator.csprojResolveAssemblyReference.cache
+D:\WorkingDir\OMS projekat\Code\OMS\NetworkModelService\CIMProfileCreator\obj\x64\Debug\FTN.ESI.SIMES.CIM.CIMProfileCreator.CIMProfileCreatorForm.resources
+D:\WorkingDir\OMS projekat\Code\OMS\NetworkModelService\CIMProfileCreator\obj\x64\Debug\FTN.ESI.SIMES.CIM.CIMProfileCreator.Properties.Resources.resources
+D:\WorkingDir\OMS projekat\Code\OMS\NetworkModelService\CIMProfileCreator\obj\x64\Debug\CIMProfileCreator.csproj.GenerateResource.Cache
+D:\WorkingDir\OMS projekat\Code\OMS\NetworkModelService\CIMProfileCreator\obj\x64\Debug\CIMProfileCreator.csproj.CoreCompileInputs.cache
+D:\WorkingDir\OMS projekat\Code\OMS\NetworkModelService\CIMProfileCreator\obj\x64\Debug\FTN.ESI.SIMES.CIM.CIMProfileCreator.exe
+D:\WorkingDir\OMS projekat\Code\OMS\NetworkModelService\CIMProfileCreator\obj\x64\Debug\FTN.ESI.SIMES.CIM.CIMProfileCreator.pdb
+>>>>>>> c327ca408ac1d5f070e7b291ed5a9b4e47f603da

@@ -3,8 +3,19 @@ D:\WorkingDir\OMS projekat\OMS\SCADA\ModbusTCPDriver\bin\Debug\ModbusTCPDriver.p
 D:\WorkingDir\OMS projekat\OMS\SCADA\ModbusTCPDriver\obj\Debug\ModbusTCPDriver.csproj.CoreCompileInputs.cache
 D:\WorkingDir\OMS projekat\OMS\SCADA\ModbusTCPDriver\obj\Debug\ModbusTCPDriver.dll
 D:\WorkingDir\OMS projekat\OMS\SCADA\ModbusTCPDriver\obj\Debug\ModbusTCPDriver.pdb
+<<<<<<< HEAD
 C:\Users\Nebojsa\Desktop\Repo\OMS\SCADA\ModbusTCPDriver\bin\Debug\ModbusTCPDriver.dll
 C:\Users\Nebojsa\Desktop\Repo\OMS\SCADA\ModbusTCPDriver\bin\Debug\ModbusTCPDriver.pdb
 C:\Users\Nebojsa\Desktop\Repo\OMS\SCADA\ModbusTCPDriver\obj\Debug\ModbusTCPDriver.dll
 C:\Users\Nebojsa\Desktop\Repo\OMS\SCADA\ModbusTCPDriver\obj\Debug\ModbusTCPDriver.pdb
 C:\Users\Nebojsa\Desktop\Repo\OMS\SCADA\ModbusTCPDriver\obj\Debug\ModbusTCPDriver.csprojResolveAssemblyReference.cache
+=======
+D:\WorkingDir\OMS projekat\Code\OMS\SCADA\ModbusTCPDriver\obj\Debug\ModbusTCPDriver.csprojResolveAssemblyReference.cache
+D:\WorkingDir\OMS projekat\Code\OMS\SCADA\ModbusTCPDriver\obj\Debug\ModbusTCPDriver.csproj.CoreCompileInputs.cache
+D:\WorkingDir\OMS projekat\Code\OMS\SCADA\ModbusTCPDriver\bin\Debug\ModbusTCPDriver.dll
+D:\WorkingDir\OMS projekat\Code\OMS\SCADA\ModbusTCPDriver\bin\Debug\ModbusTCPDriver.pdb
+D:\WorkingDir\OMS projekat\Code\OMS\SCADA\ModbusTCPDriver\bin\Debug\PCCommon.dll
+D:\WorkingDir\OMS projekat\Code\OMS\SCADA\ModbusTCPDriver\bin\Debug\PCCommon.pdb
+D:\WorkingDir\OMS projekat\Code\OMS\SCADA\ModbusTCPDriver\obj\Debug\ModbusTCPDriver.dll
+D:\WorkingDir\OMS projekat\Code\OMS\SCADA\ModbusTCPDriver\obj\Debug\ModbusTCPDriver.pdb
+>>>>>>> c327ca408ac1d5f070e7b291ed5a9b4e47f603da

@@ -29,12 +29,7 @@ namespace CommunicationEngine
             {
                 throw new Exception("Communication Engine Services can not be opend because it is not initialized.");
             }
-
             string message = string.Empty;
-            
-            host.AddServiceEndpoint(typeof(ICommunicationEngineContract),
-               new NetTcpBinding(),
-               new Uri("net.tcp://localhost:4000/CommunEngine"));
             host.Open();
 
             message = string.Format("The WCF service {0} is ready.", host.Description.Name);

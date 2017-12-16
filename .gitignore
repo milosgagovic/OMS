@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ﻿################################################################################
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
@@ -6,3 +7,10 @@
 /PubSubContract/bin/Debug
 /PubSubContract/bin/Debug
 /PubSubContract/obj/Debug
+=======
+
+*.cache
+*.cache
+*.cache
+.vs/OMSMaster/v15/.suo
+>>>>>>> c327ca408ac1d5f070e7b291ed5a9b4e47f603da

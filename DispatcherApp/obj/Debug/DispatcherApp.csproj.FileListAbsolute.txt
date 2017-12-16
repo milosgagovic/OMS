@@ -24,6 +24,7 @@ D:\WorkingDir\OMS projekat\OMS\DispatcherApp\obj\Debug\DispatcherApp.csproj.Core
 D:\WorkingDir\OMS projekat\OMS\DispatcherApp\obj\Debug\DispatcherApp.exe
 D:\WorkingDir\OMS projekat\OMS\DispatcherApp\obj\Debug\DispatcherApp.pdb
 D:\WorkingDir\OMS projekat\OMS\DispatcherApp\obj\Debug\DispatcherApp.csprojResolveAssemblyReference.cache
+<<<<<<< HEAD
 C:\Users\Nebojsa\Desktop\Repo\OMS\DispatcherApp\bin\Debug\DispatcherApp.exe.config
 C:\Users\Nebojsa\Desktop\Repo\OMS\DispatcherApp\bin\Debug\DispatcherApp.exe
 C:\Users\Nebojsa\Desktop\Repo\OMS\DispatcherApp\bin\Debug\DispatcherApp.pdb
@@ -53,3 +54,31 @@ C:\Users\Nebojsa\Desktop\Repo\OMS\DispatcherApp\bin\Debug\PubSubscribe.dll
 C:\Users\Nebojsa\Desktop\Repo\OMS\DispatcherApp\bin\Debug\PubSubContract.dll
 C:\Users\Nebojsa\Desktop\Repo\OMS\DispatcherApp\bin\Debug\PubSubscribe.pdb
 C:\Users\Nebojsa\Desktop\Repo\OMS\DispatcherApp\bin\Debug\PubSubContract.pdb
+=======
+D:\WorkingDir\OMS projekat\Code\OMS\DispatcherApp\bin\Debug\DispatcherApp.exe.config
+D:\WorkingDir\OMS projekat\Code\OMS\DispatcherApp\bin\Debug\DispatcherApp.exe
+D:\WorkingDir\OMS projekat\Code\OMS\DispatcherApp\bin\Debug\DispatcherApp.pdb
+D:\WorkingDir\OMS projekat\Code\OMS\DispatcherApp\bin\Debug\FTN.Common.dll
+D:\WorkingDir\OMS projekat\Code\OMS\DispatcherApp\bin\Debug\FTN.DataModel.dll
+D:\WorkingDir\OMS projekat\Code\OMS\DispatcherApp\bin\Debug\FTN.ServiceContracts.ServiceContracts.NetworkModelQueryContract.dll
+D:\WorkingDir\OMS projekat\Code\OMS\DispatcherApp\bin\Debug\FTN.Services.NetworkModelService.dll
+D:\WorkingDir\OMS projekat\Code\OMS\DispatcherApp\bin\Debug\FTN.Common.pdb
+D:\WorkingDir\OMS projekat\Code\OMS\DispatcherApp\bin\Debug\FTN.DataModel.pdb
+D:\WorkingDir\OMS projekat\Code\OMS\DispatcherApp\bin\Debug\FTN.Services.NetworkModelService.pdb
+D:\WorkingDir\OMS projekat\Code\OMS\DispatcherApp\bin\Debug\FTN.ServiceContracts.ServiceContracts.NetworkModelQueryContract.pdb
+D:\WorkingDir\OMS projekat\Code\OMS\DispatcherApp\obj\Debug\DispatcherApp.csprojResolveAssemblyReference.cache
+D:\WorkingDir\OMS projekat\Code\OMS\DispatcherApp\obj\Debug\MainWindow.g.cs
+D:\WorkingDir\OMS projekat\Code\OMS\DispatcherApp\obj\Debug\View\DispatherAppUserControl.g.cs
+D:\WorkingDir\OMS projekat\Code\OMS\DispatcherApp\obj\Debug\App.g.cs
+D:\WorkingDir\OMS projekat\Code\OMS\DispatcherApp\obj\Debug\GeneratedInternalTypeHelper.g.cs
+D:\WorkingDir\OMS projekat\Code\OMS\DispatcherApp\obj\Debug\DispatcherApp_MarkupCompile.cache
+D:\WorkingDir\OMS projekat\Code\OMS\DispatcherApp\obj\Debug\DispatcherApp_MarkupCompile.lref
+D:\WorkingDir\OMS projekat\Code\OMS\DispatcherApp\obj\Debug\MainWindow.baml
+D:\WorkingDir\OMS projekat\Code\OMS\DispatcherApp\obj\Debug\View\DispatherAppUserControl.baml
+D:\WorkingDir\OMS projekat\Code\OMS\DispatcherApp\obj\Debug\DispatcherApp.g.resources
+D:\WorkingDir\OMS projekat\Code\OMS\DispatcherApp\obj\Debug\DispatcherApp.Properties.Resources.resources
+D:\WorkingDir\OMS projekat\Code\OMS\DispatcherApp\obj\Debug\DispatcherApp.csproj.GenerateResource.Cache
+D:\WorkingDir\OMS projekat\Code\OMS\DispatcherApp\obj\Debug\DispatcherApp.csproj.CoreCompileInputs.cache
+D:\WorkingDir\OMS projekat\Code\OMS\DispatcherApp\obj\Debug\DispatcherApp.exe
+D:\WorkingDir\OMS projekat\Code\OMS\DispatcherApp\obj\Debug\DispatcherApp.pdb
+>>>>>>> c327ca408ac1d5f070e7b291ed5a9b4e47f603da

@@ -1,9 +1,11 @@
 ﻿using CommunicationEngineContract;
 using NSubstitute;
 using NUnit.Framework;
+using OMSSCADACommon;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.ServiceModel;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -18,7 +20,15 @@ namespace CommunicEngineTest
         {
             clientUnderTest = new CommunicEngineProxy();
             clientUnderTest.Factory = Substitute.For<ICommunicationEngineContract>();
+
             clientUnderTest.Factory.ReceiveValue().Returns(true);
+        }
+
+       
+        [Test]
+        public void CommEngineConstructorTest()
+        {
+            Assert.DoesNotThrow(() => new CommunicEngineProxy());
         }
         [Test]
         public void ReceiveValueOk()
@@ -26,11 +36,18 @@ namespace CommunicEngineTest
             bool result = clientUnderTest.Factory.ReceiveValue();
             Assert.IsTrue(result);
         }
-
         [Test]
-        public void SendCommandeException()
+        public void ReceiveValueExce()
         {
-            Assert.DoesNotThrow(() => clientUnderTest.Factory.SendCommand());
+            Assert.DoesNotThrow(() => clientUnderTest.ReceiveValue());
         }
+        [Test]
+        public void ReceiveValueNotNull()
+        {
+            bool result  = clientUnderTest.Factory.ReceiveValue();
+            Assert.IsNotNull(result);
+        }
+
+
     }
 }
