@@ -1,6 +1,7 @@
 ﻿using DispatcherApp.Model;
 using FTN.Common;
 using FTN.Services.NetworkModelService.DataModel.Core;
+using PubSubscribe;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -16,6 +17,8 @@ namespace DispatcherApp.ViewModel
         private string selectedItem;
         public event PropertyChangedEventHandler PropertyChanged;
         private ModelGda model;
+        //Subscriber
+        private Subscriber subscriber;
         #region Properties
         public string SelectedItem
         {
@@ -83,6 +86,10 @@ namespace DispatcherApp.ViewModel
             Elements = ele;
             DataGridElements = new List<IdentifiedObject>();
             model = new ModelGda();
+
+            subscriber = new Subscriber();
+            subscriber.Subscribe();
+            subscriber.publishDeltaEvent += GetDelta;
         }
         private void RaisePropertyChanged(string property)
         {
@@ -90,6 +97,18 @@ namespace DispatcherApp.ViewModel
             {
                 PropertyChanged(this, new PropertyChangedEventArgs(property));
             }
+        }
+        
+        public DispatcherAppViewModel()
+        {
+            subscriber = new Subscriber();
+            subscriber.Subscribe();
+            subscriber.publishDeltaEvent += GetDelta;
+        }
+
+        private void GetDelta(Delta delta)
+        {
+            Console.WriteLine(delta.ToString());
         }
 
         private List<IdentifiedObject> ConvertToListOfIdentifiedObjects(List<long> list)

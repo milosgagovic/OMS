@@ -46,3 +46,9 @@ D:\WorkingDir\OMS projekat\OMS\NetworkModelService\ServiceHost\NetworkModelServi
 D:\WorkingDir\OMS projekat\OMS\NetworkModelService\ServiceHost\NetworkModelServiceSelfHost\obj\x64\Debug\NetworkModelServiceSelfHost.csproj.CoreCompileInputs.cache
 D:\WorkingDir\OMS projekat\OMS\NetworkModelService\ServiceHost\NetworkModelServiceSelfHost\obj\x64\Debug\FTN_NetworkModelService.exe
 D:\WorkingDir\OMS projekat\OMS\NetworkModelService\ServiceHost\NetworkModelServiceSelfHost\obj\x64\Debug\FTN_NetworkModelService.pdb
+C:\Users\Nebojsa\Desktop\Repo\OMS\bin64\FTN_NetworkModelService.exe.config
+C:\Users\Nebojsa\Desktop\Repo\OMS\bin64\FTN_NetworkModelService.exe
+C:\Users\Nebojsa\Desktop\Repo\OMS\bin64\FTN_NetworkModelService.pdb
+C:\Users\Nebojsa\Desktop\Repo\OMS\NetworkModelService\ServiceHost\NetworkModelServiceSelfHost\obj\x64\Debug\NetworkModelServiceSelfHost.csprojResolveAssemblyReference.cache
+C:\Users\Nebojsa\Desktop\Repo\OMS\NetworkModelService\ServiceHost\NetworkModelServiceSelfHost\obj\x64\Debug\FTN_NetworkModelService.exe
+C:\Users\Nebojsa\Desktop\Repo\OMS\NetworkModelService\ServiceHost\NetworkModelServiceSelfHost\obj\x64\Debug\FTN_NetworkModelService.pdb

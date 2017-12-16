@@ -1,0 +1,11 @@
+C:\Users\Nebojsa\Desktop\Repo\OMS\TestCommon\obj\Debug\TestCommon.csprojResolveAssemblyReference.cache
+C:\Users\Nebojsa\Desktop\Repo\OMS\TestCommon\bin\Debug\TestCommon.dll
+C:\Users\Nebojsa\Desktop\Repo\OMS\TestCommon\bin\Debug\TestCommon.pdb
+C:\Users\Nebojsa\Desktop\Repo\OMS\TestCommon\bin\Debug\FTN.Common.dll
+C:\Users\Nebojsa\Desktop\Repo\OMS\TestCommon\bin\Debug\FTN.DataModel.dll
+C:\Users\Nebojsa\Desktop\Repo\OMS\TestCommon\bin\Debug\nunit.framework.dll
+C:\Users\Nebojsa\Desktop\Repo\OMS\TestCommon\bin\Debug\FTN.Common.pdb
+C:\Users\Nebojsa\Desktop\Repo\OMS\TestCommon\bin\Debug\FTN.DataModel.pdb
+C:\Users\Nebojsa\Desktop\Repo\OMS\TestCommon\bin\Debug\nunit.framework.xml
+C:\Users\Nebojsa\Desktop\Repo\OMS\TestCommon\obj\Debug\TestCommon.dll
+C:\Users\Nebojsa\Desktop\Repo\OMS\TestCommon\obj\Debug\TestCommon.pdb

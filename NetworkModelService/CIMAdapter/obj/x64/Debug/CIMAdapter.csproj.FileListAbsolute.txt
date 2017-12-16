@@ -21,3 +21,8 @@ D:\WorkingDir\OMS projekat\OMS\NetworkModelService\CIMAdapter\obj\x64\Debug\CIMA
 D:\WorkingDir\OMS projekat\OMS\NetworkModelService\CIMAdapter\obj\x64\Debug\CIMAdapter.csproj.CoreCompileInputs.cache
 D:\WorkingDir\OMS projekat\OMS\NetworkModelService\CIMAdapter\obj\x64\Debug\FTN.ESI.SIMES.CIM.CIMAdapter.dll
 D:\WorkingDir\OMS projekat\OMS\NetworkModelService\CIMAdapter\obj\x64\Debug\FTN.ESI.SIMES.CIM.CIMAdapter.pdb
+C:\Users\Nebojsa\Desktop\Repo\OMS\NetworkModelService\bin64\FTN.ESI.SIMES.CIM.CIMAdapter.dll
+C:\Users\Nebojsa\Desktop\Repo\OMS\NetworkModelService\bin64\FTN.ESI.SIMES.CIM.CIMAdapter.pdb
+C:\Users\Nebojsa\Desktop\Repo\OMS\NetworkModelService\CIMAdapter\obj\x64\Debug\CIMAdapter.csprojResolveAssemblyReference.cache
+C:\Users\Nebojsa\Desktop\Repo\OMS\NetworkModelService\CIMAdapter\obj\x64\Debug\FTN.ESI.SIMES.CIM.CIMAdapter.dll
+C:\Users\Nebojsa\Desktop\Repo\OMS\NetworkModelService\CIMAdapter\obj\x64\Debug\FTN.ESI.SIMES.CIM.CIMAdapter.pdb

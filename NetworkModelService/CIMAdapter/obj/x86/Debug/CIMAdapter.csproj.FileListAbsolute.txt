@@ -18,3 +18,8 @@ C:\Users\Nemanja\Desktop\Projekat\ModelLabsProjekat\bin\FTN.ESI.SIMES.CIM.CIMAda
 C:\Users\Nemanja\Desktop\Projekat\ModelLabsProjekat\CIMAdapter\obj\x86\Debug\CIMAdapter.csprojResolveAssemblyReference.cache
 C:\Users\Nemanja\Desktop\Projekat\ModelLabsProjekat\CIMAdapter\obj\x86\Debug\FTN.ESI.SIMES.CIM.CIMAdapter.dll
 C:\Users\Nemanja\Desktop\Projekat\ModelLabsProjekat\CIMAdapter\obj\x86\Debug\FTN.ESI.SIMES.CIM.CIMAdapter.pdb
+C:\Users\Nebojsa\Desktop\Repo\OMS\NetworkModelService\bin\FTN.ESI.SIMES.CIM.CIMAdapter.dll
+C:\Users\Nebojsa\Desktop\Repo\OMS\NetworkModelService\bin\FTN.ESI.SIMES.CIM.CIMAdapter.pdb
+C:\Users\Nebojsa\Desktop\Repo\OMS\NetworkModelService\CIMAdapter\obj\x86\Debug\CIMAdapter.csprojResolveAssemblyReference.cache
+C:\Users\Nebojsa\Desktop\Repo\OMS\NetworkModelService\CIMAdapter\obj\x86\Debug\FTN.ESI.SIMES.CIM.CIMAdapter.dll
+C:\Users\Nebojsa\Desktop\Repo\OMS\NetworkModelService\CIMAdapter\obj\x86\Debug\FTN.ESI.SIMES.CIM.CIMAdapter.pdb

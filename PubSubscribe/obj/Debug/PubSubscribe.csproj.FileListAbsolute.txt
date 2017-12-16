@@ -1,0 +1,9 @@
+C:\Users\Nebojsa\Desktop\Repo\OMS\PubSubscribe\bin\Debug\PubSubscribe.dll
+C:\Users\Nebojsa\Desktop\Repo\OMS\PubSubscribe\bin\Debug\PubSubscribe.pdb
+C:\Users\Nebojsa\Desktop\Repo\OMS\PubSubscribe\bin\Debug\FTN.Common.dll
+C:\Users\Nebojsa\Desktop\Repo\OMS\PubSubscribe\bin\Debug\PubSubContract.dll
+C:\Users\Nebojsa\Desktop\Repo\OMS\PubSubscribe\bin\Debug\FTN.Common.pdb
+C:\Users\Nebojsa\Desktop\Repo\OMS\PubSubscribe\bin\Debug\PubSubContract.pdb
+C:\Users\Nebojsa\Desktop\Repo\OMS\PubSubscribe\obj\Debug\PubSubscribe.csprojResolveAssemblyReference.cache
+C:\Users\Nebojsa\Desktop\Repo\OMS\PubSubscribe\obj\Debug\PubSubscribe.dll
+C:\Users\Nebojsa\Desktop\Repo\OMS\PubSubscribe\obj\Debug\PubSubscribe.pdb

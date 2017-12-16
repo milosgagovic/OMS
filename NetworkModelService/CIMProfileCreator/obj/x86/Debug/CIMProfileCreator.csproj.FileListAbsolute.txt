@@ -32,3 +32,14 @@ C:\Users\Nemanja\Desktop\Projekat\ModelLabsProjekat\CIMProfileCreator\obj\x86\De
 C:\Users\Nemanja\Desktop\Projekat\ModelLabsProjekat\CIMProfileCreator\obj\x86\Debug\CIMProfileCreator.csproj.GenerateResource.Cache
 C:\Users\Nemanja\Desktop\Projekat\ModelLabsProjekat\CIMProfileCreator\obj\x86\Debug\FTN.ESI.SIMES.CIM.CIMProfileCreator.exe
 C:\Users\Nemanja\Desktop\Projekat\ModelLabsProjekat\CIMProfileCreator\obj\x86\Debug\FTN.ESI.SIMES.CIM.CIMProfileCreator.pdb
+C:\Users\Nebojsa\Desktop\Repo\OMS\NetworkModelService\bin\Predefined\PredefinedClasses.xml
+C:\Users\Nebojsa\Desktop\Repo\OMS\NetworkModelService\bin\Predefined\PredefinedEnumerations.xml
+C:\Users\Nebojsa\Desktop\Repo\OMS\NetworkModelService\bin\Predefined\PredefinedPackages.xml
+C:\Users\Nebojsa\Desktop\Repo\OMS\NetworkModelService\bin\FTN.ESI.SIMES.CIM.CIMProfileCreator.exe
+C:\Users\Nebojsa\Desktop\Repo\OMS\NetworkModelService\bin\FTN.ESI.SIMES.CIM.CIMProfileCreator.pdb
+C:\Users\Nebojsa\Desktop\Repo\OMS\NetworkModelService\CIMProfileCreator\obj\x86\Debug\FTN.ESI.SIMES.CIM.CIMProfileCreator.CIMProfileCreatorForm.resources
+C:\Users\Nebojsa\Desktop\Repo\OMS\NetworkModelService\CIMProfileCreator\obj\x86\Debug\FTN.ESI.SIMES.CIM.CIMProfileCreator.Properties.Resources.resources
+C:\Users\Nebojsa\Desktop\Repo\OMS\NetworkModelService\CIMProfileCreator\obj\x86\Debug\CIMProfileCreator.csproj.GenerateResource.Cache
+C:\Users\Nebojsa\Desktop\Repo\OMS\NetworkModelService\CIMProfileCreator\obj\x86\Debug\FTN.ESI.SIMES.CIM.CIMProfileCreator.exe
+C:\Users\Nebojsa\Desktop\Repo\OMS\NetworkModelService\CIMProfileCreator\obj\x86\Debug\FTN.ESI.SIMES.CIM.CIMProfileCreator.pdb
+C:\Users\Nebojsa\Desktop\Repo\OMS\NetworkModelService\CIMProfileCreator\obj\x86\Debug\CIMProfileCreator.csprojResolveAssemblyReference.cache

@@ -7,3 +7,11 @@ D:\WorkingDir\OMS projekat\OMS\ComunicationEngine\CommunicationEngine\obj\Debug\
 D:\WorkingDir\OMS projekat\OMS\ComunicationEngine\CommunicationEngine\obj\Debug\CommunicationEngine.csproj.CoreCompileInputs.cache
 D:\WorkingDir\OMS projekat\OMS\ComunicationEngine\CommunicationEngine\obj\Debug\CommunicationEngine.exe
 D:\WorkingDir\OMS projekat\OMS\ComunicationEngine\CommunicationEngine\obj\Debug\CommunicationEngine.pdb
+C:\Users\Nebojsa\Desktop\Repo\OMS\ComunicationEngine\CommunicationEngine\bin\Debug\CommunicationEngine.exe.config
+C:\Users\Nebojsa\Desktop\Repo\OMS\ComunicationEngine\CommunicationEngine\bin\Debug\CommunicationEngine.exe
+C:\Users\Nebojsa\Desktop\Repo\OMS\ComunicationEngine\CommunicationEngine\bin\Debug\CommunicationEngine.pdb
+C:\Users\Nebojsa\Desktop\Repo\OMS\ComunicationEngine\CommunicationEngine\bin\Debug\CommunicationEngineContract.dll
+C:\Users\Nebojsa\Desktop\Repo\OMS\ComunicationEngine\CommunicationEngine\bin\Debug\CommunicationEngineContract.pdb
+C:\Users\Nebojsa\Desktop\Repo\OMS\ComunicationEngine\CommunicationEngine\obj\Debug\CommunicationEngine.csprojResolveAssemblyReference.cache
+C:\Users\Nebojsa\Desktop\Repo\OMS\ComunicationEngine\CommunicationEngine\obj\Debug\CommunicationEngine.exe
+C:\Users\Nebojsa\Desktop\Repo\OMS\ComunicationEngine\CommunicationEngine\obj\Debug\CommunicationEngine.pdb

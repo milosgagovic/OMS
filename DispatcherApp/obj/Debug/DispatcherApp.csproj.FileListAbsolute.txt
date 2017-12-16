@@ -24,3 +24,32 @@ D:\WorkingDir\OMS projekat\OMS\DispatcherApp\obj\Debug\DispatcherApp.csproj.Core
 D:\WorkingDir\OMS projekat\OMS\DispatcherApp\obj\Debug\DispatcherApp.exe
 D:\WorkingDir\OMS projekat\OMS\DispatcherApp\obj\Debug\DispatcherApp.pdb
 D:\WorkingDir\OMS projekat\OMS\DispatcherApp\obj\Debug\DispatcherApp.csprojResolveAssemblyReference.cache
+C:\Users\Nebojsa\Desktop\Repo\OMS\DispatcherApp\bin\Debug\DispatcherApp.exe.config
+C:\Users\Nebojsa\Desktop\Repo\OMS\DispatcherApp\bin\Debug\DispatcherApp.exe
+C:\Users\Nebojsa\Desktop\Repo\OMS\DispatcherApp\bin\Debug\DispatcherApp.pdb
+C:\Users\Nebojsa\Desktop\Repo\OMS\DispatcherApp\bin\Debug\FTN.Common.dll
+C:\Users\Nebojsa\Desktop\Repo\OMS\DispatcherApp\bin\Debug\FTN.DataModel.dll
+C:\Users\Nebojsa\Desktop\Repo\OMS\DispatcherApp\bin\Debug\FTN.ServiceContracts.ServiceContracts.NetworkModelQueryContract.dll
+C:\Users\Nebojsa\Desktop\Repo\OMS\DispatcherApp\bin\Debug\FTN.Services.NetworkModelService.dll
+C:\Users\Nebojsa\Desktop\Repo\OMS\DispatcherApp\bin\Debug\FTN.Common.pdb
+C:\Users\Nebojsa\Desktop\Repo\OMS\DispatcherApp\bin\Debug\FTN.DataModel.pdb
+C:\Users\Nebojsa\Desktop\Repo\OMS\DispatcherApp\bin\Debug\FTN.Services.NetworkModelService.pdb
+C:\Users\Nebojsa\Desktop\Repo\OMS\DispatcherApp\bin\Debug\FTN.ServiceContracts.ServiceContracts.NetworkModelQueryContract.pdb
+C:\Users\Nebojsa\Desktop\Repo\OMS\DispatcherApp\obj\Debug\DispatcherApp.csprojResolveAssemblyReference.cache
+C:\Users\Nebojsa\Desktop\Repo\OMS\DispatcherApp\obj\Debug\MainWindow.g.cs
+C:\Users\Nebojsa\Desktop\Repo\OMS\DispatcherApp\obj\Debug\View\DispatherAppUserControl.g.cs
+C:\Users\Nebojsa\Desktop\Repo\OMS\DispatcherApp\obj\Debug\App.g.cs
+C:\Users\Nebojsa\Desktop\Repo\OMS\DispatcherApp\obj\Debug\GeneratedInternalTypeHelper.g.cs
+C:\Users\Nebojsa\Desktop\Repo\OMS\DispatcherApp\obj\Debug\DispatcherApp_MarkupCompile.cache
+C:\Users\Nebojsa\Desktop\Repo\OMS\DispatcherApp\obj\Debug\DispatcherApp_MarkupCompile.lref
+C:\Users\Nebojsa\Desktop\Repo\OMS\DispatcherApp\obj\Debug\MainWindow.baml
+C:\Users\Nebojsa\Desktop\Repo\OMS\DispatcherApp\obj\Debug\View\DispatherAppUserControl.baml
+C:\Users\Nebojsa\Desktop\Repo\OMS\DispatcherApp\obj\Debug\DispatcherApp.g.resources
+C:\Users\Nebojsa\Desktop\Repo\OMS\DispatcherApp\obj\Debug\DispatcherApp.Properties.Resources.resources
+C:\Users\Nebojsa\Desktop\Repo\OMS\DispatcherApp\obj\Debug\DispatcherApp.csproj.GenerateResource.Cache
+C:\Users\Nebojsa\Desktop\Repo\OMS\DispatcherApp\obj\Debug\DispatcherApp.exe
+C:\Users\Nebojsa\Desktop\Repo\OMS\DispatcherApp\obj\Debug\DispatcherApp.pdb
+C:\Users\Nebojsa\Desktop\Repo\OMS\DispatcherApp\bin\Debug\PubSubscribe.dll
+C:\Users\Nebojsa\Desktop\Repo\OMS\DispatcherApp\bin\Debug\PubSubContract.dll
+C:\Users\Nebojsa\Desktop\Repo\OMS\DispatcherApp\bin\Debug\PubSubscribe.pdb
+C:\Users\Nebojsa\Desktop\Repo\OMS\DispatcherApp\bin\Debug\PubSubContract.pdb

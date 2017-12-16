@@ -9,6 +9,7 @@ using FTN.Common;
 using FTN.Services.NetworkModelService.DataModel;
 using FTN.Services.NetworkModelService.DataModel.Core;
 using FTN.Services.NetworkModelService.DataModel.Wires;
+using PubSubscribe;
 
 namespace FTN.Services.NetworkModelService
 {	
@@ -274,6 +275,8 @@ namespace FTN.Services.NetworkModelService
 				if (applyingStarted)
 				{
 					SaveDelta(delta);
+                    Publisher publisher = new Publisher();
+                    publisher.PublishDelta(delta);
 				}
 
 				if (updateResult.Result == ResultType.Succeeded)

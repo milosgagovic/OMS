@@ -17,3 +17,7 @@ C:\Users\Nemanja\Desktop\Projekat\ModelLabsProjekat\bin\FTN.Common.dll
 C:\Users\Nemanja\Desktop\Projekat\ModelLabsProjekat\bin\FTN.Common.pdb
 C:\Users\Nemanja\Desktop\Projekat\ModelLabsProjekat\Common\obj\x86\Debug\FTN.Common.dll
 C:\Users\Nemanja\Desktop\Projekat\ModelLabsProjekat\Common\obj\x86\Debug\FTN.Common.pdb
+C:\Users\Nebojsa\Desktop\Repo\OMS\bin\FTN.Common.dll
+C:\Users\Nebojsa\Desktop\Repo\OMS\bin\FTN.Common.pdb
+C:\Users\Nebojsa\Desktop\Repo\OMS\Common\obj\x86\Debug\FTN.Common.dll
+C:\Users\Nebojsa\Desktop\Repo\OMS\Common\obj\x86\Debug\FTN.Common.pdb

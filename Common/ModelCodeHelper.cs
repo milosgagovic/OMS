@@ -92,6 +92,17 @@ namespace FTN.Common
 		public static bool GetDMSTypeFromString(string strDmsType, out DMSType dmsType)
 		{
 			return Enum.TryParse(strDmsType, true, out dmsType);
-		}				
-	}
+		}
+
+        public static PropertyType ExtractPropertyTypeFromModelCode(ModelCode propertyId)
+        {
+            unchecked
+            {
+                long val = (long)propertyId;
+
+                val &= 0x00000000000000ff;
+                return (PropertyType)val;
+            }
+        }
+    }
 }

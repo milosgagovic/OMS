@@ -10,3 +10,8 @@ D:\WorkingDir\OMS projekat\OMS\ServiceContracts\CommunicationEngineContract\obj\
 D:\WorkingDir\OMS projekat\OMS\ServiceContracts\CommunicationEngineContract\obj\Debug\CommunicationEngineContract.csproj.CoreCompileInputs.cache
 D:\WorkingDir\OMS projekat\OMS\ServiceContracts\CommunicationEngineContract\obj\Debug\CommunicationEngineContract.dll
 D:\WorkingDir\OMS projekat\OMS\ServiceContracts\CommunicationEngineContract\obj\Debug\CommunicationEngineContract.pdb
+C:\Users\Nebojsa\Desktop\Repo\OMS\ServiceContracts\CommunicationEngineContract\bin\Debug\CommunicationEngineContract.dll
+C:\Users\Nebojsa\Desktop\Repo\OMS\ServiceContracts\CommunicationEngineContract\bin\Debug\CommunicationEngineContract.pdb
+C:\Users\Nebojsa\Desktop\Repo\OMS\ServiceContracts\CommunicationEngineContract\obj\Debug\CommunicationEngineContract.csprojResolveAssemblyReference.cache
+C:\Users\Nebojsa\Desktop\Repo\OMS\ServiceContracts\CommunicationEngineContract\obj\Debug\CommunicationEngineContract.dll
+C:\Users\Nebojsa\Desktop\Repo\OMS\ServiceContracts\CommunicationEngineContract\obj\Debug\CommunicationEngineContract.pdb

@@ -37,3 +37,9 @@ D:\WorkingDir\OMS projekat\OMS\NetworkModelService\Test\NMSTestClient\obj\x64\De
 D:\WorkingDir\OMS projekat\OMS\NetworkModelService\Test\NMSTestClient\obj\x64\Debug\NMSTestClient.exe
 D:\WorkingDir\OMS projekat\OMS\NetworkModelService\Test\NMSTestClient\obj\x64\Debug\NMSTestClient.pdb
 D:\WorkingDir\OMS projekat\OMS\NetworkModelService\Test\NMSTestClient\obj\x64\Debug\NMSTestClient.csprojResolveAssemblyReference.cache
+C:\Users\Nebojsa\Desktop\Repo\OMS\bin64\NMSTestClient.exe.config
+C:\Users\Nebojsa\Desktop\Repo\OMS\bin64\NMSTestClient.exe
+C:\Users\Nebojsa\Desktop\Repo\OMS\bin64\NMSTestClient.pdb
+C:\Users\Nebojsa\Desktop\Repo\OMS\NetworkModelService\Test\NMSTestClient\obj\x64\Debug\NMSTestClient.csprojResolveAssemblyReference.cache
+C:\Users\Nebojsa\Desktop\Repo\OMS\NetworkModelService\Test\NMSTestClient\obj\x64\Debug\NMSTestClient.exe
+C:\Users\Nebojsa\Desktop\Repo\OMS\NetworkModelService\Test\NMSTestClient\obj\x64\Debug\NMSTestClient.pdb

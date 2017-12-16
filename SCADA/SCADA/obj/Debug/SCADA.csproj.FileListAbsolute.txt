@@ -4,3 +4,8 @@ D:\WorkingDir\OMS projekat\OMS\SCADA\SCADA\bin\Debug\SCADA.pdb
 D:\WorkingDir\OMS projekat\OMS\SCADA\SCADA\obj\Debug\SCADA.csproj.CoreCompileInputs.cache
 D:\WorkingDir\OMS projekat\OMS\SCADA\SCADA\obj\Debug\SCADA.exe
 D:\WorkingDir\OMS projekat\OMS\SCADA\SCADA\obj\Debug\SCADA.pdb
+C:\Users\Nebojsa\Desktop\Repo\OMS\SCADA\SCADA\bin\Debug\SCADA.exe.config
+C:\Users\Nebojsa\Desktop\Repo\OMS\SCADA\SCADA\bin\Debug\SCADA.exe
+C:\Users\Nebojsa\Desktop\Repo\OMS\SCADA\SCADA\bin\Debug\SCADA.pdb
+C:\Users\Nebojsa\Desktop\Repo\OMS\SCADA\SCADA\obj\Debug\SCADA.exe
+C:\Users\Nebojsa\Desktop\Repo\OMS\SCADA\SCADA\obj\Debug\SCADA.pdb

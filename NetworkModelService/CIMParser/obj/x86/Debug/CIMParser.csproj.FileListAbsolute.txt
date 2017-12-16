@@ -18,3 +18,8 @@ C:\Users\Nemanja\Desktop\Projekat\ModelLabsProjekat\bin\CIMParser.pdb
 C:\Users\Nemanja\Desktop\Projekat\ModelLabsProjekat\CIMParser\obj\x86\Debug\CIMParser.csprojResolveAssemblyReference.cache
 C:\Users\Nemanja\Desktop\Projekat\ModelLabsProjekat\CIMParser\obj\x86\Debug\CIMParser.dll
 C:\Users\Nemanja\Desktop\Projekat\ModelLabsProjekat\CIMParser\obj\x86\Debug\CIMParser.pdb
+C:\Users\Nebojsa\Desktop\Repo\OMS\NetworkModelService\bin\CIMParser.dll
+C:\Users\Nebojsa\Desktop\Repo\OMS\NetworkModelService\bin\CIMParser.pdb
+C:\Users\Nebojsa\Desktop\Repo\OMS\NetworkModelService\CIMParser\obj\x86\Debug\CIMParser.dll
+C:\Users\Nebojsa\Desktop\Repo\OMS\NetworkModelService\CIMParser\obj\x86\Debug\CIMParser.pdb
+C:\Users\Nebojsa\Desktop\Repo\OMS\NetworkModelService\CIMParser\obj\x86\Debug\CIMParser.csprojResolveAssemblyReference.cache

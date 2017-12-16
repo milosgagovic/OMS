@@ -21,3 +21,8 @@ D:\WorkingDir\OMS projekat\OMS\NetworkModelService\obj\x64\Debug\NetworkModelSer
 D:\WorkingDir\OMS projekat\OMS\NetworkModelService\obj\x64\Debug\NetworkModelService.csproj.CoreCompileInputs.cache
 D:\WorkingDir\OMS projekat\OMS\NetworkModelService\obj\x64\Debug\FTN.Services.NetworkModelService.dll
 D:\WorkingDir\OMS projekat\OMS\NetworkModelService\obj\x64\Debug\FTN.Services.NetworkModelService.pdb
+C:\Users\Nebojsa\Desktop\Repo\OMS\bin64\FTN.Services.NetworkModelService.dll
+C:\Users\Nebojsa\Desktop\Repo\OMS\bin64\FTN.Services.NetworkModelService.pdb
+C:\Users\Nebojsa\Desktop\Repo\OMS\NetworkModelService\obj\x64\Debug\NetworkModelService.csprojResolveAssemblyReference.cache
+C:\Users\Nebojsa\Desktop\Repo\OMS\NetworkModelService\obj\x64\Debug\FTN.Services.NetworkModelService.dll
+C:\Users\Nebojsa\Desktop\Repo\OMS\NetworkModelService\obj\x64\Debug\FTN.Services.NetworkModelService.pdb

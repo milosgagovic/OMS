@@ -38,3 +38,8 @@ C:\Users\Nemanja\Desktop\Projekat\ModelLabsProjekat\bin\FTN.DataModel.pdb
 C:\Users\Nemanja\Desktop\Projekat\ModelLabsProjekat\NetworkModelService\DataModel\obj\x86\Debug\DataModel.csprojResolveAssemblyReference.cache
 C:\Users\Nemanja\Desktop\Projekat\ModelLabsProjekat\NetworkModelService\DataModel\obj\x86\Debug\FTN.DataModel.dll
 C:\Users\Nemanja\Desktop\Projekat\ModelLabsProjekat\NetworkModelService\DataModel\obj\x86\Debug\FTN.DataModel.pdb
+C:\Users\Nebojsa\Desktop\Repo\OMS\bin\FTN.DataModel.dll
+C:\Users\Nebojsa\Desktop\Repo\OMS\bin\FTN.DataModel.pdb
+C:\Users\Nebojsa\Desktop\Repo\OMS\NetworkModelService\DataModel\obj\x86\Debug\DataModel.csprojResolveAssemblyReference.cache
+C:\Users\Nebojsa\Desktop\Repo\OMS\NetworkModelService\DataModel\obj\x86\Debug\FTN.DataModel.dll
+C:\Users\Nebojsa\Desktop\Repo\OMS\NetworkModelService\DataModel\obj\x86\Debug\FTN.DataModel.pdb

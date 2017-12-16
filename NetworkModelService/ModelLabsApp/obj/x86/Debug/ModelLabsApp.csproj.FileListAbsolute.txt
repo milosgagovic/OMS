@@ -37,3 +37,12 @@ C:\Users\Nemanja\Desktop\Projekat\ModelLabsProjekat\ModelLabsApp\obj\x86\Debug\M
 C:\Users\Nemanja\Desktop\Projekat\ModelLabsProjekat\ModelLabsApp\obj\x86\Debug\ModelLabsApp.csproj.GenerateResource.Cache
 C:\Users\Nemanja\Desktop\Projekat\ModelLabsProjekat\ModelLabsApp\obj\x86\Debug\ModelLabsApp.exe
 C:\Users\Nemanja\Desktop\Projekat\ModelLabsProjekat\ModelLabsApp\obj\x86\Debug\ModelLabsApp.pdb
+C:\Users\Nebojsa\Desktop\Repo\OMS\NetworkModelService\bin\ModelLabsApp.exe.config
+C:\Users\Nebojsa\Desktop\Repo\OMS\NetworkModelService\bin\ModelLabsApp.exe
+C:\Users\Nebojsa\Desktop\Repo\OMS\NetworkModelService\bin\ModelLabsApp.pdb
+C:\Users\Nebojsa\Desktop\Repo\OMS\NetworkModelService\ModelLabsApp\obj\x86\Debug\ModelLabsApp.csprojResolveAssemblyReference.cache
+C:\Users\Nebojsa\Desktop\Repo\OMS\NetworkModelService\ModelLabsApp\obj\x86\Debug\ModelLabsApp.ModelLabsAppForm.resources
+C:\Users\Nebojsa\Desktop\Repo\OMS\NetworkModelService\ModelLabsApp\obj\x86\Debug\ModelLabsApp.Properties.Resources.resources
+C:\Users\Nebojsa\Desktop\Repo\OMS\NetworkModelService\ModelLabsApp\obj\x86\Debug\ModelLabsApp.csproj.GenerateResource.Cache
+C:\Users\Nebojsa\Desktop\Repo\OMS\NetworkModelService\ModelLabsApp\obj\x86\Debug\ModelLabsApp.exe
+C:\Users\Nebojsa\Desktop\Repo\OMS\NetworkModelService\ModelLabsApp\obj\x86\Debug\ModelLabsApp.pdb

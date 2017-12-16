@@ -48,3 +48,9 @@ C:\Users\Nemanja\Desktop\Projekat\ModelLabsProjekat\bin\FTN_NetworkModelService.
 C:\Users\Nemanja\Desktop\Projekat\ModelLabsProjekat\NetworkModelService\ServiceHost\NetworkModelServiceSelfHost\obj\x86\Debug\NetworkModelServiceSelfHost.csprojResolveAssemblyReference.cache
 C:\Users\Nemanja\Desktop\Projekat\ModelLabsProjekat\NetworkModelService\ServiceHost\NetworkModelServiceSelfHost\obj\x86\Debug\FTN_NetworkModelService.exe
 C:\Users\Nemanja\Desktop\Projekat\ModelLabsProjekat\NetworkModelService\ServiceHost\NetworkModelServiceSelfHost\obj\x86\Debug\FTN_NetworkModelService.pdb
+C:\Users\Nebojsa\Desktop\Repo\OMS\bin\FTN_NetworkModelService.exe.config
+C:\Users\Nebojsa\Desktop\Repo\OMS\bin\FTN_NetworkModelService.exe
+C:\Users\Nebojsa\Desktop\Repo\OMS\bin\FTN_NetworkModelService.pdb
+C:\Users\Nebojsa\Desktop\Repo\OMS\NetworkModelService\ServiceHost\NetworkModelServiceSelfHost\obj\x86\Debug\NetworkModelServiceSelfHost.csprojResolveAssemblyReference.cache
+C:\Users\Nebojsa\Desktop\Repo\OMS\NetworkModelService\ServiceHost\NetworkModelServiceSelfHost\obj\x86\Debug\FTN_NetworkModelService.exe
+C:\Users\Nebojsa\Desktop\Repo\OMS\NetworkModelService\ServiceHost\NetworkModelServiceSelfHost\obj\x86\Debug\FTN_NetworkModelService.pdb
