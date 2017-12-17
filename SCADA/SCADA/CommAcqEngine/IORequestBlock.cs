@@ -22,8 +22,7 @@ namespace SCADA.CommAcqEngine
      * Communication/Acquisition request description
      * 
      * Request defines single (or broadcast) communication transaction
-     * between SCADA sw and process controller(s).
-     * 
+     * between SCADA sw and process controller(s).    
      * 
      * IZMESTITI U PCCommon
      */
@@ -53,7 +52,7 @@ namespace SCADA.CommAcqEngine
         public int sendCount { get; set; }
 
         // trsciever buffer 
-        public Byte [] sendBuff { get; set; } 
+        public Byte[] sendBuff { get; set; }
 
 
         /* reply parameters*/
@@ -65,7 +64,7 @@ namespace SCADA.CommAcqEngine
         public int rcvCount { get; set; }
 
         // receiver buffer 
-        public Byte [] rcvBuff { get; set; }
+        public Byte[] rcvBuff { get; set; }
 
     }
 }

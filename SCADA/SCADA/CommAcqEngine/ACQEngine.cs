@@ -25,16 +25,15 @@ namespace SCADA.CommAcqEngine
             timerMsc = 1000;
         }
 
-        // ovo sam za test krenula da pravim
+
         public void Setup()
         {
-            // promenicu ovo, necu koristiti ove kao Channele - verovatno mi nece ipak trebati,
-            // nego ce RTU imati referencu na otvoren komunikacioni kanal u kontekstu .NET-a
+            // RTU imati referencu na otvoren komunikacioni kanal u kontekstu .NET-a
             // ili ce channel struktura omogucivati da se otvore kanalu iz .neta, videcu
 
             Channel TCPChannel = new TCPClientChannel();
             TCPChannel.Protocol = IndustryProtocols.Modbus;
-           
+
 
             rtu1 = new RTU(8, 8, 4, 4, 2);
             rtu1.HostName = "localhost";
@@ -48,24 +47,26 @@ namespace SCADA.CommAcqEngine
 
         }
 
-        public void StartAcquisition()
+        // za automatsku proceduru akvizicije
+        public async void StartAcquisition(CancellationToken token)
         {
-            while (!shutdown)
+            while (token.IsCancellationRequested)
             {
                 // zapravo treba da ovaj toProcess IORB sadrzi RTU koji gadja, ali to dolazi iz RTDB baze i tako to...
 
                 IORequestBlock toProcess = new IORequestBlock();
 
-                toProcess.Rtu = rtu1;             
+                toProcess.Rtu = rtu1;
                 IORequests.EnqueueIOReqForProcess(toProcess);
 
                 Console.WriteLine("Request added to processing buffer.");
 
-                // ne koritisti thread.sleep -> menjam to sve...
+                // ne koritisti thread.sleep -> menjati to sve...
                 Thread.Sleep(timerMsc);
             }
         }
 
+        // trebace nam f-ja za komandovanje, ona takodje siba zahteve u queue
 
         public void SendReadCoilRequest()
         {
