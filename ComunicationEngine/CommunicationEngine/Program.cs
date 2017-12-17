@@ -5,6 +5,10 @@ using System.ServiceModel;
 using System.Text;
 using System.Threading.Tasks;
 using CommunicationEngine;
+using OMSSCADACommon;
+using OMSSCADACommon.Commands;
+using SCADAContracts;
+
 namespace CommunicationEngine
 {
     public class Program
@@ -18,7 +22,7 @@ namespace CommunicationEngine
                 ces.Start();
                 message = "Press <Enter> to stop the service.";
                 Console.WriteLine(message);
-                Console.ReadLine();
+                //Console.ReadLine();
 
             }
             catch (Exception ex)
@@ -29,8 +33,12 @@ namespace CommunicationEngine
                 Console.ReadLine();
             }
 
+            SCADAProxy proxy = new SCADAProxy(new NetTcpBinding(), "net.tcp://localhost:4000/SCADAService");
+            Command command = new WriteSingleDigital() { Id = "dig-1", command = CommandTypes.OPEN };
+
+            proxy.ExecuteCommand(command);
+
+            Console.ReadKey();
         }
-
-
     }
 }

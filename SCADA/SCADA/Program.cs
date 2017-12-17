@@ -42,12 +42,12 @@ namespace SCADA
 
             /*Ovo moraju biti taskovi-threadovi, da bi se izvrsavali konkuretno i asinhrono
              ovako samo PCCommEng vrti...to cu veceras odraditi*/
-            PCCommunicationEngine PCCommEng = new PCCommunicationEngine();
-            PCCommEng.StartProcessing();
+            //PCCommunicationEngine PCCommEng = new PCCommunicationEngine();
+            //PCCommEng.StartProcessing();
 
 
-            ACQEngine AcqEngine = new ACQEngine();
-            AcqEngine.StartAcquisition();
+            //ACQEngine AcqEngine = new ACQEngine();
+            //AcqEngine.StartAcquisition();
 
             try
             {

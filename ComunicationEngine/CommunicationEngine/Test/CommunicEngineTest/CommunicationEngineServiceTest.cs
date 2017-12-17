@@ -39,11 +39,11 @@ namespace CommunicEngineTest
             Assert.NotNull(new CommunicationEngine.CommunicationEngine());
 
         }
-       
+
         [Test]
         public void ReceiveValueExp()
         {
-            Assert.Throws<NullReferenceException>( () => serviceUnderTest.ReceiveValue());
+            Assert.Throws<NullReferenceException>(() => serviceUnderTest.ReceiveValue());
         }
         [Test]
         public void SendCommantTrue()
@@ -63,7 +63,7 @@ namespace CommunicEngineTest
         public void SendCommantExp()
         {
             WriteSingleDigital digital = new WriteSingleDigital() { Id = "-1" };
-             
+
             Assert.Throws<Exception>(() => CommunicationEngine.CommunicationEngine.Callback.SendCommand(digital));
         }
 

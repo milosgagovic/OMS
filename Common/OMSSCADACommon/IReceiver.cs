@@ -6,14 +6,14 @@ namespace OMSSCADACommon
 {
     public interface IReceiver
     {
-        void WriteSingleDigital(string id, CommandTypes command);
-        void WriteSingleAnalog(string id, float value);
-        void ReadSingleDigital(string id);
-        void ReadSingleAnalog(string id);
-        void ReadSingleCounter(string id);
-        void ReadAllDigital(DeviceTypes type);
-        void ReadAllAnalog(DeviceTypes type);
-        void ReadAllCounter(DeviceTypes type);
-        void RealAll();
+        ResultMessage WriteSingleDigital(string id, CommandTypes command);
+        ResultMessage WriteSingleAnalog(string id, float value);
+        ResultMessage ReadSingleDigital(string id);
+        ResultMessage ReadSingleAnalog(string id);
+        ResultMessage ReadSingleCounter(string id);
+        ResultMessage ReadAllDigital(DeviceTypes type);
+        ResultMessage ReadAllAnalog(DeviceTypes type);
+        ResultMessage ReadAllCounter(DeviceTypes type);
+        ResultMessage RealAll();
     }
 }

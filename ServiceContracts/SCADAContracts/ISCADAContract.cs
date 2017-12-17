@@ -1,4 +1,5 @@
 ﻿using OMSSCADACommon;
+using OMSSCADACommon.Commands;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,6 +16,6 @@ namespace SCADAContracts
         ///  
         /// </summary>
         [OperationContract]
-        void ExecuteCommand(Command command);
+        ResultMessage ExecuteCommand(Command command);
     }
 }

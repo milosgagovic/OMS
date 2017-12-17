@@ -56,9 +56,17 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Common\OMSSCADACommon\OMSSCADACommon.csproj">
+      <Project>{A7F86CA6-39F1-4B61-BF71-C01E327FA861}</Project>
+      <Name>OMSSCADACommon</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\ServiceContracts\CommunicationEngineContract\CommunicationEngineContract.csproj">
       <Project>{F4F76A34-3088-41D6-ACEF-47D2DDC94441}</Project>
       <Name>CommunicationEngineContract</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ServiceContracts\SCADAContracts\SCADAContracts.csproj">
+      <Project>{91FA4DB9-E3E0-4A3C-B0AB-29DCEC746770}</Project>
+      <Name>SCADAContracts</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

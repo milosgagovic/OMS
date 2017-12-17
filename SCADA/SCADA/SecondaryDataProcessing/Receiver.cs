@@ -14,63 +14,74 @@ namespace SCADA.SecondaryDataProcessing
     {
         DBContext db = new DBContext();
 
-        public void ReadAllAnalog(OMSSCADACommon.DeviceTypes type)
+        public ResultMessage ReadAllAnalog(OMSSCADACommon.DeviceTypes type)
         {
             throw new NotImplementedException();
         }
 
-        public void ReadAllCounter(OMSSCADACommon.DeviceTypes type)
+        public ResultMessage ReadAllCounter(OMSSCADACommon.DeviceTypes type)
         {
             throw new NotImplementedException();
         }
 
-        public void ReadAllDigital(OMSSCADACommon.DeviceTypes type)
+        public ResultMessage ReadAllDigital(OMSSCADACommon.DeviceTypes type)
         {
             throw new NotImplementedException();
         }
 
-        public void ReadSingleAnalog(string id)
+        public ResultMessage ReadSingleAnalog(string id)
         {
             throw new NotImplementedException();
         }
 
-        public void ReadSingleCounter(string id)
+        public ResultMessage ReadSingleCounter(string id)
         {
             throw new NotImplementedException();
         }
 
-        public void ReadSingleDigital(string id)
+        public ResultMessage ReadSingleDigital(string id)
         {
             throw new NotImplementedException();
         }
 
-        public void RealAll()
+        public ResultMessage RealAll()
         {
             throw new NotImplementedException();
         }
 
-        public void WriteSingleAnalog(string id, float value)
+        public ResultMessage WriteSingleAnalog(string id, float value)
         {
             throw new NotImplementedException();
         }
 
-        public void WriteSingleDigital(string id, CommandTypes command)
+        public ResultMessage WriteSingleDigital(string id, CommandTypes command)
         {
-            Digital digital = db.GetSingleDigital(id);
+            Digital digital = null;
+
+            try
+            {
+               digital = db.GetSingleDigital(id);
+            }
+            catch(Exception e)
+            {
+                return ResultMessage.ID_NOT_SET;
+            }
 
             if (digital == null)
             {
-                return;
+                return ResultMessage.INVALID_ID;
             }
 
             if (!CommandValidator.ValidateDigitalCommand(digital, command))
             {
-                return;
+                return ResultMessage.INVALID_DIG_COMM;
             }
 
             // send to mdbsim
 
             CommandValidator.CheckCommandExecution();
+
+            return ResultMessage.OK;
         }
     }
 }

@@ -1,13 +1,19 @@
-﻿using System;
+﻿using OMSSCADACommon.Commands;
+using System;
+using System.Runtime.Serialization;
 
-namespace OMSSCADACommon
+namespace OMSSCADACommon.Commands
 {
+    [DataContract]
+    [KnownType(typeof(WriteSingleDigital))]
     public abstract class Command
     {
-        public IReceiver Receiver { get;  set; }
+        [IgnoreDataMember]
+        public IReceiver Receiver { get; set; }
 
+        [DataMember]
         public string Id { get; set; }
 
-        public abstract void Execute();
+        public abstract ResultMessage Execute();
     }
 }

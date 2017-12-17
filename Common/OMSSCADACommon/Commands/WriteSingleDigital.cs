@@ -1,16 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using System.Text;
 
 namespace OMSSCADACommon.Commands
 {
+    [DataContract]
     public class WriteSingleDigital : Command
     {
+        [DataMember]
         public CommandTypes command;
 
-        public override void Execute()
+        public override ResultMessage Execute()
         {
-            this.Receiver.WriteSingleDigital(this.Id, this.command);
+            return this.Receiver.WriteSingleDigital(this.Id, this.command);
         }
     }
 }
