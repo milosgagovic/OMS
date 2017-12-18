@@ -8,7 +8,7 @@ using SCADA.RealtimeDatabase.Model;
 namespace SCADA.CommAcqEngine
 {
 
-    enum RequestType
+    public enum RequestType
     {
         SEND_RECV = 0,
         RECV_SEND,
@@ -29,15 +29,12 @@ namespace SCADA.CommAcqEngine
     public class IORequestBlock
     {
         // transaction type
-        RequestType ioRequestType;
+        public RequestType RequestType;
 
-        // channel identification -> msm da ne treba, preko RTU zna kom channelu pristupa
-
-        // target rtu
-        public RTU Rtu { get; set; }
+        public string ChannelId { get; set; }
 
         // ovo ce kanda string biti
-        public int RtuId { get; set; }
+        public short RTUAddress { get; set; }
 
         /* request parameters*/
 

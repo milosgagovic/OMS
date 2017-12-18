@@ -7,7 +7,7 @@ using PCCommon;
 
 namespace ModbusTCPDriver
 {
-    class ModbusApplicationHeader
+    public class ModbusApplicationHeader
     {
         // initialized by the client, copied by the server from request to the response
         // Identification of a MODBUS request/response transaction
@@ -26,6 +26,6 @@ namespace ModbusTCPDriver
 
         // initialized by the client (request), copied by the server from request to the response
         // identification of a remote slave
-        public Byte deviceAddress { get; set; }
+        public Byte DeviceAddress { get; set; }
     }
 }

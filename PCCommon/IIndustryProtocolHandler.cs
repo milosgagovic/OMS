@@ -10,10 +10,14 @@ namespace PCCommon
     {
         IndustryProtocols ProtocolType { get; set; }
 
-        void PackData(ushort transId, Byte[] data);
+        byte[] PackData();
+
+        void UnpackData(byte[] data);
 
         // mozda ovde da budu metode send data, i receive data
         // kao npr sto na TCPClient klasi imamo metode za slanje i primanje
         // tako i ovde napraviti.... 
+
+        
     }
 }

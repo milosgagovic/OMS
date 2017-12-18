@@ -66,7 +66,7 @@ namespace SCADA.CommAcqEngine
                 var req = IORequests.GetRequest();
 
                 // 0 hardkodovano dok ne vidim sta tu 
-                protHandler.PackData(0, req.sendBuff);
+                //protHandler.PackData(0, req.sendBuff);
 
             }
             else

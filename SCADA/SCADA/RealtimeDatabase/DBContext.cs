@@ -22,5 +22,10 @@ namespace SCADA.RealtimeDatabase
 
             return (Digital)digital;
         }
+
+        public List<RTU> GetAllRTUs()
+        {
+            return Database.Instance.RTUsList;
+        }
     }
 }
