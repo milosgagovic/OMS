@@ -48,18 +48,19 @@ namespace SCADA.CommAcqEngine
         {
             Task<byte[]> readBytesTask = Task.Factory.StartNew(() =>
             {
-                byte[] bytes;
+                byte[] bytes = new byte[100]; //ovo sam stavio jer nije prolazio build?
 
                 if (!IORequests.IsIORequstEmpty())
-                do                {
-                    bytes = null;
-                } while (bytes == null);
+                    do
+                    {
+                        bytes = null;
+                    } while (bytes == null);
 
                 return bytes;
             }, /*token,*/ TaskCreationOptions.LongRunning);
 
 
-            if (!IORequests.IsEmpty())
+            if (!IORequests.IsIORequstEmpty())
             {
                 Console.WriteLine("Request processing");
                 var req = IORequests.GetRequest();
