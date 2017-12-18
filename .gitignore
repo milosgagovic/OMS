@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+﻿<<<<<<< HEAD
 ﻿################################################################################
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
@@ -8,9 +8,31 @@
 /PubSubContract/bin/Debug
 /PubSubContract/obj/Debug
 =======
+# User-specific files
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
 
-*.cache
-*.cache
-*.cache
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+[Xx]64/
+[Xx]86/
+[Bb]uild/
+bld/
+[Bb]in/
+[Oo]bj/
+
+
+# Visual Studio cache files
+# files ending in .cache can be ignored
+*.[Cc]ache
+# but keep track of directories ending in .cache
+!*.[Cc]ache/
+
+
 .vs/OMSMaster/v15/.suo
 >>>>>>> c327ca408ac1d5f070e7b291ed5a9b4e47f603da

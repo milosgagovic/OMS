@@ -13,6 +13,11 @@ namespace SCADA.CommAcqEngine
     // Logic for communication with Process Controller
     public class PCCommunicationEngine
     {
+
+        // konfigurisati komunikacione linkove
+        // pokrenuti nit za procesuiranje IORB-a
+
+        // rukovaoc konkretnog industrijskog protokola
         IIndustryProtocolHandler protHandler = new ModbusHandler();
 
         IORequestsQueue IORequests;
@@ -28,7 +33,7 @@ namespace SCADA.CommAcqEngine
         public void AddIOReqForProcess(IORequestBlock iorb)
         {
             IORequests.EnqueueIOReqForProcess(iorb);
-           
+
         }
 
         // ovde treba srediti komunikaciju sa svim ucitanim-konfigurisanim RTU-ovima i kanalima
@@ -38,27 +43,38 @@ namespace SCADA.CommAcqEngine
         }
 
         // obrada zahteva iz IORB Queue-a
-        public async void StartProcessing()
+        // tu treba cela logika prosledjivanja na odredjeni kanal, koji je otvoren ranije
+        public async void StartProcessing(CancellationToken token)
         {
-            while (!shutdown)
+            Task<byte[]> readBytesTask = Task.Factory.StartNew(() =>
             {
+                byte[] bytes;
 
                 if (!IORequests.IsIORequstEmpty())
-                {
-                    Console.WriteLine("Request processing");
-                    var req=IORequests.GetRequest();
-                    protHandler.PackData(req.sendBuff);
-                    
-                }
-                else
-                {
-                    Console.WriteLine("There is no requests for processing");
-                }
+                do                {
+                    bytes = null;
+                } while (bytes == null);
 
-                await Task.Delay(timerMsc);
+                return bytes;
+            }, /*token,*/ TaskCreationOptions.LongRunning);
 
-                //Thread.Sleep(timerMsc);               
+
+            if (!IORequests.IsEmpty())
+            {
+                Console.WriteLine("Request processing");
+                var req = IORequests.GetRequest();
+
+                // 0 hardkodovano dok ne vidim sta tu 
+                protHandler.PackData(0, req.sendBuff);
+
             }
+            else
+            {
+                Console.WriteLine("There is no requests for processing");
+            }
+
+            await Task.Delay(timerMsc, token);
+
         }
 
     }

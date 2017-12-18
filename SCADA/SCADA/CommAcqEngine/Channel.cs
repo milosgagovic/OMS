@@ -9,7 +9,6 @@ using PCCommon;
 
 namespace SCADA.CommAcqEngine
 {
-    // maybe this should be interface
     class Channel : IChannel
     {
         public int channelId { get; set; }
@@ -24,7 +23,7 @@ namespace SCADA.CommAcqEngine
 
         // logic address of port
         public CommunicationPort COMPort { get; set; }
-        
+
         public List<RTU> RtuList { get; set; }
 
         public int RtuCount { get; set; }
