@@ -43,7 +43,7 @@ namespace SCADA.CommAcqEngine
             while (!shutdown)
             {
 
-                if (!IORequests.IsEmpty())
+                if (!IORequests.IsIORequstEmpty())
                 {
                     Console.WriteLine("Request processing");
                     var req=IORequests.GetRequest();
