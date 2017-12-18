@@ -31,20 +31,14 @@ namespace SCADA
         {
             InstanceContext = new InstanceContext(new SCADACommuncEngineService());
             DBContext context = new DBContext();
-            // load and parse configuration
-            // create process variables
-            // fill database
-
-            // start polling thread
-
-           
-           
-            //PCCommunicationEngine PCCommEng = new PCCommunicationEngine();
-            //PCCommEng.StartProcessing();
+                   
+            PCCommunicationEngine PCCommEng = new PCCommunicationEngine();
+            PCCommEng.Configure(); // mozda parametar da bude adresa datoteka...           
+            PCCommEng.StartProcessing();
 
 
-            //ACQEngine AcqEngine = new ACQEngine();
-            //AcqEngine.StartAcquisition();
+            ACQEngine AcqEngine = new ACQEngine();
+            AcqEngine.StartAcquisition();
 
             try
             {

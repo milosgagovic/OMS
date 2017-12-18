@@ -19,13 +19,6 @@ namespace ModbusTCPDriver
         // Modbus data format:
         //  MBAP (16+16+16+8) + Function (8) + Data (n x 8 bit)
 
-
-        // zamisljeno je da se ova metoda poziva nezavisno od toga koji industrijski protokol koristimo
-        // znaci u njoj obezbediti podatke za formiranje poruke koji su nezavisni od protokola ? 
-
-        // packing request. we need
-        // protocolId, slaveAddress, transactionId, Length, function, and data(start addr and stuff...) 
-
         // slave adress je sadrzana u RTU odnosno IORBu, function takodje u IORBu
         public void PackData(ushort transId, byte[] data)
         {
@@ -43,9 +36,7 @@ namespace ModbusTCPDriver
 
         }
 
-
         // ovo se sve poziva iz akvizicionog taska. ili se samo pack data pozove, pa on sve ovo odradi...
-
 
         // 0x04 ili 0x03
         // citanje analognih izlaza

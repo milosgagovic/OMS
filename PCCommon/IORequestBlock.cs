@@ -6,7 +6,58 @@ using System.Threading.Tasks;
 
 namespace PCCommon
 {
-    class IORequestBlock
+    public enum RequestType
     {
+        SEND_RECV = 0,
+        RECV_SEND,
+        SEND,
+        RECV,
+        CONNECT,
+        DISCONNECT
+    }
+
+    /* 
+     * Communication/Acquisition request description
+     * 
+     * Request defines single (or broadcast) communication transaction
+     * between SCADA sw and process controller(s).    
+     * 
+     */
+    public class IORequestBlock
+    {   
+        // transaction type
+        public RequestType RequestType { get; set; }
+
+        // da li ovo da zna, ili mu samo PCId treba? logicnije je samo PCId
+        public int ChannelId { get; set; } 
+
+        // target slave device Id - RTU address
+        // neka bude tipa string, ko zna kakve sve adrese mogu imati 
+        // razliciti end device-ovi :) 
+        public string ProcessControllerAddress { get; set; }
+
+        /* request parameters*/
+
+        // max number of request repeating
+        public int MaxRepeat { get; set; }
+
+        public int SendMsgLength { get; set; }
+
+        // number of send characters
+        public int SendCount { get; set; }
+
+        // trsciever buffer 
+        public Byte[] SendBuff { get; set; }
+
+        /* reply parameters*/
+
+        public int RcvMsgLength { get; set; }
+
+        // number of received chahacters
+        public int RcvCount { get; set; }
+
+        // receiver buffer 
+        public Byte[] RcvBuff { get; set; }
+
     }
 }
