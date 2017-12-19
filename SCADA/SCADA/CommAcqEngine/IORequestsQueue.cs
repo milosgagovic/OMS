@@ -14,20 +14,52 @@ namespace SCADA.CommAcqEngine
         private static object syncObj = new object();
         private static volatile IORequestsQueue instance;
 
-        private static BlockingCollection<IORequestBlock> IORequests;
+        private ConcurrentQueue<IORequestBlock> ioRequests;
+        private ConcurrentQueue<IORequestBlock> ioAnswers;
 
+        public ConcurrentQueue<IORequestBlock> IORequests
+        {
+            get
+            {
+                return ioRequests;
+            }
+            set
+            {
+                if (value != null)
+                {
+                    ioRequests = value;
+                }
+            }
+        }
+
+        public ConcurrentQueue<IORequestBlock> IOAnswers
+        {
+            get
+            {
+                return ioAnswers;
+            }
+            set
+            {
+                if (value != null)
+                {
+                    ioAnswers = value;
+                }
+            }
+        }
         private IORequestsQueue()
         {
-            IORequests = new BlockingCollection<IORequestBlock>();
+            IORequests = new ConcurrentQueue<IORequestBlock>();
+            IOAnswers = new ConcurrentQueue<IORequestBlock>();
+
         }
 
         public static IORequestsQueue GetQueue()
         {
-            if (IORequests == null)
+            if (instance == null)
             {
                 lock (syncObj)
                 {
-                    if (IORequests == null)
+                    if (instance == null)
                     {
                         instance = new IORequestsQueue();
                     }
@@ -38,18 +70,40 @@ namespace SCADA.CommAcqEngine
 
         public void EnqueueIOReqForProcess(IORequestBlock iorb)
         {
-            IORequests.Add(iorb);
+            IORequests.Enqueue(iorb);
         }
 
         public IORequestBlock GetRequest()
         {
-            return IORequests.Take();
+            IORequestBlock req;
+
+            // pay attention -> made to be blocking
+            while (!IORequests.TryDequeue(out req));
+
+
+            return req;
+
         }
 
-        public bool IsEmpty()
+        public bool IsIORequstEmpty()
         {
             return IORequests.Count == 0;
         }
+        public void EnqueueIOAnsForProcess(IORequestBlock iorb)
+        {
+            IOAnswers.Enqueue(iorb);
+        }
 
+        public IORequestBlock GetAnswer()
+        {
+            IORequestBlock answ;
+            IOAnswers.TryDequeue(out answ);
+            return answ;
+        }
+
+        public bool IsIOAnswersEmpty()
+        {
+            return IOAnswers.Count == 0;
+        }
     }
 }

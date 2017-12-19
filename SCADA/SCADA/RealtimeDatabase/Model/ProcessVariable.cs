@@ -12,7 +12,7 @@ namespace SCADA.RealtimeDatabase.Model
 
         public string Name { get; set; }
 
-        public int RtuId { get; set; }
+        public string RtuId { get; set; } 
 
         public VariableTypes type { get; set; }
 

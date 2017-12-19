@@ -9,7 +9,7 @@ namespace OMSSCADACommon.Commands
     public abstract class Command
     {
         [IgnoreDataMember]
-        public IReceiver Receiver { get; set; }
+        public ICommandReceiver Receiver { get; set; }
 
         [DataMember]
         public string Id { get; set; }

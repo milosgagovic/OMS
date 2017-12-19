@@ -4,7 +4,7 @@ using System.Text;
 
 namespace OMSSCADACommon
 {
-    public interface IReceiver
+    public interface ICommandReceiver
     {
         ResultMessage WriteSingleDigital(string id, CommandTypes command);
         ResultMessage WriteSingleAnalog(string id, float value);
@@ -14,6 +14,6 @@ namespace OMSSCADACommon
         ResultMessage ReadAllDigital(DeviceTypes type);
         ResultMessage ReadAllAnalog(DeviceTypes type);
         ResultMessage ReadAllCounter(DeviceTypes type);
-        ResultMessage RealAll();
+        ResultMessage ReadAll();
     }
 }

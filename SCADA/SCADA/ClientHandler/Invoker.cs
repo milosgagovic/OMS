@@ -1,5 +1,6 @@
 ﻿using OMSSCADACommon;
 using OMSSCADACommon.Commands;
+using SCADA.CommAcqEngine;
 using SCADA.SecondaryDataProcessing;
 using SCADAContracts;
 using System;
@@ -15,7 +16,7 @@ namespace SCADA.ClientHandler
     {
         public ResultMessage ExecuteCommand(Command command)
         {
-            command.Receiver = new Receiver();
+            command.Receiver = new ACQEngine();
             return command.Execute();
         }
     }

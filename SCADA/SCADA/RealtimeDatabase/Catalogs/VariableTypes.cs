@@ -11,6 +11,7 @@ namespace SCADA.RealtimeDatabase.Model
         ANALOGIN = 0,
         ANALOGOUT,
         DIGITAL,
-        COUNTER
+        COUNTER,
+        OBJECT
     }
 }

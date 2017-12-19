@@ -7,7 +7,8 @@ using System.Threading.Tasks;
 
 namespace SCADA.CommAcqEngine
 {
-    class TCPClientChannel : IChannel
+    // mozda visak
+    public class Channel 
     {
         public IndustryProtocols Protocol { get; set; }
         public int TimeOutMsc { get; set; } // connect time out

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.ServiceModel;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace SCADA
@@ -31,12 +32,15 @@ namespace SCADA
         {
             InstanceContext = new InstanceContext(new SCADACommuncEngineService());
             DBContext context = new DBContext();
-                   
+
+            Console.WriteLine("aaaaa");
             PCCommunicationEngine PCCommEng = new PCCommunicationEngine();
-            PCCommEng.Configure(); // mozda parametar da bude adresa datoteka...           
+            PCCommEng.Configure(); // mozda parametar da bude adresa datoteka...     
+
+            //Thread consumer = new Thread(PCCommEng.StartProcessing()); 
             PCCommEng.StartProcessing();
 
-
+            Console.WriteLine("nnnnnnn");
             ACQEngine AcqEngine = new ACQEngine();
             AcqEngine.StartAcquisition();
 

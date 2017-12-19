@@ -15,37 +15,41 @@ namespace SCADA.CommAcqEngine
     public class PCCommunicationEngine
     {
         // rukovaoc konkretnog industrijskog protokola
-        private static IIndustryProtocolHandler protHandler;
-        private static IORequestsQueue IORequests;
-        private bool shutdown;
-        private int timerMsc;
+       // IIndustryProtocolHandler protHandler = new ModbusHandler();
 
-        // ovo mi zapravo ni ne treba za sada
-        private static Dictionary<string, IChannel> channels { get; set; }
+        IORequestsQueue IORequests;
+        bool shutdown;
+        int timerMsc;
+
+       
+        private static Dictionary<string, Channel> channels { get; set; }  // ovo mi zapravo ni ne treba za sada
         private Dictionary<string, ProcessController> processControllers { get; set; }
 
         private Dictionary<string, TcpClient> TcpChannels { get; set; }
 
+
         public PCCommunicationEngine()
         {
-            protHandler = new ModbusHandler(); //? mozda ne ovde, nego kad se prot type vidi
+           // protHandler = new ModbusHandler(); 
 
             IORequests = IORequestsQueue.GetQueue();
 
             shutdown = false;
             timerMsc = 1000;
 
-            channels = new Dictionary<string, IChannel>();
+            channels = new Dictionary<string, Channel>();
             processControllers = new Dictionary<string, ProcessController>();
 
             TcpChannels = new Dictionary<string, TcpClient>();
         }
 
-        // citanje iz fajlova ovde...
+
+
+        // citanje iz fajlova ovde da bude...
         public void Configure()
         {
-            // videti kako da iskoristis IChnannel ili Channel
-            TCPClientChannel chan1 = new TCPClientChannel()
+            // videti kako da iskoristis Channel
+            Channel chan1 = new Channel()
             {
                 Protocol = IndustryProtocols.Modbus,
                 TimeOutMsc = 10, // za sada nam ovo nece trebati
@@ -53,7 +57,7 @@ namespace SCADA.CommAcqEngine
                 Info = "Acquistion Channel 1"
             };
 
-            TCPClientChannel chan2 = new TCPClientChannel()
+            Channel chan2 = new Channel()
             {
                 Protocol = IndustryProtocols.Modbus,
                 TimeOutMsc = 10000,
@@ -100,45 +104,60 @@ namespace SCADA.CommAcqEngine
 
         void CreateChannels()
         {
-            // citamo sve kanale
 
-            // otvaramo komunikacione linkove 
-
-
-            // za svaki RTU pravimo komunikacioni link
+            // za svaki RTU pravimo kokretan komunikacioni link
             foreach (var rtu in processControllers)
             {
-                if (!EstablishCommunication(rtu.Value)) 
+                if (!EstablishCommunication(rtu.Value))
                 {
                     // ako nije uspelo pobrisi sta ne treba i tako to
+
+                    // ako nije povezano sa kontrolerima - nisu podignuti onda vratiti neki error ovde i ni ne pocinjati StartProcessing
 
                 }
             }
         }
 
-        // ovo je izdvojeno da bude zasebna metoda, jer cemo mozda vrsiti povezivanje sa rtu-om sa specificiarnim time-out-om u channelu
-        // jer ovo sinhrono povezivanje se ceka dugo excewption ako ne valja
-        // // https://stackoverflow.com/questions/17118632/how-to-set-the-timeout-for-a-tcpclient 
-       
-       // testirati to koliko se dugo ceka za exception
+        // ovo je izdvojeno da bude zasebna metoda, jer se tu nazire potencijalna upotrebna Channel.cs...
+        // Ondno mozemo specificiarati time-out u channelu
+        // jer ovo TcpClient() radi sinhrono povezivanje sa serverom, pa se ceka dugo exception ako ne valja server
+        // https://stackoverflow.com/questions/17118632/how-to-set-the-timeout-for-a-tcpclient 
 
-        // jedan kanal moze biti pridruzen vecem broju RTU-ova. kao BaseVoltage sto je pridruzen vecem broju opreme
+        // jedan kanal - kada mu utvrdim mesto, moze biti pridruzen vecem broju RTU-ova. (To je npr. kao BaseVoltage sto je pridruzen vecem broju opreme u CIMu)
         // taj kanal odredjuje prirodu komunikacije
 
-       
+
         private bool EstablishCommunication(ProcessController rtu)
         {
             bool retval = false;
-            TcpClient tcpClient = new TcpClient(rtu.HostName, rtu.HostPort) // connecting to slave
+           
+            try
             {
-                SendTimeout = 1000,
-                ReceiveTimeout = 1000
-            };
+                TcpClient tcpClient = new TcpClient() { SendTimeout = 1000, ReceiveTimeout = 1000 };
 
-            TcpChannels.Add(rtu.Name, tcpClient); 
+                // connecting to slave
+                tcpClient.Connect(rtu.HostName, rtu.HostPort);
 
+                TcpChannels.Add(rtu.Name, tcpClient);
+            }
+            catch (SocketException e)
+            {
+                // no connection can  be made because target machine activelly refused it
+                // ako MdbSim nije podignut to dobijes
+                Console.WriteLine(e);
+            }
+            catch (Exception e)
+            {
 
-            
+                Console.WriteLine(e);
+            }
+            finally
+            {
+
+            }
+
+           
+
             //IChannel ch;
             //if (channels.TryGetValue(rtu.ChannelName, out ch))
             //{
@@ -168,14 +187,15 @@ namespace SCADA.CommAcqEngine
         {
             while (!shutdown)
             {
+                Console.WriteLine("StartProcessing");
                 IORequestBlock toProcess = IORequests.GetRequest();
-                // toProcess.ChannelId; // ne treba mi zapravo
 
-                if (TcpChannels.TryGetValue(toProcess.ProcessControllerAddress, out TcpClient client))
+                TcpClient client=new TcpClient();
+                if (TcpChannels.TryGetValue(toProcess.RtuName, out client))
                 {
                     NetworkStream stream = client.GetStream();
                     int offset = 0;
-                   
+
                     stream.Write(toProcess.SendBuff, offset, toProcess.SendMsgLength);
 
 
@@ -185,13 +205,18 @@ namespace SCADA.CommAcqEngine
 
                     toProcess.RcvBuff = new byte[client.ReceiveBufferSize];
 
-                    stream.Read(toProcess.RcvBuff, offset, 512);                   
-                    
+                    stream.Read(toProcess.RcvBuff, offset, 512);
+
+                    // nisam proverila da li ovo radi dobro citanje pisanje, jer nisam uspela konkretan zahtev da dobijem
+                    // sad treba odmah value upisivati nazad u iorb
+
                 }
                 else
                 {
-
+                    
                 }
+
+                Thread.Sleep(1000);
             }
             {
                 // close svega i dispose
@@ -201,21 +226,11 @@ namespace SCADA.CommAcqEngine
             }
         }
 
-
-
-
-        // ovde treba srediti komunikaciju sa svim ucitanim-konfigurisanim RTU-ovima i kanalima
-        public void StartCommunication()
-        {
-
-        }
-
         public void AddIOReqForProcess(IORequestBlock iorb)
         {
             IORequests.EnqueueIOReqForProcess(iorb);
 
         }
-
 
     }
 }

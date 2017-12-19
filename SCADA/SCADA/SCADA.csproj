@@ -48,9 +48,9 @@
     <Compile Include="ClientHandler\Invoker.cs" />
     <Compile Include="ClientHandler\SCADAService.cs" />
     <Compile Include="CommAcqEngine\ACQEngine.cs" />
-    <Compile Include="CommAcqEngine\Channel.cs" />
     <Compile Include="CommAcqEngine\IORequestsQueue.cs" />
     <Compile Include="CommAcqEngine\PCCommunicationEngine.cs" />
+    <Compile Include="CommAcqEngine\RTU.cs" />
     <Compile Include="CommAcqEngine\TCPClientChannel.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -65,16 +65,17 @@
     <Compile Include="RealtimeDatabase\Model\Object.cs" />
     <Compile Include="RealtimeDatabase\Model\ProcessVariable.cs" />
     <Compile Include="RealtimeDatabase\Catalogs\VariableTypes.cs" />
-    <Compile Include="RealtimeDatabase\Model\RTU.cs" />
     <Compile Include="RealtimeDatabase\PVID.cs" />
     <Compile Include="SCADACommuncEngineService.cs" />
     <Compile Include="SecondaryDataProcessing\CommandValidator.cs" />
-    <Compile Include="SecondaryDataProcessing\Receiver.cs" />
+    <Compile Include="SecondaryDataProcessing\CommandReceiver.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="ConfigurationParser\" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Common\OMSSCADACommon\OMSSCADACommon.csproj">
       <Project>{a7f86ca6-39f1-4b61-bf71-c01e327fa861}</Project>

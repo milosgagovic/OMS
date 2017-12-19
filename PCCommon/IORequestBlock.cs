@@ -28,13 +28,14 @@ namespace PCCommon
         // transaction type
         public RequestType RequestType { get; set; }
 
-        // da li ovo da zna, ili mu samo PCId treba? logicnije je samo PCId
-        public int ChannelId { get; set; } 
+        // target slave device Id - RTU address
+        public short RTUAddress { get; set; }
+
 
         // target slave device Id - RTU address
         // neka bude tipa string, ko zna kakve sve adrese mogu imati 
         // razliciti end device-ovi :) 
-        public string ProcessControllerAddress { get; set; }
+        public string RtuName{ get; set; }
 
         /* request parameters*/
 

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
 using PCCommon;
@@ -10,33 +12,44 @@ namespace ModbusTCPDriver
     // Concrete protocol handler class
     public class ModbusHandler : IIndustryProtocolHandler
     {
-        public IndustryProtocols ProtocolType
+        public IndustryProtocols ProtocolType { get; set; }
+        public ModbusApplicationHeader Header { get; set; }
+        public Request Request { get; set; }
+        public Response Response { get; set; }
+
+
+        public byte[] PackData()
         {
-            get => ProtocolType;
-            set => ProtocolType = IndustryProtocols.Modbus;
+            ModbusRequestMessage mrm = new ModbusRequestMessage()
+            {
+                Header = this.Header,
+                Request = this.Request
+            };
+
+            BinaryFormatter bf = new BinaryFormatter();
+            using (MemoryStream ms = new MemoryStream())
+            {
+                bf.Serialize(ms, mrm);
+                return ms.ToArray();
+            }
         }
+
+        public void UnpackData(byte[] data)
+        {
+            // obrnuto
+            throw new NotImplementedException();
+        }
+
+        //public IndustryProtocols ProtocolType
+        //{
+        //    get => ProtocolType;
+        //    set => ProtocolType = IndustryProtocols.Modbus;
+        //}
 
         // Modbus data format:
         //  MBAP (16+16+16+8) + Function (8) + Data (n x 8 bit)
 
-        // slave adress je sadrzana u RTU odnosno IORBu, function takodje u IORBu
-        public void PackData(ushort transId, byte[] data)
-        {
-            ModbusApplicationHeader mbap = new ModbusApplicationHeader();
-
-            mbap.ProtocolId = (ushort)ProtocolType;
-
-            /*
-             mozda ovde na nivou modbus handlera da vodimo racuna o transaction Id-u, ako se broj uvecava sa bilo kojom
-             transakcijom, nebitno kom kontroleru je prosledjena.
-             ili da imamo na nivou kontrolera polje...
-             */
-            mbap.TransactionId = transId;
-
-
-        }
-
-        // ovo se sve poziva iz akvizicionog taska. ili se samo pack data pozove, pa on sve ovo odradi...
+        /*
 
         // 0x04 ili 0x03
         // citanje analognih izlaza
@@ -69,5 +82,7 @@ namespace ModbusTCPDriver
         }
 
         // 0x10 (16) mi fali
+
+        */
     }
 }

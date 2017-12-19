@@ -1,4 +1,5 @@
 ﻿using OMSSCADACommon;
+using SCADA.CommAcqEngine;
 using SCADA.RealtimeDatabase;
 using SCADA.RealtimeDatabase.Catalogs;
 using SCADA.RealtimeDatabase.Model;
@@ -10,9 +11,10 @@ using System.Threading.Tasks;
 
 namespace SCADA.SecondaryDataProcessing
 {
-    public class Receiver : IReceiver
+    public class CommandReceiver : ICommandReceiver
     {
         DBContext db = new DBContext();
+        ACQEngine acqe = new ACQEngine();
 
         public ResultMessage ReadAllAnalog(OMSSCADACommon.DeviceTypes type)
         {
@@ -44,7 +46,7 @@ namespace SCADA.SecondaryDataProcessing
             throw new NotImplementedException();
         }
 
-        public ResultMessage RealAll()
+        public ResultMessage ReadAll()
         {
             throw new NotImplementedException();
         }
@@ -77,7 +79,7 @@ namespace SCADA.SecondaryDataProcessing
                 return ResultMessage.INVALID_DIG_COMM;
             }
 
-            // send to mdbsim
+            //acqe.FormRequestOnCommand();
 
             CommandValidator.CheckCommandExecution();
 
