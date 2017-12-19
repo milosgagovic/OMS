@@ -4,15 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SCADA.RealtimeDatabase.Model
+namespace OMSSCADACommon.Response
 {
-    public class Counter : ProcessVariable
+    public class CounterVariable : ResponseVariable
     {
-        public Counter()
-        {
-            this.Type = VariableTypes.COUNTER;
-        }
-
         public int Value { get; set; }
     }
 }

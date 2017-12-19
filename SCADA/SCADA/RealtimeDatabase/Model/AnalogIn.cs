@@ -10,7 +10,9 @@ namespace SCADA.RealtimeDatabase.Model
     {
         public AnalogIn()
         {
-            this.type = VariableTypes.ANALOGIN;
+            this.Type = VariableTypes.ANALOGIN;
         }
+
+        public float Value { get; set; }
     }
 }

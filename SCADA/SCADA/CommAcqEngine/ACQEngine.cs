@@ -10,6 +10,7 @@ using PCCommon;
 using SCADA.RealtimeDatabase;
 using OMSSCADACommon;
 using SCADA.SecondaryDataProcessing;
+using OMSSCADACommon.Response;
 
 namespace SCADA.CommAcqEngine
 {
@@ -60,9 +61,8 @@ namespace SCADA.CommAcqEngine
                         IORequestBlock iorb = new IORequestBlock()
                         {
                             RequestType = RequestType.SEND_RECV,
-                            //ChannelId = rtu.Channel.Name,
                             RTUAddress = rtu.Address,
-                            RtuName=rtu.Name // preko ovoga mi bilo lakse da konfigurisem, moze address samo da se salje, promenicu
+                            RtuName = rtu.Name // preko ovoga mi bilo lakse da konfigurisem, moze address samo da se salje, promenicu
                         };
 
 
@@ -156,7 +156,32 @@ namespace SCADA.CommAcqEngine
 
         public ResultMessage ReadAll()
         {
-            throw new NotImplementedException();
+            List<ProcessVariable> pvs = db.GetAllProcessVariables();
+
+            OMSSCADACommon.Response.Response response = new OMSSCADACommon.Response.Response();
+
+            foreach (ProcessVariable pv in pvs)
+            {
+                switch (pv.Type)
+                {
+                    case VariableTypes.DIGITAL:
+                        Digital digital = (Digital)pv;
+                        response.Variables.Add(new DigitalVariable() { Id = digital.Name, State = (States)digital.State });
+                        break;
+                    case VariableTypes.ANALOGIN:
+                        AnalogIn analog = (AnalogIn)pv;
+                        response.Variables.Add(new AnalogVariable() { Id = analog.Name, Value = analog.Value });
+                        break;
+                    case VariableTypes.COUNTER:
+                        Counter counter = (Counter)pv;
+                        response.Variables.Add(new CounterVariable() { Id = counter.Name, Value = counter.Value });
+                        break;
+                }
+            }
+
+            // return response
+
+            return ResultMessage.OK;
         }
 
         public ResultMessage WriteSingleAnalog(string id, float value)
@@ -200,7 +225,6 @@ namespace SCADA.CommAcqEngine
                 IORequestBlock iorb = new IORequestBlock()
                 {
                     RequestType = RequestType.SEND,
-                   // ChannelId = rtu.Channel.Name,
                     RTUAddress = rtu.Address
                 };
 
@@ -211,7 +235,34 @@ namespace SCADA.CommAcqEngine
 
                 protHandler = new ModbusHandler();
 
-                // form data
+                switch (rtu.Channel.Protocol)
+                {
+                    case IndustryProtocols.Modbus:
+                        ModbusHandler mdbHandler = (ModbusHandler)protHandler;
+
+                        mdbHandler.Header = new ModbusApplicationHeader()
+                        {
+                            TransactionId = 0,
+                            Length = 0,
+                            ProtocolId = (ushort)IndustryProtocols.Modbus,
+                            DeviceAddress = rtu.Address
+                        };
+
+                        mdbHandler.Request = new WriteRequest()
+                        {
+                            FunCode = FunctionCodes.WriteSingleCoil,
+                            StartAddr = digital.Address,
+                            Value = (ushort)command
+                        };
+
+                        iorb.SendBuff = mdbHandler.PackData();
+                        break;
+                }
+
+                IORequests.EnqueueIOReqForProcess(iorb);
+
+                // yet to be implemented
+                //CommandValidator.CheckCommandExecution();
 
                 IORequests.EnqueueIOReqForProcess(iorb);
 

@@ -23,9 +23,9 @@ namespace SCADA.RealtimeDatabase
             return (Digital)digital;
         }
 
-        //public List<RTU> GetAllRTUs()
-        //{
-        //    return Database.Instance.RTUsList;
-        //}
+        public List<ProcessVariable> GetAllProcessVariables()
+        {
+            return database.ProcessVariables.Values.ToList();
+        }
     }
 }
