@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace ModbusTCPDriver
 {
+    [Serializable]
     public abstract class Request
     {
         public Byte FunCode { get; set; }

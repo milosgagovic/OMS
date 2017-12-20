@@ -7,6 +7,7 @@ using PCCommon;
 
 namespace ModbusTCPDriver
 {
+    [Serializable]
     public class ModbusApplicationHeader
     {
         // initialized by the client, copied by the server from request to the response

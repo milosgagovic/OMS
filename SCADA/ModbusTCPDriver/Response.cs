@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace ModbusTCPDriver
 {
+    [Serializable]
     public abstract class Response
     {
     }

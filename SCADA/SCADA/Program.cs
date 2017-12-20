@@ -33,16 +33,22 @@ namespace SCADA
             InstanceContext = new InstanceContext(new SCADACommuncEngineService());
             DBContext context = new DBContext();
 
-            Console.WriteLine("aaaaa");
+            Console.WriteLine("Setting PCCommEngine");
             PCCommunicationEngine PCCommEng = new PCCommunicationEngine();
             PCCommEng.Configure(); // mozda parametar da bude adresa datoteka...     
 
-            //Thread consumer = new Thread(PCCommEng.StartProcessing()); 
-            PCCommEng.StartProcessing();
+            Thread consumer = new Thread(PCCommEng.StartProcessing); 
 
-            Console.WriteLine("nnnnnnn");
+
+            Console.WriteLine("Setting AcqEngine");
             ACQEngine AcqEngine = new ACQEngine();
-            AcqEngine.StartAcquisition();
+ 
+            Thread producer = new Thread(AcqEngine.StartAcquisition);
+
+            consumer.Start();
+            producer.Start();
+
+            //AcqEngine.StartAcquisition();
 
             try
             {

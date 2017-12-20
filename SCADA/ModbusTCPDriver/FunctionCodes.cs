@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ModbusTCPDriver
 {
-    public enum FunctionCodes : Byte
+    public enum FunctionCodes : byte
     {
         ReadCoils = 1,          // digital output
         ReadDiscreteInput,      // digital input

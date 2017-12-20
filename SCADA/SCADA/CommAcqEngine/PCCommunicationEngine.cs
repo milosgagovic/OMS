@@ -20,8 +20,7 @@ namespace SCADA.CommAcqEngine
         IORequestsQueue IORequests;
         bool shutdown;
         int timerMsc;
-
-       
+      
         private static Dictionary<string, Channel> channels { get; set; }  // ovo mi zapravo ni ne treba za sada
         private Dictionary<string, ProcessController> processControllers { get; set; }
 
@@ -97,7 +96,7 @@ namespace SCADA.CommAcqEngine
 
             processControllers.Add(rtu1.Name, rtu1);
             processControllers.Add(rtu2.Name, rtu2);
-            processControllers.Add(rtu3.Name, rtu3);
+            //processControllers.Add(rtu3.Name, rtu3);
 
             CreateChannels();
         }

@@ -42,7 +42,7 @@ namespace SCADA.CommAcqEngine
         {
            //RTU rtu1 = new RTU(8, 8, 4, 4, 2);
             RTU rtu1 = new RTU();
-            // rtu1.RTUAddress = 21;
+            rtu1.Address = 21;
             rtu1.Name = "RTU-1";
 
             RTUs.Add(rtu1.Name, rtu1);
@@ -91,13 +91,13 @@ namespace SCADA.CommAcqEngine
                         {
                             TransactionId = 0,
                             Length = 0,
-                            ProtocolId = (ushort)IndustryProtocols.Modbus, // smsm da ovaj cast nije potreban
+                            ProtocolId = (ushort)IndustryProtocols.Modbus,
                             DeviceAddress = rtu.Address
                         };
 
                         mdbHandler.Request = new WriteRequest()
                         {
-                           // FunCode = FunctionCodes.WriteSingleCoil,
+                            FunCode = (byte)FunctionCodes.WriteSingleCoil,
                             // StartAddr=digital.Address,
                            // Value=(ushort)command
                         };

@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 namespace ModbusTCPDriver
 {
+
+    [Serializable]
     public class ReadRequest : Request
     {
         public ushort Quantity { get; set; }
