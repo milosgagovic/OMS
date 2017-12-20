@@ -10,7 +10,9 @@ namespace SCADA.RealtimeDatabase.Model
     {
         public Counter()
         {
-            this.type = VariableTypes.COUNTER;
+            this.Type = VariableTypes.COUNTER;
         }
+
+        public int Value { get; set; }
     }
 }

@@ -10,7 +10,7 @@ namespace SCADA.RealtimeDatabase.Model
     {
         public AnalogOut()
         {
-            this.type = VariableTypes.ANALOGOUT;
+            this.Type = VariableTypes.ANALOGOUT;
         }
     }
 }

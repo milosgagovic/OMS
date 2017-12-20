@@ -12,14 +12,15 @@ namespace SCADA.RealtimeDatabase.Model
     {
         public DigitalDeviceClasses Class { get; set; }
         public List<CommandTypes> ValidCommands { get; set; }
-        public List<States> ValidStates { get; set; }
+        public List<Catalogs.States> ValidStates { get; set; }
         public CommandTypes Command { get; set; }
+        public Catalogs.States State { get; set; }
 
         public Digital()
         {
-            this.type = VariableTypes.DIGITAL;
+            this.Type = VariableTypes.DIGITAL;
             ValidCommands = new List<CommandTypes>();
-            ValidStates = new List<States>();
+            ValidStates = new List<Catalogs.States>();
         }
     }
 }

@@ -40,7 +40,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Channel.cs" />
     <Compile Include="IIndustryProtocolHandler.cs" />
     <Compile Include="IndustryProtocols.cs" />
     <Compile Include="IORequestBlock.cs" />

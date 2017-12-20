@@ -10,7 +10,7 @@ namespace ModbusTCPDriver
     [Serializable]
     public abstract class Request
     {
-        public Byte FunCode { get; set; }
+        public FunctionCodes FunCode { get; set; }
         public ushort StartAddr { get; set; }
     }
 }
