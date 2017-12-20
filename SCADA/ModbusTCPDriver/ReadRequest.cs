@@ -11,5 +11,10 @@ namespace ModbusTCPDriver
     public class ReadRequest : Request
     {
         public ushort Quantity { get; set; }
+
+        public override byte[] getByteRequest()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

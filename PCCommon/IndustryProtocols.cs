@@ -8,6 +8,6 @@ namespace PCCommon
 {
     public enum IndustryProtocols
     {
-        Modbus = 0
+        ModbusTCP = 0
     }
 }

@@ -50,7 +50,7 @@ namespace SCADA.CommAcqEngine
             // videti kako da iskoristis Channel
             Channel chan1 = new Channel()
             {
-                Protocol = IndustryProtocols.Modbus,
+                Protocol = IndustryProtocols.ModbusTCP,
                 TimeOutMsc = 10, // za sada nam ovo nece trebati
                 Name = "CHAN-1",
                 Info = "Acquistion Channel 1"
@@ -58,7 +58,7 @@ namespace SCADA.CommAcqEngine
 
             Channel chan2 = new Channel()
             {
-                Protocol = IndustryProtocols.Modbus,
+                Protocol = IndustryProtocols.ModbusTCP,
                 TimeOutMsc = 10000,
                 Name = "CHAN-2",
                 Info = "Acquistion Channel 2"
@@ -95,7 +95,7 @@ namespace SCADA.CommAcqEngine
             };
 
             processControllers.Add(rtu1.Name, rtu1);
-            processControllers.Add(rtu2.Name, rtu2);
+            //processControllers.Add(rtu2.Name, rtu2);
             //processControllers.Add(rtu3.Name, rtu3);
 
             CreateChannels();

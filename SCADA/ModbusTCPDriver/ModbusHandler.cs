@@ -26,12 +26,29 @@ namespace ModbusTCPDriver
                 Request = this.Request
             };
 
-            BinaryFormatter bf = new BinaryFormatter();
-            using (MemoryStream ms = new MemoryStream())
-            {
-                bf.Serialize(ms, mrm);
-                return ms.ToArray();
-            }
+            // message must be in big endian format
+
+            // mbap
+            //Console.WriteLine("     Header ->");
+            //Console.WriteLine(BitConverter.ToString(Header.getByteHeader()));
+            //Console.WriteLine("     Request ->");
+            //Console.WriteLine(BitConverter.ToString(Request.getByteRequest()));
+
+            var bHeader = Header.getByteHeader();
+            var bRequest = Request.getByteRequest();
+
+            byte[] packedData = new byte[bHeader.Length + bRequest.Length];
+
+            //BinaryFormatter bf = new BinaryFormatter();
+            //using (MemoryStream ms = new MemoryStream())
+            //{
+            //    bf.Serialize(ms, mrm);
+            //    return ms.ToArray();
+            //}
+
+            bHeader.CopyTo(packedData, 0);
+            bRequest.CopyTo(packedData, Header.Length);
+            return packedData;
         }
 
         public void UnpackData(byte[] data)
@@ -40,13 +57,14 @@ namespace ModbusTCPDriver
             throw new NotImplementedException();
         }
 
+
         //public IndustryProtocols ProtocolType
         //{
         //    get => ProtocolType;
-        //    set => ProtocolType = IndustryProtocols.Modbus;
+        //    set => ProtocolType = IndustryProtocols.ModbusTCP;
         //}
 
-        // Modbus data format:
+        // ModbusTCP data format:
         //  MBAP (16+16+16+8) + Function (8) + Data (n x 8 bit)
 
         /*

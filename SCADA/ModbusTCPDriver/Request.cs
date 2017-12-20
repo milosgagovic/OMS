@@ -12,5 +12,7 @@ namespace ModbusTCPDriver
     {
         public FunctionCodes FunCode { get; set; }
         public ushort StartAddr { get; set; }
+
+        public abstract byte[] getByteRequest();
     }
 }

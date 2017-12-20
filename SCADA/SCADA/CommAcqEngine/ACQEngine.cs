@@ -41,9 +41,9 @@ namespace SCADA.CommAcqEngine
         // ovo sam za test krenula da pravim
         public void SetupRTUs()
         {
-           //RTU rtu1 = new RTU(8, 8, 4, 4, 2);
+            //RTU rtu1 = new RTU(8, 8, 4, 4, 2);
             RTU rtu1 = new RTU();
-            rtu1.Address = 21;
+            rtu1.Address = 1;
             rtu1.Name = "RTU-1";
 
             RTUs.Add(rtu1.Name, rtu1);
@@ -53,6 +53,9 @@ namespace SCADA.CommAcqEngine
         {
             while (!shutdown)
             {
+                // miljana dodala samo za test
+                ModbusHandler protocolHandler = new ModbusHandler();
+
                 Console.WriteLine("StartAcquisition");
                 if (RTUs.Count > 0)
                 {
@@ -70,13 +73,13 @@ namespace SCADA.CommAcqEngine
                         // smisliti kako da se ukombinuje sve i da bude konfigurabilno
                         // za sada ipak moram onako da "harkodujem" modbus kao choosen,
                         // bar da poteramo komunikacij, pa cu ovo smisliti...
-                       // mozda da za pocetak polje Protocol bude u rtu, nezavisno od channel-a
+                        // mozda da za pocetak polje Protocol bude u rtu, nezavisno od channel-a
                         //if (!ProtocolSetter(rtu.Channel.Protocol))
                         //{
                         //    continue;
                         //}
 
-                        if (!ProtocolSetter(IndustryProtocols.Modbus))
+                        if (!ProtocolSetter(IndustryProtocols.ModbusTCP))
                         {
                             //return ResultMessage.INTERNAL_SERVER_ERROR;
                         }
@@ -87,22 +90,34 @@ namespace SCADA.CommAcqEngine
                         // ovo je sad kao da je modbus vec odabran
                         ModbusHandler mdbHandler = (ModbusHandler)protHandler;
 
-                        mdbHandler.Header = new ModbusApplicationHeader()
-                        {
-                            TransactionId = 0,
-                            Length = 0,
-                            ProtocolId = (ushort)IndustryProtocols.Modbus,
-                            DeviceAddress = rtu.Address
-                        };
-
                         mdbHandler.Request = new WriteRequest()
                         {
                             FunCode = FunctionCodes.WriteSingleCoil,
-                            //StartAddr=digital.Address,
-                           // Value=(ushort)command
+                            //StartAddr = digital.Address,
+                            //Value = (ushort)command
+
+                            // hardcode for testing purpose
+
+                            // ovde console.write da unesemo adresu
+                            StartAddr = 0,
+                            Value = 1
+
+                        };
+                        mdbHandler.Header = new ModbusApplicationHeader()
+                        {
+                            TransactionId = 0,
+                            Length = 6, // ovo izracunavati
+                            ProtocolId = (ushort)IndustryProtocols.ModbusTCP,
+                            DeviceAddress = rtu.Address
                         };
 
+                        
+
                         iorb.SendBuff = mdbHandler.PackData();
+                        iorb.SendMsgLength = iorb.SendBuff.Length;
+                        Console.WriteLine("     data for send ->");
+                        Console.WriteLine(BitConverter.ToString(iorb.SendBuff));
+
 
                         IORequests.EnqueueIOReqForProcess(iorb);
                     }
@@ -116,7 +131,7 @@ namespace SCADA.CommAcqEngine
         {
             switch (protocol)
             {
-                case IndustryProtocols.Modbus:
+                case IndustryProtocols.ModbusTCP:
                     protHandler = new ModbusHandler();
                     return true;
             }
@@ -237,14 +252,14 @@ namespace SCADA.CommAcqEngine
 
                 switch (rtu.Channel.Protocol)
                 {
-                    case IndustryProtocols.Modbus:
+                    case IndustryProtocols.ModbusTCP:
                         ModbusHandler mdbHandler = (ModbusHandler)protHandler;
 
                         mdbHandler.Header = new ModbusApplicationHeader()
                         {
                             TransactionId = 0,
                             Length = 0,
-                            ProtocolId = (ushort)IndustryProtocols.Modbus,
+                            ProtocolId = (ushort)IndustryProtocols.ModbusTCP,
                             DeviceAddress = rtu.Address
                         };
 
@@ -273,5 +288,11 @@ namespace SCADA.CommAcqEngine
 
             return ResultMessage.OK;
         }
+
+
+
+
+
+
     }
 }
