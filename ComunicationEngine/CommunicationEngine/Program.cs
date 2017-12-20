@@ -34,7 +34,7 @@ namespace CommunicationEngine
             }
 
             SCADAProxy proxy = new SCADAProxy(new NetTcpBinding(), "net.tcp://localhost:4000/SCADAService");
-            Command command = new WriteSingleDigital() { Id = "dig-1", command = CommandTypes.OPEN };
+            Command command = new ReadAll();
 
             proxy.ExecuteCommand(command);
 

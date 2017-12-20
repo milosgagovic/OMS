@@ -218,6 +218,43 @@
 		<cim:IdentifiedObject.name>Breaker_3</cim:IdentifiedObject.name>
 	</cim:Breaker>
 	
+	<cim:Discrete rdf:ID="MEAS_D_1">
+		<cim:Discrete.maxValue>1</cim:Discrete.maxValue>
+		<cim:Discrete.minValue>0</cim:Discrete.minValue>
+		<cim:Discrete.normalValue>1</cim:Discrete.normalValue>
+		<cim:Measurement.direction>ReadWrite</cim:Measurement.direction>
+		<cim:Measurement.measurementType></cim:Measurement.measurementType>
+		<cim:Measurement.PowerSystemResource rdf:resource="#BR_1"/>
+		<cim:Measurement.unitSymbol>none</cim:Measurement.unitSymbol>
+		<cim:IdentifiedObject.mRID>MEAS_D_1</cim:IdentifiedObject.mRID>
+		<cim:IdentifiedObject.name>DiscreteMeasurement_1</cim:IdentifiedObject.name>
+	</cim:Discrete>
+
+	<cim:Discrete rdf:ID="MEAS_D_2">
+		<cim:Discrete.maxValue>1</cim:Discrete.maxValue>
+		<cim:Discrete.minValue>0</cim:Discrete.minValue>
+		<cim:Discrete.normalValue>1</cim:Discrete.normalValue>
+		<cim:Measurement.direction>ReadWrite</cim:Measurement.direction>
+		<cim:Measurement.measurementType></cim:Measurement.measurementType>
+		<cim:Measurement.PowerSystemResource rdf:resource="#BR_2"/>
+		<cim:Measurement.unitSymbol>none</cim:Measurement.unitSymbol>
+		<cim:IdentifiedObject.mRID>MEAS_D_2</cim:IdentifiedObject.mRID>
+		<cim:IdentifiedObject.name>DiscreteMeasurement_2</cim:IdentifiedObject.name>
+	</cim:Discrete>
+
+	<cim:Discrete rdf:ID="MEAS_D_3">
+		<cim:Discrete.maxValue>1</cim:Discrete.maxValue>
+		<cim:Discrete.minValue>0</cim:Discrete.minValue>
+		<cim:Discrete.normalValue>1</cim:Discrete.normalValue>
+		<cim:Measurement.direction>ReadWrite</cim:Measurement.direction>
+		<cim:Measurement.measurementType></cim:Measurement.measurementType>
+		<cim:Measurement.PowerSystemResource rdf:resource="#BR_3"/>
+		<cim:Measurement.unitSymbol>none</cim:Measurement.unitSymbol>
+		<cim:IdentifiedObject.mRID>MEAS_D_3</cim:IdentifiedObject.mRID>
+		<cim:IdentifiedObject.name>DiscreteMeasurement_3</cim:IdentifiedObject.name>
+	</cim:Discrete>
+
+	
 	<cim:EnergyConsumer rdf:ID="EC_1">
 		<cim:EnergyConsumer.pfixed></cim:EnergyConsumer.pfixed>
 		<cim:EnergyConsumer.qfixed></cim:EnergyConsumer.qfixed>

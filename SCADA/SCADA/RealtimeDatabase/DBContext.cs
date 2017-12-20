@@ -16,6 +16,11 @@ namespace SCADA.RealtimeDatabase
             database = Database.Instance;
         }
 
+        public void AddProcessVariable(ProcessVariable pv)
+        {
+            Database.Instance.ProcessVariables.Add(pv.Name, pv);
+        }
+
         public Digital GetSingleDigital(string name)
         {
             Database.Instance.ProcessVariables.TryGetValue(name, out ProcessVariable digital);

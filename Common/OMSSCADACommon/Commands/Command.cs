@@ -5,7 +5,9 @@ using System.Runtime.Serialization;
 namespace OMSSCADACommon.Commands
 {
     [DataContract]
+    [KnownType(typeof(ReadAll))]
     [KnownType(typeof(WriteSingleDigital))]
+    [KnownType(typeof(WriteSingleAnalog))]
     public abstract class Command
     {
         [IgnoreDataMember]

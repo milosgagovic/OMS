@@ -1,7 +1,10 @@
 ﻿using CommunicationEngineContract;
+using OMSSCADACommon;
 using SCADA.ClientHandler;
 using SCADA.CommAcqEngine;
 using SCADA.RealtimeDatabase;
+using SCADA.RealtimeDatabase.Catalogs;
+using SCADA.RealtimeDatabase.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,7 +34,44 @@ namespace SCADA
         static void Main(string[] args)
         {
             InstanceContext = new InstanceContext(new SCADACommuncEngineService());
+
+            Digital d1 = new Digital()
+            {
+                Name = "MEAS_D_1",
+
+                Class = DigitalDeviceClasses.SWITCH,
+                ValidCommands = { CommandTypes.CLOSE, CommandTypes.OPEN },
+                ValidStates = { RealtimeDatabase.Catalogs.States.CLOSED, RealtimeDatabase.Catalogs.States.OPENED },
+                Command = CommandTypes.OPEN,
+                State = RealtimeDatabase.Catalogs.States.CLOSED
+            };
+
+            Digital d2 = new Digital()
+            {
+                Name = "MEAS_D_2",
+
+                Class = DigitalDeviceClasses.SWITCH,
+                ValidCommands = { CommandTypes.CLOSE, CommandTypes.OPEN },
+                ValidStates = { RealtimeDatabase.Catalogs.States.CLOSED, RealtimeDatabase.Catalogs.States.OPENED },
+                Command = CommandTypes.OPEN,
+                State = RealtimeDatabase.Catalogs.States.CLOSED
+            };
+
+            Digital d3 = new Digital()
+            {
+                Name = "MEAS_D_3",
+
+                Class = DigitalDeviceClasses.SWITCH,
+                ValidCommands = { CommandTypes.CLOSE, CommandTypes.OPEN },
+                ValidStates = { RealtimeDatabase.Catalogs.States.CLOSED, RealtimeDatabase.Catalogs.States.OPENED },
+                Command = CommandTypes.OPEN,
+                State = RealtimeDatabase.Catalogs.States.CLOSED
+            };
+
             DBContext context = new DBContext();
+            context.AddProcessVariable(d1);
+            context.AddProcessVariable(d2);
+            context.AddProcessVariable(d3);
 
             Console.WriteLine("Setting PCCommEngine");
             PCCommunicationEngine PCCommEng = new PCCommunicationEngine();
@@ -39,14 +79,13 @@ namespace SCADA
 
             Thread consumer = new Thread(PCCommEng.StartProcessing); 
 
-
             Console.WriteLine("Setting AcqEngine");
             ACQEngine AcqEngine = new ACQEngine();
  
             Thread producer = new Thread(AcqEngine.StartAcquisition);
 
-            consumer.Start();
-            producer.Start();
+            //consumer.Start();
+            //producer.Start();
 
             //AcqEngine.StartAcquisition();
 
