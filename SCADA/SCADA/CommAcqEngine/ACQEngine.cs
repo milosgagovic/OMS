@@ -133,11 +133,13 @@ namespace SCADA.CommAcqEngine
         {
             while (!shutdown)
             {
-                IORequestBlock answer = IORequests.GetAnswer(out bool isSuccessful);
+                bool isSuccessful;
+                IORequestBlock answer = IORequests.GetAnswer(out  isSuccessful);
 
                 if (isSuccessful)
                 {
-                    if(RTUs.TryGetValue((answer.RtuName),out RTU rtu))
+                    RTU rtu;
+                    if(RTUs.TryGetValue((answer.RtuName),out  rtu))
                     {
                         // treba takodje onaj switch case sa protocol handler-om
 
@@ -276,8 +278,8 @@ namespace SCADA.CommAcqEngine
             if (digital.Command != command)
             {
                 digital.Command = command;
-
-                RTUs.TryGetValue(digital.RtuId, out RTU rtu);
+                RTU rtu;
+                RTUs.TryGetValue(digital.RtuId, out  rtu);
 
                 IORequestBlock iorb = new IORequestBlock()
                 {

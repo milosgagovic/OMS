@@ -77,8 +77,8 @@ namespace SCADA.CommAcqEngine
         {
             // pay attention to ';' -> made to be blocking
             // while (!IORequests.TryDequeue(out req));
-        
-            isSuccessful=IORequests.TryDequeue(out IORequestBlock req);
+            IORequestBlock req;
+            isSuccessful=IORequests.TryDequeue(out req);
             return req;
         }
 
@@ -95,7 +95,8 @@ namespace SCADA.CommAcqEngine
 
         public IORequestBlock GetAnswer(out bool isSuccessful)
         {
-            isSuccessful=IOAnswers.TryDequeue(out IORequestBlock answ);
+            IORequestBlock answ;
+            isSuccessful=IOAnswers.TryDequeue(out  answ);
             return answ;
         }
 

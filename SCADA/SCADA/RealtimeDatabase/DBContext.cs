@@ -23,7 +23,8 @@ namespace SCADA.RealtimeDatabase
 
         public Digital GetSingleDigital(string name)
         {
-            Database.Instance.ProcessVariables.TryGetValue(name, out ProcessVariable digital);
+            ProcessVariable digital;
+            Database.Instance.ProcessVariables.TryGetValue(name, out  digital);
 
             return (Digital)digital;
         }

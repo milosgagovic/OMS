@@ -188,10 +188,13 @@ namespace SCADA.CommAcqEngine
             while (!shutdown)
             {
                 Console.WriteLine("StartProcessing");
-                IORequestBlock toProcess = IORequests.GetRequest(out bool isSuccessful);
+                bool isSuccessful;
+                IORequestBlock toProcess = IORequests.GetRequest(out  isSuccessful);
                 if (isSuccessful)
                 {
-                    if (TcpChannels.TryGetValue(toProcess.RtuName, out TcpClient client))
+                    TcpClient client;
+
+                    if (TcpChannels.TryGetValue(toProcess.RtuName, out  client))
                     {
                         NetworkStream stream = client.GetStream();
                         int offset = 0;
