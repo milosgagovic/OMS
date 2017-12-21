@@ -17,7 +17,7 @@
     </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x86</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -79,6 +79,10 @@
     <ProjectReference Include="..\..\DispatcherApp\DispatcherApp.csproj">
       <Project>{147E8CD4-1935-4A34-AFF6-ECB0F8F29B7A}</Project>
       <Name>DispatcherApp</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\PubSubscribe\PubSubscribe.csproj">
+      <Project>{36299CC7-43BA-4F75-AF82-96A54DD3D0E9}</Project>
+      <Name>PubSubscribe</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\ServiceContracts\CommunicationEngineContract\CommunicationEngineContract.csproj">
       <Project>{F4F76A34-3088-41D6-ACEF-47D2DDC94441}</Project>

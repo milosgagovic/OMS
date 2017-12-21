@@ -21,7 +21,6 @@ namespace DispatcherApp.ViewModel
         //Subscriber
         private Subscriber subscriber;
         private CommEngProxyUpdate proxy = new CommEngProxyUpdate("CommEngineEndpoint");
-
         //Get Meas Command
         private RelayCommand _measCommand;
         #region Properties

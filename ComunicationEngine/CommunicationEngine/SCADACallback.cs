@@ -18,7 +18,10 @@ namespace CommunicationEngine
 
         public void ReceiveResponse(Response response)
         {
-            //List<ResourceDescription> resDescList = mapEngine.MappResult(response);
+            Console.WriteLine(response.ToString());
+            CommunicationEngine.Instance.ResponseFromSCADA = response;
+            CommunicationEngine.Instance.SendResponseToClient();
+          //  List<ResourceDescription> resDescList = MappingEngine.Instance.MappResult(response);
         }
     }
 }

@@ -25,7 +25,7 @@ namespace CommunicationEngine
         }
         public MappingEngine()
         {
-           // model = new ModelGda();
+            model = new ModelGda();
         }
         public List<ResourceDescription> MappResult(Response response)
         {
@@ -35,29 +35,43 @@ namespace CommunicationEngine
             ResourceDescription rd;
             foreach (ResponseVariable rv in response.Variables)
             {
-                long measID = Convert.ToInt64(rv.Id);
-                string variableType = rv.GetType().ToString();
-                if (variableType == "AnalogVariable" && AnalogList.Contains(measID))
+                //izmijena zato sto vraca mrid a ne gid
+                rd = new ResourceDescription();
+                DigitalVariable dv = rv as DigitalVariable;
+                rd = new ResourceDescription();
+                rd.AddProperty(new Property(ModelCode.IDOBJ_MRID, dv.Id));
+                if(dv.State.ToString() == "CLOSED")
                 {
-                    // model.GetValues(measID) ako bude trebalo jos nesto da se ucita da se nasminka
-                    AnalogVariable av = rv as AnalogVariable;
-                    rd = new ResourceDescription();
-                    rd.Id = measID;
-                    rd.AddProperty(new Property(ModelCode.IDOBJ_MRID, measID));
-                    rd.AddProperty(new Property(ModelCode.ANALOG_NORMVAL, av.Value));
-                    //dodati vrijednost
-                    retVal.Add(rd);
+                    rd.AddProperty(new Property(ModelCode.DISCRETE_NORMVAL, 1));
                 }
-                else if (variableType == "DigitalVariable" && DiscreteList.Contains(measID))
+                else
                 {
-                    DigitalVariable dv = rv as DigitalVariable;
-                    rd = new ResourceDescription();
-                    rd.Id = measID;
-                    rd.AddProperty(new Property(ModelCode.IDOBJ_MRID, measID));
-                    rd.AddProperty(new Property(ModelCode.DISCRETE_NORMVAL, dv.State.ToString()));
-                    //dodati vrijednost
-                    retVal.Add(rd);
+                    rd.AddProperty(new Property(ModelCode.DISCRETE_NORMVAL,0));
                 }
+                retVal.Add(rd);
+                //long measID = Convert.ToInt64(rv.Id);
+                //string variableType = rv.GetType().ToString();
+                //if (variableType == "AnalogVariable" && AnalogList.Contains(measID))
+                //{
+                //    // model.GetValues(measID) ako bude trebalo jos nesto da se ucita da se nasminka
+                //    AnalogVariable av = rv as AnalogVariable;
+                //    rd = new ResourceDescription();
+                //    rd.Id = measID;
+                //    rd.AddProperty(new Property(ModelCode.IDOBJ_MRID, measID));
+                //    rd.AddProperty(new Property(ModelCode.ANALOG_NORMVAL, av.Value));
+                //    //dodati vrijednost
+                //    retVal.Add(rd);
+                //}
+                //else if (variableType == "DigitalVariable" && DiscreteList.Contains(measID))
+                //{
+                //    DigitalVariable dv = rv as DigitalVariable;
+                //    rd = new ResourceDescription();
+                //    rd.Id = measID;
+                //    rd.AddProperty(new Property(ModelCode.IDOBJ_MRID, measID));
+                //    rd.AddProperty(new Property(ModelCode.DISCRETE_NORMVAL, dv.State.ToString()));
+                //    //dodati vrijednost
+                //    retVal.Add(rd);
+                //}
             }
 
             //vratiti rezultat korisniku
