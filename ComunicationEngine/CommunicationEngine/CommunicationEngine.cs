@@ -17,7 +17,6 @@ namespace CommunicationEngine
         private static ICommuncEngineContract_CallBack callback = null;
 
         private static CommunicationEngine instance;
-        private Response responseFromSCADA;
         public static CommunicationEngine Instance
         {
             get
@@ -25,19 +24,6 @@ namespace CommunicationEngine
                 if (instance == null)
                     instance = new CommunicationEngine();
                 return instance;
-            }
-        }
-
-        public Response ResponseFromSCADA
-        {
-            get
-            {
-                return responseFromSCADA;
-            }
-
-            set
-            {
-                responseFromSCADA = value;
             }
         }
 
@@ -51,9 +37,9 @@ namespace CommunicationEngine
         {
         }
 
-        public bool SendResponseToClient()
+        public bool SendResponseToClient(Response response)
         {
-            List<ResourceDescription> result = MappingEngine.Instance.MappResult(ResponseFromSCADA);
+            List<ResourceDescription> result = MappingEngine.Instance.MappResult(response);
             //proslijediti klijentu
             return true;
         }
