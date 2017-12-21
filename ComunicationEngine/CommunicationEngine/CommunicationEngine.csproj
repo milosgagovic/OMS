@@ -9,7 +9,7 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>CommunicationEngine</RootNamespace>
     <AssemblyName>CommunicationEngine</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFrameworkProfile />
@@ -52,6 +52,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ClientCommEngine.cs" />
     <Compile Include="CommunicationEngine.cs" />
     <Compile Include="CommunicEngineService.cs" />
     <Compile Include="Config.cs" />

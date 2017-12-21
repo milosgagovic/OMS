@@ -12,10 +12,20 @@ namespace CommunicationEngine
 {
     public class MappingEngine
     {
-        private ModelGda model;
+        private static MappingEngine instance;
+        private static ModelGda model;
+        public static MappingEngine Instance
+        {
+            get
+            {
+                if (instance == null)
+                    instance = new MappingEngine();
+                return instance;
+            }
+        }
         public MappingEngine()
         {
-            model = new ModelGda();
+           // model = new ModelGda();
         }
         public List<ResourceDescription> MappResult(Response response)
         {
