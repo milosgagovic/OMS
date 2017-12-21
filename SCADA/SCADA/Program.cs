@@ -77,19 +77,19 @@ namespace SCADA
             context.AddProcessVariable(d3);
 
 
-            Console.WriteLine("Setting PCCommEngine");
-            PCCommunicationEngine PCCommEng = new PCCommunicationEngine();
-            PCCommEng.Configure(); // mozda parametar da bude adresa datoteka...     
+            //Console.WriteLine("Setting PCCommEngine");
+            //PCCommunicationEngine PCCommEng = new PCCommunicationEngine();
+            //PCCommEng.Configure(); // mozda parametar da bude adresa datoteka...     
 
-            Thread consumer = new Thread(PCCommEng.StartProcessing); 
+            //Thread consumer = new Thread(PCCommEng.StartProcessing); 
 
-            Console.WriteLine("Setting AcqEngine");
-            ACQEngine AcqEngine = new ACQEngine();
+            //Console.WriteLine("Setting AcqEngine");
+            //ACQEngine AcqEngine = new ACQEngine();
  
-            Thread producer = new Thread(AcqEngine.StartAcquisition);
+            //Thread producer = new Thread(AcqEngine.StartAcquisition);
 
-            consumer.Start();
-            producer.Start();
+            //consumer.Start();
+            //producer.Start();
 
             //AcqEngine.StartAcquisition();
 

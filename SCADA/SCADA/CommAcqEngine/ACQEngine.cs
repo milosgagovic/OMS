@@ -11,6 +11,7 @@ using SCADA.RealtimeDatabase;
 using OMSSCADACommon;
 using SCADA.SecondaryDataProcessing;
 using OMSSCADACommon.Response;
+using SCADA.ClientHandler;
 
 namespace SCADA.CommAcqEngine
 {
@@ -238,7 +239,8 @@ namespace SCADA.CommAcqEngine
                 }
             }
 
-            // return response
+            Responser r = new Responser();
+            r.ReceiveResponse(response);
 
             return ResultMessage.OK;
         }

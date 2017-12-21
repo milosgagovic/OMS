@@ -33,10 +33,9 @@ namespace CommunicationEngine
                 Console.ReadLine();
             }
 
-            SCADAProxy proxy = new SCADAProxy(new NetTcpBinding(), "net.tcp://localhost:4000/SCADAService");
-            Command command = new ReadAll();
+            SCADAClient sc = new SCADAClient();
 
-            proxy.ExecuteCommand(command);
+            sc.ExecuteCommand(new ReadAll());
 
             Console.ReadKey();
         }

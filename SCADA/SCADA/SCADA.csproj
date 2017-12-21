@@ -74,6 +74,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ClientHandler\Invoker.cs" />
+    <Compile Include="ClientHandler\Responser.cs" />
     <Compile Include="ClientHandler\SCADAService.cs" />
     <Compile Include="CommAcqEngine\ACQEngine.cs" />
     <Compile Include="CommAcqEngine\IORequestsQueue.cs" />

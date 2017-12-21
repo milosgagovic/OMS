@@ -58,6 +58,8 @@
     <Compile Include="MappingEngine.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SCADACallback.cs" />
+    <Compile Include="SCADAClient.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">
