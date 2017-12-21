@@ -55,6 +55,7 @@
     <Compile Include="CommunicationEngine.cs" />
     <Compile Include="CommunicEngineService.cs" />
     <Compile Include="Config.cs" />
+    <Compile Include="MappingEngine.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -64,9 +65,17 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Common\Common.csproj">
+      <Project>{892CBE15-9ED7-4540-81FA-0EAABA592138}</Project>
+      <Name>Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Common\OMSSCADACommon\OMSSCADACommon.csproj">
       <Project>{A7F86CA6-39F1-4B61-BF71-C01E327FA861}</Project>
       <Name>OMSSCADACommon</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\DispatcherApp\DispatcherApp.csproj">
+      <Project>{147E8CD4-1935-4A34-AFF6-ECB0F8F29B7A}</Project>
+      <Name>DispatcherApp</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\ServiceContracts\CommunicationEngineContract\CommunicationEngineContract.csproj">
       <Project>{F4F76A34-3088-41D6-ACEF-47D2DDC94441}</Project>
@@ -78,5 +87,4 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  
 </Project>

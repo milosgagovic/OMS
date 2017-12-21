@@ -13,13 +13,26 @@ namespace DispatcherApp.ViewModel
     public class DispatcherAppViewModel : INotifyPropertyChanged
     {
         private List<string> elements;
-        private List<IdentifiedObject> dataGridElements;
+        private List<MeasResult> dataGridElements;
         private string selectedItem;
         public event PropertyChangedEventHandler PropertyChanged;
         private ModelGda model;
         //Subscriber
         private Subscriber subscriber;
+
+        //Get Meas Command
+        private RelayCommand _measCommand;
         #region Properties
+        public RelayCommand MeasCommand
+        {
+            // get { return _measCommand = new ReadAll(); }
+            get
+            {
+                return _measCommand ?? new RelayCommand(ExecuteReadAll);
+            }
+        }
+
+
         public string SelectedItem
         {
             get
@@ -45,7 +58,7 @@ namespace DispatcherApp.ViewModel
             }
 
         }
-        public List<IdentifiedObject> DataGridElements
+        public List<MeasResult> DataGridElements
         {
             get
             {
@@ -65,16 +78,16 @@ namespace DispatcherApp.ViewModel
             {
 
                 case "Breaker":
-                    DataGridElements = ConvertToListOfIdentifiedObjects(model.GetExtentValues(FTN.Common.ModelCode.BREAKER));
+                    DataGridElements = ConvertToListOfMeasResults(model.GetExtentValues(FTN.Common.ModelCode.BREAKER));
                     break;
                 case "ACLineSegment":
-                    DataGridElements = ConvertToListOfIdentifiedObjects(model.GetExtentValues(FTN.Common.ModelCode.ACLINESEGMENT));
+                    DataGridElements = ConvertToListOfMeasResults(model.GetExtentValues(FTN.Common.ModelCode.ACLINESEGMENT));
                     break;
                 case "EnergySource":
-                    DataGridElements = ConvertToListOfIdentifiedObjects(model.GetExtentValues(FTN.Common.ModelCode.ENERGSOURCE));
+                    DataGridElements = ConvertToListOfMeasResults(model.GetExtentValues(FTN.Common.ModelCode.ENERGSOURCE));
                     break;
                 case "EnergyConsumer":
-                    DataGridElements = ConvertToListOfIdentifiedObjects(model.GetExtentValues(FTN.Common.ModelCode.ENERGCONSUMER));
+                    DataGridElements = ConvertToListOfMeasResults(model.GetExtentValues(FTN.Common.ModelCode.ENERGCONSUMER));
                     break;
                 default:
                     break;
@@ -84,12 +97,12 @@ namespace DispatcherApp.ViewModel
         public DispatcherAppViewModel(List<string> ele)
         {
             Elements = ele;
-            DataGridElements = new List<IdentifiedObject>();
+            DataGridElements = new List<MeasResult>();
             model = new ModelGda();
 
-            subscriber = new Subscriber();
-            subscriber.Subscribe();
-            subscriber.publishDeltaEvent += GetDelta;
+            //subscriber = new Subscriber();
+            //subscriber.Subscribe();
+            //subscriber.publishDeltaEvent += GetDelta;
         }
         private void RaisePropertyChanged(string property)
         {
@@ -111,16 +124,56 @@ namespace DispatcherApp.ViewModel
             Console.WriteLine(delta.ToString());
         }
 
-        private List<IdentifiedObject> ConvertToListOfIdentifiedObjects(List<long> list)
+        private List<MeasResult> ConvertToListOfMeasResults(List<long> list)
         {
-            List<IdentifiedObject> retValue = new List<IdentifiedObject>();
+            List<MeasResult> retValue = new List<MeasResult>();
             ResourceDescription rd = new ResourceDescription();
             foreach (long l in list)
             {
                 rd = model.GetValues(l);
-                retValue.Add(new IdentifiedObject(rd.Id));
+                retValue.Add(new MeasResult(rd.Id.ToString(), "Unknown"));
             }
             return retValue;
+        }
+
+        private void ExecuteReadAll(object parameter)
+        {
+            ///
+            /// otvori vezu ka CommEngine i dobavi mjerenja
+            ////
+            List<MeasResult> rezultat = new List<MeasResult>();
+            ResourceDescription rd1 = new ResourceDescription();
+            rd1.Id = 1;
+            rd1.Properties.Add(new Property(ModelCode.DISCRETE_NORMVAL, 1));
+
+            ResourceDescription rd2 = new ResourceDescription();
+            rd2.Id = 2;
+            rd2.Properties.Add(new Property(ModelCode.DISCRETE_NORMVAL, 0));
+            // ResourceDescription result = proxyToComm().GetaAll();
+            List<ResourceDescription> result = new List<ResourceDescription>();
+            result.Add(rd1);
+            result.Add(rd2);
+            string status = "";
+            //napunjeno zbog testiranjaa
+            foreach (ResourceDescription rd in result)
+            {
+                switch (rd.Properties[0].PropertyValue.LongValues[0])
+                {
+                    case 0:
+                        status = "CLOSED";
+                        break;
+                    case 1:
+                        status = "OPEN";
+                        break;
+                    default:
+                        status = "Unkonown";
+                        break;
+
+                }
+
+                rezultat.Add(new MeasResult(rd.Id.ToString(), status));
+            }
+            DataGridElements = rezultat;
         }
     }
 }

@@ -16,7 +16,7 @@
     <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x86</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -59,6 +59,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Model\DataGridResult.cs" />
+    <Compile Include="Model\MeasResult.cs" />
+    <Compile Include="Model\RelayCommand.cs" />
     <Compile Include="ViewModel\DispatcherAppViewModel.cs" />
     <Compile Include="View\DispatherAppUserControl.xaml.cs">
       <DependentUpon>DispatherAppUserControl.xaml</DependentUpon>

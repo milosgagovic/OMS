@@ -10,5 +10,6 @@
         <Label Content="Select element" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="100"/>
         <ComboBox x:Name="elementComboBox" ItemsSource="{Binding Path=Elements}" SelectedItem="{Binding Path=SelectedItem}" HorizontalAlignment="Left" Margin="10,41,0,0" VerticalAlignment="Top" Width="137" RenderTransformOrigin="-0.017,0.727"/>
         <DataGrid x:Name="dataGridElements" ItemsSource="{Binding Path=DataGridElements}" HorizontalAlignment="Left" Height="208" Margin="10,91,0,0" VerticalAlignment="Top" Width="497"/>
+        <Button  x:Name="buttMeas" Content="Measurment" Command="{Binding MeasCommand}" HorizontalAlignment="Left" Margin="241,43,-16,0" VerticalAlignment="Top" Width="75" RenderTransformOrigin="0.24,1.2"/>
     </Grid>
 </UserControl>
