@@ -43,7 +43,8 @@ namespace SCADA
                 ValidCommands = { CommandTypes.CLOSE, CommandTypes.OPEN },
                 ValidStates = { RealtimeDatabase.Catalogs.States.CLOSED, RealtimeDatabase.Catalogs.States.OPENED },
                 Command = CommandTypes.OPEN,
-                State = RealtimeDatabase.Catalogs.States.CLOSED
+                State = RealtimeDatabase.Catalogs.States.CLOSED,
+                Address=0
             };
 
             Digital d2 = new Digital()
@@ -54,7 +55,8 @@ namespace SCADA
                 ValidCommands = { CommandTypes.CLOSE, CommandTypes.OPEN },
                 ValidStates = { RealtimeDatabase.Catalogs.States.CLOSED, RealtimeDatabase.Catalogs.States.OPENED },
                 Command = CommandTypes.OPEN,
-                State = RealtimeDatabase.Catalogs.States.CLOSED
+                State = RealtimeDatabase.Catalogs.States.CLOSED,
+                Address = 1
             };
 
             Digital d3 = new Digital()
@@ -65,13 +67,15 @@ namespace SCADA
                 ValidCommands = { CommandTypes.CLOSE, CommandTypes.OPEN },
                 ValidStates = { RealtimeDatabase.Catalogs.States.CLOSED, RealtimeDatabase.Catalogs.States.OPENED },
                 Command = CommandTypes.OPEN,
-                State = RealtimeDatabase.Catalogs.States.CLOSED
+                State = RealtimeDatabase.Catalogs.States.CLOSED,
+                Address = 2
             };
 
             DBContext context = new DBContext();
             context.AddProcessVariable(d1);
             context.AddProcessVariable(d2);
             context.AddProcessVariable(d3);
+
 
             Console.WriteLine("Setting PCCommEngine");
             PCCommunicationEngine PCCommEng = new PCCommunicationEngine();
@@ -84,8 +88,8 @@ namespace SCADA
  
             Thread producer = new Thread(AcqEngine.StartAcquisition);
 
-            //consumer.Start();
-            //producer.Start();
+            consumer.Start();
+            producer.Start();
 
             //AcqEngine.StartAcquisition();
 

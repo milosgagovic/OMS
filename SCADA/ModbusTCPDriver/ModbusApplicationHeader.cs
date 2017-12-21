@@ -7,7 +7,6 @@ using PCCommon;
 
 namespace ModbusTCPDriver
 {
-    [Serializable]
     public class ModbusApplicationHeader
     {
         // initialized by the client, copied by the server from request to the response
@@ -23,21 +22,14 @@ namespace ModbusTCPDriver
             //    Array.Reverse(transId);
             //    value = Convert.ToUInt16(transId);
             //}
-            get;set;
+            get; set;
         }
 
         // initialized by the client, copied by the server from request to the response
         // 0 = ModbuTCP protocol
         public ushort ProtocolId
         {
-            //get { return ProtocolId; }
-            //set
-            //{
-            //    byte[] protId = BitConverter.GetBytes(value);
-            //    Array.Reverse(protId);
-            //    value = Convert.ToUInt16(protId);
-            //}
-            get;set;
+            get; set;
         }
 
         // initialized by the client (request), initialized by the server (response)
@@ -45,14 +37,7 @@ namespace ModbusTCPDriver
         // broj bajtova iza zaglavlja -> bez adrese uracunate
         public ushort Length
         {
-            //get { return Length; }
-            //set
-            //{
-            //    byte[] length = BitConverter.GetBytes(value);
-            //    Array.Reverse(length);
-            //    value = Convert.ToUInt16(length);
-            //}
-            get;set;
+            get; set;
         }
 
         // initialized by the client (request), copied by the server from request to the response
@@ -81,6 +66,41 @@ namespace ModbusTCPDriver
             };
 
             return byteHeader;
+        }
+
+        public ModbusApplicationHeader getObjectHeader(byte[] bHeader)
+        {
+            // mozda moze bolje, kao u WriteResponse.cs, odmah reverse
+
+            byte[] transId = new byte[2]
+            {
+                bHeader[0], bHeader[1]
+            };
+
+            byte[] protocolId = new byte[2]
+            {
+                bHeader[2], bHeader[3]
+            };
+
+            byte[] length = new byte[2]
+            {
+                bHeader[4], bHeader[5]
+            };
+
+            Array.Reverse(transId);
+            Array.Reverse(protocolId);
+            Array.Reverse(length);
+
+            ModbusApplicationHeader retHeader = new ModbusApplicationHeader()
+            {
+                TransactionId = BitConverter.ToUInt16(transId, 0),
+                ProtocolId = BitConverter.ToUInt16(protocolId, 0),
+                Length = BitConverter.ToUInt16(length, 0),
+
+                DeviceAddress = bHeader[6]
+            };
+
+            return retHeader;
         }
     }
 }

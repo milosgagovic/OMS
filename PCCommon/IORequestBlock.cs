@@ -8,7 +8,7 @@ namespace PCCommon
 {
     public enum RequestType
     {
-        SEND_RECV = 0,
+        SEND_RECV = 0, // used for unbalanced protocols
         RECV_SEND,
         SEND,
         RECV,
@@ -25,7 +25,7 @@ namespace PCCommon
      */
     public class IORequestBlock
     {   
-        // transaction type
+        // transaction type.
         public RequestType RequestType { get; set; }
 
         // target slave device Id - RTU address

@@ -73,31 +73,29 @@ namespace SCADA.CommAcqEngine
             IORequests.Enqueue(iorb);
         }
 
-        public IORequestBlock GetRequest()
+        public IORequestBlock GetRequest(out bool isSuccessful)
         {
-            IORequestBlock req;
-
-            // pay attention -> made to be blocking
-            while (!IORequests.TryDequeue(out req));
-
-
+            // pay attention to ';' -> made to be blocking
+            // while (!IORequests.TryDequeue(out req));
+        
+            isSuccessful=IORequests.TryDequeue(out IORequestBlock req);
             return req;
-
         }
 
+        // mozda visak
         public bool IsIORequstEmpty()
         {
             return IORequests.Count == 0;
         }
+
         public void EnqueueIOAnsForProcess(IORequestBlock iorb)
         {
             IOAnswers.Enqueue(iorb);
         }
 
-        public IORequestBlock GetAnswer()
+        public IORequestBlock GetAnswer(out bool isSuccessful)
         {
-            IORequestBlock answ;
-            IOAnswers.TryDequeue(out answ);
+            isSuccessful=IOAnswers.TryDequeue(out IORequestBlock answ);
             return answ;
         }
 

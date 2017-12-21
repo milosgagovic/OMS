@@ -38,24 +38,35 @@ namespace SCADA.CommAcqEngine
             SetupRTUs();
         }
 
-        // ovo sam za test krenula da pravim
         public void SetupRTUs()
         {
             //RTU rtu1 = new RTU(8, 8, 4, 4, 2);
             RTU rtu1 = new RTU();
             rtu1.Address = 1;
             rtu1.Name = "RTU-1";
-
             RTUs.Add(rtu1.Name, rtu1);
+
+            RTU rtu2 = new RTU();
+            rtu2.Address = 1;
+            rtu2.Name = "RTU-2";
+            RTUs.Add(rtu2.Name, rtu2);
         }
 
+        // ovde poslati iorbe za 3 dig uredjaja
+        // da citas za svaki od njih
+        // pa procesuiranje reply-ova
         public void StartAcquisition()
         {
+
+            // razmisliti o ovome, da li treba da se pokrece nova nit?
+            // ako je ovo automatska procedura, odmah ocekujemo i odgovor. 
+            // mozda kada se dobije odgovor da se okine task da ga procesuira
+            // i jos reply sadrzi neke podatke iste kao odgovarajuci request
+            Thread PCAnswerProcessor = new Thread(ProcessPCAnwers);
+            PCAnswerProcessor.Start();
+
             while (!shutdown)
             {
-                // miljana dodala samo za test
-                ModbusHandler protocolHandler = new ModbusHandler();
-
                 Console.WriteLine("StartAcquisition");
                 if (RTUs.Count > 0)
                 {
@@ -68,11 +79,8 @@ namespace SCADA.CommAcqEngine
                             RtuName = rtu.Name // preko ovoga mi bilo lakse da konfigurisem, moze address samo da se salje, promenicu
                         };
 
-
                         // srediti ovaj deo kasnije kad vidim sta sa ovim Channel
                         // smisliti kako da se ukombinuje sve i da bude konfigurabilno
-                        // za sada ipak moram onako da "harkodujem" modbus kao choosen,
-                        // bar da poteramo komunikacij, pa cu ovo smisliti...
                         // mozda da za pocetak polje Protocol bude u rtu, nezavisno od channel-a
                         //if (!ProtocolSetter(rtu.Channel.Protocol))
                         //{
@@ -86,8 +94,6 @@ namespace SCADA.CommAcqEngine
 
                         // treba da bude switch u zavisnosti od protokola
                         // ali prvo mora channel i rtu povezanost da se reorganizuje
-
-                        // ovo je sad kao da je modbus vec odabran
                         ModbusHandler mdbHandler = (ModbusHandler)protHandler;
 
                         mdbHandler.Request = new WriteRequest()
@@ -110,16 +116,47 @@ namespace SCADA.CommAcqEngine
                             ProtocolId = (ushort)IndustryProtocols.ModbusTCP,
                             DeviceAddress = rtu.Address
                         };
-
                         
-
                         iorb.SendBuff = mdbHandler.PackData();
                         iorb.SendMsgLength = iorb.SendBuff.Length;
                         Console.WriteLine("     data for send ->");
                         Console.WriteLine(BitConverter.ToString(iorb.SendBuff));
 
-
                         IORequests.EnqueueIOReqForProcess(iorb);
+                    }
+                }
+
+                Thread.Sleep(millisecondsTimeout: timerMsc);
+            }
+        }
+        private void ProcessPCAnwers()
+        {
+            while (!shutdown)
+            {
+                IORequestBlock answer = IORequests.GetAnswer(out bool isSuccessful);
+
+                if (isSuccessful)
+                {
+                    if(RTUs.TryGetValue((answer.RtuName),out RTU rtu))
+                    {
+                        // treba takodje onaj switch case sa protocol handler-om
+
+                        //if (!ProtocolSetter(IndustryProtocols.ModbusTCP))
+                        //{
+                            //return ResultMessage.INTERNAL_SERVER_ERROR;
+                        //}
+
+                        ModbusHandler mdbHandler = (ModbusHandler)protHandler;
+                        //mdbHandler.Response = new Response();
+                        mdbHandler.UnpackData(answer.RcvBuff, answer.RcvMsgLength);
+
+                        // sad neka metoda za procesuiranje tih podataka
+                        // u smislu upisa u bazu? 
+                        // mozda kad pravimo iorb-e za slanje, da imamo
+                        // neki queue posaltih poruka, i onda
+                        // su one asocirane primljenim?
+                        
+
                     }
                 }
 
@@ -138,6 +175,11 @@ namespace SCADA.CommAcqEngine
 
             return false;
         }
+
+
+
+        // CommandReceiver methods
+        //-------------------------
 
         public ResultMessage ReadAllAnalog(OMSSCADACommon.DeviceTypes type)
         {
@@ -288,11 +330,6 @@ namespace SCADA.CommAcqEngine
 
             return ResultMessage.OK;
         }
-
-
-
-
-
 
     }
 }

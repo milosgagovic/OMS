@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ModbusTCPDriver
 {
-    [Serializable]
+    // videti da li ti ovo treba
     public class ModbusRequestMessage
     {
         public ModbusApplicationHeader Header { get; set; }

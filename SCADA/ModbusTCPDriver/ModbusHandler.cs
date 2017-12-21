@@ -20,52 +20,54 @@ namespace ModbusTCPDriver
 
         public byte[] PackData()
         {
-            ModbusRequestMessage mrm = new ModbusRequestMessage()
-            {
-                Header = this.Header,
-                Request = this.Request
-            };
+            // ne koristi se
+            //ModbusRequestMessage mrm = new ModbusRequestMessage()
+            //{
+            //    Header = this.Header,
+            //    Request = this.Request
+            //};
 
             // message must be in big endian format
-
-            // mbap
-            //Console.WriteLine("     Header ->");
-            //Console.WriteLine(BitConverter.ToString(Header.getByteHeader()));
-            //Console.WriteLine("     Request ->");
-            //Console.WriteLine(BitConverter.ToString(Request.getByteRequest()));
 
             var bHeader = Header.getByteHeader();
             var bRequest = Request.getByteRequest();
 
             byte[] packedData = new byte[bHeader.Length + bRequest.Length];
 
-            //BinaryFormatter bf = new BinaryFormatter();
-            //using (MemoryStream ms = new MemoryStream())
-            //{
-            //    bf.Serialize(ms, mrm);
-            //    return ms.ToArray();
-            //}
-
             bHeader.CopyTo(packedData, 0);
-            bRequest.CopyTo(packedData, Header.Length);
+            bRequest.CopyTo(packedData, bHeader.Length);
             return packedData;
         }
 
-        public void UnpackData(byte[] data)
+        public void UnpackData(byte[] data, int length)
         {
-            // obrnuto
-            throw new NotImplementedException();
+            
+            var mbap = Header.getObjectHeader(data); // nepotrebno za sada?
+
+            byte[] responseData = new byte[length - 7];
+            Buffer.BlockCopy(data, 7, responseData, 0, length - 7);
+
+            switch ((FunctionCodes)responseData[0])
+            {
+                case FunctionCodes.WriteSingleCoil:
+                case FunctionCodes.WriteSingleRegister:
+                    Response = new WriteResponse();
+                    Response.getObjectResponse(responseData);
+                        break;
+                case FunctionCodes.ReadCoils:
+                case FunctionCodes.ReadDiscreteInput:
+                case FunctionCodes.ReadHoldingRegisters:
+                case FunctionCodes.ReadInputRegisters:
+                    Response = new ReadResponse();
+                    Response.getObjectResponse(responseData);
+                    break;
+                default:
+                    break;
+            }
+
+            Response.getObjectResponse(responseData);
         }
 
-
-        //public IndustryProtocols ProtocolType
-        //{
-        //    get => ProtocolType;
-        //    set => ProtocolType = IndustryProtocols.ModbusTCP;
-        //}
-
-        // ModbusTCP data format:
-        //  MBAP (16+16+16+8) + Function (8) + Data (n x 8 bit)
 
         /*
 

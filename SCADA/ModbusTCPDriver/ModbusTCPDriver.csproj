@@ -51,6 +51,7 @@
     <Compile Include="Request.cs" />
     <Compile Include="Response.cs" />
     <Compile Include="WriteRequest.cs" />
+    <Compile Include="WriteResponse.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\PCCommon\PCCommon.csproj">

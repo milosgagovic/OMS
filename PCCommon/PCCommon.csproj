@@ -43,6 +43,7 @@
     <Compile Include="IIndustryProtocolHandler.cs" />
     <Compile Include="IndustryProtocols.cs" />
     <Compile Include="IORequestBlock.cs" />
+    <Compile Include="IResponse.cs" />
     <Compile Include="ProcessController.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

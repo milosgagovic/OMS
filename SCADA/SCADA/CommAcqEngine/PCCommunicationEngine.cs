@@ -15,12 +15,12 @@ namespace SCADA.CommAcqEngine
     public class PCCommunicationEngine
     {
         // rukovaoc konkretnog industrijskog protokola
-       // IIndustryProtocolHandler protHandler = new ModbusHandler();
+        // IIndustryProtocolHandler protHandler = new ModbusHandler();
 
         IORequestsQueue IORequests;
         bool shutdown;
         int timerMsc;
-      
+
         private static Dictionary<string, Channel> channels { get; set; }  // ovo mi zapravo ni ne treba za sada
         private Dictionary<string, ProcessController> processControllers { get; set; }
 
@@ -29,7 +29,7 @@ namespace SCADA.CommAcqEngine
 
         public PCCommunicationEngine()
         {
-           // protHandler = new ModbusHandler(); 
+            // protHandler = new ModbusHandler(); 
 
             IORequests = IORequestsQueue.GetQueue();
 
@@ -95,7 +95,7 @@ namespace SCADA.CommAcqEngine
             };
 
             processControllers.Add(rtu1.Name, rtu1);
-            //processControllers.Add(rtu2.Name, rtu2);
+            processControllers.Add(rtu2.Name, rtu2);
             //processControllers.Add(rtu3.Name, rtu3);
 
             CreateChannels();
@@ -111,7 +111,8 @@ namespace SCADA.CommAcqEngine
                 {
                     // ako nije uspelo pobrisi sta ne treba i tako to
 
-                    // ako nije povezano sa kontrolerima - nisu podignuti onda vratiti neki error ovde i ni ne pocinjati StartProcessing
+                    // ako nije povezano sa kontrolerima - nisu podignuti onda vratiti neki error ovde i 
+                    // ni ne pocinjati StartProcessing
 
                 }
             }
@@ -129,7 +130,7 @@ namespace SCADA.CommAcqEngine
         private bool EstablishCommunication(ProcessController rtu)
         {
             bool retval = false;
-           
+
             try
             {
                 TcpClient tcpClient = new TcpClient() { SendTimeout = 1000, ReceiveTimeout = 1000 };
@@ -155,7 +156,7 @@ namespace SCADA.CommAcqEngine
 
             }
 
-           
+
 
             //IChannel ch;
             //if (channels.TryGetValue(rtu.ChannelName, out ch))
@@ -187,34 +188,33 @@ namespace SCADA.CommAcqEngine
             while (!shutdown)
             {
                 Console.WriteLine("StartProcessing");
-                IORequestBlock toProcess = IORequests.GetRequest();
-
-                TcpClient client=new TcpClient();
-                if (TcpChannels.TryGetValue(toProcess.RtuName, out client))
+                IORequestBlock toProcess = IORequests.GetRequest(out bool isSuccessful);
+                if (isSuccessful)
                 {
-                    NetworkStream stream = client.GetStream();
-                    int offset = 0;
+                    if (TcpChannels.TryGetValue(toProcess.RtuName, out TcpClient client))
+                    {
+                        NetworkStream stream = client.GetStream();
+                        int offset = 0;
 
-                    stream.Write(toProcess.SendBuff, offset, toProcess.SendMsgLength);
+                        stream.Write(toProcess.SendBuff, offset, toProcess.SendMsgLength);
 
 
-                    // kasnije razmisliti da li poruke dolaze cele, ili u
-                    // delovima ako su velike?...da li je potrebno u petlji
-                    // citati
+                        // kasnije razmisliti da li poruke dolaze cele, ili u
+                        // delovima ako su velike?...da li je potrebno u petlji
+                        // citati
 
-                    toProcess.RcvBuff = new byte[client.ReceiveBufferSize];
+                        toProcess.RcvBuff = new byte[client.ReceiveBufferSize];
 
-                    stream.Read(toProcess.RcvBuff, offset, 512);
+                        var length = stream.Read(toProcess.RcvBuff, offset, 512);
+                        toProcess.RcvMsgLength = length;
 
-                    // nisam proverila da li ovo radi dobro citanje pisanje, jer nisam uspela konkretan zahtev da dobijem
-                    // sad treba odmah value upisivati nazad u iorb
+                        IORequests.EnqueueIOAnsForProcess(toProcess);
+                    }
+                    else
+                    {
 
+                    }
                 }
-                else
-                {
-                    
-                }
-
                 Thread.Sleep(1000);
             }
             {
@@ -228,7 +228,6 @@ namespace SCADA.CommAcqEngine
         public void AddIOReqForProcess(IORequestBlock iorb)
         {
             IORequests.EnqueueIOReqForProcess(iorb);
-
         }
 
     }

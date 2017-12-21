@@ -7,14 +7,29 @@ using System.Threading.Tasks;
 namespace ModbusTCPDriver
 {
 
-    [Serializable]
     public class ReadRequest : Request
     {
         public ushort Quantity { get; set; }
 
         public override byte[] getByteRequest()
         {
-            throw new NotImplementedException();
+            byte[] stAddr = BitConverter.GetBytes(StartAddr);
+            byte[] qnt = BitConverter.GetBytes(Quantity);
+
+            if (BitConverter.IsLittleEndian)
+            {
+                Array.Reverse(stAddr);
+                Array.Reverse(qnt);
+            }
+
+            byte[] byteRequest = new byte[5]
+            {
+                (byte)FunCode,
+                stAddr[0], stAddr[1],
+                qnt[0], qnt[1]
+            };
+
+            return byteRequest;
         }
     }
 }
