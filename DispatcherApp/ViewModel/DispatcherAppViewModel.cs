@@ -106,9 +106,9 @@ namespace DispatcherApp.ViewModel
             DataGridElements = new List<MeasResult>();
             model = new ModelGda();
 
-            //subscriber = new Subscriber();
-            //subscriber.Subscribe();
-            //subscriber.publishDeltaEvent += GetDelta;
+            subscriber = new Subscriber();
+            subscriber.Subscribe();
+            subscriber.publishDeltaEvent += GetDelta;
         }
         private void RaisePropertyChanged(string property)
         {
@@ -127,7 +127,12 @@ namespace DispatcherApp.ViewModel
 
         private void GetDelta(Delta delta)
         {
-            Console.WriteLine(delta.ToString());
+            Console.WriteLine("Ima li sta: " + delta.TestOperations.Count);
+            if(delta.TestOperations.Count != 0)
+            {
+                ReadResult(delta.TestOperations);
+            }
+
         }
 
         private List<MeasResult> ConvertToListOfMeasResults(List<long> list)
@@ -142,6 +147,42 @@ namespace DispatcherApp.ViewModel
             return retValue;
         }
 
+        private void ReadResult(List<ResourceDescription> result)
+        {
+
+            List<MeasResult> rezultat = new List<MeasResult>();
+            string status = "";
+            foreach (ResourceDescription rd in result)
+            {
+                MeasResult measResult = new MeasResult();
+                if (rd.ContainsProperty(ModelCode.IDOBJ_MRID))
+                {
+                    measResult.MrID = rd.GetProperty(ModelCode.IDOBJ_MRID).AsString();
+                }
+                if (rd.ContainsProperty(ModelCode.DISCRETE_NORMVAL))
+                {
+
+                    switch (rd.GetProperty(ModelCode.DISCRETE_NORMVAL).AsLong())
+                    {
+                        case 0:
+                            status = "CLOSED";
+                            break;
+                        case 1:
+                            status = "OPEN";
+                            break;
+                        default:
+                            status = "Unkonown";
+                            break;
+
+                    }
+
+                    measResult.MeasValue = status;
+                }
+                rezultat.Add(measResult);
+            }
+            DataGridElements = rezultat;
+        }
+
         private void ExecuteReadAll(object parameter)
         {
             ///
@@ -149,39 +190,39 @@ namespace DispatcherApp.ViewModel
             ////
             Proxy.ReceiveAllMeasValue();
 
-            List<MeasResult> rezultat = new List<MeasResult>();
-            ResourceDescription rd1 = new ResourceDescription();
-            rd1.Id = 1;
-            rd1.Properties.Add(new Property(ModelCode.DISCRETE_NORMVAL, 1));
+            //List<MeasResult> rezultat = new List<MeasResult>();
+            //ResourceDescription rd1 = new ResourceDescription();
+            //rd1.Id = 1;
+            //rd1.Properties.Add(new Property(ModelCode.DISCRETE_NORMVAL, 1));
+            
+            //ResourceDescription rd2 = new ResourceDescription();
+            //rd2.Id = 2;
+            //rd2.Properties.Add(new Property(ModelCode.DISCRETE_NORMVAL, 0));
+            //// ResourceDescription result = proxyToComm().GetaAll();
+            //List<ResourceDescription> result = new List<ResourceDescription>();
+            //result.Add(rd1);
+            //result.Add(rd2);
+            //string status = "";
+            ////napunjeno zbog testiranjaa
+            //foreach (ResourceDescription rd in result)
+            //{
+            //    switch (rd.Properties[0].PropertyValue.LongValues[0])
+            //    {
+            //        case 0:
+            //            status = "CLOSED";
+            //            break;
+            //        case 1:
+            //            status = "OPEN";
+            //            break;
+            //        default:
+            //            status = "Unkonown";
+            //            break;
 
-            ResourceDescription rd2 = new ResourceDescription();
-            rd2.Id = 2;
-            rd2.Properties.Add(new Property(ModelCode.DISCRETE_NORMVAL, 0));
-            // ResourceDescription result = proxyToComm().GetaAll();
-            List<ResourceDescription> result = new List<ResourceDescription>();
-            result.Add(rd1);
-            result.Add(rd2);
-            string status = "";
-            //napunjeno zbog testiranjaa
-            foreach (ResourceDescription rd in result)
-            {
-                switch (rd.Properties[0].PropertyValue.LongValues[0])
-                {
-                    case 0:
-                        status = "CLOSED";
-                        break;
-                    case 1:
-                        status = "OPEN";
-                        break;
-                    default:
-                        status = "Unkonown";
-                        break;
+            //    }
 
-                }
-
-                rezultat.Add(new MeasResult(rd.Id.ToString(), status));
-            }
-            DataGridElements = rezultat;
+            //    rezultat.Add(new MeasResult(rd.Id.ToString(), status));
+            //}
+            //DataGridElements = rezultat;
         }
     }
 }
