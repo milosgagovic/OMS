@@ -13,11 +13,12 @@ namespace CommunicationEngine
     [CallbackBehavior(ConcurrencyMode = ConcurrencyMode.Reentrant, UseSynchronizationContext = false)]
     public class SCADACallback : ISCADAContract_Callback
     {
-        MappingEngine mapEngine = new MappingEngine();
+        //ovde puca proveriti to
+        //MappingEngine mapEngine = new MappingEngine();
 
         public void ReceiveResponse(Response response)
         {
-            //List<ResourceDescription> resDescList = mapEngine.MappResult(response);
+            CommunicationEngine.Instance.SendResponseToClient(response);
         }
     }
 }

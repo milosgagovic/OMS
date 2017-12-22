@@ -1,4 +1,5 @@
-﻿using DispatcherApp.Model;
+﻿using CommunicationEngineContract;
+using DispatcherApp.Model;
 using FTN.Common;
 using FTN.Services.NetworkModelService.DataModel.Core;
 using PubSubscribe;
@@ -19,7 +20,7 @@ namespace DispatcherApp.ViewModel
         private ModelGda model;
         //Subscriber
         private Subscriber subscriber;
-
+        private CommEngProxyUpdate proxy = new CommEngProxyUpdate("CommEngineEndpoint");
         //Get Meas Command
         private RelayCommand _measCommand;
         #region Properties
@@ -70,6 +71,11 @@ namespace DispatcherApp.ViewModel
                 RaisePropertyChanged("DataGridElements");
             }
 
+        }
+        public CommEngProxyUpdate Proxy
+        {
+            get { return proxy; }
+            set { proxy = value; }
         }
         #endregion Properties
         private void GetElementsFromNMS()
@@ -141,6 +147,8 @@ namespace DispatcherApp.ViewModel
             ///
             /// otvori vezu ka CommEngine i dobavi mjerenja
             ////
+            Proxy.ReceiveAllMeasValue();
+
             List<MeasResult> rezultat = new List<MeasResult>();
             ResourceDescription rd1 = new ResourceDescription();
             rd1.Id = 1;

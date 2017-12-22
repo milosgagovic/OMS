@@ -33,9 +33,9 @@ namespace CommunicationEngine
                 Console.ReadLine();
             }
 
-            SCADAClient sc = new SCADAClient();
+           // SCADAClient sc = new SCADAClient();
 
-            sc.ExecuteCommand(new ReadAll());
+            //sc.ExecuteCommand(new ReadAll());
 
             Console.ReadKey();
         }

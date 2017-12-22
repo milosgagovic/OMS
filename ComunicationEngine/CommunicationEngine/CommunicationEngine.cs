@@ -1,4 +1,7 @@
 ﻿using CommunicationEngineContract;
+using FTN.Common;
+using OMSSCADACommon.Response;
+using PubSubscribe;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +16,17 @@ namespace CommunicationEngine
     {
         private static ICommuncEngineContract_CallBack callback = null;
 
+        private static CommunicationEngine instance;
+        public static CommunicationEngine Instance
+        {
+            get
+            {
+                if (instance == null)
+                    instance = new CommunicationEngine();
+                return instance;
+            }
+        }
+
         public static ICommuncEngineContract_CallBack Callback
         {
             get { return callback; }
@@ -21,6 +35,13 @@ namespace CommunicationEngine
 
         public CommunicationEngine()
         {
+        }
+
+        public bool SendResponseToClient(Response response)
+        {
+            List<ResourceDescription> result = MappingEngine.Instance.MappResult(response);
+            //proslijediti klijentu
+            return true;
         }
 
         public bool ReceiveValue()
