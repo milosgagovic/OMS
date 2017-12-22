@@ -42,11 +42,11 @@ namespace CommunicationEngine
                 rd.AddProperty(new Property(ModelCode.IDOBJ_MRID, dv.Id));
                 if(dv.State.ToString() == "CLOSED")
                 {
-                    rd.AddProperty(new Property(ModelCode.DISCRETE_NORMVAL, 1));
+                    rd.AddProperty(new Property(ModelCode.DISCRETE_NORMVAL, 0));
                 }
                 else
                 {
-                    rd.AddProperty(new Property(ModelCode.DISCRETE_NORMVAL,0));
+                    rd.AddProperty(new Property(ModelCode.DISCRETE_NORMVAL,1));
                 }
                 retVal.Add(rd);
                 //long measID = Convert.ToInt64(rv.Id);
