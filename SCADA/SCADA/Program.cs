@@ -37,6 +37,7 @@ namespace SCADA
 
             Digital d1 = new Digital()
             {
+                RtuName = "RTU-1",
                 Name = "MEAS_D_1",
 
                 Class = DigitalDeviceClasses.SWITCH,
@@ -44,11 +45,12 @@ namespace SCADA
                 ValidStates = { RealtimeDatabase.Catalogs.States.CLOSED, RealtimeDatabase.Catalogs.States.OPENED },
                 Command = CommandTypes.OPEN,
                 State = RealtimeDatabase.Catalogs.States.CLOSED,
-                Address=0
+                Address = 1000
             };
 
             Digital d2 = new Digital()
             {
+                RtuName = "RTU-1",
                 Name = "MEAS_D_2",
 
                 Class = DigitalDeviceClasses.SWITCH,
@@ -56,11 +58,12 @@ namespace SCADA
                 ValidStates = { RealtimeDatabase.Catalogs.States.CLOSED, RealtimeDatabase.Catalogs.States.OPENED },
                 Command = CommandTypes.OPEN,
                 State = RealtimeDatabase.Catalogs.States.CLOSED,
-                Address = 1
+                Address = 1001
             };
 
             Digital d3 = new Digital()
             {
+                RtuName = "RTU-1",
                 Name = "MEAS_D_3",
 
                 Class = DigitalDeviceClasses.SWITCH,
@@ -68,30 +71,75 @@ namespace SCADA
                 ValidStates = { RealtimeDatabase.Catalogs.States.CLOSED, RealtimeDatabase.Catalogs.States.OPENED },
                 Command = CommandTypes.OPEN,
                 State = RealtimeDatabase.Catalogs.States.CLOSED,
-                Address = 2
+                Address = 1002
             };
+
+
+            //Digital d4 = new Digital()
+            //{
+            //    RtuName = "RTU-1",
+            //    Name = "TEST1",
+
+            //    Class = DigitalDeviceClasses.SWITCH,
+            //    ValidCommands = { CommandTypes.CLOSE, CommandTypes.OPEN },
+            //    ValidStates = { RealtimeDatabase.Catalogs.States.CLOSED, RealtimeDatabase.Catalogs.States.OPENED, RealtimeDatabase.Catalogs.States.UNKNOWN },
+            //    Command = CommandTypes.OPEN,
+            //    State = RealtimeDatabase.Catalogs.States.CLOSED,
+            //    Address = 1003
+            //};
+
+            Digital d4 = new Digital()
+            {
+                RtuName = "RTU-1",
+                Name = "TEST1",
+
+                Class = DigitalDeviceClasses.SWITCH,
+                ValidCommands = { CommandTypes.CLOSE, CommandTypes.OPEN },
+                ValidStates = { RealtimeDatabase.Catalogs.States.CLOSED, RealtimeDatabase.Catalogs.States.OPENED },
+                Command = CommandTypes.OPEN,
+                State = RealtimeDatabase.Catalogs.States.CLOSED,
+                Address = 1003
+            };
+
+            Digital d5 = new Digital()
+            {
+                RtuName = "RTU-1",
+                Name = "TEST2",
+
+                Class = DigitalDeviceClasses.SWITCH,
+                ValidCommands = { CommandTypes.CLOSE, CommandTypes.OPEN },
+                ValidStates = { RealtimeDatabase.Catalogs.States.CLOSED, RealtimeDatabase.Catalogs.States.OPENED },
+                Command = CommandTypes.OPEN,
+                State = RealtimeDatabase.Catalogs.States.CLOSED,
+                Address = 1004
+            };
+
 
             DBContext context = new DBContext();
             context.AddProcessVariable(d1);
             context.AddProcessVariable(d2);
             context.AddProcessVariable(d3);
 
+            // test
+            //context.AddProcessVariable(d4);
+            //context.AddProcessVariable(d5);
 
-            //Console.WriteLine("Setting PCCommEngine");
-            //PCCommunicationEngine PCCommEng = new PCCommunicationEngine();
-            //PCCommEng.Configure(); // mozda parametar da bude adresa datoteka...     
+            Console.WriteLine("Setting PCCommEngine");
+            PCCommunicationEngine PCCommEng = new PCCommunicationEngine();
+            PCCommEng.Configure(); // mozda parametar da bude adresa datoteka...     
 
-            //Thread consumer = new Thread(PCCommEng.StartProcessing); 
+            Thread reqConsumer = new Thread(PCCommEng.StartProcessing);
 
-            //Console.WriteLine("Setting AcqEngine");
-            //ACQEngine AcqEngine = new ACQEngine();
- 
-            //Thread producer = new Thread(AcqEngine.StartAcquisition);
+            Console.WriteLine("Setting AcqEngine");
+            ACQEngine AcqEngine = new ACQEngine();
 
-            //consumer.Start();
-            //producer.Start();
+            Thread reqProducer = new Thread(AcqEngine.StartAcquisition);
+            Thread answConsumer = new Thread(AcqEngine.ProcessPCAnwers);
 
-            //AcqEngine.StartAcquisition();
+            reqConsumer.Start();
+            reqProducer.Start();
+            answConsumer.Start();
+
 
             try
             {

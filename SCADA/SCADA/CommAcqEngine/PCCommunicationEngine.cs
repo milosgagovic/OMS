@@ -95,7 +95,7 @@ namespace SCADA.CommAcqEngine
             };
 
             processControllers.Add(rtu1.Name, rtu1);
-            processControllers.Add(rtu2.Name, rtu2);
+            //processControllers.Add(rtu2.Name, rtu2);
             //processControllers.Add(rtu3.Name, rtu3);
 
             CreateChannels();
@@ -187,7 +187,7 @@ namespace SCADA.CommAcqEngine
         {
             while (!shutdown)
             {
-                Console.WriteLine("StartProcessing");
+                //Console.WriteLine("StartProcessing");
                 bool isSuccessful;
                 IORequestBlock toProcess = IORequests.GetRequest(out  isSuccessful);
                 if (isSuccessful)
@@ -218,7 +218,7 @@ namespace SCADA.CommAcqEngine
 
                     }
                 }
-                Thread.Sleep(1000);
+                Thread.Sleep(5000);
             }
             {
                 // close svega i dispose

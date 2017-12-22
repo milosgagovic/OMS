@@ -19,12 +19,24 @@ namespace SCADA.RealtimeDatabase
         public void AddProcessVariable(ProcessVariable pv)
         {
             Database.Instance.ProcessVariables.Add(pv.Name, pv);
+            Database.Instance.LookupPVs.Add(pv.Address, pv);
         }
 
+        public void UpdateProcessVariable(ProcessVariable pv)
+        {
+
+        }
+
+        public ProcessVariable PVLookup(ushort address)
+        {
+            ProcessVariable pv;
+            Database.Instance.LookupPVs.TryGetValue(address, out pv);
+            return pv;
+        }
         public Digital GetSingleDigital(string name)
         {
             ProcessVariable digital;
-            Database.Instance.ProcessVariables.TryGetValue(name, out  digital);
+            Database.Instance.ProcessVariables.TryGetValue(name, out digital);
 
             return (Digital)digital;
         }
