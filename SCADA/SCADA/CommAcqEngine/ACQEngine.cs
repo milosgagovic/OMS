@@ -32,7 +32,7 @@ namespace SCADA.CommAcqEngine
         {
             IORequests = IORequestsQueue.GetQueue();
             shutdown = false;
-            timerMsc = 1000;
+            timerMsc = 5000;
 
             RTUs = new Dictionary<string, RTU>();
             db = new DBContext();
@@ -56,109 +56,123 @@ namespace SCADA.CommAcqEngine
         // ovde poslati iorbe za 3 dig uredjaja
         // da citas za svaki od njih
         // pa procesuiranje reply-ova
+        // citanje digitalnih ulaza odnosno stanja 
         public void StartAcquisition()
         {
-
-            // razmisliti o ovome, da li treba da se pokrece nova nit?
-            // ako je ovo automatska procedura, odmah ocekujemo i odgovor. 
-            // mozda kada se dobije odgovor da se okine task da ga procesuira
-            // i jos reply sadrzi neke podatke iste kao odgovarajuci request
-            Thread PCAnswerProcessor = new Thread(ProcessPCAnwers);
-            PCAnswerProcessor.Start();
-
+            List<ProcessVariable> pvs = db.GetAllProcessVariables();
             while (!shutdown)
             {
-                Console.WriteLine("StartAcquisition");
-                if (RTUs.Count > 0)
+                foreach (ProcessVariable pv in pvs)
                 {
-                    foreach (RTU rtu in RTUs.Values)
+                    IORequestBlock iorb = new IORequestBlock()
                     {
-                        IORequestBlock iorb = new IORequestBlock()
+                        RequestType = RequestType.SEND_RECV,
+                        // RTUAddress = pv.RtuAddress, // ne koristim
+                        RtuName = pv.RtuName,
+                        Address = pv.Address
+                    };
+
+                    RTU rtu;
+                    if (RTUs.TryGetValue(iorb.RtuName, out rtu))
+                    {
+                        if (!ProtocolSetter(rtu.Protocol))
                         {
-                            RequestType = RequestType.SEND_RECV,
-                            RTUAddress = rtu.Address,
-                            RtuName = rtu.Name // preko ovoga mi bilo lakse da konfigurisem, moze address samo da se salje, promenicu
-                        };
+                            continue;
+                            //return ResultMessage.INTERNAL_SERVER_ERROR;
+                        }
 
-                        // srediti ovaj deo kasnije kad vidim sta sa ovim Channel
-                        // smisliti kako da se ukombinuje sve i da bude konfigurabilno
-                        // mozda da za pocetak polje Protocol bude u rtu, nezavisno od channel-a
-                        //if (!ProtocolSetter(rtu.Channel.Protocol))
-                        //{
-                        //    continue;
-                        //}
+                        //treba da bude switch u zavisnosti od protokola
+                        ModbusHandler mdbHandler = (ModbusHandler)protHandler;
 
+                        switch (pv.Type)
+                        {
+                            case VariableTypes.DIGITAL:
+                                Digital digital = (Digital)pv;
+                                mdbHandler.Request = new ReadRequest()
+                                {
+                                    FunCode = FunctionCodes.ReadDiscreteInput,
+                                    StartAddr = digital.Address,
+                                    Quantity = (ushort)(Math.Floor((Math.Log(digital.ValidStates.Count, 2))))
+
+                                };
+                                mdbHandler.Header = new ModbusApplicationHeader()
+                                {
+                                    TransactionId = 0,
+                                    Length = 5,
+                                    ProtocolId = (ushort)IndustryProtocols.ModbusTCP,
+                                    DeviceAddress = rtu.Address
+                                };
+                                break;
+
+                            case VariableTypes.ANALOGIN:
+                                AnalogIn analog = (AnalogIn)pv;
+
+                                break;
+
+                            case VariableTypes.COUNTER:
+                                Counter counter = (Counter)pv;
+
+                                break;
+                        }
+
+                        iorb.SendBuff = mdbHandler.PackData();
+                        iorb.SendMsgLength = iorb.SendBuff.Length;
+                        //Console.WriteLine("     data for send ->");
+                        //Console.WriteLine(BitConverter.ToString(iorb.SendBuff));
+
+                        IORequests.EnqueueIOReqForProcess(iorb);
+                    }
+                    else
+                    {
+                        // dodati message da je nevalidno podesavanje PV, da taj RTU ne postoji bla bla
+                        // ishedlovati nekako tu pv ili rtu....
+                        continue;
+                    }
+
+                    // znaci ovde siba zahteve za akvizicijom bez ikakvog sleep-a, za sve pv
+                }
+
+                Thread.Sleep(millisecondsTimeout: timerMsc); // a ovo je timeout acq ciklusa
+            }
+        }
+
+        public void ProcessPCAnwers()
+        {
+            // kad bude shutdown uraditi clean...          
+            while (!shutdown)
+            {
+                bool isSuccessful;
+                IORequestBlock answer = IORequests.GetAnswer(out isSuccessful);
+
+                if (isSuccessful)
+                {
+                    RTU rtu;
+                    if (RTUs.TryGetValue((answer.RtuName), out rtu))
+                    {
+                        // treba takodje onaj switch case sa protocol handler-om
                         if (!ProtocolSetter(IndustryProtocols.ModbusTCP))
                         {
                             //return ResultMessage.INTERNAL_SERVER_ERROR;
                         }
 
-                        // treba da bude switch u zavisnosti od protokola
-                        // ali prvo mora channel i rtu povezanost da se reorganizuje
                         ModbusHandler mdbHandler = (ModbusHandler)protHandler;
-
-                        mdbHandler.Request = new WriteRequest()
-                        {
-                            FunCode = FunctionCodes.WriteSingleCoil,
-                            //StartAddr = digital.Address,
-                            //Value = (ushort)command
-
-                            // hardcode for testing purpose
-
-                            // ovde console.write da unesemo adresu
-                            StartAddr = 0,
-                            Value = 1
-
-                        };
-                        mdbHandler.Header = new ModbusApplicationHeader()
-                        {
-                            TransactionId = 0,
-                            Length = 6, // ovo izracunavati
-                            ProtocolId = (ushort)IndustryProtocols.ModbusTCP,
-                            DeviceAddress = rtu.Address
-                        };
-                        
-                        iorb.SendBuff = mdbHandler.PackData();
-                        iorb.SendMsgLength = iorb.SendBuff.Length;
-                        Console.WriteLine("     data for send ->");
-                        Console.WriteLine(BitConverter.ToString(iorb.SendBuff));
-
-                        IORequests.EnqueueIOReqForProcess(iorb);
-                    }
-                }
-
-                Thread.Sleep(millisecondsTimeout: timerMsc);
-            }
-        }
-        private void ProcessPCAnwers()
-        {
-            while (!shutdown)
-            {
-                bool isSuccessful;
-                IORequestBlock answer = IORequests.GetAnswer(out  isSuccessful);
-
-                if (isSuccessful)
-                {
-                    RTU rtu;
-                    if(RTUs.TryGetValue((answer.RtuName),out  rtu))
-                    {
-                        // treba takodje onaj switch case sa protocol handler-om
-
-                        //if (!ProtocolSetter(IndustryProtocols.ModbusTCP))
-                        //{
-                            //return ResultMessage.INTERNAL_SERVER_ERROR;
-                        //}
-
-                        ModbusHandler mdbHandler = (ModbusHandler)protHandler;
-                        //mdbHandler.Response = new Response();
                         mdbHandler.UnpackData(answer.RcvBuff, answer.RcvMsgLength);
 
-                        // sad neka metoda za procesuiranje tih podataka
-                        // u smislu upisa u bazu? 
-                        // mozda kad pravimo iorb-e za slanje, da imamo
-                        // neki queue posaltih poruka, i onda
-                        // su one asocirane primljenim?
-                        
+                        switch (mdbHandler.Response.FunCode)
+                        {
+                            case FunctionCodes.ReadDiscreteInput:
+                                BitReadResponse response = (BitReadResponse)mdbHandler.Response;
+
+                                Digital target = (Digital)db.PVLookup(answer.Address);
+
+                                // updating database
+                                // tu treba neki sync
+                                target.SetState(response.BitValues);                               
+                                break;
+                        }
+
+
+
 
                     }
                 }
@@ -281,7 +295,7 @@ namespace SCADA.CommAcqEngine
             {
                 digital.Command = command;
                 RTU rtu;
-                RTUs.TryGetValue(digital.RtuId, out  rtu);
+                RTUs.TryGetValue(digital.RtuName, out rtu);
 
                 IORequestBlock iorb = new IORequestBlock()
                 {
@@ -289,14 +303,15 @@ namespace SCADA.CommAcqEngine
                     RTUAddress = rtu.Address
                 };
 
-                //if (!ProtocolSetter(rtu.Channel.Protocol))
-                //{
-                //    return ResultMessage.INTERNAL_SERVER_ERROR;
-                //}
+                if (!ProtocolSetter(rtu.Protocol))
+                {
+                    return ResultMessage.INTERNAL_SERVER_ERROR;
+                }
 
                 protHandler = new ModbusHandler();
 
-                switch (rtu.Channel.Protocol)
+                switch (rtu.Protocol)
+                //switch (rtu.Channel.Protocol)
                 {
                     case IndustryProtocols.ModbusTCP:
                         ModbusHandler mdbHandler = (ModbusHandler)protHandler;

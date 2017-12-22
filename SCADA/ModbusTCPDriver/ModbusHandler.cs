@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using PCCommon;
 
+
 namespace ModbusTCPDriver
 {
     // Concrete protocol handler class
@@ -20,13 +21,6 @@ namespace ModbusTCPDriver
 
         public byte[] PackData()
         {
-            // ne koristi se
-            //ModbusRequestMessage mrm = new ModbusRequestMessage()
-            //{
-            //    Header = this.Header,
-            //    Request = this.Request
-            //};
-
             // message must be in big endian format
 
             var bHeader = Header.getByteHeader();
@@ -39,10 +33,11 @@ namespace ModbusTCPDriver
             return packedData;
         }
 
+        // data.Length=65536
         public void UnpackData(byte[] data, int length)
         {
-            
-            var mbap = Header.getObjectHeader(data); // nepotrebno za sada?
+            Header = new ModbusApplicationHeader();
+            Header = Header.getObjectHeader(data); // nepotrebno ipak
 
             byte[] responseData = new byte[length - 7];
             Buffer.BlockCopy(data, 7, responseData, 0, length - 7);
@@ -51,58 +46,38 @@ namespace ModbusTCPDriver
             {
                 case FunctionCodes.WriteSingleCoil:
                 case FunctionCodes.WriteSingleRegister:
+
                     Response = new WriteResponse();
                     Response.getObjectResponse(responseData);
-                        break;
+
+                    //Console.WriteLine("WriteSingleCoil Response");
+                    //Console.WriteLine(BitConverter.ToString(data, 0, length));
+                    break;
+
                 case FunctionCodes.ReadCoils:
                 case FunctionCodes.ReadDiscreteInput:
+
+                    Response = new BitReadResponse();
+                    Response.getObjectResponse(responseData);
+
+                    //Console.WriteLine("ReadDiscreteInput Response");
+                    //Console.WriteLine(BitConverter.ToString(data, 0, length));
+                    break;
+
                 case FunctionCodes.ReadHoldingRegisters:
                 case FunctionCodes.ReadInputRegisters:
-                    Response = new ReadResponse();
+
+                    Response = new RegisterReadResponse();
                     Response.getObjectResponse(responseData);
+
+                    //Console.WriteLine("ReadHoldingRegisters Response");
+                    //Console.WriteLine(BitConverter.ToString(data, 0, length));
                     break;
+
                 default:
                     break;
             }
 
-            Response.getObjectResponse(responseData);
         }
-
-
-        /*
-
-        // 0x04 ili 0x03
-        // citanje analognih izlaza
-        private void ReadHoldingRegisterRequest()
-        {
-
-        }
-
-        //0x01
-        // citanje digitalnih izlaza
-        private void ReadCoilsRequest()
-        {
-
-        }
-
-        // 0x02 mi fali, i 0x03/04
-
-        //0x06
-        // pisanje analognih izlaza
-        private void WriteSingleRegisterRequest()
-        {
-
-        }
-
-        //0x05
-        // pisanje digitalnih izlaza
-        private void WriteSingleCoilRequest()
-        {
-
-        }
-
-        // 0x10 (16) mi fali
-
-        */
     }
 }

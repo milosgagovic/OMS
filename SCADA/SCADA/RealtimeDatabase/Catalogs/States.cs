@@ -9,6 +9,7 @@ namespace SCADA.RealtimeDatabase.Catalogs
     public enum States
     {
         OPENED = 0,
-        CLOSED
+        CLOSED,
+        UNKNOWN // dodala samo da bih testirala
     }
 }

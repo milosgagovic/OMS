@@ -11,11 +11,14 @@ namespace SCADA.RealtimeDatabase
     {
         public Dictionary<string, ProcessVariable> ProcessVariables = null;
 
+        public Dictionary<ushort, ProcessVariable> LookupPVs = null;
+
         private static Database instance;
 
         private Database()
         {
             this.ProcessVariables = new Dictionary<string, ProcessVariable>();
+            this.LookupPVs = new Dictionary<ushort, ProcessVariable>();
         }
 
         public static Database Instance

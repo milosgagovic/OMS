@@ -12,7 +12,9 @@ namespace SCADA.RealtimeDatabase.Model
 
         public string Name { get; set; }
 
-        public string RtuId { get; set; }
+        public string RtuName { get; set; }
+
+        public byte RtuAddress { get; set; }
 
         public ushort Address { get; set; }
 

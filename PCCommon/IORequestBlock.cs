@@ -24,28 +24,25 @@ namespace PCCommon
      * 
      */
     public class IORequestBlock
-    {   
+    {
         // transaction type.
         public RequestType RequestType { get; set; }
 
         // target slave device Id - RTU address
         public short RTUAddress { get; set; }
 
-
         // target slave device Id - RTU address
-        // neka bude tipa string, ko zna kakve sve adrese mogu imati 
-        // razliciti end device-ovi :) 
-        public string RtuName{ get; set; }
+        public string RtuName { get; set; }
 
         /* request parameters*/
 
         // max number of request repeating
-        public int MaxRepeat { get; set; }
+        // public int MaxRepeat { get; set; }
 
         public int SendMsgLength { get; set; }
 
         // number of send characters
-        public int SendCount { get; set; }
+        // public int SendCount { get; set; }
 
         // trsciever buffer 
         public Byte[] SendBuff { get; set; }
@@ -55,10 +52,12 @@ namespace PCCommon
         public int RcvMsgLength { get; set; }
 
         // number of received chahacters
-        public int RcvCount { get; set; }
+        // public int RcvCount { get; set; }
 
         // receiver buffer 
         public Byte[] RcvBuff { get; set; }
+
+        public ushort Address { get; set; }
 
     }
 }

@@ -15,23 +15,15 @@ namespace ModbusTCPDriver
 
         public override Response getObjectResponse(byte[] bResponse)
         {
+            FunCode = (FunctionCodes)bResponse[0];
 
             Array.Reverse(bResponse, 1, 2);
             Array.Reverse(bResponse, 3, 2);
+          
+            Addr = BitConverter.ToUInt16(bResponse, 1);
+            Value = BitConverter.ToUInt16(bResponse, 3);
 
-            // samo ovo mi treba, ono drugo koment
-            FunCode = (FunctionCodes)bResponse[0];
-            Addr = BitConverter.ToUInt16(bResponse, 0);
-            Value = BitConverter.ToUInt16(bResponse, 2);
-
-            WriteResponse wRes = new WriteResponse()
-            {
-                FunCode = (FunctionCodes)bResponse[0],
-                Addr = BitConverter.ToUInt16(bResponse, 0),
-                Value = BitConverter.ToUInt16(bResponse, 2)
-            };
-
-            return wRes;
+            return this;
         }
     }
 }
