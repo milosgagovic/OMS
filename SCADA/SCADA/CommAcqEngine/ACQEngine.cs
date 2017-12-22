@@ -53,10 +53,6 @@ namespace SCADA.CommAcqEngine
             RTUs.Add(rtu2.Name, rtu2);
         }
 
-        // ovde poslati iorbe za 3 dig uredjaja
-        // da citas za svaki od njih
-        // pa procesuiranje reply-ova
-        // citanje digitalnih ulaza odnosno stanja 
         public void StartAcquisition()
         {
             List<ProcessVariable> pvs = db.GetAllProcessVariables();
@@ -127,9 +123,7 @@ namespace SCADA.CommAcqEngine
                         // dodati message da je nevalidno podesavanje PV, da taj RTU ne postoji bla bla
                         // ishedlovati nekako tu pv ili rtu....
                         continue;
-                    }
-
-                    // znaci ovde siba zahteve za akvizicijom bez ikakvog sleep-a, za sve pv
+                    }                   
                 }
 
                 Thread.Sleep(millisecondsTimeout: timerMsc); // a ovo je timeout acq ciklusa
@@ -171,13 +165,10 @@ namespace SCADA.CommAcqEngine
                                 break;
                         }
 
-
-
-
                     }
                 }
 
-                Thread.Sleep(millisecondsTimeout: timerMsc);
+                Thread.Sleep(1000);
             }
         }
 

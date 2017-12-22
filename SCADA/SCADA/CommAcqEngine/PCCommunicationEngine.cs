@@ -21,7 +21,6 @@ namespace SCADA.CommAcqEngine
         bool shutdown;
         int timerMsc;
 
-        private static Dictionary<string, Channel> channels { get; set; }  // ovo mi zapravo ni ne treba za sada
         private Dictionary<string, ProcessController> processControllers { get; set; }
 
         private Dictionary<string, TcpClient> TcpChannels { get; set; }
@@ -35,8 +34,7 @@ namespace SCADA.CommAcqEngine
 
             shutdown = false;
             timerMsc = 1000;
-
-            channels = new Dictionary<string, Channel>();
+          
             processControllers = new Dictionary<string, ProcessController>();
 
             TcpChannels = new Dictionary<string, TcpClient>();
@@ -48,24 +46,24 @@ namespace SCADA.CommAcqEngine
         public void Configure()
         {
             // videti kako da iskoristis Channel
-            Channel chan1 = new Channel()
-            {
-                Protocol = IndustryProtocols.ModbusTCP,
-                TimeOutMsc = 10, // za sada nam ovo nece trebati
-                Name = "CHAN-1",
-                Info = "Acquistion Channel 1"
-            };
+            //Channel chan1 = new Channel()
+            //{
+            //    Protocol = IndustryProtocols.ModbusTCP,
+            //    TimeOutMsc = 10, // za sada nam ovo nece trebati
+            //    Name = "CHAN-1",
+            //    Info = "Acquistion Channel 1"
+            //};
 
-            Channel chan2 = new Channel()
-            {
-                Protocol = IndustryProtocols.ModbusTCP,
-                TimeOutMsc = 10000,
-                Name = "CHAN-2",
-                Info = "Acquistion Channel 2"
-            };
+            //Channel chan2 = new Channel()
+            //{
+            //    Protocol = IndustryProtocols.ModbusTCP,
+            //    TimeOutMsc = 10000,
+            //    Name = "CHAN-2",
+            //    Info = "Acquistion Channel 2"
+            //};
 
-            channels.Add(chan1.Name, chan1);
-            channels.Add(chan2.Name, chan2);
+            //channels.Add(chan1.Name, chan1);
+            //channels.Add(chan2.Name, chan2);
 
             ProcessController rtu1 = new ProcessController()
             {
@@ -120,7 +118,6 @@ namespace SCADA.CommAcqEngine
 
         // ovo je izdvojeno da bude zasebna metoda, jer se tu nazire potencijalna upotrebna Channel.cs...
         // Ondno mozemo specificiarati time-out u channelu
-        // jer ovo TcpClient() radi sinhrono povezivanje sa serverom, pa se ceka dugo exception ako ne valja server
         // https://stackoverflow.com/questions/17118632/how-to-set-the-timeout-for-a-tcpclient 
 
         // jedan kanal - kada mu utvrdim mesto, moze biti pridruzen vecem broju RTU-ova. (To je npr. kao BaseVoltage sto je pridruzen vecem broju opreme u CIMu)
@@ -218,7 +215,7 @@ namespace SCADA.CommAcqEngine
 
                     }
                 }
-                Thread.Sleep(5000);
+                Thread.Sleep(1000);
             }
             {
                 // close svega i dispose

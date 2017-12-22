@@ -18,13 +18,8 @@ namespace ModbusTCPDriver
             ByteCount = bResponse[1];
 
             byte[] help = new byte[bResponse.Length - 2];
-            Buffer.BlockCopy(help, 0, bResponse, 2, bResponse.Length - 2);
-            BitValues = new BitArray(help);
-
-            /// ************************************* problem
-            Console.WriteLine("bits");
-            Console.WriteLine(BitValues.Get(0));
-            Console.WriteLine(BitValues.ToString());
+            Buffer.BlockCopy(bResponse, 2, help, 0, bResponse.Length - 2);
+            BitValues = new BitArray(help);          
             return this;
         }
     }
