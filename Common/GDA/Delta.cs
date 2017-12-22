@@ -27,7 +27,8 @@ namespace FTN.Common
 		private List<ResourceDescription> insertOps = new List<ResourceDescription>();
 		private List<ResourceDescription> deleteOps = new List<ResourceDescription>();
 		private List<ResourceDescription> updateOps = new List<ResourceDescription>();
-		private bool positiveIdsAllowed;		
+        private List<ResourceDescription> testOps = new List<ResourceDescription>();
+        private bool positiveIdsAllowed;		
 		
 		private static ModelResourcesDesc resDesc = null;
 
@@ -111,9 +112,15 @@ namespace FTN.Common
 		{
 			get { return id; }
 			set { id = value; }
-		}		
+		}
+        [DataMember]
+        public List<ResourceDescription> TestOperations
+        {
+            get { return testOps; }
+            set { testOps = value; }
+        }
 
-		[DataMember]		
+        [DataMember]		
 		public List<ResourceDescription> InsertOperations
 		{
 			get	{ return insertOps;	}
