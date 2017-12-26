@@ -188,7 +188,7 @@ namespace DispatcherApp.ViewModel
             ///
             /// otvori vezu ka CommEngine i dobavi mjerenja
             ////
-            Proxy.ReceiveAllMeasValue();
+            Proxy.ReceiveAllMeasValue(TypeOfSCADACommand.ReadAll);
 
             //List<MeasResult> rezultat = new List<MeasResult>();
             //ResourceDescription rd1 = new ResourceDescription();

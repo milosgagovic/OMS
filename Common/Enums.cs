@@ -2,6 +2,12 @@
 
 namespace FTN.Common
 {
+    public enum TypeOfSCADACommand : short
+    {
+        ReadAll = 1,
+        WriteDigital = 2,
+        WriteAnalog = 3
+    }
     public enum PhaseCode : short
     {
         Unknown = 0x0,

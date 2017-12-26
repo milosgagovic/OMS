@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FTN.Common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.ServiceModel;
@@ -36,12 +37,12 @@ namespace CommunicationEngineContract
         {
             this.Factory = this.CreateChannel();
         }
-        public bool ReceiveAllMeasValue()
+        public bool ReceiveAllMeasValue(TypeOfSCADACommand typeOfCommand)
         {
             bool result;
             try
             {
-                result = factory.ReceiveAllMeasValue();
+                result = factory.ReceiveAllMeasValue(typeOfCommand);
                 return result;
             }
             catch (Exception e)

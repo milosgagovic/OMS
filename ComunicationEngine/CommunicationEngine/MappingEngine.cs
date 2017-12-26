@@ -26,6 +26,7 @@ namespace CommunicationEngine
         public MappingEngine()
         {
             model = new ModelGda();
+            instance = new MappingEngine();
         }
         public List<ResourceDescription> MappResult(Response response)
         {
@@ -78,11 +79,27 @@ namespace CommunicationEngine
             return retVal;
         }
 
-        public Command MappCommand()
+        public Command MappCommand(TypeOfSCADACommand typeOfCommand)
         {
-            //naapirati klijentsku komandu na scada komandu
-            ReadAll readAllCommand = new ReadAll();
-            return readAllCommand;
+            switch (typeOfCommand)
+            {
+                case TypeOfSCADACommand.ReadAll:
+                    return new ReadAll();
+                case TypeOfSCADACommand.WriteAnalog:
+                    return new WriteSingleAnalog();
+                case TypeOfSCADACommand.WriteDigital:
+                    return new WriteSingleDigital();
+            }
+
+            return null;
+            ////naapirati klijentsku komandu na scada komandu
+            //ReadAll readAllCommand = new ReadAll();
+            //return readAllCommand;
+        }
+
+        public MappingEngine getInstanceForTest()
+        {
+            return Instance;
         }
     }
 }
