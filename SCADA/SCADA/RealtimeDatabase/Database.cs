@@ -9,16 +9,18 @@ namespace SCADA.RealtimeDatabase
 {
     public class Database
     {
-        public Dictionary<string, ProcessVariable> ProcessVariables = null;
+        public Dictionary<string, ProcessVariable> ProcessVariablesName = null;
 
-        public Dictionary<ushort, ProcessVariable> LookupPVs = null;
+        public Dictionary<ushort, ProcessVariable> ProcessVariablesAddress = null;
 
         private static Database instance;
+        public object SyncObject = null;
 
         private Database()
         {
-            this.ProcessVariables = new Dictionary<string, ProcessVariable>();
-            this.LookupPVs = new Dictionary<ushort, ProcessVariable>();
+            this.ProcessVariablesName = new Dictionary<string, ProcessVariable>();
+            this.ProcessVariablesAddress = new Dictionary<ushort, ProcessVariable>();
+            this.SyncObject = new object();
         }
 
         public static Database Instance

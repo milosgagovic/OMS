@@ -41,19 +41,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BitReadResponse.cs" />
+    <Compile Include="Response\BitReadResponse.cs" />
     <Compile Include="FunctionCodes.cs" />
     <Compile Include="ModbusApplicationHeader.cs" />
     <Compile Include="ModbusHandler.cs" />
     <Compile Include="ModbusRequestMessage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ReadRequest.cs" />
-    <Compile Include="ReadResponse.cs" />
-    <Compile Include="RegisterReadResponse.cs" />
-    <Compile Include="Request.cs" />
-    <Compile Include="Response.cs" />
-    <Compile Include="WriteRequest.cs" />
-    <Compile Include="WriteResponse.cs" />
+    <Compile Include="Request\ReadRequest.cs" />
+    <Compile Include="Response\ReadResponse.cs" />
+    <Compile Include="Response\RegisterReadResponse.cs" />
+    <Compile Include="Request\Request.cs" />
+    <Compile Include="Response\Response.cs" />
+    <Compile Include="Request\WriteRequest.cs" />
+    <Compile Include="Response\WriteResponse.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\PCCommon\PCCommon.csproj">

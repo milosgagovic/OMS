@@ -13,7 +13,7 @@ namespace ModbusTCPDriver
 
         public ushort Value { get; set; }
 
-        public override Response getObjectResponse(byte[] bResponse)
+        public override Response GetObjectResponse(byte[] bResponse)
         {
             FunCode = (FunctionCodes)bResponse[0];
 

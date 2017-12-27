@@ -1,4 +1,5 @@
-﻿using SCADA.RealtimeDatabase.Model;
+﻿using SCADA.RealtimeDatabase.Catalogs;
+using SCADA.RealtimeDatabase.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,41 +10,37 @@ namespace SCADA.RealtimeDatabase
 {
     public class DBContext
     {
-        private static Database database = null;
+        public Database Database { get; set; }
 
         public DBContext()
         {
-            database = Database.Instance;
+            Database = Database.Instance;
         }
 
         public void AddProcessVariable(ProcessVariable pv)
         {
-            Database.Instance.ProcessVariables.Add(pv.Name, pv);
-            Database.Instance.LookupPVs.Add(pv.Address, pv);
+            Database.Instance.ProcessVariablesName.Add(pv.Name, pv);
+            Database.Instance.ProcessVariablesAddress.Add(pv.Address, pv);
         }
 
-        public void UpdateProcessVariable(ProcessVariable pv)
-        {
-
-        }
-
-        public ProcessVariable PVLookup(ushort address)
+        public ProcessVariable GetProcessVariableByName(string name)
         {
             ProcessVariable pv;
-            Database.Instance.LookupPVs.TryGetValue(address, out pv);
+            Database.Instance.ProcessVariablesName.TryGetValue(name, out pv);
+
             return pv;
         }
-        public Digital GetSingleDigital(string name)
-        {
-            ProcessVariable digital;
-            Database.Instance.ProcessVariables.TryGetValue(name, out digital);
 
-            return (Digital)digital;
+        public ProcessVariable GetProcessVariableByAddress(ushort address)
+        {
+            ProcessVariable pv;
+            Database.Instance.ProcessVariablesAddress.TryGetValue(address, out pv);
+            return pv;
         }
 
         public List<ProcessVariable> GetAllProcessVariables()
         {
-            return database.ProcessVariables.Values.ToList();
+            return Database.ProcessVariablesName.Values.ToList();
         }
     }
 }

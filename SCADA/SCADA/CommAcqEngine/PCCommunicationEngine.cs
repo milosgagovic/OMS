@@ -43,7 +43,7 @@ namespace SCADA.CommAcqEngine
 
 
         // citanje iz fajlova ovde da bude...
-        public void Configure()
+        public bool Configure()
         {
             // videti kako da iskoristis Channel
             //Channel chan1 = new Channel()
@@ -96,10 +96,10 @@ namespace SCADA.CommAcqEngine
             //processControllers.Add(rtu2.Name, rtu2);
             //processControllers.Add(rtu3.Name, rtu3);
 
-            CreateChannels();
+            return CreateChannels();
         }
 
-        void CreateChannels()
+        bool CreateChannels()
         {
 
             // za svaki RTU pravimo kokretan komunikacioni link
@@ -111,9 +111,11 @@ namespace SCADA.CommAcqEngine
 
                     // ako nije povezano sa kontrolerima - nisu podignuti onda vratiti neki error ovde i 
                     // ni ne pocinjati StartProcessing
-
+                    return false;
                 }
             }
+
+            return true;
         }
 
         // ovo je izdvojeno da bude zasebna metoda, jer se tu nazire potencijalna upotrebna Channel.cs...
@@ -136,6 +138,8 @@ namespace SCADA.CommAcqEngine
                 tcpClient.Connect(rtu.HostName, rtu.HostPort);
 
                 TcpChannels.Add(rtu.Name, tcpClient);
+
+                retval = true;
             }
             catch (SocketException e)
             {
