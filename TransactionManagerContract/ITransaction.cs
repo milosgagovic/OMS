@@ -7,14 +7,14 @@ using System.Threading.Tasks;
 
 namespace TransactionManagerContract
 {
-    [ServiceContract]
-   public interface ITransaction
+    [ServiceContract(CallbackContract = typeof(ITransactionCallback))]
+    public interface ITransaction
     {
         [OperationContract]
         void Enlist();
 
         [OperationContract]
-        bool Prepare();
+        void Prepare();
 
         [OperationContract]
         void Commit();

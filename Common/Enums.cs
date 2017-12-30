@@ -2,6 +2,12 @@
 
 namespace FTN.Common
 {
+    public enum TransactionAnswer : short
+    {
+        Prepared = 1,
+        Unprepared = 2,
+        Unanswered = 3
+    }
     public enum TypeOfSCADACommand : short
     {
         ReadAll = 1,

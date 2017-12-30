@@ -16,6 +16,10 @@ namespace TransactionManager
         {
             TransactionManagerService tms = new TransactionManagerService();
             Console.WriteLine("Transaction Manager is started");
+            TransactionManager transactionManager = new TransactionManager();
+            transactionManager.Enlist();
+            transactionManager.Prepare();
+
             tms.Start();
 
             Console.ReadLine();
