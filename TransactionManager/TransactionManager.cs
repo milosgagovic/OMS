@@ -39,6 +39,17 @@ namespace TransactionManager
            new EndpointAddress("net.tcp://localhost:8028/DMSTransactionService"));
             ITransaction proxyDMS = factoryDMS.CreateChannel();
             Proxys.Add(proxyDMS);
+
+            TransactionCallback callBackCommunicationEngine = new TransactionCallback();
+            Callbacks.Add(callBackCommunicationEngine);
+
+            DuplexChannelFactory<ITransaction> factoryCommEngine = new DuplexChannelFactory<ITransaction>(callBackCommunicationEngine, new NetTcpBinding(),
+           new EndpointAddress("net.tcp://localhost:8038/CommunicationEngineTransactionService"));
+            ITransaction proxyCommEngine = factoryCommEngine.CreateChannel();
+            Proxys.Add(proxyCommEngine);
+
+
+            
         }
 
         public TransactionManager()
