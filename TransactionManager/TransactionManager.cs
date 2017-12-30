@@ -32,13 +32,13 @@ namespace TransactionManager
             ITransaction proxy = factory.CreateChannel();
             Proxys.Add(proxy);
 
-           // TransactionCallback callBackDMS = new TransactionCallback();
-           // Callbacks.Add(callBackDMS);
+            TransactionCallback callBackDMS = new TransactionCallback();
+            Callbacks.Add(callBackDMS);
 
-           // DuplexChannelFactory<ITransaction> factoryDMS = new DuplexChannelFactory<ITransaction>(callBackDMS, new NetTcpBinding(),
-           //new EndpointAddress("net.tcp://localhost:9000/DMSTransactionService"));
-           // ITransaction proxyDMS = factoryDMS.CreateChannel();
-           // Proxys.Add(proxyDMS);
+            DuplexChannelFactory<ITransaction> factoryDMS = new DuplexChannelFactory<ITransaction>(callBackDMS, new NetTcpBinding(),
+           new EndpointAddress("net.tcp://localhost:8028/DMSTransactionService"));
+            ITransaction proxyDMS = factoryDMS.CreateChannel();
+            Proxys.Add(proxyDMS);
         }
 
         public TransactionManager()
