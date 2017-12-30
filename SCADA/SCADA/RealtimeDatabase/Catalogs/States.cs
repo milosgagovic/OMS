@@ -10,6 +10,7 @@ namespace SCADA.RealtimeDatabase.Catalogs
     {
         OPENED = 0,
         CLOSED,
-        UNKNOWN // dodala samo da bih testirala
+        UNKNOWN, // dodala samo da bih testirala
+        INVALID
     }
 }

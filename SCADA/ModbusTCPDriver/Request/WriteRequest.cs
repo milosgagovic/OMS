@@ -10,7 +10,7 @@ namespace ModbusTCPDriver
     {
         public ushort Value { get; set; }
 
-        public override byte[] getByteRequest()
+        public override byte[] GetByteRequest()
         {
             byte[] stAddr = BitConverter.GetBytes(StartAddr);
             byte[] val = BitConverter.GetBytes(Value);

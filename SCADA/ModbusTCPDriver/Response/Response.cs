@@ -11,6 +11,6 @@ namespace ModbusTCPDriver
     {
         public FunctionCodes FunCode { get; set; }
 
-        public abstract Response getObjectResponse(byte[] bResponse);
+        public abstract Response GetObjectResponse(byte[] bResponse);
     }
 }

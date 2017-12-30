@@ -12,7 +12,7 @@ namespace ModbusTCPDriver
         // need to process bits, not bytes
         public BitArray BitValues;
 
-        public override Response getObjectResponse(byte[] bResponse)
+        public override Response GetObjectResponse(byte[] bResponse)
         {
             FunCode = (FunctionCodes)bResponse[0];
             ByteCount = bResponse[1];

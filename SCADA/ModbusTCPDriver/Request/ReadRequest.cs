@@ -11,7 +11,7 @@ namespace ModbusTCPDriver
     {
         public ushort Quantity { get; set; }
 
-        public override byte[] getByteRequest()
+        public override byte[] GetByteRequest()
         {
             byte[] stAddr = BitConverter.GetBytes(StartAddr);
             byte[] qnt = BitConverter.GetBytes(Quantity);
