@@ -4,13 +4,14 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{1C74A638-26EB-4F71-BE54-D24954BEDB0C}</ProjectGuid>
+    <ProjectGuid>{86D0FD27-8DA2-476E-A046-FCB849F12414}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>DMSService</RootNamespace>
-    <AssemblyName>DMSService</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <RootNamespace>DMSCommon</RootNamespace>
+    <AssemblyName>DMSCommon</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -41,22 +42,25 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DMSService.cs" />
-    <Compile Include="DMSTransactionService.cs" />
+    <Compile Include="Model\ACLine.cs" />
+    <Compile Include="Model\Branch.cs" />
+    <Compile Include="Model\Consumer.cs" />
+    <Compile Include="Model\Element.cs" />
+    <Compile Include="Model\ModelGdaDMS.cs" />
+    <Compile Include="Model\Node.cs" />
+    <Compile Include="Model\Source.cs" />
+    <Compile Include="Model\Switch.cs" />
+    <Compile Include="Model\SwitchState.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Common\Common.csproj">
+    <ProjectReference Include="..\..\ServiceContracts\NetworkModelQueryContract\NetworkModelGDAContract.csproj">
+      <Project>{B726FB71-D295-41EE-9644-B2B0B1BC8911}</Project>
+      <Name>NetworkModelGDAContract</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Common.csproj">
       <Project>{892CBE15-9ED7-4540-81FA-0EAABA592138}</Project>
       <Name>Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Common\DMSCommon\DMSCommon.csproj">
-      <Project>{86D0FD27-8DA2-476E-A046-FCB849F12414}</Project>
-      <Name>DMSCommon</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\TransactionManagerContract\TransactionManagerContract.csproj">
-      <Project>{72a5dd5a-5613-49cb-8351-3ce33a86fc01}</Project>
-      <Name>TransactionManagerContract</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
