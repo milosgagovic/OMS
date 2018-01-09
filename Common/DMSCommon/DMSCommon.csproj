@@ -52,6 +52,9 @@
     <Compile Include="Model\Switch.cs" />
     <Compile Include="Model\SwitchState.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TreeGraph\NodeLink.cs" />
+    <Compile Include="TreeGraph\Tree.cs" />
+    <Compile Include="TreeGraph\TreeNode.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\ServiceContracts\NetworkModelQueryContract\NetworkModelGDAContract.csproj">
