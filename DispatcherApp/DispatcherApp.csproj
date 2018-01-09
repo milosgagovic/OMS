@@ -61,10 +61,27 @@
     </ApplicationDefinition>
     <Compile Include="Model\DataGridResult.cs" />
     <Compile Include="Model\MeasResult.cs" />
+    <Compile Include="Model\Properties\ACLineSegmentProperties.cs" />
+    <Compile Include="Model\Properties\BreakerProperties.cs" />
+    <Compile Include="Model\Properties\EnergyConsumerProperties.cs" />
+    <Compile Include="Model\Properties\EnergySourceProperties.cs" />
+    <Compile Include="Model\Properties\Properties.cs" />
     <Compile Include="Model\RelayCommand.cs" />
     <Compile Include="ViewModel\DispatcherAppViewModel.cs" />
+    <Compile Include="View\BasicCommandsControl.xaml.cs">
+      <DependentUpon>BasicCommandsControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\DispatherAppUserControl.xaml.cs">
       <DependentUpon>DispatherAppUserControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\NetworkExplorerControl.xaml.cs">
+      <DependentUpon>NetworkExplorerControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\NetworkModelControl.xaml.cs">
+      <DependentUpon>NetworkModelControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\TopMenuControl.xaml.cs">
+      <DependentUpon>TopMenuControl.xaml</DependentUpon>
     </Compile>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -78,7 +95,23 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="View\BasicCommandsControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\DispatherAppUserControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\NetworkExplorerControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\NetworkModelControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\TopMenuControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -111,11 +144,14 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.csproj">
       <Project>{892CBE15-9ED7-4540-81FA-0EAABA592138}</Project>
       <Name>Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Common\DMSCommon\DMSCommon.csproj">
+      <Project>{86D0FD27-8DA2-476E-A046-FCB849F12414}</Project>
+      <Name>DMSCommon</Name>
     </ProjectReference>
     <ProjectReference Include="..\NetworkModelService\DataModel\DataModel.csproj">
       <Project>{ADE96497-7C11-40B6-AE82-57F956C9F104}</Project>
@@ -137,6 +173,18 @@
       <Project>{B726FB71-D295-41EE-9644-B2B0B1BC8911}</Project>
       <Name>NetworkModelGDAContract</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\sun.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\triangle.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\bluecircle.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\yellowcircle.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
