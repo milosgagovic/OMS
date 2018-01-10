@@ -5,6 +5,7 @@ using System.Linq;
 using System.ServiceModel;
 using System.Text;
 using System.Threading.Tasks;
+using TransactionManagerContract;
 
 namespace CommunicationEngine
 {
@@ -23,6 +24,12 @@ namespace CommunicationEngine
             hosts = new List<ServiceHost>();
             hosts.Add(new ServiceHost(typeof(CommunicationEngine)));
             hosts.Add(new ServiceHost(typeof(ClientCommEngine)));
+
+            ServiceHost svc = new ServiceHost(typeof(CommunicationEngineTransactionService));
+            svc.Description.Name = "CommunicationEngineTransactionService";
+            svc.AddServiceEndpoint(typeof(ITransaction), new NetTcpBinding(), new
+            Uri("net.tcp://localhost:8038/CommunicationEngineTransactionService"));
+            hosts.Add(svc);
         }
 
         public void Start()

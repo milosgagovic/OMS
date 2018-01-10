@@ -24,7 +24,7 @@ namespace ModbusTCPDriver
             // message must be in big endian format
 
             var bHeader = Header.getByteHeader();
-            var bRequest = Request.getByteRequest();
+            var bRequest = Request.GetByteRequest();
 
             byte[] packedData = new byte[bHeader.Length + bRequest.Length];
 
@@ -48,7 +48,7 @@ namespace ModbusTCPDriver
                 case FunctionCodes.WriteSingleRegister:
 
                     Response = new WriteResponse();
-                    Response.getObjectResponse(responseData);
+                    Response.GetObjectResponse(responseData);
 
                     //Console.WriteLine("WriteSingleCoil Response");
                     //Console.WriteLine(BitConverter.ToString(data, 0, length));
@@ -58,7 +58,7 @@ namespace ModbusTCPDriver
                 case FunctionCodes.ReadDiscreteInput:
 
                     Response = new BitReadResponse();
-                    Response.getObjectResponse(responseData);
+                    Response.GetObjectResponse(responseData);
 
                     //Console.WriteLine("ReadDiscreteInput Response");
                     //Console.WriteLine(BitConverter.ToString(data, 0, length));
@@ -68,7 +68,7 @@ namespace ModbusTCPDriver
                 case FunctionCodes.ReadInputRegisters:
 
                     Response = new RegisterReadResponse();
-                    Response.getObjectResponse(responseData);
+                    Response.GetObjectResponse(responseData);
 
                     //Console.WriteLine("ReadHoldingRegisters Response");
                     //Console.WriteLine(BitConverter.ToString(data, 0, length));

@@ -56,6 +56,7 @@ namespace SCADA.CommAcqEngine
         public void StartAcquisition()
         {
             List<ProcessVariable> pvs = db.GetAllProcessVariables();
+
             while (!shutdown)
             {
                 foreach (ProcessVariable pv in pvs)
@@ -63,7 +64,6 @@ namespace SCADA.CommAcqEngine
                     IORequestBlock iorb = new IORequestBlock()
                     {
                         RequestType = RequestType.SEND_RECV,
-                        // RTUAddress = pv.RtuAddress, // ne koristim
                         RtuName = pv.RtuName,
                         Address = pv.Address
                     };
@@ -71,50 +71,48 @@ namespace SCADA.CommAcqEngine
                     RTU rtu;
                     if (RTUs.TryGetValue(iorb.RtuName, out rtu))
                     {
-                        if (!ProtocolSetter(rtu.Protocol))
+                        switch (rtu.Protocol)
                         {
-                            continue;
-                            //return ResultMessage.INTERNAL_SERVER_ERROR;
+                            case IndustryProtocols.ModbusTCP:
+
+                                ModbusHandler mdbHandler = new ModbusHandler();
+
+                                switch (pv.Type)
+                                {
+                                    case VariableTypes.DIGITAL:
+
+                                        Digital digital = (Digital)pv;
+                                        mdbHandler.Request = new ReadRequest()
+                                        {
+                                            FunCode = FunctionCodes.ReadDiscreteInput,
+                                            StartAddr = digital.Address,
+                                            Quantity = (ushort)(Math.Ceiling((Math.Log(digital.ValidStates.Count, 2))))
+                                        };
+                                        mdbHandler.Header = new ModbusApplicationHeader()
+                                        {
+                                            TransactionId = 0,
+                                            Length = 5,
+                                            ProtocolId = (ushort)IndustryProtocols.ModbusTCP,
+                                            DeviceAddress = rtu.Address
+                                        };
+                                        break;
+
+                                    case VariableTypes.ANALOGIN:
+
+                                        AnalogIn analog = (AnalogIn)pv;
+                                        break;
+
+                                    case VariableTypes.COUNTER:
+
+                                        Counter counter = (Counter)pv;
+                                        break;
+                                }
+
+                                iorb.SendBuff = mdbHandler.PackData();
+                                break;
                         }
 
-                        //treba da bude switch u zavisnosti od protokola
-                        ModbusHandler mdbHandler = (ModbusHandler)protHandler;
-
-                        switch (pv.Type)
-                        {
-                            case VariableTypes.DIGITAL:
-                                Digital digital = (Digital)pv;
-                                mdbHandler.Request = new ReadRequest()
-                                {
-                                    FunCode = FunctionCodes.ReadDiscreteInput,
-                                    StartAddr = digital.Address,
-                                    Quantity = (ushort)(Math.Floor((Math.Log(digital.ValidStates.Count, 2))))
-
-                                };
-                                mdbHandler.Header = new ModbusApplicationHeader()
-                                {
-                                    TransactionId = 0,
-                                    Length = 5,
-                                    ProtocolId = (ushort)IndustryProtocols.ModbusTCP,
-                                    DeviceAddress = rtu.Address
-                                };
-                                break;
-
-                            case VariableTypes.ANALOGIN:
-                                AnalogIn analog = (AnalogIn)pv;
-
-                                break;
-
-                            case VariableTypes.COUNTER:
-                                Counter counter = (Counter)pv;
-
-                                break;
-                        }
-
-                        iorb.SendBuff = mdbHandler.PackData();
                         iorb.SendMsgLength = iorb.SendBuff.Length;
-                        //Console.WriteLine("     data for send ->");
-                        //Console.WriteLine(BitConverter.ToString(iorb.SendBuff));
 
                         IORequests.EnqueueIOReqForProcess(iorb);
                     }
@@ -143,48 +141,53 @@ namespace SCADA.CommAcqEngine
                     RTU rtu;
                     if (RTUs.TryGetValue((answer.RtuName), out rtu))
                     {
-                        // treba takodje onaj switch case sa protocol handler-om
-                        if (!ProtocolSetter(IndustryProtocols.ModbusTCP))
+                        switch (rtu.Protocol)
                         {
-                            //return ResultMessage.INTERNAL_SERVER_ERROR;
-                        }
+                            case IndustryProtocols.ModbusTCP:
 
-                        ModbusHandler mdbHandler = (ModbusHandler)protHandler;
-                        mdbHandler.UnpackData(answer.RcvBuff, answer.RcvMsgLength);
+                                ModbusHandler mdbHandler = new ModbusHandler();
 
-                        switch (mdbHandler.Response.FunCode)
-                        {
-                            case FunctionCodes.ReadDiscreteInput:
-                                BitReadResponse response = (BitReadResponse)mdbHandler.Response;
+                                mdbHandler.UnpackData(answer.RcvBuff, answer.RcvMsgLength);
 
-                                Digital target = (Digital)db.PVLookup(answer.Address);
+                                switch (mdbHandler.Response.FunCode)
+                                {
+                                    case FunctionCodes.ReadDiscreteInput:
+                                        BitReadResponse response = (BitReadResponse)mdbHandler.Response;
 
-                                // updating database
-                                // tu treba neki sync
-                                target.SetState(response.BitValues);                               
+                                        Digital target = (Digital)db.GetProcessVariableByAddress(answer.Address);
+
+                                        if (target != null)
+                                        {
+                                            int bitNumber = (int)Math.Floor((Math.Log(target.ValidStates.Count, 2)));
+
+                                            int[] array = new int[1];
+                                            response.BitValues.CopyTo(array, 0);
+
+                                            try
+                                            {
+                                                lock (db.Database.SyncObject)
+                                                {
+                                                    target.State = target.ValidStates[array[0]];
+                                                }
+                                                Console.WriteLine("Digital variable {0}, state: {1}", target.Name, target.State);
+                                            }
+                                            catch
+                                            {
+                                                Console.WriteLine("Digital variable {0}, state: INVALID", target.Name);
+                                            }
+                                        }
+
+                                        break;
+                                }
+
                                 break;
                         }
-
                     }
                 }
 
                 Thread.Sleep(1000);
             }
         }
-
-        private static bool ProtocolSetter(IndustryProtocols protocol)
-        {
-            switch (protocol)
-            {
-                case IndustryProtocols.ModbusTCP:
-                    protHandler = new ModbusHandler();
-                    return true;
-            }
-
-            return false;
-        }
-
-
 
         // CommandReceiver methods
         //-------------------------
@@ -262,7 +265,7 @@ namespace SCADA.CommAcqEngine
             // is ID set in the request
             try
             {
-                digital = db.GetSingleDigital(id);
+                digital = (Digital)db.GetProcessVariableByName(id);
             }
             catch (Exception e)
             {
@@ -294,15 +297,9 @@ namespace SCADA.CommAcqEngine
                     RTUAddress = rtu.Address
                 };
 
-                if (!ProtocolSetter(rtu.Protocol))
-                {
-                    return ResultMessage.INTERNAL_SERVER_ERROR;
-                }
-
                 protHandler = new ModbusHandler();
 
                 switch (rtu.Protocol)
-                //switch (rtu.Channel.Protocol)
                 {
                     case IndustryProtocols.ModbusTCP:
                         ModbusHandler mdbHandler = (ModbusHandler)protHandler;
@@ -340,6 +337,5 @@ namespace SCADA.CommAcqEngine
 
             return ResultMessage.OK;
         }
-
     }
 }

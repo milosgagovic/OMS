@@ -8,6 +8,7 @@ using System.ServiceModel;
 using FTN.Services.NetworkModelService;
 using System.ServiceModel.Description;
 using FTN.Common;
+using TransactionManagerContract;
 
 namespace FTN.Services.NetworkModelService
 {
@@ -38,7 +39,12 @@ namespace FTN.Services.NetworkModelService
 		private void InitializeHosts()
 		{
 			hosts = new List<ServiceHost>();
-			hosts.Add(new ServiceHost(typeof(GenericDataAccess)));
+            ServiceHost svc = new ServiceHost(typeof(NetworkModelTransactionService));
+            svc.Description.Name = "NetworkModelTransactionService";
+            svc.AddServiceEndpoint(typeof(ITransaction), new NetTcpBinding(), new
+            Uri("net.tcp://localhost:8018/NetworkModelTransactionService"));
+            hosts.Add(new ServiceHost(typeof(GenericDataAccess)));
+            hosts.Add(svc);
 		}
 
 		private void StartHosts()

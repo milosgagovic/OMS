@@ -62,7 +62,7 @@ namespace SCADA.SecondaryDataProcessing
 
             try
             {
-               digital = db.GetSingleDigital(id);
+               digital = (Digital)db.GetProcessVariableByName(id);
             }
             catch(Exception e)
             {

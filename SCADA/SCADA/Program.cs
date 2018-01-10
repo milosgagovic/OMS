@@ -74,6 +74,18 @@ namespace SCADA
                 Address = 1002
             };
 
+            Digital d4 = new Digital()
+            {
+                RtuName = "RTU-1",
+                Name = "TEST1",
+
+                Class = DigitalDeviceClasses.SWITCH,
+                ValidCommands = { CommandTypes.CLOSE, CommandTypes.OPEN },
+                ValidStates = { RealtimeDatabase.Catalogs.States.CLOSED, RealtimeDatabase.Catalogs.States.OPENED, RealtimeDatabase.Catalogs.States.UNKNOWN },
+                Command = CommandTypes.OPEN,
+                State = RealtimeDatabase.Catalogs.States.CLOSED,
+                Address = 1003
+            };
 
             //Digital d4 = new Digital()
             //{
@@ -82,37 +94,24 @@ namespace SCADA
 
             //    Class = DigitalDeviceClasses.SWITCH,
             //    ValidCommands = { CommandTypes.CLOSE, CommandTypes.OPEN },
-            //    ValidStates = { RealtimeDatabase.Catalogs.States.CLOSED, RealtimeDatabase.Catalogs.States.OPENED, RealtimeDatabase.Catalogs.States.UNKNOWN },
+            //    ValidStates = { RealtimeDatabase.Catalogs.States.CLOSED, RealtimeDatabase.Catalogs.States.OPENED },
             //    Command = CommandTypes.OPEN,
             //    State = RealtimeDatabase.Catalogs.States.CLOSED,
             //    Address = 1003
             //};
 
-            Digital d4 = new Digital()
-            {
-                RtuName = "RTU-1",
-                Name = "TEST1",
+            //Digital d5 = new Digital()
+            //{
+            //    RtuName = "RTU-1",
+            //    Name = "TEST2",
 
-                Class = DigitalDeviceClasses.SWITCH,
-                ValidCommands = { CommandTypes.CLOSE, CommandTypes.OPEN },
-                ValidStates = { RealtimeDatabase.Catalogs.States.CLOSED, RealtimeDatabase.Catalogs.States.OPENED },
-                Command = CommandTypes.OPEN,
-                State = RealtimeDatabase.Catalogs.States.CLOSED,
-                Address = 1003
-            };
-
-            Digital d5 = new Digital()
-            {
-                RtuName = "RTU-1",
-                Name = "TEST2",
-
-                Class = DigitalDeviceClasses.SWITCH,
-                ValidCommands = { CommandTypes.CLOSE, CommandTypes.OPEN },
-                ValidStates = { RealtimeDatabase.Catalogs.States.CLOSED, RealtimeDatabase.Catalogs.States.OPENED },
-                Command = CommandTypes.OPEN,
-                State = RealtimeDatabase.Catalogs.States.CLOSED,
-                Address = 1004
-            };
+            //    Class = DigitalDeviceClasses.SWITCH,
+            //    ValidCommands = { CommandTypes.CLOSE, CommandTypes.OPEN },
+            //    ValidStates = { RealtimeDatabase.Catalogs.States.CLOSED, RealtimeDatabase.Catalogs.States.OPENED },
+            //    Command = CommandTypes.OPEN,
+            //    State = RealtimeDatabase.Catalogs.States.CLOSED,
+            //    Address = 1004
+            //};
 
 
             DBContext context = new DBContext();
@@ -121,12 +120,24 @@ namespace SCADA
             context.AddProcessVariable(d3);
 
             // test
-            //context.AddProcessVariable(d4);
+            context.AddProcessVariable(d4);
             //context.AddProcessVariable(d5);
 
             Console.WriteLine("Setting PCCommEngine");
-            PCCommunicationEngine PCCommEng = new PCCommunicationEngine();
-            PCCommEng.Configure(); // mozda parametar da bude adresa datoteka...     
+            PCCommunicationEngine PCCommEng;
+
+            while (true)
+            {
+                PCCommEng = new PCCommunicationEngine();
+
+                if (!PCCommEng.Configure()) // mozda parametar da bude adresa datoteka...  
+                {
+                    Console.WriteLine("\nStart the simulator then press any key to continue the application.\n");
+                    Console.ReadKey();
+                    continue;
+                }
+                break;
+            }
 
             Thread reqConsumer = new Thread(PCCommEng.StartProcessing);
 
@@ -139,7 +150,6 @@ namespace SCADA
             reqConsumer.Start();
             reqProducer.Start();
             answConsumer.Start();
-
 
             try
             {
