@@ -69,29 +69,14 @@ namespace ModbusTCPDriver
         }
 
         public ModbusApplicationHeader getObjectHeader(byte[] bHeader)
-        {
-
-            //byte[] transId = new byte[2]
-            //{
-            //    bHeader[0], bHeader[1]
-            //};
-
-            //byte[] protocolId = new byte[2]
-            //{
-            //    bHeader[2], bHeader[3]
-            //};
-
-            //byte[] length = new byte[2]
-            //{
-            //    bHeader[4], bHeader[5]
-            //};
-
-            //Array.Reverse(transId);
-            //Array.Reverse(protocolId);
-            //Array.Reverse(length);
-         
+        {     
+            // transaction Id
             Array.Reverse(bHeader, 0, 2);
+
+            // protocol Id
             Array.Reverse(bHeader, 2, 2);
+
+            // Length
             Array.Reverse(bHeader, 4, 2);
 
             TransactionId = BitConverter.ToUInt16(bHeader, 0);
@@ -99,16 +84,6 @@ namespace ModbusTCPDriver
             Length = BitConverter.ToUInt16(bHeader, 4);
 
             DeviceAddress = bHeader[6];
-
-            //ModbusApplicationHeader retHeader = new ModbusApplicationHeader()
-            //{
-            //    TransactionId = BitConverter.ToUInt16(bHeader, 0),
-            //    ProtocolId = BitConverter.ToUInt16(bHeader, 2),
-            //    Length = BitConverter.ToUInt16(bHeader, 4),
-
-            //    DeviceAddress = bHeader[6]
-            //};
-
             return this;
         }
     }

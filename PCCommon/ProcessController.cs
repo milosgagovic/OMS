@@ -10,15 +10,16 @@ namespace PCCommon
 
     public class ProcessController
     {
+        public int DeviceAddress { get; set; }
+
+        // unique name  
+        public string Name { get; set; }
+
+        public int AcqPeriod { get; set; }
+
         public string HostName { get; set; }
 
         public short HostPort { get; set; }
-
-        public int DeviceAddress { get; set; } // to je onaj int - short
-
-        public string ChannelName { get; set; } // associtad channel Id
-               
-        public string Name { get; set; } // unique name   
     }
 
 }
