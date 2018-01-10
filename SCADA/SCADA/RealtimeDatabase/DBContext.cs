@@ -17,10 +17,26 @@ namespace SCADA.RealtimeDatabase
             Database = Database.Instance;
         }
 
+        public void AddRTU(RTU rtu)
+        {
+            Database.Instance.RTUs.Add(rtu.Name, rtu);
+        }
+
+        public RTU GetRTUByName(string name)
+        {
+            RTU rtu;
+            Database.Instance.RTUs.TryGetValue(name, out rtu);
+
+            return rtu;
+        }
+
+        public Dictionary<string, RTU> GettAllRTUs()
+        {
+            return Database.RTUs;
+        }
         public void AddProcessVariable(ProcessVariable pv)
         {
             Database.Instance.ProcessVariablesName.Add(pv.Name, pv);
-            Database.Instance.ProcessVariablesAddress.Add(pv.Address, pv);
         }
 
         public ProcessVariable GetProcessVariableByName(string name)

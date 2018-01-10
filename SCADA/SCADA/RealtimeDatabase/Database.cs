@@ -13,6 +13,9 @@ namespace SCADA.RealtimeDatabase
 
         public Dictionary<ushort, ProcessVariable> ProcessVariablesAddress = null;
 
+        // mora RTU da bude osnovni element u bazi ako zelimo da ih imamo vise?
+        public Dictionary<string, RTU> RTUs = null;
+
         private static Database instance;
         public object SyncObject = null;
 
@@ -21,6 +24,7 @@ namespace SCADA.RealtimeDatabase
             this.ProcessVariablesName = new Dictionary<string, ProcessVariable>();
             this.ProcessVariablesAddress = new Dictionary<ushort, ProcessVariable>();
             this.SyncObject = new object();
+            this.RTUs = new Dictionary<string, RTU>();
         }
 
         public static Database Instance

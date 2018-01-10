@@ -80,7 +80,6 @@
     <Compile Include="CommAcqEngine\IORequestsQueue.cs" />
     <Compile Include="CommAcqEngine\PCCommunicationEngine.cs" />
     <Compile Include="CommAcqEngine\RTU.cs" />
-    <Compile Include="CommAcqEngine\TCPClientChannel.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RealtimeDatabase\Catalogs\DigitalDeviceClasses.cs" />

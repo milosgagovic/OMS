@@ -75,20 +75,18 @@ namespace SCADA.CommAcqEngine
 
         public IORequestBlock GetRequest(out bool isSuccessful)
         {
-            // pay attention to ';' -> made to be blocking
-            // while (!IORequests.TryDequeue(out req));
             IORequestBlock req;
-            isSuccessful=IORequests.TryDequeue(out req);
+            isSuccessful = IORequests.TryDequeue(out req);
+            IORequests.Take(1);
             return req;
         }
 
-        // mozda visak
         public bool IsIORequstEmpty()
         {
-            return IORequests.Count == 0;
+            return IORequests.IsEmpty;
         }
 
-        public void EnqueueIOAnsForProcess(IORequestBlock iorb)
+        public void EnqueueIOAnswerForProcess(IORequestBlock iorb)
         {
             IOAnswers.Enqueue(iorb);
         }
@@ -96,7 +94,7 @@ namespace SCADA.CommAcqEngine
         public IORequestBlock GetAnswer(out bool isSuccessful)
         {
             IORequestBlock answ;
-            isSuccessful=IOAnswers.TryDequeue(out  answ);
+            isSuccessful = IOAnswers.TryDequeue(out answ);
             return answ;
         }
 

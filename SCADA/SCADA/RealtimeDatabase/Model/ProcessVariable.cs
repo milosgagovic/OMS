@@ -8,16 +8,21 @@ namespace SCADA.RealtimeDatabase.Model
 {
     public abstract class ProcessVariable
     {
-        public PVID PVID { get; set; }
-
         public string Name { get; set; }
 
-        public string RtuName { get; set; }
+        // Associated ProcessController
+        public string ProcContrName { get; set; }
 
-        public byte RtuAddress { get; set; }
+        // Relative address in configuration file
+        public ushort RelativeAddress { get; set; }
 
-        public ushort Address { get; set; }
+        // Address in associated Process Controller memory.
+        // public ushort ProcContrAddress { get; set; }
 
         public VariableTypes Type { get; set; }
+
+        public ProcessVariable()
+        {
+        }
     }
 }

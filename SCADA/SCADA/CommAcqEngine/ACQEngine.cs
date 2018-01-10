@@ -12,6 +12,7 @@ using OMSSCADACommon;
 using SCADA.SecondaryDataProcessing;
 using OMSSCADACommon.Response;
 using SCADA.ClientHandler;
+using SCADA.RealtimeDatabase.Catalogs;
 
 namespace SCADA.CommAcqEngine
 {
@@ -24,8 +25,7 @@ namespace SCADA.CommAcqEngine
         private bool shutdown;
         private int timerMsc;
 
-        private DBContext db = null;
-
+        private DBContext dbContext = null;
         public static Dictionary<string, RTU> RTUs { get; set; }
 
         public ACQEngine()
@@ -33,15 +33,179 @@ namespace SCADA.CommAcqEngine
             IORequests = IORequestsQueue.GetQueue();
             shutdown = false;
             timerMsc = 5000;
+            dbContext = new DBContext();
+        }
 
-            RTUs = new Dictionary<string, RTU>();
-            db = new DBContext();
-            SetupRTUs();
+        // ovde konfigurisati varijable, rtu-ove. celu rtdb
+        public void Configure(string path)
+        {
+            RTUs = dbContext.GettAllRTUs();
+
+            RTU rtu1 = new RTU()
+            {
+                Address = 1,
+                Name = "RTU-1",
+                Protocol = PCCommon.IndustryProtocols.ModbusTCP,
+
+                DigOutStartAddr = 0,
+                DigInStartAddr = 1000,
+                AnaInStartAddr = 2000,
+                AnaOutStartAddr = 3000,
+                CounterStartAddr = 3500,
+
+                DigOutCount = 8,
+                DigInCount = 8,
+                AnaInCount = 4,
+                AnaOutCount = 2,
+                CounterCount = 2
+            };
+
+            RTU rtu2 = new RTU()
+            {
+                Address = 1,
+                Name = "RTU-2",
+                Protocol = PCCommon.IndustryProtocols.ModbusTCP,
+
+                DigOutStartAddr = 0,
+                DigInStartAddr = 1000,
+                AnaInStartAddr = 2000,
+                AnaOutStartAddr = 3000,
+                CounterStartAddr = 3500,
+
+                DigOutCount = 8,
+                DigInCount = 8,
+                AnaInCount = 4,
+                AnaOutCount = 2,
+                CounterCount = 2
+
+            };
+
+            RTUs.Add(rtu1.Name, rtu1);
+            RTUs.Add(rtu2.Name, rtu2);
+
+            // rtu 1
+            Digital d1 = new Digital()
+            {
+                ProcContrName = "RTU-1",
+                Name = "MEAS_D_1",
+                RelativeAddress = 0,
+                Class = DigitalDeviceClasses.SWITCH,
+                ValidCommands = { CommandTypes.CLOSE, CommandTypes.OPEN },
+                ValidStates = { RealtimeDatabase.Catalogs.States.CLOSED, RealtimeDatabase.Catalogs.States.OPENED },
+                Command = CommandTypes.OPEN,
+                State = RealtimeDatabase.Catalogs.States.CLOSED,
+            };
+
+            Digital d2 = new Digital()
+            {
+                ProcContrName = "RTU-1",
+                Name = "MEAS_D_2",
+                RelativeAddress = 1,
+                Class = DigitalDeviceClasses.SWITCH,
+                ValidCommands = { CommandTypes.CLOSE, CommandTypes.OPEN },
+                ValidStates = { RealtimeDatabase.Catalogs.States.CLOSED, RealtimeDatabase.Catalogs.States.OPENED },
+                Command = CommandTypes.OPEN,
+                State = RealtimeDatabase.Catalogs.States.CLOSED,
+            };
+
+            Digital d3 = new Digital()
+            {
+                ProcContrName = "RTU-1",
+                Name = "MEAS_D_3",
+                RelativeAddress = 2,
+                Class = DigitalDeviceClasses.SWITCH,
+                ValidCommands = { CommandTypes.CLOSE, CommandTypes.OPEN },
+                ValidStates = { RealtimeDatabase.Catalogs.States.CLOSED, RealtimeDatabase.Catalogs.States.OPENED },
+                Command = CommandTypes.OPEN,
+                State = RealtimeDatabase.Catalogs.States.CLOSED,
+            };
+
+            Digital d4 = new Digital()
+            {
+                ProcContrName = "RTU-1",
+                Name = "TEST1",
+                RelativeAddress = 3,
+                Class = DigitalDeviceClasses.SWITCH,
+                ValidCommands = { CommandTypes.CLOSE, CommandTypes.OPEN },
+                ValidStates = { RealtimeDatabase.Catalogs.States.CLOSED, RealtimeDatabase.Catalogs.States.OPENED, RealtimeDatabase.Catalogs.States.UNKNOWN },
+                Command = CommandTypes.OPEN,
+                State = RealtimeDatabase.Catalogs.States.CLOSED,
+            };
+
+            Digital d5 = new Digital()
+            {
+                ProcContrName = "RTU-1",
+                Name = "TEST2",
+                RelativeAddress = 4,
+                Class = DigitalDeviceClasses.SWITCH,
+                ValidCommands = { CommandTypes.CLOSE, CommandTypes.OPEN },
+                ValidStates = { RealtimeDatabase.Catalogs.States.CLOSED, RealtimeDatabase.Catalogs.States.OPENED },
+                Command = CommandTypes.OPEN,
+                State = RealtimeDatabase.Catalogs.States.CLOSED,
+            };
+
+            // rtu 2
+            Digital d6 = new Digital()
+            {
+                ProcContrName = "RTU-2",
+                Name = "TEST3",
+                RelativeAddress = 0,
+                Class = DigitalDeviceClasses.SWITCH,
+                ValidCommands = { CommandTypes.CLOSE, CommandTypes.OPEN },
+                ValidStates = { RealtimeDatabase.Catalogs.States.CLOSED, RealtimeDatabase.Catalogs.States.OPENED },
+                Command = CommandTypes.OPEN,
+                State = RealtimeDatabase.Catalogs.States.CLOSED,
+            };
+
+            Digital d7 = new Digital()
+            {
+                ProcContrName = "RTU-2",
+                Name = "TEST4",
+                RelativeAddress = 1,
+                Class = DigitalDeviceClasses.SWITCH,
+                ValidCommands = { CommandTypes.CLOSE, CommandTypes.OPEN },
+                ValidStates = { RealtimeDatabase.Catalogs.States.CLOSED, RealtimeDatabase.Catalogs.States.OPENED },
+                Command = CommandTypes.OPEN,
+                State = RealtimeDatabase.Catalogs.States.CLOSED,
+            };
+
+            Digital d8 = new Digital()
+            {
+                ProcContrName = "RTU-2",
+                Name = "TEST5",
+                RelativeAddress = 2,
+                Class = DigitalDeviceClasses.SWITCH,
+                ValidCommands = { CommandTypes.CLOSE, CommandTypes.OPEN },
+                ValidStates = { RealtimeDatabase.Catalogs.States.CLOSED, RealtimeDatabase.Catalogs.States.OPENED },
+                Command = CommandTypes.OPEN,
+                State = RealtimeDatabase.Catalogs.States.CLOSED,
+            };
+
+            rtu1.AddProcessVariable(d1);
+            rtu1.AddProcessVariable(d2);
+            rtu1.AddProcessVariable(d3);
+            rtu1.AddProcessVariable(d4);
+            rtu1.AddProcessVariable(d5);
+
+            rtu2.AddProcessVariable(d6);
+            rtu2.AddProcessVariable(d7);
+            rtu2.AddProcessVariable(d8);
+
+            // pitanje, ako uradim delete variajble iz baze, da li se brise i iz rtu-a?
+            dbContext.AddProcessVariable(d1);
+            dbContext.AddProcessVariable(d2);
+            dbContext.AddProcessVariable(d3);
+            dbContext.AddProcessVariable(d4);
+            dbContext.AddProcessVariable(d5);
+            dbContext.AddProcessVariable(d6);
+            dbContext.AddProcessVariable(d7);
+            dbContext.AddProcessVariable(d8);
+
+            d1.Name = "PromenaD1";
         }
 
         public void SetupRTUs()
         {
-            //RTU rtu1 = new RTU(8, 8, 4, 4, 2);
             RTU rtu1 = new RTU();
             rtu1.Address = 1;
             rtu1.Name = "RTU-1";
@@ -55,7 +219,7 @@ namespace SCADA.CommAcqEngine
 
         public void StartAcquisition()
         {
-            List<ProcessVariable> pvs = db.GetAllProcessVariables();
+            List<ProcessVariable> pvs = dbContext.GetAllProcessVariables();
 
             while (!shutdown)
             {
@@ -64,13 +228,13 @@ namespace SCADA.CommAcqEngine
                     IORequestBlock iorb = new IORequestBlock()
                     {
                         RequestType = RequestType.SEND_RECV,
-                        RtuName = pv.RtuName,
-                        Address = pv.Address
+                        RtuName = pv.ProcContrName
                     };
 
                     RTU rtu;
                     if (RTUs.TryGetValue(iorb.RtuName, out rtu))
                     {
+                        iorb.ReqAddress = (ushort)rtu.GetAcqAddress(pv);
                         switch (rtu.Protocol)
                         {
                             case IndustryProtocols.ModbusTCP:
@@ -82,11 +246,12 @@ namespace SCADA.CommAcqEngine
                                     case VariableTypes.DIGITAL:
 
                                         Digital digital = (Digital)pv;
+
                                         mdbHandler.Request = new ReadRequest()
                                         {
                                             FunCode = FunctionCodes.ReadDiscreteInput,
-                                            StartAddr = digital.Address,
-                                            Quantity = (ushort)(Math.Ceiling((Math.Log(digital.ValidStates.Count, 2))))
+                                            StartAddr = (ushort)rtu.GetAcqAddress(pv),
+                                            Quantity = (ushort)(Math.Floor((Math.Log(digital.ValidStates.Count, 2))))
                                         };
                                         mdbHandler.Header = new ModbusApplicationHeader()
                                         {
@@ -121,7 +286,7 @@ namespace SCADA.CommAcqEngine
                         // dodati message da je nevalidno podesavanje PV, da taj RTU ne postoji bla bla
                         // ishedlovati nekako tu pv ili rtu....
                         continue;
-                    }                   
+                    }
                 }
 
                 Thread.Sleep(millisecondsTimeout: timerMsc); // a ovo je timeout acq ciklusa
@@ -154,7 +319,11 @@ namespace SCADA.CommAcqEngine
                                     case FunctionCodes.ReadDiscreteInput:
                                         BitReadResponse response = (BitReadResponse)mdbHandler.Response;
 
-                                        Digital target = (Digital)db.GetProcessVariableByAddress(answer.Address);
+                                        // sad treba skontati na koju varijablu namapirati
+                                        // ono sto jednoznacno identifikuje variajblu to je njena pripadnost
+                                        // rtu-u i adresa u njemu
+                                        //Digital target = (Digital)db.GetProcessVariableByAddress(answer.ReqAddress);
+                                        Digital target = (Digital)rtu.GetProcessVariableByAddress(answer.ReqAddress);
 
                                         if (target != null)
                                         {
@@ -165,7 +334,7 @@ namespace SCADA.CommAcqEngine
 
                                             try
                                             {
-                                                lock (db.Database.SyncObject)
+                                                lock (dbContext.Database.SyncObject)
                                                 {
                                                     target.State = target.ValidStates[array[0]];
                                                 }
@@ -224,7 +393,7 @@ namespace SCADA.CommAcqEngine
 
         public ResultMessage ReadAll()
         {
-            List<ProcessVariable> pvs = db.GetAllProcessVariables();
+            List<ProcessVariable> pvs = dbContext.GetAllProcessVariables();
 
             OMSSCADACommon.Response.Response response = new OMSSCADACommon.Response.Response();
 
@@ -234,7 +403,7 @@ namespace SCADA.CommAcqEngine
                 {
                     case VariableTypes.DIGITAL:
                         Digital digital = (Digital)pv;
-                        response.Variables.Add(new DigitalVariable() { Id = digital.Name, State = (States)digital.State });
+                        response.Variables.Add(new DigitalVariable() { Id = digital.Name, State = (OMSSCADACommon.States)digital.State });
                         break;
                     case VariableTypes.ANALOGIN:
                         AnalogIn analog = (AnalogIn)pv;
@@ -265,7 +434,7 @@ namespace SCADA.CommAcqEngine
             // is ID set in the request
             try
             {
-                digital = (Digital)db.GetProcessVariableByName(id);
+                digital = (Digital)dbContext.GetProcessVariableByName(id);
             }
             catch (Exception e)
             {
@@ -289,12 +458,12 @@ namespace SCADA.CommAcqEngine
             {
                 digital.Command = command;
                 RTU rtu;
-                RTUs.TryGetValue(digital.RtuName, out rtu);
+                RTUs.TryGetValue(digital.ProcContrName, out rtu);
 
                 IORequestBlock iorb = new IORequestBlock()
                 {
                     RequestType = RequestType.SEND,
-                    RTUAddress = rtu.Address
+
                 };
 
                 protHandler = new ModbusHandler();
@@ -315,7 +484,7 @@ namespace SCADA.CommAcqEngine
                         mdbHandler.Request = new WriteRequest()
                         {
                             FunCode = FunctionCodes.WriteSingleCoil,
-                            StartAddr = digital.Address,
+                            StartAddr = (ushort)rtu.GetAcqAddress(digital),
                             Value = (ushort)command
                         };
 
