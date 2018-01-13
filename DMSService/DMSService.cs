@@ -1,6 +1,7 @@
 ﻿using DMSCommon.Model;
 using DMSCommon.TreeGraph;
 using DMSCommon.TreeGraph.Tree;
+using DMSContract;
 using FTN.Common;
 using System;
 using System.Collections.Generic;
@@ -59,7 +60,7 @@ namespace DMSService
                 rd = gda.GetValues(item);
                 mrid = rd.GetProperty(ModelCode.IDOBJ_MRID).AsString();
 
-                Source ESource = new Source(item, null, mrid);
+                Source ESource = new Source(item, 0, mrid);
 
                 ModelCode propertyId = ModelCode.CONDUCTEQUIP_TERMINALS;
                 ModelCode type = ModelCode.TERMINAL;
@@ -84,12 +85,12 @@ namespace DMSService
                         rd = gda.GetValues(connNode[0]);
                         mrid = rd.GetProperty(ModelCode.IDOBJ_MRID).AsString();
                         Node n = new Node(connNode[0], mrid, ESource, terms[0]);
-                        ESource.End2 = n;
+                        ESource.End2 = n.ElementGID;
                         ConnecNodes.Add(n);
                         Sources.Add(ESource);
                         //dodavanje ES u koren stabla i prvog childa
                         tree.AddRoot(Sources[0].ElementGID, Sources[0]);
-                        tree.AddChild(n.Parent.ElementGID, n.ElementGID, n);
+                        tree.AddChild(n.Parent, n.ElementGID, n);
                     }
                 }
                 terminals.Remove(terms[0]);
@@ -129,13 +130,13 @@ namespace DMSService
                     if (mc.Equals(DMSType.ACLINESEGMENT))
                     {
                         ACLine acline = new ACLine(bransch, mrid);
-                        acline.End1 = n;
-                        n.Children.Add(acline);
+                        acline.End1 = n.ElementGID;
+                        n.Children.Add(acline.ElementGID);
                         long downNodegid = GetConnNodeConnectedWithTerminal(branchTerminals[0]);
                         rd = gda.GetValues(downNodegid);
                         mrid = rd.GetProperty(ModelCode.IDOBJ_MRID).AsString();
                         Node downNode = new Node(downNodegid, mrid, acline, branchTerminals[0]);
-                        acline.End2 = downNode;
+                        acline.End2 = downNode.ElementGID;
                         Aclines.Add(acline);
                         ConnecNodes.Add(downNode);
                         terminals.Remove(branchTerminals[0]);
@@ -146,13 +147,13 @@ namespace DMSService
                     else if (mc.Equals(DMSType.BREAKER))
                     {
                         Switch sw = new Switch(bransch, mrid);
-                        sw.End1 = n;
-                        n.Children.Add(sw);
+                        sw.End1 = n.ElementGID;
+                        n.Children.Add(sw.ElementGID);
                         long downNodegid = GetConnNodeConnectedWithTerminal(branchTerminals[0]);
                         rd = gda.GetValues(downNodegid);
                         mrid = rd.GetProperty(ModelCode.IDOBJ_MRID).AsString();
                         Node downNode = new Node(downNodegid, mrid, sw, branchTerminals[0]);
-                        sw.End2 = downNode;
+                        sw.End2 = downNode.ElementGID;
                         Switches.Add(sw);
                         ConnecNodes.Add(downNode);
                         terminals.Remove(branchTerminals[0]);
@@ -163,8 +164,8 @@ namespace DMSService
                     else if (mc.Equals(DMSType.ENERGCONSUMER))
                     {
                         Consumer consumer = new Consumer(bransch, mrid);
-                        consumer.End1 = n;
-                        n.Children.Add(consumer);
+                        consumer.End1 = n.ElementGID;
+                        n.Children.Add(consumer.ElementGID);
                         Consumers.Add(consumer);
 
                         tree.AddChild(n.ElementGID, consumer.ElementGID, consumer);
@@ -260,6 +261,8 @@ namespace DMSService
             svc.AddServiceEndpoint(typeof(ITransaction), new NetTcpBinding(), new
             Uri("net.tcp://localhost:8028/DMSTransactionService"));
             hosts.Add(svc);
+
+           
         }
 
         private void StartHosts()
@@ -317,5 +320,6 @@ namespace DMSService
             CommonTrace.WriteTrace(CommonTrace.TraceInfo, message);
             Console.WriteLine("\n\n{0}", message);
         }
+
     }
 }

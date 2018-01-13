@@ -1,16 +1,19 @@
-﻿using DMSCommon.TreeGraph.Tree;
+﻿using DMSCommon.Model;
+using DMSCommon.TreeGraph.Tree;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 
 namespace DMSCommon.TreeGraph
 {
-    public class Tree<T> : IEnumerable
+    [CollectionDataContract]
+    public class Tree<T> : Dictionary<long, Element>
     {
-        public readonly Dictionary<long, T> Data;
-
+        public  Dictionary<long, T> Data;
+        [DataMember]
         public readonly Dictionary<long, NodeLink> Links;
 
         public Tree()
@@ -18,11 +21,11 @@ namespace DMSCommon.TreeGraph
             Data = new Dictionary<long, T>();
             Links = new Dictionary<long, NodeLink>();
         }
-        
+        [DataMember]
         public List<long> Roots { get; } = new List<long>();
-
+        [DataMember]
         public List<long> Leaves { get; } = new List<long>();
-
+        [DataMember]
         public TreeNode<T> this[long id] => new TreeNode<T> { Link = Links[id], Data = Data[id] };
 
         public bool Contains(long id) => Links.ContainsKey(id);
