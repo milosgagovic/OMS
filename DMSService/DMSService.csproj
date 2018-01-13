@@ -50,6 +50,10 @@
       <Project>{892CBE15-9ED7-4540-81FA-0EAABA592138}</Project>
       <Name>Common</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Common\DMSCommon\DMSCommon.csproj">
+      <Project>{86D0FD27-8DA2-476E-A046-FCB849F12414}</Project>
+      <Name>DMSCommon</Name>
+    </ProjectReference>
     <ProjectReference Include="..\TransactionManagerContract\TransactionManagerContract.csproj">
       <Project>{72a5dd5a-5613-49cb-8351-3ce33a86fc01}</Project>
       <Name>TransactionManagerContract</Name>

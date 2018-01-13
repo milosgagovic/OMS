@@ -14,9 +14,6 @@ namespace SCADA.CommAcqEngine
     // Logic for communication with Process Controller
     public class PCCommunicationEngine
     {
-        // rukovaoc konkretnog industrijskog protokola
-        // IIndustryProtocolHandler protHandler = new ModbusHandler();
-
         IORequestsQueue IORequests;
         bool shutdown;
         int timerMsc;
@@ -28,103 +25,79 @@ namespace SCADA.CommAcqEngine
 
         public PCCommunicationEngine()
         {
-            // protHandler = new ModbusHandler(); 
-
             IORequests = IORequestsQueue.GetQueue();
 
             shutdown = false;
             timerMsc = 1000;
-          
+
             processControllers = new Dictionary<string, ProcessController>();
 
             TcpChannels = new Dictionary<string, TcpClient>();
         }
 
-
-
-        // citanje iz fajlova ovde da bude...
-        public bool Configure()
+        // Komunikacioni sloj treba da konfigurise samo deo vezan bas za komunikaciju
+        public bool Configure(string configPath)
         {
-            // videti kako da iskoristis Channel
-            //Channel chan1 = new Channel()
-            //{
-            //    Protocol = IndustryProtocols.ModbusTCP,
-            //    TimeOutMsc = 10, // za sada nam ovo nece trebati
-            //    Name = "CHAN-1",
-            //    Info = "Acquistion Channel 1"
-            //};
-
-            //Channel chan2 = new Channel()
-            //{
-            //    Protocol = IndustryProtocols.ModbusTCP,
-            //    TimeOutMsc = 10000,
-            //    Name = "CHAN-2",
-            //    Info = "Acquistion Channel 2"
-            //};
-
-            //channels.Add(chan1.Name, chan1);
-            //channels.Add(chan2.Name, chan2);
 
             ProcessController rtu1 = new ProcessController()
             {
+                DeviceAddress = 1,
                 HostName = "localhost",
                 HostPort = 4021,
-                Name = "RTU-1",
-                ChannelName = "CHAN-1",
-
+                Name = "RTU-1"
             };
 
             ProcessController rtu2 = new ProcessController()
             {
+                DeviceAddress = 2,
                 HostName = "localhost",
                 HostPort = 4022,
                 Name = "RTU-2",
-                ChannelName = "CHAN-1",
-
             };
 
             ProcessController rtu3 = new ProcessController()
             {
+                DeviceAddress = 3,
                 HostName = "localhost",
                 HostPort = 502,
                 Name = "RTU-3",
-                ChannelName = "CHAN-2",
-
             };
 
             processControllers.Add(rtu1.Name, rtu1);
-            //processControllers.Add(rtu2.Name, rtu2);
-            //processControllers.Add(rtu3.Name, rtu3);
+            processControllers.Add(rtu2.Name, rtu2);
+            processControllers.Add(rtu3.Name, rtu3);
 
             return CreateChannels();
         }
 
         bool CreateChannels()
         {
+            List<ProcessController> failedRtus = new List<ProcessController>();
 
             // za svaki RTU pravimo kokretan komunikacioni link
             foreach (var rtu in processControllers)
             {
                 if (!EstablishCommunication(rtu.Value))
                 {
-                    // ako nije uspelo pobrisi sta ne treba i tako to
-
-                    // ako nije povezano sa kontrolerima - nisu podignuti onda vratiti neki error ovde i 
-                    // ni ne pocinjati StartProcessing
-                    return false;
+                    Console.WriteLine("\nEstablishing communication with RTU - {0} failed.", rtu.Value.Name);
+                    failedRtus.Add(rtu.Value);
                 }
+                Console.WriteLine("\nSuccessfully established communication with RTU - {0}.", rtu.Value.Name);
             }
+
+            foreach (var failedRTU in failedRtus)
+            {
+                processControllers.Remove(failedRTU.Name);
+            }
+            failedRtus.Clear();
+
+            // ako nije povezano sa kontrolerima 
+            // ni ne pocinjati StartProcessing
+            if (processControllers.Count == 0)
+                return false;
 
             return true;
         }
-
-        // ovo je izdvojeno da bude zasebna metoda, jer se tu nazire potencijalna upotrebna Channel.cs...
-        // Ondno mozemo specificiarati time-out u channelu
-        // https://stackoverflow.com/questions/17118632/how-to-set-the-timeout-for-a-tcpclient 
-
-        // jedan kanal - kada mu utvrdim mesto, moze biti pridruzen vecem broju RTU-ova. (To je npr. kao BaseVoltage sto je pridruzen vecem broju opreme u CIMu)
-        // taj kanal odredjuje prirodu komunikacije
-
 
         private bool EstablishCommunication(ProcessController rtu)
         {
@@ -145,19 +118,18 @@ namespace SCADA.CommAcqEngine
             {
                 // no connection can  be made because target machine activelly refused it
                 // ako MdbSim nije podignut to dobijes
-                Console.WriteLine(e);
+                Console.WriteLine("ErrorCode = {0}", e.ErrorCode);
+                Console.WriteLine(e.Message);
             }
             catch (Exception e)
             {
 
-                Console.WriteLine(e);
+                Console.WriteLine(e.Message);
             }
             finally
             {
 
             }
-
-
 
             //IChannel ch;
             //if (channels.TryGetValue(rtu.ChannelName, out ch))
@@ -189,13 +161,18 @@ namespace SCADA.CommAcqEngine
             while (!shutdown)
             {
                 //Console.WriteLine("StartProcessing");
+
+                // treba mi concurent queueu a ne blocking collection, bas
+                // ovako sa isSuccessfull
+                // da ne blokiram ceo pccommunicationengine ako nema zahteva
+                // da ogu da se obraduju odgovori od modbusa
                 bool isSuccessful;
-                IORequestBlock toProcess = IORequests.GetRequest(out  isSuccessful);
+                IORequestBlock toProcess = IORequests.GetRequest(out isSuccessful);
                 if (isSuccessful)
                 {
                     TcpClient client;
 
-                    if (TcpChannels.TryGetValue(toProcess.RtuName, out  client))
+                    if (TcpChannels.TryGetValue(toProcess.RtuName, out client))
                     {
                         NetworkStream stream = client.GetStream();
                         int offset = 0;
@@ -204,28 +181,33 @@ namespace SCADA.CommAcqEngine
 
 
                         // kasnije razmisliti da li poruke dolaze cele, ili u
-                        // delovima ako su velike?...da li je potrebno u petlji
+                        // delovima ako su velike...da li je potrebno u petlji
                         // citati
 
                         toProcess.RcvBuff = new byte[client.ReceiveBufferSize];
 
-                        var length = stream.Read(toProcess.RcvBuff, offset, 512);
+                        var length = stream.Read(toProcess.RcvBuff, offset, client.ReceiveBufferSize);
                         toProcess.RcvMsgLength = length;
 
-                        IORequests.EnqueueIOAnsForProcess(toProcess);
+                        IORequests.EnqueueIOAnswerForProcess(toProcess);
                     }
                     else
                     {
-
+                        Console.WriteLine("\nThere is no communication link with {0} rtu. Request will be disposed.", toProcess.RtuName);
                     }
                 }
                 Thread.Sleep(1000);
             }
             {
-                // close svega i dispose
-                //tcpClient.GetStream().Close();
-                //tcpClient.Close();
-                //tcpClient.Client.Disconnect(true);
+                foreach (var channel in TcpChannels.Values)
+                {
+                    // ne treba sve
+                    channel.GetStream().Close();
+                    channel.Close();
+                    channel.Client.Disconnect(true);
+                }
+                TcpChannels.Clear();
+
             }
         }
 

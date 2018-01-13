@@ -35,102 +35,16 @@ namespace SCADA
         {
             InstanceContext = new InstanceContext(new SCADACommuncEngineService());
 
-            Digital d1 = new Digital()
-            {
-                RtuName = "RTU-1",
-                Name = "MEAS_D_1",
+            DBContext dbContext = new DBContext();
 
-                Class = DigitalDeviceClasses.SWITCH,
-                ValidCommands = { CommandTypes.CLOSE, CommandTypes.OPEN },
-                ValidStates = { RealtimeDatabase.Catalogs.States.CLOSED, RealtimeDatabase.Catalogs.States.OPENED },
-                Command = CommandTypes.OPEN,
-                State = RealtimeDatabase.Catalogs.States.CLOSED,
-                Address = 1000
-            };
-
-            Digital d2 = new Digital()
-            {
-                RtuName = "RTU-1",
-                Name = "MEAS_D_2",
-
-                Class = DigitalDeviceClasses.SWITCH,
-                ValidCommands = { CommandTypes.CLOSE, CommandTypes.OPEN },
-                ValidStates = { RealtimeDatabase.Catalogs.States.CLOSED, RealtimeDatabase.Catalogs.States.OPENED },
-                Command = CommandTypes.OPEN,
-                State = RealtimeDatabase.Catalogs.States.CLOSED,
-                Address = 1001
-            };
-
-            Digital d3 = new Digital()
-            {
-                RtuName = "RTU-1",
-                Name = "MEAS_D_3",
-
-                Class = DigitalDeviceClasses.SWITCH,
-                ValidCommands = { CommandTypes.CLOSE, CommandTypes.OPEN },
-                ValidStates = { RealtimeDatabase.Catalogs.States.CLOSED, RealtimeDatabase.Catalogs.States.OPENED },
-                Command = CommandTypes.OPEN,
-                State = RealtimeDatabase.Catalogs.States.CLOSED,
-                Address = 1002
-            };
-
-            Digital d4 = new Digital()
-            {
-                RtuName = "RTU-1",
-                Name = "TEST1",
-
-                Class = DigitalDeviceClasses.SWITCH,
-                ValidCommands = { CommandTypes.CLOSE, CommandTypes.OPEN },
-                ValidStates = { RealtimeDatabase.Catalogs.States.CLOSED, RealtimeDatabase.Catalogs.States.OPENED, RealtimeDatabase.Catalogs.States.UNKNOWN },
-                Command = CommandTypes.OPEN,
-                State = RealtimeDatabase.Catalogs.States.CLOSED,
-                Address = 1003
-            };
-
-            //Digital d4 = new Digital()
-            //{
-            //    RtuName = "RTU-1",
-            //    Name = "TEST1",
-
-            //    Class = DigitalDeviceClasses.SWITCH,
-            //    ValidCommands = { CommandTypes.CLOSE, CommandTypes.OPEN },
-            //    ValidStates = { RealtimeDatabase.Catalogs.States.CLOSED, RealtimeDatabase.Catalogs.States.OPENED },
-            //    Command = CommandTypes.OPEN,
-            //    State = RealtimeDatabase.Catalogs.States.CLOSED,
-            //    Address = 1003
-            //};
-
-            //Digital d5 = new Digital()
-            //{
-            //    RtuName = "RTU-1",
-            //    Name = "TEST2",
-
-            //    Class = DigitalDeviceClasses.SWITCH,
-            //    ValidCommands = { CommandTypes.CLOSE, CommandTypes.OPEN },
-            //    ValidStates = { RealtimeDatabase.Catalogs.States.CLOSED, RealtimeDatabase.Catalogs.States.OPENED },
-            //    Command = CommandTypes.OPEN,
-            //    State = RealtimeDatabase.Catalogs.States.CLOSED,
-            //    Address = 1004
-            //};
-
-
-            DBContext context = new DBContext();
-            context.AddProcessVariable(d1);
-            context.AddProcessVariable(d2);
-            context.AddProcessVariable(d3);
-
-            // test
-            context.AddProcessVariable(d4);
-            //context.AddProcessVariable(d5);
-
-            Console.WriteLine("Setting PCCommEngine");
+            Console.WriteLine("Setting ProcessController CommunicationEngine");
             PCCommunicationEngine PCCommEng;
 
             while (true)
             {
                 PCCommEng = new PCCommunicationEngine();
 
-                if (!PCCommEng.Configure()) // mozda parametar da bude adresa datoteka...  
+                if (!PCCommEng.Configure("PCConfiguration.xml"))
                 {
                     Console.WriteLine("\nStart the simulator then press any key to continue the application.\n");
                     Console.ReadKey();
@@ -139,15 +53,17 @@ namespace SCADA
                 break;
             }
 
-            Thread reqConsumer = new Thread(PCCommEng.StartProcessing);
+            Thread requestConsumer = new Thread(PCCommEng.StartProcessing);
 
-            Console.WriteLine("Setting AcqEngine");
+            Console.WriteLine("Setting Acquisition Engine");
             ACQEngine AcqEngine = new ACQEngine();
+
+            AcqEngine.Configure("AcqConfiguration.xml");
 
             Thread reqProducer = new Thread(AcqEngine.StartAcquisition);
             Thread answConsumer = new Thread(AcqEngine.ProcessPCAnwers);
 
-            reqConsumer.Start();
+            requestConsumer.Start();
             reqProducer.Start();
             answConsumer.Start();
 

@@ -28,36 +28,30 @@ namespace PCCommon
         // transaction type.
         public RequestType RequestType { get; set; }
 
-        // target slave device Id - RTU address
-        public short RTUAddress { get; set; }
-
+        // register address
+        public ushort ReqAddress { get; set; }
+         
         // target slave device Id - RTU address
         public string RtuName { get; set; }
 
+
         /* request parameters*/
 
-        // max number of request repeating
         // public int MaxRepeat { get; set; }
 
         public int SendMsgLength { get; set; }
 
-        // number of send characters
-        // public int SendCount { get; set; }
-
         // trsciever buffer 
         public Byte[] SendBuff { get; set; }
+
+
 
         /* reply parameters*/
 
         public int RcvMsgLength { get; set; }
 
-        // number of received chahacters
-        // public int RcvCount { get; set; }
-
         // receiver buffer 
         public Byte[] RcvBuff { get; set; }
-
-        public ushort Address { get; set; }
 
     }
 }

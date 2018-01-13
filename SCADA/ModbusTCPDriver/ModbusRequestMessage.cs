@@ -7,14 +7,14 @@ using System.Threading.Tasks;
 namespace ModbusTCPDriver
 {
     // videti da li ti ovo treba
-    public class ModbusRequestMessage
-    {
-        public ModbusApplicationHeader Header { get; set; }
-        public Request Request { get; set; }
+    //public class ModbusRequestMessage
+    //{
+    //    public ModbusApplicationHeader Header { get; set; }
+    //    public Request Request { get; set; }
 
-        public ModbusRequestMessage()
-        {
-            Header = new ModbusApplicationHeader();
-        }
-    }
+    //    public ModbusRequestMessage()
+    //    {
+    //        Header = new ModbusApplicationHeader();
+    //    }
+    //}
 }

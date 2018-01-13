@@ -12,11 +12,6 @@ namespace PCCommon
        
         byte[] PackData();
 
-        void UnpackData(byte[] data, int length);
-
-        // mozda ovde da budu metode send data, i receive data
-        // kao npr sto na TCPClient klasi imamo metode za slanje i primanje
-        // tako i ovde napraviti.... 
-       
+        void UnpackData(byte[] data, int length);     
     }
 }

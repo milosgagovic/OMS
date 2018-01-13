@@ -1,4 +1,5 @@
-﻿using DMSService;
+﻿using DMSCommon.Model;
+using DMSService;
 using FTN.Common;
 using System;
 using System.Collections.Generic;
@@ -21,7 +22,6 @@ namespace DMSServiceHost
                 using (DMSService.DMSService dms = new DMSService.DMSService())
                 {
                     dms.Start();
-
                     message = "Press <Enter> to stop the service.";
                     CommonTrace.WriteTrace(CommonTrace.TraceInfo, message);
                     Console.WriteLine(message);

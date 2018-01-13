@@ -23,7 +23,7 @@ namespace DispatcherApp.View
         public DispatherAppUserControl()
         {
             InitializeComponent();
-            this.DataContext = new DispatcherAppViewModel(new List<string> { "Breaker", "ACLineSegment", "EnergySource", "EnergyConsumer" });
+            //this.DataContext = new DispatcherAppViewModel(new List<string> { "Breaker", "ACLineSegment", "EnergySource", "EnergyConsumer" });
         }
     }
 }
