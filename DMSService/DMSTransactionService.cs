@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FTN.Common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.ServiceModel;
@@ -27,7 +28,7 @@ namespace DMSService
             callback.CallbackEnlist();
         }
 
-        public void Prepare()
+        public void Prepare(Delta delta)
         {
             Console.WriteLine("Pozvan je prepare na DMS-u");
             //TO DO Kopije i provjera da li moze da se primjeni delta

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FTN.Common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.ServiceModel;
@@ -11,10 +12,12 @@ namespace FTN.Services.NetworkModelService
     [ServiceBehavior(InstanceContextMode = InstanceContextMode.PerCall)]
     public class NetworkModelTransactionService : ITransaction
     {
+        NetworkModel newNetworkModel;
+        
         public void Commit()
         {
             Console.WriteLine("Pozvan je Commit na NMS-u");
-
+            GenericDataAccess.NetworkModel = newNetworkModel;
             ITransactionCallback callback = OperationContext.Current.GetCallbackChannel<ITransactionCallback>();
             callback.CallbackCommit("Uspjesno je prosao commit na NMS-u");
         }
@@ -22,25 +25,51 @@ namespace FTN.Services.NetworkModelService
         public void Enlist()
         {
             Console.WriteLine("Pozvan je enlist na NMS-u");
+            try
+            {
+                GenericDataAccess gda = new GenericDataAccess();
+                newNetworkModel = gda.GetCopyOfNetworkModel();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
 
             ITransactionCallback callback = OperationContext.Current.GetCallbackChannel<ITransactionCallback>();
             callback.CallbackEnlist();
         }
 
-        public void Prepare()
+        public void Prepare(Delta delta)
         {
             Console.WriteLine("Pozvan je prepare na NMS-u");
-            //TO DO Kopije i provjera da li moze da se primjeni delta
-            //NEtwork model = new Network model
-            //model.AppltyDelta();...
             ITransactionCallback callback = OperationContext.Current.GetCallbackChannel<ITransactionCallback>();
-            callback.CallbackPrepare(true);
+
+            try
+            {
+                UpdateResult updateResult = newNetworkModel.ApplyDelta(delta);
+                if (updateResult.Result == ResultType.Succeeded)
+                {
+                    Commit();
+                    callback.CallbackPrepare(true);
+                }
+                else
+                {
+                    Rollback();
+                    callback.CallbackPrepare(false);
+                }
+            }
+            catch (Exception ex)
+            {
+                Rollback();
+                callback.CallbackPrepare(false);
+                Console.WriteLine(ex.Message);
+            }
         }
 
         public void Rollback()
         {
             Console.WriteLine("Pozvan je RollBack na NMSu");
-
+            newNetworkModel = null;
             ITransactionCallback callback = OperationContext.Current.GetCallbackChannel<ITransactionCallback>();
             callback.CallbackRollabck("Something went wrong on NMS");
         }

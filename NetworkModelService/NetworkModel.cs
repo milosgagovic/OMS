@@ -764,5 +764,17 @@ namespace FTN.Services.NetworkModelService
 			return typesCounters;
 		}
 
-	}
+        public NetworkModel GetCopyOfNetworkModel()
+        {
+            NetworkModel newNetworkModel = new NetworkModel();
+
+            foreach (DMSType dmsType in this.networkDataModel.Keys)
+            {
+                newNetworkModel.networkDataModel.Add(dmsType, this.networkDataModel[dmsType]);
+            }
+
+            return newNetworkModel;
+        }
+
+    }
 }

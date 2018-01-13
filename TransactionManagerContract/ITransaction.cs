@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FTN.Common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.ServiceModel;
@@ -14,7 +15,7 @@ namespace TransactionManagerContract
         void Enlist();
 
         [OperationContract]
-        void Prepare();
+        void Prepare(Delta delta);
 
         [OperationContract]
         void Commit();

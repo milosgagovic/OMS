@@ -21,6 +21,8 @@ namespace TransactionManager
         void IOMSClient.UpdateSystem(Delta d)
         {
             Console.WriteLine("Update System started." + d.Id);
+            Enlist();
+            Prepare(d);
         }
 
         private void InitializeChanels()
@@ -67,19 +69,19 @@ namespace TransactionManager
                 svc.Enlist();
             }
         }
-        public void Prepare()
+        public void Prepare(Delta delta)
         {
             Console.WriteLine("Transaction Manager calling prepare");
             foreach (ITransaction svc in Proxys)
             {
-                svc.Prepare();
+                svc.Prepare(delta);
             }
 
             while (true)
             {
                 if (Callbacks.Where(k => k.Answer == TransactionAnswer.Unanswered).Count() > 0)
                 {
-                    Thread.Sleep(100);
+                    Thread.Sleep(1000);
                     continue;
                 }
                 else if (Callbacks.Where(u => u.Answer == TransactionAnswer.Unprepared).Count() > 0)
