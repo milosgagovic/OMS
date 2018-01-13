@@ -1,14 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 
 namespace DMSCommon.Model
 {
+    [DataContract]
     public class Switch:Branch
     {
+        [EnumMember]
         private SwitchState _state;
-
+        
         public SwitchState State
         {
             get
