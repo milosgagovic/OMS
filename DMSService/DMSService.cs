@@ -262,7 +262,13 @@ namespace DMSService
             Uri("net.tcp://localhost:8028/DMSTransactionService"));
             hosts.Add(svc);
 
-           
+            ServiceHost svc1 = new ServiceHost(typeof(DMSDispatcherService));
+            svc1.Description.Name = "DMSDispatcherService";
+            svc1.AddServiceEndpoint(typeof(IDMSContract), new NetTcpBinding(), new
+            Uri("net.tcp://localhost:8029/DMSDispatcherService"));
+            hosts.Add(svc1);
+
+
         }
 
         private void StartHosts()

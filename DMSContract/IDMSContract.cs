@@ -1,0 +1,40 @@
+﻿using DMSCommon.Model;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.ServiceModel;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace DMSContract
+{
+    [ServiceContract]
+    public interface IDMSContract
+    {
+
+        [OperationContract]
+        List<Source> GetAllSource();
+
+        [OperationContract]
+        List<Consumer> GetAllConsumers();
+
+        [OperationContract]
+        List<Switch> GetAllSwitches();
+
+        [OperationContract]
+        List<ACLine> GetAllACLines();
+
+        [OperationContract]
+        List<Node> GetAllNodes();
+
+        [OperationContract]
+        Dictionary<long, Element> InitNetwork();
+
+        [OperationContract]
+
+        Source GetTreeRoot();
+
+        [OperationContract]
+        int GetNetworkDepth();
+    }
+}
