@@ -1,6 +1,7 @@
 ﻿namespace FTN.ESI.SIMES.CIM.CIMAdapter.Importer
 {
     using FTN.Common;
+    using System.Collections.Generic;
 
     /// <summary>
     /// PowerTransformerConverter has methods for populating
@@ -286,6 +287,15 @@
                 {
                     rd.AddProperty(new Property(ModelCode.DISCRETE_NORMVAL, cimDiscrete.NormalValue));
                 }
+                if (cimDiscrete.ValidCommandsHasValue)
+                {
+                    rd.AddProperty(new Property(ModelCode.DISCRETE_VALIDCOMMANDS,GetDMSCommand(cimDiscrete.ValidCommands)));
+                }
+
+                if (cimDiscrete.ValidStatesHasValue)
+                {
+                    rd.AddProperty(new Property(ModelCode.DISCRETE_VALIDSTATES, GetDMSStates(cimDiscrete.ValidStates)));
+                }
 
             }
         }
@@ -365,8 +375,47 @@
                     return DirectionType.ReadWrite;
                 default:
                     return DirectionType.ReadWrite;
-
             }
+        }
+
+        public static List<short> GetDMSCommand(List<FTN.Commands> commands)
+        {
+            List<short> pom = new List<short>();
+            foreach (var item in commands)
+            {
+                switch (item)
+                {
+                    case FTN.Commands.Close:
+                        pom.Add((short)Commands.CLOSE);
+                        break;
+                    case FTN.Commands.Open:
+                        pom.Add((short)Commands.OPEN);
+                        break; 
+                    default:
+                        break;
+                }
+            }
+            return pom;
+        }
+
+        public static List<short> GetDMSStates (List<FTN.States> state)
+        {
+            List<short> pom = new List<short>();
+            foreach (var item in state)
+            {
+                switch (item)
+                {
+                    case FTN.States.Closed:
+                        pom.Add((short)States.CLOSED);
+                        break;
+                    case FTN.States.Opened:
+                        pom.Add((short)States.OPENED);
+                        break;
+                    default:
+                        break;
+                }
+            }
+            return pom;
         }
 
         #endregion Enums convert

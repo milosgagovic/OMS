@@ -101,4 +101,16 @@ namespace FTN.Common
         Write = 1,
         ReadWrite = 2
     }
+
+    public enum Commands : short
+    {
+        OPEN = 0,
+        CLOSE = 1
+    }
+
+    public enum States : short
+    {
+        OPENED = 0,
+        CLOSED = 1
+    }
 }
