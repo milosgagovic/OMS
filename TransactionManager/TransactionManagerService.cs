@@ -17,7 +17,7 @@ namespace TransactionManager
             var binding = new NetTcpBinding();
             binding.TransactionFlow = true;
             svc.AddServiceEndpoint(typeof(IOMSClient), binding, new
-            Uri("net.tcp://localhost:6000/TransactionManagerService"));
+            Uri("net.tcp://localhost:6080/TransactionManagerService"));
             svc.Open();
             Console.WriteLine("TransactionManagerService ready and waiting for requests.");
         }

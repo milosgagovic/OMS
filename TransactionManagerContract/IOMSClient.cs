@@ -1,4 +1,5 @@
-﻿using FTN.Common;
+﻿using DMSCommon.Model;
+using FTN.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,5 +14,11 @@ namespace TransactionManagerContract
     {
         [OperationContract]
         void UpdateSystem(Delta d);
+
+        [OperationContract]
+        void GetNetworkWithOutParam(out List<Element> DMSElements, out List<ResourceDescription> resourceDescriptions, out int GraphDeep);
+
+        [OperationContract]
+        TMSAnswerToClient GetNetwork();
     }
 }

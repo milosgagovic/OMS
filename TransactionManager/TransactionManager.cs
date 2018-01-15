@@ -1,4 +1,7 @@
-﻿using FTN.Common;
+﻿using DMSCommon.Model;
+using DMSContract;
+using FTN.Common;
+using FTN.Services.NetworkModelService;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,6 +9,7 @@ using System.ServiceModel;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using TelventDMS.Services.NetworkModelService.TestClient.Tests;
 using TransactionManagerContract;
 
 namespace TransactionManager
@@ -14,7 +18,8 @@ namespace TransactionManager
     {
         List<ITransaction> proxys;
         List<TransactionCallback> callbacks;
-
+        IDMSContract proxyToDMS;
+        ModelGDATMS gdaTMS;
         public List<ITransaction> Proxys { get => proxys; set => proxys = value; }
         public List<TransactionCallback> Callbacks { get => callbacks; set => callbacks = value; }
 
@@ -50,8 +55,9 @@ namespace TransactionManager
             ITransaction proxyCommEngine = factoryCommEngine.CreateChannel();
             Proxys.Add(proxyCommEngine);
 
+            ChannelFactory<IDMSContract> factoryToDMS = new ChannelFactory<IDMSContract>(new NetTcpBinding(), new EndpointAddress("net.tcp://localhost:8029/DMSDispatcherService"));
+            proxyToDMS = factoryToDMS.CreateChannel();
 
-            
         }
 
         public TransactionManager()
@@ -59,6 +65,7 @@ namespace TransactionManager
             Proxys = new List<ITransaction>();
             Callbacks = new List<TransactionCallback>();
             InitializeChanels();
+            gdaTMS = new ModelGDATMS();
         }
 
         public void Enlist()
@@ -112,6 +119,61 @@ namespace TransactionManager
             {
                 svc.Rollback();
             }
+        }
+
+        public void GetNetworkWithOutParam(out List<Element> DMSElements, out List<ResourceDescription> resourceDescriptions, out int GraphDeep)
+        {
+            List<Element> listOfDMSElement = new List<Element>();//proxyToDMS.GetAllElements();
+            List<ResourceDescription> resourceDescriptionFromNMS = new List<ResourceDescription>();
+            List<ACLine> acList = proxyToDMS.GetAllACLines();
+            List<Node> nodeList = proxyToDMS.GetAllNodes();
+            List<Source> sourceList = proxyToDMS.GetAllSource();
+            List<Switch> switchList = proxyToDMS.GetAllSwitches();
+            List<Consumer> consumerList = proxyToDMS.GetAllConsumers();
+
+            acList.ForEach(u => listOfDMSElement.Add(u));
+            nodeList.ForEach(u => listOfDMSElement.Add(u));
+            sourceList.ForEach(u => listOfDMSElement.Add(u));
+            switchList.ForEach(u => listOfDMSElement.Add(u));
+            consumerList.ForEach(u => listOfDMSElement.Add(u));
+
+            gdaTMS.GetExtentValues(ModelCode.BREAKER).ForEach(u => resourceDescriptionFromNMS.Add(u));
+            gdaTMS.GetExtentValues(ModelCode.CONNECTNODE).ForEach(u => resourceDescriptionFromNMS.Add(u));
+            gdaTMS.GetExtentValues(ModelCode.ENERGCONSUMER).ForEach(u => resourceDescriptionFromNMS.Add(u));
+            gdaTMS.GetExtentValues(ModelCode.ENERGSOURCE).ForEach(u => resourceDescriptionFromNMS.Add(u));
+            gdaTMS.GetExtentValues(ModelCode.ACLINESEGMENT).ForEach(u => resourceDescriptionFromNMS.Add(u));
+            GraphDeep = proxyToDMS.GetNetworkDepth();
+            TMSAnswerToClient answer = new TMSAnswerToClient(resourceDescriptionFromNMS, listOfDMSElement, GraphDeep);
+            resourceDescriptions = resourceDescriptionFromNMS;
+            DMSElements = listOfDMSElement;
+            GraphDeep = proxyToDMS.GetNetworkDepth();
+            // return resourceDescriptionFromNMS;
+        }
+
+        public TMSAnswerToClient GetNetwork()
+        {
+            List<Element> listOfDMSElement = new List<Element>();//proxyToDMS.GetAllElements();
+            List<ResourceDescription> resourceDescriptionFromNMS = new List<ResourceDescription>();
+            List<ACLine> acList = proxyToDMS.GetAllACLines();
+            List<Node> nodeList = proxyToDMS.GetAllNodes();
+            List<Source> sourceList = proxyToDMS.GetAllSource();
+            List<Switch> switchList = proxyToDMS.GetAllSwitches();
+            List<Consumer> consumerList = proxyToDMS.GetAllConsumers();
+
+            acList.ForEach(u => listOfDMSElement.Add(u));
+            nodeList.ForEach(u => listOfDMSElement.Add(u));
+            sourceList.ForEach(u => listOfDMSElement.Add(u));
+            switchList.ForEach(u => listOfDMSElement.Add(u));
+            consumerList.ForEach(u => listOfDMSElement.Add(u));
+
+            gdaTMS.GetExtentValues(ModelCode.BREAKER).ForEach(u => resourceDescriptionFromNMS.Add(u));
+            gdaTMS.GetExtentValues(ModelCode.CONNECTNODE).ForEach(u => resourceDescriptionFromNMS.Add(u));
+            gdaTMS.GetExtentValues(ModelCode.ENERGCONSUMER).ForEach(u => resourceDescriptionFromNMS.Add(u));
+            gdaTMS.GetExtentValues(ModelCode.ENERGSOURCE).ForEach(u => resourceDescriptionFromNMS.Add(u));
+            gdaTMS.GetExtentValues(ModelCode.ACLINESEGMENT).ForEach(u => resourceDescriptionFromNMS.Add(u));
+            int GraphDeep = proxyToDMS.GetNetworkDepth();
+            TMSAnswerToClient answer = new TMSAnswerToClient(resourceDescriptionFromNMS, listOfDMSElement, GraphDeep);
+            return answer;
         }
     }
 }

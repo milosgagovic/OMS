@@ -36,5 +36,7 @@ namespace DMSContract
 
         [OperationContract]
         int GetNetworkDepth();
+        [OperationContract]
+        List<Element> GetAllElements();
     }
 }

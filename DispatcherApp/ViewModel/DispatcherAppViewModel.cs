@@ -20,6 +20,9 @@ using System.Windows.Shapes;
 using System.Windows.Media.Imaging;
 using System.IO;
 using System.Threading;
+using DMSContract;
+using TransactionManagerContract;
+using System.ServiceModel;
 
 namespace DispatcherApp.ViewModel
 {
@@ -30,7 +33,7 @@ namespace DispatcherApp.ViewModel
         private string selectedItem;
         public event PropertyChangedEventHandler PropertyChanged;
         private ModelGda model;
-
+        private IOMSClient proxyToTransactionManager;
         #region Subscriber
         private Subscriber subscriber;
         private CommEngProxyUpdate proxy = new CommEngProxyUpdate("CommEngineEndpoint");
@@ -73,6 +76,8 @@ namespace DispatcherApp.ViewModel
             Elements = ele;
             DataGridElements = new List<MeasResult>();
             model = new ModelGda();
+            ChannelFactory<IOMSClient> factoryToTMS = new ChannelFactory<IOMSClient>(new NetTcpBinding(), new EndpointAddress("net.tcp://localhost:6080/TransactionManagerService"));
+            proxyToTransactionManager = factoryToTMS.CreateChannel();
 
             subscriber = new Subscriber();
             subscriber.Subscribe();
@@ -96,64 +101,65 @@ namespace DispatcherApp.ViewModel
             #endregion
 
             #region FakeNetwork
-            Source s1 = new Source(0, null, "ES_1");
-            Node n1 = new Node(0, "CN_1");
-            n1.Parent = s1;
-            s1.End2 = n1;
-            ACLine b1 = new ACLine(0, "ACLS_1");
-            b1.End1 = n1;
-            n1.Children.Add(b1);
-            Node n2 = new Node(0, "CN_2");
-            b1.End2 = n2;
-            n2.Parent = b1;
-            Switch b2 = new Switch(0, "BR_1");
-            b2.End1 = n2;
-            n2.Children.Add(b2);
-            ACLine b3 = new ACLine(0, "ACLS_3");
-            b3.End1 = n2;
-            n2.Children.Add(b3);
-            Node n3 = new Node(0, "CN_3");
-            b2.End2 = n3;
-            n3.Parent = b2;
-            Switch b4 = new Switch(0, "BR_2");
-            b4.End1 = n3;
-            n3.Children.Add(b4);
-            ACLine b5 = new ACLine(0, "ACLS_2");
-            b5.End1 = n3;
-            n3.Children.Add(b5);
-            Node n4 = new Node(0, "CN_4");
-            b4.End2 = n4;
-            n4.Parent = b4;
-            Consumer b6 = new Consumer(0, "EC_1");
-            b6.End1 = n4;
-            n4.Children.Add(b6);
-            Node n5 = new Node(0, "CN_5");
-            b5.End2 = n5;
-            n5.Parent = b5;
-            Consumer b7 = new Consumer(0, "EC_2");
-            b7.End1 = n5;
-            n5.Children.Add(b7);
-            Node n6 = new Node(0, "CN_6");
-            b3.End2 = n6;
-            n6.Parent = b3;
-            Switch b8 = new Switch(0, "BR_3");
-            b8.End1 = n6;
-            n6.Children.Add(b8);
-            Node n7 = new Node(0, "CN_7");
-            b8.End2 = n7;
-            n7.Parent = b8;
-            Consumer b9 = new Consumer(0, "EC_3");
-            b9.End1 = n7;
-            b9.End2 = null;
-            n7.Children.Add(b9);
+            //Source s1 = new Source(0, null, "ES_1");
+            //Node n1 = new Node(0, "CN_1");
+            //n1.Parent = s1;
+            //s1.End2 = n1;
+            //ACLine b1 = new ACLine(0, "ACLS_1");
+            //b1.End1 = n1;
+            //n1.Children.Add(b1);
+            //Node n2 = new Node(0, "CN_2");
+            //b1.End2 = n2;
+            //n2.Parent = b1;
+            //Switch b2 = new Switch(0, "BR_1");
+            //b2.End1 = n2;
+            //n2.Children.Add(b2);
+            //ACLine b3 = new ACLine(0, "ACLS_3");
+            //b3.End1 = n2;
+            //n2.Children.Add(b3);
+            //Node n3 = new Node(0, "CN_3");
+            //b2.End2 = n3;
+            //n3.Parent = b2;
+            //Switch b4 = new Switch(0, "BR_2");
+            //b4.End1 = n3;
+            //n3.Children.Add(b4);
+            //ACLine b5 = new ACLine(0, "ACLS_2");
+            //b5.End1 = n3;
+            //n3.Children.Add(b5);
+            //Node n4 = new Node(0, "CN_4");
+            //b4.End2 = n4;
+            //n4.Parent = b4;
+            //Consumer b6 = new Consumer(0, "EC_1");
+            //b6.End1 = n4;
+            //n4.Children.Add(b6);
+            //Node n5 = new Node(0, "CN_5");
+            //b5.End2 = n5;
+            //n5.Parent = b5;
+            //Consumer b7 = new Consumer(0, "EC_2");
+            //b7.End1 = n5;
+            //n5.Children.Add(b7);
+            //Node n6 = new Node(0, "CN_6");
+            //b3.End2 = n6;
+            //n6.Parent = b3;
+            //Switch b8 = new Switch(0, "BR_3");
+            //b8.End1 = n6;
+            //n6.Children.Add(b8);
+            //Node n7 = new Node(0, "CN_7");
+            //b8.End2 = n7;
+            //n7.Parent = b8;
+            //Consumer b9 = new Consumer(0, "EC_3");
+            //b9.End1 = n7;
+            //b9.End2 = null;
+            //n7.Children.Add(b9);
 
-            sources.Add(s1);
+            //sources.Add(s1);
             #endregion
 
             this.NetworkElements.Add(mainCanvas);
 
             // dobaviti mreze od DMS-a (za sad su lazni podaci)
 
+            TMSAnswerToClient answerFromTransactionManager = proxyToTransactionManager.GetNetwork();
             foreach (Source source in sources)
             {
                 DrawGraph(source);
@@ -182,7 +188,7 @@ namespace DispatcherApp.ViewModel
 
             PlaceBranch(point1, point2, cellHeight, source);
 
-            PlaceGraph(source.End2, 1, 1, mainCanvas.Width, cellHeight, 1, 0, null);
+            //PlaceGraph(source.End2, 1, 1, mainCanvas.Width, cellHeight, 1, 0, null);
         }
 
         private void PlaceGraph(Node currentNode, int x, int y, double cellWidth, double cellHeight, double currentDivision, double offset, Point? point1)
@@ -196,7 +202,7 @@ namespace DispatcherApp.ViewModel
 
             if (point1 != null)
             {
-                PlaceBranch((Point)point1, (Point)point2, cellHeight, currentNode.Parent);
+                //PlaceBranch((Point)point1, (Point)point2, cellHeight, currentNode.Parent);
             }
 
             cellWidth = mainCanvas.Width / (currentDivision * currentNode.Children.Count);
@@ -204,7 +210,7 @@ namespace DispatcherApp.ViewModel
             for (int x1 = 1; x1 <= currentNode.Children.Count; x1++)
             {
                 offset += (x1 - 1) * cellWidth;
-                PlaceGraph(currentNode.Children[x1 - 1].End2, x1, y, cellWidth, cellHeight, currentDivision * currentNode.Children.Count, offset, point2);
+                //PlaceGraph(currentNode.Children[x1 - 1].End2, x1, y, cellWidth, cellHeight, currentDivision * currentNode.Children.Count, offset, point2);
 
                 if(currentNode.Children[x1 - 1] is Consumer)
                 {

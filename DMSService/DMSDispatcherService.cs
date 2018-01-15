@@ -90,5 +90,15 @@ namespace DMSService
         {
             return DMSService.tree.Data;
         }
+
+        public List<Element> GetAllElements()
+        {
+            List<Element> retVal = new List<Element>();
+            foreach(Element e in DMSService.tree.Data.Values)
+            {
+                retVal.Add(e);
+            }
+            return retVal;
+        }
     }
 }
