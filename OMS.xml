@@ -222,6 +222,12 @@
 		<cim:Discrete.maxValue>1</cim:Discrete.maxValue>
 		<cim:Discrete.minValue>0</cim:Discrete.minValue>
 		<cim:Discrete.normalValue>1</cim:Discrete.normalValue>
+		<cim:Discrete.validCommands>
+		Open Close
+		</cim:Discrete.validCommands>
+		<cim:Discrete.validStates>
+		Opened Closed
+		</cim:Discrete.validStates>
 		<cim:Measurement.direction>ReadWrite</cim:Measurement.direction>
 		<cim:Measurement.measurementType></cim:Measurement.measurementType>
 		<cim:Measurement.PowerSystemResource rdf:resource="#BR_1"/>
@@ -234,6 +240,12 @@
 		<cim:Discrete.maxValue>1</cim:Discrete.maxValue>
 		<cim:Discrete.minValue>0</cim:Discrete.minValue>
 		<cim:Discrete.normalValue>1</cim:Discrete.normalValue>
+		<cim:Discrete.validCommands>
+		Open
+		</cim:Discrete.validCommands>
+		<cim:Discrete.validStates>
+		Closed Opened
+		</cim:Discrete.validStates>
 		<cim:Measurement.direction>ReadWrite</cim:Measurement.direction>
 		<cim:Measurement.measurementType></cim:Measurement.measurementType>
 		<cim:Measurement.PowerSystemResource rdf:resource="#BR_2"/>
@@ -246,6 +258,12 @@
 		<cim:Discrete.maxValue>1</cim:Discrete.maxValue>
 		<cim:Discrete.minValue>0</cim:Discrete.minValue>
 		<cim:Discrete.normalValue>1</cim:Discrete.normalValue>
+		<cim:Discrete.validStates>
+		
+		</cim:Discrete.validStates>
+		<cim:Discrete.validCommands>
+			Open Close
+		</cim:Discrete.validCommands>
 		<cim:Measurement.direction>ReadWrite</cim:Measurement.direction>
 		<cim:Measurement.measurementType></cim:Measurement.measurementType>
 		<cim:Measurement.PowerSystemResource rdf:resource="#BR_3"/>
@@ -253,7 +271,6 @@
 		<cim:IdentifiedObject.mRID>MEAS_D_3</cim:IdentifiedObject.mRID>
 		<cim:IdentifiedObject.name>DiscreteMeasurement_3</cim:IdentifiedObject.name>
 	</cim:Discrete>
-
 	
 	<cim:EnergyConsumer rdf:ID="EC_1">
 		<cim:EnergyConsumer.pfixed></cim:EnergyConsumer.pfixed>

@@ -13,7 +13,9 @@ namespace FTN.Common
 		{
 			property2enumType.Add(ModelCode.MEASUREMENT_UNITSYMB, typeof(UnitSymbol));
 			property2enumType.Add(ModelCode.MEASUREMENT_DIRECTION, typeof(DirectionType));
-		}
+            property2enumType.Add(ModelCode.DISCRETE_VALIDCOMMANDS, typeof(Commands));
+            property2enumType.Add(ModelCode.DISCRETE_VALIDSTATES, typeof(States));
+        }
 
 		public List<string> GetEnumList(ModelCode propertyId)
 		{
