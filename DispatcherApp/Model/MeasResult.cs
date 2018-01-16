@@ -5,7 +5,7 @@ using System.Text;
 
 namespace DispatcherApp.Model
 {
-    public class MeasResult : DataGridResult
+    public class MeasResult
     {
         private string mrID;
         private string measValue;

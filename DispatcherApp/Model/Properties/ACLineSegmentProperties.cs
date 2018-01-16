@@ -5,8 +5,21 @@ using System.Text;
 
 namespace DispatcherApp.Model.Properties
 {
-    public class ACLineSegmentProperties : Properties
+    public class ACLineSegmentProperties : ElementProperties
     {
-        public float Lenght { get; private set; }
+        private float lenght;
+
+        public float Length
+        {
+            get
+            {
+                return lenght;
+            }
+            set
+            {
+                lenght = value;
+                RaisePropertyChanged("Length");
+            }
+        }
     }
 }

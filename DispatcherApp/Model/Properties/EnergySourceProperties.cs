@@ -5,7 +5,7 @@ using System.Text;
 
 namespace DispatcherApp.Model.Properties
 {
-    public class EnergySourceProperties  : Properties
+    public class EnergySourceProperties  : ElementProperties
     {
     }
 }

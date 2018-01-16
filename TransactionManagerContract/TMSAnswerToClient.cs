@@ -34,6 +34,12 @@ namespace TransactionManagerContract
             set { resourceDescriptions = value; }
         }
 
+        public TMSAnswerToClient()
+        {
+            Elements = new List<Element>();
+            ResourceDescriptions = new List<ResourceDescription>();
+        }
+
         public TMSAnswerToClient(List<ResourceDescription> rd, List<Element> ele, int deep)
         {
             GraphDeep = deep;

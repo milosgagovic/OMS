@@ -47,7 +47,7 @@ namespace PubSubscribe
             }
             catch (Exception e)
             {
-                throw e;
+                //throw e;
                 //TODO  Log error 
             }
 
