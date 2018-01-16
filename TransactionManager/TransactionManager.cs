@@ -152,18 +152,18 @@ namespace TransactionManager
 
         public TMSAnswerToClient GetNetwork()
         {
-            List<Element> listOfDMSElement = new List<Element>();//proxyToDMS.GetAllElements();
+            List<Element> listOfDMSElement = proxyToDMS.GetAllElements();
             List<ResourceDescription> resourceDescriptionFromNMS = new List<ResourceDescription>();
-            List<ACLine> acList = proxyToDMS.GetAllACLines();
-            List<Node> nodeList = proxyToDMS.GetAllNodes();
-            List<Source> sourceList = proxyToDMS.GetAllSource();
-            List<Switch> switchList = proxyToDMS.GetAllSwitches();
-            List<Consumer> consumerList = proxyToDMS.GetAllConsumers();
-            acList.ForEach(u => listOfDMSElement.Add(u));
-            nodeList.ForEach(u => listOfDMSElement.Add(u));
-            sourceList.ForEach(u => listOfDMSElement.Add(u));
-            switchList.ForEach(u => listOfDMSElement.Add(u));
-            consumerList.ForEach(u => listOfDMSElement.Add(u));
+            //List<ACLine> acList = proxyToDMS.GetAllACLines();
+            //List<Node> nodeList = proxyToDMS.GetAllNodes();
+            //List<Source> sourceList = proxyToDMS.GetAllSource();
+            //List<Switch> switchList = proxyToDMS.GetAllSwitches();
+            //List<Consumer> consumerList = proxyToDMS.GetAllConsumers();
+            //acList.ForEach(u => listOfDMSElement.Add(u));
+            //nodeList.ForEach(u => listOfDMSElement.Add(u));
+            //sourceList.ForEach(u => listOfDMSElement.Add(u));
+            //switchList.ForEach(u => listOfDMSElement.Add(u));
+            //consumerList.ForEach(u => listOfDMSElement.Add(u));
 
             gdaTMS.GetExtentValues(ModelCode.BREAKER).ForEach(u => resourceDescriptionFromNMS.Add(u));
             gdaTMS.GetExtentValues(ModelCode.CONNECTNODE).ForEach(u => resourceDescriptionFromNMS.Add(u));
