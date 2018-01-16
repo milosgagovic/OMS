@@ -19,6 +19,9 @@ namespace FTN.Services.NetworkModelService.DataModel.Meas
         /// Normal measurement value, e.g., used for percentage calculations.
         private int normalValue;
 
+        private List<Commands> validCommands;
+
+        private List<States> validStates;
 
         public Discrete(long globalId) :
                 base(globalId)
@@ -61,7 +64,29 @@ namespace FTN.Services.NetworkModelService.DataModel.Meas
             }
         }
 
-       
+        public List<Commands> ValidCommands
+        {
+            get
+            {
+                return this.validCommands;
+            }
+            set
+            {
+                this.validCommands = value;
+            }
+        }
+
+        public List<States> ValidStates
+        {
+            get
+            {
+                return this.validStates;
+            }
+            set
+            {
+                this.validStates = value;
+            }
+        }
 
         public override bool IsReferenced
         {
@@ -81,7 +106,9 @@ namespace FTN.Services.NetworkModelService.DataModel.Meas
                 return (
                 (x.maxValue == this.maxValue) &&
                 (x.minValue == this.minValue) &&
-                (x.normalValue == this.normalValue));
+                (x.normalValue == this.normalValue) &&
+                (x.validCommands == this.validCommands &&
+                (x.validStates == this.validStates)));
                
             }
             else
@@ -108,6 +135,12 @@ namespace FTN.Services.NetworkModelService.DataModel.Meas
                 case ModelCode.DISCRETE_NORMVAL:
                     property.SetValue(normalValue);
                     break;
+                case ModelCode.DISCRETE_VALIDCOMMANDS:
+                    property.SetValue(validCommands.Cast<short>().ToList());  // ?
+                    break;
+                case ModelCode.DISCRETE_VALIDSTATES:
+                    property.SetValue(validStates.Cast<short>().ToList());  // ?
+                    break;
                 default:
                     base.GetProperty(property);
                     break;
@@ -121,6 +154,8 @@ namespace FTN.Services.NetworkModelService.DataModel.Meas
                 case ModelCode.DISCRETE_MAXVAL:
                 case ModelCode.DISCRETE_MINVAL:
                 case ModelCode.DISCRETE_NORMVAL:
+                case ModelCode.DISCRETE_VALIDCOMMANDS:
+                case ModelCode.DISCRETE_VALIDSTATES:
                     return true;
                 default:
                     return base.HasProperty(property);
@@ -139,6 +174,12 @@ namespace FTN.Services.NetworkModelService.DataModel.Meas
                     break;
                 case ModelCode.DISCRETE_NORMVAL:
                     normalValue = property.AsInt();
+                    break;
+                case ModelCode.DISCRETE_VALIDCOMMANDS:
+                    validCommands = property.AsEnums().Cast<Commands>().ToList();
+                    break;
+                case ModelCode.DISCRETE_VALIDSTATES:
+                    validStates = property.AsEnums().Cast<States>().ToList();
                     break;
                 default:
                     base.SetProperty(property);

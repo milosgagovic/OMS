@@ -55,6 +55,8 @@ namespace FTN.Common
         DISCRETE_MINVAL                 = 0x1210000000080103,
         DISCRETE_MAXVAL                 = 0x1210000000080203,
         DISCRETE_NORMVAL                = 0x1210000000080303,
+        DISCRETE_VALIDCOMMANDS          = 0x121000000008041a,
+        DISCRETE_VALIDSTATES            = 0x121000000008051a,
 
         ANALOG                          = 0x1220000000090000,
         ANALOG_MINVAL                   = 0x1220000000090105,
