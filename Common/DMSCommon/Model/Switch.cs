@@ -11,7 +11,8 @@ namespace DMSCommon.Model
     {
         [EnumMember]
         private SwitchState _state;
-        
+
+
         public SwitchState State
         {
             get

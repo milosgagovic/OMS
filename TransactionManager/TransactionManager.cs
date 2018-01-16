@@ -143,7 +143,7 @@ namespace TransactionManager
             gdaTMS.GetExtentValues(ModelCode.ENERGSOURCE).ForEach(u => resourceDescriptionFromNMS.Add(u));
             gdaTMS.GetExtentValues(ModelCode.ACLINESEGMENT).ForEach(u => resourceDescriptionFromNMS.Add(u));
             GraphDeep = proxyToDMS.GetNetworkDepth();
-            TMSAnswerToClient answer = new TMSAnswerToClient(resourceDescriptionFromNMS, listOfDMSElement, GraphDeep);
+            TMSAnswerToClient answer = new TMSAnswerToClient(resourceDescriptionFromNMS, null, GraphDeep);
             resourceDescriptions = resourceDescriptionFromNMS;
             DMSElements = listOfDMSElement;
             GraphDeep = proxyToDMS.GetNetworkDepth();
@@ -159,7 +159,6 @@ namespace TransactionManager
             List<Source> sourceList = proxyToDMS.GetAllSource();
             List<Switch> switchList = proxyToDMS.GetAllSwitches();
             List<Consumer> consumerList = proxyToDMS.GetAllConsumers();
-
             acList.ForEach(u => listOfDMSElement.Add(u));
             nodeList.ForEach(u => listOfDMSElement.Add(u));
             sourceList.ForEach(u => listOfDMSElement.Add(u));
@@ -172,8 +171,7 @@ namespace TransactionManager
             gdaTMS.GetExtentValues(ModelCode.ENERGSOURCE).ForEach(u => resourceDescriptionFromNMS.Add(u));
             gdaTMS.GetExtentValues(ModelCode.ACLINESEGMENT).ForEach(u => resourceDescriptionFromNMS.Add(u));
             int GraphDeep = proxyToDMS.GetNetworkDepth();
-            TMSAnswerToClient answer = new TMSAnswerToClient(resourceDescriptionFromNMS, listOfDMSElement, GraphDeep);
-            return answer;
+            return new TMSAnswerToClient(resourceDescriptionFromNMS, listOfDMSElement, GraphDeep);
         }
     }
 }

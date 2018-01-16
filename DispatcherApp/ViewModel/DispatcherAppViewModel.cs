@@ -76,8 +76,15 @@ namespace DispatcherApp.ViewModel
             Elements = ele;
             DataGridElements = new List<MeasResult>();
             model = new ModelGda();
-            ChannelFactory<IOMSClient> factoryToTMS = new ChannelFactory<IOMSClient>(new NetTcpBinding(), new EndpointAddress("net.tcp://localhost:6080/TransactionManagerService"));
+            NetTcpBinding bindig = new NetTcpBinding();
+            //bindig.CloseTimeout = TimeSpan.FromMinutes(10);
+            //bindig.OpenTimeout = TimeSpan.FromMinutes(10);
+            //bindig.ReceiveTimeout = TimeSpan.FromMinutes(10);
+            //bindig.SendTimeout = TimeSpan.FromMinutes(10);
+            
+            ChannelFactory<IOMSClient> factoryToTMS = new ChannelFactory<IOMSClient>(bindig, new EndpointAddress("net.tcp://localhost:6080/TransactionManagerService"));  
             proxyToTransactionManager = factoryToTMS.CreateChannel();
+            //((IContextChannel)proxyToTransactionManager).OperationTimeout = TimeSpan.FromMinutes(10);
 
             subscriber = new Subscriber();
             subscriber.Subscribe();
@@ -158,8 +165,15 @@ namespace DispatcherApp.ViewModel
             this.NetworkElements.Add(mainCanvas);
 
             // dobaviti mreze od DMS-a (za sad su lazni podaci)
+            TMSAnswerToClient answerFromTransactionManager;
+            try
+            {
+                 answerFromTransactionManager = proxyToTransactionManager.GetNetwork();
+            }catch(Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
 
-            TMSAnswerToClient answerFromTransactionManager = proxyToTransactionManager.GetNetwork();
             foreach (Source source in sources)
             {
                 DrawGraph(source);

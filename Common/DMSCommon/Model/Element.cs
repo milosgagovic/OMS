@@ -8,26 +8,35 @@ using System.Threading.Tasks;
 namespace DMSCommon.Model
 {
     [DataContract]
+    [KnownType(typeof(ACLine))]
+    [KnownType(typeof(Switch))]
+    [KnownType(typeof(Node))]
+    [KnownType(typeof(Source))]
+    [KnownType(typeof(Consumer))]
+    [KnownType(typeof(Node))]
     public class Element
     {
-        [DataMember]
+
         private long _elementGID;
-        [DataMember]
+
         private bool _marker;
-        [DataMember]
+
         private string _mRID;
-       
+
+        [DataMember]
         public long ElementGID
         {
             get { return _elementGID; }
             set { _elementGID = value; }
         }
-       
+
+        [DataMember]
         public bool Marker
         {
             get { return _marker; }
             set { _marker = value; }
         }
+        [DataMember]
         public string MRID
         {
             get { return _mRID; }

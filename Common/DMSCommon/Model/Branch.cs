@@ -10,13 +10,23 @@ namespace DMSCommon.Model
     [DataContract]
     public class Branch : Element
     {
-        [DataMember]
+
         private long _end1;
-        [DataMember]
+
         private long _end2;
-        
-        public long End1 { get => _end1; set => _end1 = value; }
-        public long End2 { get => _end2; set => _end2 = value; }
+
+        [DataMember]
+        public long End1
+        {
+            get { return _end1; }
+            set { _end1 = value; }
+        }
+        [DataMember]
+        public long End2
+        {
+            get { return _end2; }
+            set { _end2 = value; }
+        }
 
         public Branch() { }
         public Branch (long gid):base(gid)

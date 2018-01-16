@@ -16,17 +16,29 @@ namespace TransactionManagerContract
         private int graphDeep;
 
         [DataMember]
-        public int GraphDeep { get => graphDeep; set => graphDeep = value; }
+        public int GraphDeep
+        {
+            get { return graphDeep; }
+            set { graphDeep = value; }
+        }
         [DataMember]
-        public List<Element> Elements { get => elements; set => elements = value; }
+        public List<Element> Elements
+        {
+            get { return elements; }
+            set { elements = value; }
+        }
         [DataMember]
-        public List<ResourceDescription> ResourceDescriptions { get => resourceDescriptions; set => resourceDescriptions = value; }
+        public List<ResourceDescription> ResourceDescriptions
+        {
+            get { return resourceDescriptions; }
+            set { resourceDescriptions = value; }
+        }
 
         public TMSAnswerToClient(List<ResourceDescription> rd, List<Element> ele, int deep)
         {
             GraphDeep = deep;
             ResourceDescriptions = rd;
-            ele = Elements;
+            Elements = ele;
         }
     }
 }

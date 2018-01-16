@@ -1,15 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 
 namespace DMSCommon.Model
 {
+    [DataContract]
     public class ACLine : Branch
     {
         private float _length;
-
-        public float Length { get => _length; set => _length = value; }
+        [DataMember]
+        public float Length
+        {
+            get { return _length; }
+            set { _length = value; }
+        }
 
         public ACLine() { }
         public ACLine(float length)

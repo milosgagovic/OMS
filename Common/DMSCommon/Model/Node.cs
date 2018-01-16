@@ -10,16 +10,32 @@ namespace DMSCommon.Model
     [DataContract]
     public class Node : Element
     {
-        [DataMember]
+
         private long _parent;
-        [DataMember]
+
         private List<long> children;
-        [DataMember]
+
         private long upTerminal;
 
-        public long Parent { get => _parent; set => _parent = value; }
-        public List<long> Children { get => children; set => children = value; }
-        public long UpTerminal { get => upTerminal; set => upTerminal = value; }
+        [DataMember]
+        public long Parent
+        {
+            get { return _parent; }
+            set { _parent = value; }
+        }
+
+        [DataMember]
+        public List<long> Children
+        {
+            get { return children; }
+            set { children = value; }
+        }
+        [DataMember]
+        public long UpTerminal
+        {
+            get { return upTerminal; }
+            set { upTerminal = value; }
+        }
 
         public Node() { }
         public Node(long gid) : base(gid)

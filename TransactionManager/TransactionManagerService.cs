@@ -15,6 +15,10 @@ namespace TransactionManager
         {
             svc = new ServiceHost(typeof(TransactionManager));
             var binding = new NetTcpBinding();
+            binding.CloseTimeout = TimeSpan.FromMinutes(10);
+            binding.OpenTimeout = TimeSpan.FromMinutes(10);
+            binding.ReceiveTimeout = TimeSpan.FromMinutes(10);
+            binding.SendTimeout = TimeSpan.FromMinutes(10);
             binding.TransactionFlow = true;
             svc.AddServiceEndpoint(typeof(IOMSClient), binding, new
             Uri("net.tcp://localhost:6080/TransactionManagerService"));
