@@ -52,7 +52,7 @@ namespace DMSCommon.TreeGraph
             {
                 var parentLink = Links[(long)parentId];
 
-                depth = parentLink.Depth + 1;
+                
 
                 if (parentLink.Child != null)
                 {
@@ -63,6 +63,14 @@ namespace DMSCommon.TreeGraph
                     Leaves.Remove((long)parentId);
                 }
                 parentLink.Child = id;
+                if (!(Data[parentLink.Id] is Node))
+                {
+                    depth = parentLink.Depth + 1;
+                }
+                else
+                {
+                    depth = parentLink.Depth;
+                }
             }
 
             // Saves data

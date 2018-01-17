@@ -77,7 +77,7 @@ namespace DMSService
 
         public int GetNetworkDepth()
         {
-            return DMSService.tree.Links.Max(x => x.Value.Depth);
+            return DMSService.tree.Links.Max(x => x.Value.Depth)+1;
         }
 
         public Source GetTreeRoot()
