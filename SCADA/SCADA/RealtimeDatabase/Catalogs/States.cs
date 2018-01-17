@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace SCADA.RealtimeDatabase.Catalogs
 {
-    public enum States
-    {
-        OPENED = 0,
-        CLOSED,
-        UNKNOWN, // dodala samo da bih testirala
-        INVALID
-    }
+    //public enum States
+    //{
+    //    OPENED = 0,
+    //    CLOSED,
+    //    UNKNOWN, // dodala samo da bih testirala
+    //    INVALID
+    //}
 }

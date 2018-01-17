@@ -1,4 +1,5 @@
 ﻿using FTN.Common;
+using OMSSCADACommon;
 using OMSSCADACommon.Response;
 using SCADAContracts;
 using System;
@@ -13,6 +14,12 @@ namespace CommunicationEngine
     [CallbackBehavior(ConcurrencyMode = ConcurrencyMode.Reentrant, UseSynchronizationContext = false)]
     public class SCADACallback : ISCADAContract_Callback
     {
+        public void DigitalStateChanged(string mRID, OMSSCADACommon.States newState)
+        {
+            // mapirati i prodlediti DMS-u
+            //throw new NotImplementedException();
+        }
+
         //ovde puca proveriti to
         //MappingEngine mapEngine = new MappingEngine();
 

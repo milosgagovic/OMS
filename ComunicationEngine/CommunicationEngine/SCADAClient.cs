@@ -20,6 +20,11 @@ namespace CommunicationEngine
             proxy = new SCADAProxy(new NetTcpBinding(), new EndpointAddress("net.tcp://localhost:4000/SCADAService"), new SCADACallback());
         }
 
+        public void CheckIn()
+        {
+            proxy.CheckIn();
+        }
+
         public ResultMessage ExecuteCommand(Command command)
         {
             return proxy.ExecuteCommand(command);

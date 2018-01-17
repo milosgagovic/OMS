@@ -1,4 +1,5 @@
-﻿using OMSSCADACommon.Response;
+﻿using OMSSCADACommon;
+using OMSSCADACommon.Response;
 using SCADAContracts;
 using System;
 using System.Collections.Generic;
@@ -13,6 +14,22 @@ namespace SCADA.ClientHandler
     public class Responser : ISCADAContract_Callback
     {
         ISCADAContract_Callback proxy;
+        public static List<OperationContext> Contexts;
+
+        static Responser()
+        {
+            Contexts = new List<OperationContext>();
+        }
+
+        public void DigitalStateChanged(string mRID, States newState)
+        {
+            foreach (OperationContext context in Contexts)
+            {
+                proxy = context.GetCallbackChannel<ISCADAContract_Callback>();
+
+                proxy.DigitalStateChanged(mRID, newState);
+            }
+        }
 
         public void ReceiveResponse(Response response)
         {

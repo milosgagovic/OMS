@@ -14,6 +14,9 @@ namespace SCADAContracts
     public interface ISCADAContract
     {
         [OperationContract]
+        void CheckIn();
+
+        [OperationContract]
         ResultMessage ExecuteCommand(Command command);
     }
 
@@ -22,5 +25,8 @@ namespace SCADAContracts
     {
         [OperationContract]
         void ReceiveResponse(Response response);
+
+        [OperationContract]
+        void DigitalStateChanged(string mRID, States newState);
     }
 }

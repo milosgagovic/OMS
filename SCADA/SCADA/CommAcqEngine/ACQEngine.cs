@@ -91,9 +91,9 @@ namespace SCADA.CommAcqEngine
                 RelativeAddress = 0,
                 Class = DigitalDeviceClasses.SWITCH,
                 ValidCommands = { CommandTypes.CLOSE, CommandTypes.OPEN },
-                ValidStates = { RealtimeDatabase.Catalogs.States.CLOSED, RealtimeDatabase.Catalogs.States.OPENED },
+                ValidStates = { States.CLOSED, States.OPENED },
                 Command = CommandTypes.OPEN,
-                State = RealtimeDatabase.Catalogs.States.CLOSED,
+                State = States.CLOSED,
             };
 
             Digital d2 = new Digital()
@@ -103,9 +103,9 @@ namespace SCADA.CommAcqEngine
                 RelativeAddress = 1,
                 Class = DigitalDeviceClasses.SWITCH,
                 ValidCommands = { CommandTypes.CLOSE, CommandTypes.OPEN },
-                ValidStates = { RealtimeDatabase.Catalogs.States.CLOSED, RealtimeDatabase.Catalogs.States.OPENED },
+                ValidStates = { States.CLOSED, States.OPENED },
                 Command = CommandTypes.OPEN,
-                State = RealtimeDatabase.Catalogs.States.CLOSED,
+                State = States.CLOSED,
             };
 
             Digital d3 = new Digital()
@@ -115,34 +115,34 @@ namespace SCADA.CommAcqEngine
                 RelativeAddress = 2,
                 Class = DigitalDeviceClasses.SWITCH,
                 ValidCommands = { CommandTypes.CLOSE, CommandTypes.OPEN },
-                ValidStates = { RealtimeDatabase.Catalogs.States.CLOSED, RealtimeDatabase.Catalogs.States.OPENED },
+                ValidStates = { States.CLOSED, States.OPENED },
                 Command = CommandTypes.OPEN,
-                State = RealtimeDatabase.Catalogs.States.CLOSED,
+                State = States.CLOSED,
             };
 
-            Digital d4 = new Digital()
-            {
-                ProcContrName = "RTU-1",
-                Name = "TEST1",
-                RelativeAddress = 3,
-                Class = DigitalDeviceClasses.SWITCH,
-                ValidCommands = { CommandTypes.CLOSE, CommandTypes.OPEN },
-                ValidStates = { RealtimeDatabase.Catalogs.States.CLOSED, RealtimeDatabase.Catalogs.States.OPENED, RealtimeDatabase.Catalogs.States.UNKNOWN },
-                Command = CommandTypes.OPEN,
-                State = RealtimeDatabase.Catalogs.States.CLOSED,
-            };
+            //Digital d4 = new Digital()
+            //{
+            //    ProcContrName = "RTU-1",
+            //    Name = "TEST1",
+            //    RelativeAddress = 3,
+            //    Class = DigitalDeviceClasses.SWITCH,
+            //    ValidCommands = { CommandTypes.CLOSE, CommandTypes.OPEN },
+            //    ValidStates = { States.CLOSED, States.OPENED, States.UNKNOWN },
+            //    Command = CommandTypes.OPEN,
+            //    State = States.CLOSED,
+            //};
 
-            Digital d5 = new Digital()
-            {
-                ProcContrName = "RTU-1",
-                Name = "TEST2",
-                RelativeAddress = 4,
-                Class = DigitalDeviceClasses.SWITCH,
-                ValidCommands = { CommandTypes.CLOSE, CommandTypes.OPEN },
-                ValidStates = { RealtimeDatabase.Catalogs.States.CLOSED, RealtimeDatabase.Catalogs.States.OPENED },
-                Command = CommandTypes.OPEN,
-                State = RealtimeDatabase.Catalogs.States.CLOSED,
-            };
+            //Digital d5 = new Digital()
+            //{
+            //    ProcContrName = "RTU-1",
+            //    Name = "TEST2",
+            //    RelativeAddress = 4,
+            //    Class = DigitalDeviceClasses.SWITCH,
+            //    ValidCommands = { CommandTypes.CLOSE, CommandTypes.OPEN },
+            //    ValidStates = { States.CLOSED, States.OPENED },
+            //    Command = CommandTypes.OPEN,
+            //    State = States.CLOSED,
+            //};
 
             // rtu 2
             Digital d6 = new Digital()
@@ -152,9 +152,9 @@ namespace SCADA.CommAcqEngine
                 RelativeAddress = 0,
                 Class = DigitalDeviceClasses.SWITCH,
                 ValidCommands = { CommandTypes.CLOSE, CommandTypes.OPEN },
-                ValidStates = { RealtimeDatabase.Catalogs.States.CLOSED, RealtimeDatabase.Catalogs.States.OPENED },
+                ValidStates = { States.CLOSED, States.OPENED },
                 Command = CommandTypes.OPEN,
-                State = RealtimeDatabase.Catalogs.States.CLOSED,
+                State = States.CLOSED,
             };
 
             Digital d7 = new Digital()
@@ -164,9 +164,9 @@ namespace SCADA.CommAcqEngine
                 RelativeAddress = 1,
                 Class = DigitalDeviceClasses.SWITCH,
                 ValidCommands = { CommandTypes.CLOSE, CommandTypes.OPEN },
-                ValidStates = { RealtimeDatabase.Catalogs.States.CLOSED, RealtimeDatabase.Catalogs.States.OPENED },
+                ValidStates = { States.CLOSED, States.OPENED },
                 Command = CommandTypes.OPEN,
-                State = RealtimeDatabase.Catalogs.States.CLOSED,
+                State = States.CLOSED,
             };
 
             Digital d8 = new Digital()
@@ -176,16 +176,16 @@ namespace SCADA.CommAcqEngine
                 RelativeAddress = 2,
                 Class = DigitalDeviceClasses.SWITCH,
                 ValidCommands = { CommandTypes.CLOSE, CommandTypes.OPEN },
-                ValidStates = { RealtimeDatabase.Catalogs.States.CLOSED, RealtimeDatabase.Catalogs.States.OPENED },
+                ValidStates = { States.CLOSED, States.OPENED },
                 Command = CommandTypes.OPEN,
-                State = RealtimeDatabase.Catalogs.States.CLOSED,
+                State = States.CLOSED,
             };
 
             rtu1.AddProcessVariable(d1);
             rtu1.AddProcessVariable(d2);
             rtu1.AddProcessVariable(d3);
-            rtu1.AddProcessVariable(d4);
-            rtu1.AddProcessVariable(d5);
+            //rtu1.AddProcessVariable(d4);
+            //rtu1.AddProcessVariable(d5);
 
             rtu2.AddProcessVariable(d6);
             rtu2.AddProcessVariable(d7);
@@ -195,13 +195,13 @@ namespace SCADA.CommAcqEngine
             dbContext.AddProcessVariable(d1);
             dbContext.AddProcessVariable(d2);
             dbContext.AddProcessVariable(d3);
-            dbContext.AddProcessVariable(d4);
-            dbContext.AddProcessVariable(d5);
+            //dbContext.AddProcessVariable(d4);
+            //dbContext.AddProcessVariable(d5);
             dbContext.AddProcessVariable(d6);
             dbContext.AddProcessVariable(d7);
             dbContext.AddProcessVariable(d8);
 
-            d1.Name = "PromenaD1";
+            //d1.Name = "PromenaD1";
         }
 
         public void SetupRTUs()
@@ -336,7 +336,12 @@ namespace SCADA.CommAcqEngine
                                             {
                                                 lock (dbContext.Database.SyncObject)
                                                 {
-                                                    target.State = target.ValidStates[array[0]];
+                                                    if (target.State != target.ValidStates[array[0]])
+                                                    {
+                                                        Responser responser = new Responser();
+                                                        responser.DigitalStateChanged(target.Name, target.ValidStates[array[0]]);
+                                                        target.State = target.ValidStates[array[0]];
+                                                    }
                                                 }
                                                 Console.WriteLine("Digital variable {0}, state: {1}", target.Name, target.State);
                                             }

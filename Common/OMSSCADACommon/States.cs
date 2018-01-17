@@ -9,6 +9,7 @@ namespace OMSSCADACommon
     public enum States
     {
         OPENED = 0,
-        CLOSED
+        CLOSED,
+        UNKNOWN
     }
 }

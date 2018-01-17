@@ -20,6 +20,18 @@ namespace SCADAContracts
             factory = this.CreateChannel();
         }
 
+        public void CheckIn()
+        {
+            try
+            {
+                factory.CheckIn();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+        }
+
         public ResultMessage ExecuteCommand(Command command)
         {
             try

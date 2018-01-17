@@ -13,15 +13,15 @@ namespace SCADA.RealtimeDatabase.Model
     {
         public DigitalDeviceClasses Class { get; set; }
         public List<CommandTypes> ValidCommands { get; set; }
-        public List<Catalogs.States> ValidStates { get; set; }
+        public List<States> ValidStates { get; set; }
         public CommandTypes Command { get; set; }
-        public Catalogs.States State { get; set; }
+        public States State { get; set; }
 
         public Digital()
         {
             this.Type = VariableTypes.DIGITAL;
             ValidCommands = new List<CommandTypes>();
-            ValidStates = new List<Catalogs.States>();
+            ValidStates = new List<States>();
         }
 
         // here should be mapping between Catalogs.States and bit values
