@@ -1,6 +1,7 @@
 ﻿using OMSSCADACommon.Commands;
 using System;
 using System.Runtime.Serialization;
+using OMSSCADACommon.Responses;
 
 namespace OMSSCADACommon.Commands
 {
@@ -16,6 +17,6 @@ namespace OMSSCADACommon.Commands
         [DataMember]
         public string Id { get; set; }
 
-        public abstract ResultMessage Execute();
+        public abstract Response Execute();
     }
 }

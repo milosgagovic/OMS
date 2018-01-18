@@ -5,7 +5,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OMSSCADACommon.Response
+namespace OMSSCADACommon.Responses
 {
     [DataContract]
     [KnownType(typeof(AnalogVariable))]
@@ -14,7 +14,10 @@ namespace OMSSCADACommon.Response
     public class Response
     {
         [DataMember]
-        public List<ResponseVariable> Variables = null;
+        public List<ResponseVariable> Variables;
+
+        [DataMember]
+        public ResultMessage ResultMessage;
 
         public Response()
         {

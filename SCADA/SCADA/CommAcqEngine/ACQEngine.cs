@@ -10,7 +10,7 @@ using PCCommon;
 using SCADA.RealtimeDatabase;
 using OMSSCADACommon;
 using SCADA.SecondaryDataProcessing;
-using OMSSCADACommon.Response;
+using OMSSCADACommon.Responses;
 using SCADA.ClientHandler;
 using SCADA.RealtimeDatabase.Catalogs;
 
@@ -145,41 +145,41 @@ namespace SCADA.CommAcqEngine
             //};
 
             // rtu 2
-            Digital d6 = new Digital()
-            {
-                ProcContrName = "RTU-2",
-                Name = "TEST3",
-                RelativeAddress = 0,
-                Class = DigitalDeviceClasses.SWITCH,
-                ValidCommands = { CommandTypes.CLOSE, CommandTypes.OPEN },
-                ValidStates = { States.CLOSED, States.OPENED },
-                Command = CommandTypes.OPEN,
-                State = States.CLOSED,
-            };
+            //Digital d6 = new Digital()
+            //{
+            //    ProcContrName = "RTU-2",
+            //    Name = "TEST3",
+            //    RelativeAddress = 0,
+            //    Class = DigitalDeviceClasses.SWITCH,
+            //    ValidCommands = { CommandTypes.CLOSE, CommandTypes.OPEN },
+            //    ValidStates = { States.CLOSED, States.OPENED },
+            //    Command = CommandTypes.OPEN,
+            //    State = States.CLOSED,
+            //};
 
-            Digital d7 = new Digital()
-            {
-                ProcContrName = "RTU-2",
-                Name = "TEST4",
-                RelativeAddress = 1,
-                Class = DigitalDeviceClasses.SWITCH,
-                ValidCommands = { CommandTypes.CLOSE, CommandTypes.OPEN },
-                ValidStates = { States.CLOSED, States.OPENED },
-                Command = CommandTypes.OPEN,
-                State = States.CLOSED,
-            };
+            //Digital d7 = new Digital()
+            //{
+            //    ProcContrName = "RTU-2",
+            //    Name = "TEST4",
+            //    RelativeAddress = 1,
+            //    Class = DigitalDeviceClasses.SWITCH,
+            //    ValidCommands = { CommandTypes.CLOSE, CommandTypes.OPEN },
+            //    ValidStates = { States.CLOSED, States.OPENED },
+            //    Command = CommandTypes.OPEN,
+            //    State = States.CLOSED,
+            //};
 
-            Digital d8 = new Digital()
-            {
-                ProcContrName = "RTU-2",
-                Name = "TEST5",
-                RelativeAddress = 2,
-                Class = DigitalDeviceClasses.SWITCH,
-                ValidCommands = { CommandTypes.CLOSE, CommandTypes.OPEN },
-                ValidStates = { States.CLOSED, States.OPENED },
-                Command = CommandTypes.OPEN,
-                State = States.CLOSED,
-            };
+            //Digital d8 = new Digital()
+            //{
+            //    ProcContrName = "RTU-2",
+            //    Name = "TEST5",
+            //    RelativeAddress = 2,
+            //    Class = DigitalDeviceClasses.SWITCH,
+            //    ValidCommands = { CommandTypes.CLOSE, CommandTypes.OPEN },
+            //    ValidStates = { States.CLOSED, States.OPENED },
+            //    Command = CommandTypes.OPEN,
+            //    State = States.CLOSED,
+            //};
 
             rtu1.AddProcessVariable(d1);
             rtu1.AddProcessVariable(d2);
@@ -187,9 +187,9 @@ namespace SCADA.CommAcqEngine
             //rtu1.AddProcessVariable(d4);
             //rtu1.AddProcessVariable(d5);
 
-            rtu2.AddProcessVariable(d6);
-            rtu2.AddProcessVariable(d7);
-            rtu2.AddProcessVariable(d8);
+            //rtu2.AddProcessVariable(d6);
+            //rtu2.AddProcessVariable(d7);
+            //rtu2.AddProcessVariable(d8);
 
             // pitanje, ako uradim delete variajble iz baze, da li se brise i iz rtu-a?
             dbContext.AddProcessVariable(d1);
@@ -197,9 +197,9 @@ namespace SCADA.CommAcqEngine
             dbContext.AddProcessVariable(d3);
             //dbContext.AddProcessVariable(d4);
             //dbContext.AddProcessVariable(d5);
-            dbContext.AddProcessVariable(d6);
-            dbContext.AddProcessVariable(d7);
-            dbContext.AddProcessVariable(d8);
+            //dbContext.AddProcessVariable(d6);
+            //dbContext.AddProcessVariable(d7);
+            //dbContext.AddProcessVariable(d8);
 
             //d1.Name = "PromenaD1";
         }
@@ -366,41 +366,41 @@ namespace SCADA.CommAcqEngine
         // CommandReceiver methods
         //-------------------------
 
-        public ResultMessage ReadAllAnalog(OMSSCADACommon.DeviceTypes type)
+        public OMSSCADACommon.Responses.Response ReadAllAnalog(OMSSCADACommon.DeviceTypes type)
         {
             throw new NotImplementedException();
         }
 
-        public ResultMessage ReadAllCounter(OMSSCADACommon.DeviceTypes type)
+        public OMSSCADACommon.Responses.Response ReadAllCounter(OMSSCADACommon.DeviceTypes type)
         {
             throw new NotImplementedException();
         }
 
-        public ResultMessage ReadAllDigital(OMSSCADACommon.DeviceTypes type)
+        public OMSSCADACommon.Responses.Response ReadAllDigital(OMSSCADACommon.DeviceTypes type)
         {
             throw new NotImplementedException();
         }
 
-        public ResultMessage ReadSingleAnalog(string id)
+        public OMSSCADACommon.Responses.Response ReadSingleAnalog(string id)
         {
             throw new NotImplementedException();
         }
 
-        public ResultMessage ReadSingleCounter(string id)
+        public OMSSCADACommon.Responses.Response ReadSingleCounter(string id)
         {
             throw new NotImplementedException();
         }
 
-        public ResultMessage ReadSingleDigital(string id)
+        public OMSSCADACommon.Responses.Response ReadSingleDigital(string id)
         {
             throw new NotImplementedException();
         }
 
-        public ResultMessage ReadAll()
+        public OMSSCADACommon.Responses.Response ReadAll()
         {
             List<ProcessVariable> pvs = dbContext.GetAllProcessVariables();
 
-            OMSSCADACommon.Response.Response response = new OMSSCADACommon.Response.Response();
+            OMSSCADACommon.Responses.Response response = new OMSSCADACommon.Responses.Response();
 
             foreach (ProcessVariable pv in pvs)
             {
@@ -421,95 +421,97 @@ namespace SCADA.CommAcqEngine
                 }
             }
 
-            Responser r = new Responser();
-            r.ReceiveResponse(response);
+            //Responser r = new Responser();
+            //r.ReceiveResponse(response);
+            response.ResultMessage = ResultMessage.OK;
 
-            return ResultMessage.OK;
+            return response;
         }
 
-        public ResultMessage WriteSingleAnalog(string id, float value)
+        public OMSSCADACommon.Responses.Response WriteSingleAnalog(string id, float value)
         {
             throw new NotImplementedException();
         }
 
-        public ResultMessage WriteSingleDigital(string id, CommandTypes command)
+        public OMSSCADACommon.Responses.Response WriteSingleDigital(string id, CommandTypes command)
         {
-            Digital digital = null;
+            //Digital digital = null;
 
-            // is ID set in the request
-            try
-            {
-                digital = (Digital)dbContext.GetProcessVariableByName(id);
-            }
-            catch (Exception e)
-            {
-                return ResultMessage.ID_NOT_SET;
-            }
+            //// is ID set in the request
+            //try
+            //{
+            //    digital = (Digital)dbContext.GetProcessVariableByName(id);
+            //}
+            //catch (Exception e)
+            //{
+            //    return ResultMessage.ID_NOT_SET;
+            //}
 
-            // does this ID exist in the database
-            if (digital == null)
-            {
-                return ResultMessage.INVALID_ID;
-            }
+            //// does this ID exist in the database
+            //if (digital == null)
+            //{
+            //    return ResultMessage.INVALID_ID;
+            //}
 
-            // is this a valid command for this digital device
-            if (!CommandValidator.ValidateDigitalCommand(digital, command))
-            {
-                return ResultMessage.INVALID_DIG_COMM;
-            }
+            //// is this a valid command for this digital device
+            //if (!CommandValidator.ValidateDigitalCommand(digital, command))
+            //{
+            //    return ResultMessage.INVALID_DIG_COMM;
+            //}
 
-            // execute command if it's different from current command
-            if (digital.Command != command)
-            {
-                digital.Command = command;
-                RTU rtu;
-                RTUs.TryGetValue(digital.ProcContrName, out rtu);
+            //// execute command if it's different from current command
+            //if (digital.Command != command)
+            //{
+            //    digital.Command = command;
+            //    RTU rtu;
+            //    RTUs.TryGetValue(digital.ProcContrName, out rtu);
 
-                IORequestBlock iorb = new IORequestBlock()
-                {
-                    RequestType = RequestType.SEND,
+            //    IORequestBlock iorb = new IORequestBlock()
+            //    {
+            //        RequestType = RequestType.SEND,
 
-                };
+            //    };
 
-                protHandler = new ModbusHandler();
+            //    protHandler = new ModbusHandler();
 
-                switch (rtu.Protocol)
-                {
-                    case IndustryProtocols.ModbusTCP:
-                        ModbusHandler mdbHandler = (ModbusHandler)protHandler;
+            //    switch (rtu.Protocol)
+            //    {
+            //        case IndustryProtocols.ModbusTCP:
+            //            ModbusHandler mdbHandler = (ModbusHandler)protHandler;
 
-                        mdbHandler.Header = new ModbusApplicationHeader()
-                        {
-                            TransactionId = 0,
-                            Length = 0,
-                            ProtocolId = (ushort)IndustryProtocols.ModbusTCP,
-                            DeviceAddress = rtu.Address
-                        };
+            //            mdbHandler.Header = new ModbusApplicationHeader()
+            //            {
+            //                TransactionId = 0,
+            //                Length = 0,
+            //                ProtocolId = (ushort)IndustryProtocols.ModbusTCP,
+            //                DeviceAddress = rtu.Address
+            //            };
 
-                        mdbHandler.Request = new WriteRequest()
-                        {
-                            FunCode = FunctionCodes.WriteSingleCoil,
-                            StartAddr = (ushort)rtu.GetAcqAddress(digital),
-                            Value = (ushort)command
-                        };
+            //            mdbHandler.Request = new WriteRequest()
+            //            {
+            //                FunCode = FunctionCodes.WriteSingleCoil,
+            //                StartAddr = (ushort)rtu.GetAcqAddress(digital),
+            //                Value = (ushort)command
+            //            };
 
-                        iorb.SendBuff = mdbHandler.PackData();
-                        break;
-                }
+            //            iorb.SendBuff = mdbHandler.PackData();
+            //            break;
+            //    }
 
-                IORequests.EnqueueIOReqForProcess(iorb);
+            //    IORequests.EnqueueIOReqForProcess(iorb);
 
-                // yet to be implemented
-                //CommandValidator.CheckCommandExecution();
+            //    // yet to be implemented
+            //    //CommandValidator.CheckCommandExecution();
 
-                IORequests.EnqueueIOReqForProcess(iorb);
+            //    IORequests.EnqueueIOReqForProcess(iorb);
 
-                CommandValidator.CheckCommandExecution();
+            //    CommandValidator.CheckCommandExecution();
 
-                return ResultMessage.OK;
-            }
+            //    return ResultMessage.OK;
+            //}
 
-            return ResultMessage.OK;
+            //return ResultMessage.OK;
+            return new OMSSCADACommon.Responses.Response();
         }
     }
 }

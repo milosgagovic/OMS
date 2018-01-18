@@ -1,4 +1,5 @@
 ﻿using OMSSCADACommon;
+using OMSSCADACommon.Responses;
 using SCADA.CommAcqEngine;
 using SCADA.RealtimeDatabase;
 using SCADA.RealtimeDatabase.Catalogs;
@@ -16,74 +17,77 @@ namespace SCADA.SecondaryDataProcessing
         DBContext db = new DBContext();
         ACQEngine acqe = new ACQEngine();
 
-        public ResultMessage ReadAllAnalog(OMSSCADACommon.DeviceTypes type)
+        public Response ReadAllAnalog(OMSSCADACommon.DeviceTypes type)
         {
             throw new NotImplementedException();
         }
 
-        public ResultMessage ReadAllCounter(OMSSCADACommon.DeviceTypes type)
+        public Response ReadAllCounter(OMSSCADACommon.DeviceTypes type)
         {
             throw new NotImplementedException();
         }
 
-        public ResultMessage ReadAllDigital(OMSSCADACommon.DeviceTypes type)
+        public Response ReadAllDigital(OMSSCADACommon.DeviceTypes type)
         {
             throw new NotImplementedException();
         }
 
-        public ResultMessage ReadSingleAnalog(string id)
+        public Response ReadSingleAnalog(string id)
         {
             throw new NotImplementedException();
         }
 
-        public ResultMessage ReadSingleCounter(string id)
+        public Response ReadSingleCounter(string id)
         {
             throw new NotImplementedException();
         }
 
-        public ResultMessage ReadSingleDigital(string id)
+        public Response ReadSingleDigital(string id)
         {
             throw new NotImplementedException();
         }
 
-        public ResultMessage ReadAll()
+        public Response ReadAll()
         {
             throw new NotImplementedException();
         }
 
-        public ResultMessage WriteSingleAnalog(string id, float value)
+        public Response WriteSingleAnalog(string id, float value)
         {
             throw new NotImplementedException();
         }
 
-        public ResultMessage WriteSingleDigital(string id, CommandTypes command)
+        public Response WriteSingleDigital(string id, CommandTypes command)
         {
-            Digital digital = null;
+            //    Digital digital = null;
 
-            try
-            {
-               digital = (Digital)db.GetProcessVariableByName(id);
-            }
-            catch(Exception e)
-            {
-                return ResultMessage.ID_NOT_SET;
-            }
+            //    try
+            //    {
+            //       digital = (Digital)db.GetProcessVariableByName(id);
+            //    }
+            //    catch(Exception e)
+            //    {
+            //        return ResultMessage.ID_NOT_SET;
+            //    }
 
-            if (digital == null)
-            {
-                return ResultMessage.INVALID_ID;
-            }
+            //    if (digital == null)
+            //    {
+            //        return ResultMessage.INVALID_ID;
+            //    }
 
-            if (!CommandValidator.ValidateDigitalCommand(digital, command))
-            {
-                return ResultMessage.INVALID_DIG_COMM;
-            }
+            //    if (!CommandValidator.ValidateDigitalCommand(digital, command))
+            //    {
+            //        return ResultMessage.INVALID_DIG_COMM;
+            //    }
 
-            //acqe.FormRequestOnCommand();
+            //    //acqe.FormRequestOnCommand();
 
-            CommandValidator.CheckCommandExecution();
+            //    CommandValidator.CheckCommandExecution();
 
-            return ResultMessage.OK;
+            //    return ResultMessage.OK;
+            //}
+
+            return new Response();
         }
     }
 }

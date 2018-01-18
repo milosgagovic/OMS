@@ -47,11 +47,11 @@
     <Compile Include="Commands\WriteSingleAnalog.cs" />
     <Compile Include="Commands\WriteSingleDigital.cs" />
     <Compile Include="CommandTypes.cs" />
-    <Compile Include="Response\AnalogVariable.cs" />
-    <Compile Include="Response\CounterVariable.cs" />
-    <Compile Include="Response\DigitalVariable.cs" />
-    <Compile Include="Response\Response.cs" />
-    <Compile Include="Response\ResponseVariable.cs" />
+    <Compile Include="Responses\AnalogVariable.cs" />
+    <Compile Include="Responses\CounterVariable.cs" />
+    <Compile Include="Responses\DigitalVariable.cs" />
+    <Compile Include="Responses\Response.cs" />
+    <Compile Include="Responses\ResponseVariable.cs" />
     <Compile Include="ResultMessage.cs" />
     <Compile Include="ICommandReceiver.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

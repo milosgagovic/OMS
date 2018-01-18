@@ -1,5 +1,5 @@
 ﻿using OMSSCADACommon;
-using OMSSCADACommon.Response;
+using OMSSCADACommon.Responses;
 using SCADAContracts;
 using System;
 using System.Collections.Generic;

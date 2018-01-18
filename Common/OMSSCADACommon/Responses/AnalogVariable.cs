@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OMSSCADACommon.Response
+namespace OMSSCADACommon.Responses
 {
-    public class CounterVariable : ResponseVariable
+    public class AnalogVariable : ResponseVariable
     {
-        public int Value { get; set; }
+        public float Value { get; set; }
     }
 }

@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OMSSCADACommon.Response
+namespace OMSSCADACommon.Responses
 {
-    public class DigitalVariable : ResponseVariable
+    public class CounterVariable : ResponseVariable
     {
-        public States State { get; set; }
+        public int Value { get; set; }
     }
 }

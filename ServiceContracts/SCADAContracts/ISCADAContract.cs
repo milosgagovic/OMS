@@ -1,6 +1,6 @@
 ﻿using OMSSCADACommon;
 using OMSSCADACommon.Commands;
-using OMSSCADACommon.Response;
+using OMSSCADACommon.Responses;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +17,7 @@ namespace SCADAContracts
         void CheckIn();
 
         [OperationContract]
-        ResultMessage ExecuteCommand(Command command);
+        Response ExecuteCommand(Command command);
     }
 
     [ServiceContract]

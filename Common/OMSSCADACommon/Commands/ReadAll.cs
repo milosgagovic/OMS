@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OMSSCADACommon.Responses;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,7 +9,7 @@ namespace OMSSCADACommon.Commands
 {
     public class ReadAll : Command
     {
-        public override ResultMessage Execute()
+        public override Response Execute()
         {
             return this.Receiver.ReadAll();
         }

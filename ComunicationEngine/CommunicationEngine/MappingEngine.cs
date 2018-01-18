@@ -1,7 +1,7 @@
 ﻿using DispatcherApp.Model;
 using FTN.Common;
 using OMSSCADACommon.Commands;
-using OMSSCADACommon.Response;
+using OMSSCADACommon.Responses;
 using System;
 using System.Collections.Generic;
 using System.Linq;

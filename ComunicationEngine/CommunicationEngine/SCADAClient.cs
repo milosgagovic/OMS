@@ -1,6 +1,6 @@
 ﻿using OMSSCADACommon;
 using OMSSCADACommon.Commands;
-using OMSSCADACommon.Response;
+using OMSSCADACommon.Responses;
 using SCADAContracts;
 using System;
 using System.Collections.Generic;
@@ -25,7 +25,7 @@ namespace CommunicationEngine
             proxy.CheckIn();
         }
 
-        public ResultMessage ExecuteCommand(Command command)
+        public Response ExecuteCommand(Command command)
         {
             return proxy.ExecuteCommand(command);
         }

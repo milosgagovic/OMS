@@ -1,5 +1,6 @@
 ﻿using OMSSCADACommon;
 using OMSSCADACommon.Commands;
+using OMSSCADACommon.Responses;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,7 +33,7 @@ namespace SCADAContracts
             }
         }
 
-        public ResultMessage ExecuteCommand(Command command)
+        public Response ExecuteCommand(Command command)
         {
             try
             {
@@ -41,7 +42,7 @@ namespace SCADAContracts
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
-                return ResultMessage.INTERNAL_SERVER_ERROR;
+                return new Response();
             }
         }
     }

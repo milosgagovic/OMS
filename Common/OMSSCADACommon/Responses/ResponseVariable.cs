@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OMSSCADACommon.Response
+namespace OMSSCADACommon.Responses
 {
     public abstract class ResponseVariable
     {

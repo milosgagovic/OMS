@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OMSSCADACommon.Responses;
+using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Text;
@@ -11,7 +12,7 @@ namespace OMSSCADACommon.Commands
         [DataMember]
         public CommandTypes command;
 
-        public override ResultMessage Execute()
+        public override Response Execute()
         {
             return this.Receiver.WriteSingleDigital(this.Id, this.command);
         }

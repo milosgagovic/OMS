@@ -1,6 +1,6 @@
 ﻿using CommunicationEngineContract;
 using FTN.Common;
-using OMSSCADACommon.Response;
+using OMSSCADACommon.Responses;
 using PubSubscribe;
 using System;
 using System.Collections.Generic;

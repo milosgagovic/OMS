@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using CommunicationEngine;
 using OMSSCADACommon;
 using OMSSCADACommon.Commands;
+using OMSSCADACommon.Responses;
 using SCADAContracts;
 
 namespace CommunicationEngine
@@ -34,7 +35,7 @@ namespace CommunicationEngine
             }
 
             SCADAClient sc = new SCADAClient();
-            sc.CheckIn();
+            Response r = sc.ExecuteCommand(new ReadAll());
 
             Console.ReadKey();
         }
