@@ -39,11 +39,11 @@ namespace CommunicationEngine
 
         public bool SendResponseToClient(Response response)
         {
-            Delta delta = new Delta();
-            List<ResourceDescription> result = MappingEngine.Instance.MappResult(response);
-            Publisher publisher = new Publisher();
-            delta.TestOperations = result;
-            publisher.PublishDelta(delta);
+            //Delta delta = new Delta();
+            //List<ResourceDescription> result = MappingEngine.Instance.MappResult(response);
+            //Publisher publisher = new Publisher();
+            //delta.TestOperations = result;
+            //publisher.PublishDelta(delta);
             //proslijediti klijentu
             return true;
         }

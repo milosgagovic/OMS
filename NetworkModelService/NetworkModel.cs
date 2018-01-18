@@ -275,8 +275,8 @@ namespace FTN.Services.NetworkModelService
 				if (applyingStarted)
 				{
 					SaveDelta(delta);
-                    Publisher publisher = new Publisher();
-                    publisher.PublishDelta(delta);
+                    //Publisher publisher = new Publisher();
+                    //publisher.PublishDelta(delta);
 				}
 
 				if (updateResult.Result == ResultType.Succeeded)

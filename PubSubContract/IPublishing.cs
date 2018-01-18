@@ -1,4 +1,5 @@
-﻿using FTN.Common;
+﻿using DMSCommon.Model;
+using FTN.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,6 @@ namespace PubSubContract
     {
 
         [OperationContract(IsOneWay = true)]
-        void Publish(Delta delta);
+        void Publish(SCADAUpdateModel update);
     }
 }

@@ -1,4 +1,5 @@
-﻿using FTN.Common;
+﻿using DMSCommon.Model;
+using FTN.Common;
 using PubSubContract;
 using System;
 using System.Collections.Generic;
@@ -16,11 +17,11 @@ namespace PubSubscribeService.Services
         {
         }
 
-        public void Publish(Delta delta)
+        public void Publish(SCADAUpdateModel update)
         {
             foreach (IPublishing subscriber in PubSubscribeDB.Subscribers)
             {
-                PublishThreadData threadObj = new PublishThreadData(subscriber, delta);
+                PublishThreadData threadObj = new PublishThreadData(subscriber, update);
 
                 Thread thread = new Thread(threadObj.PublishDelta);
                 thread.Start();
@@ -33,26 +34,26 @@ namespace PubSubscribeService.Services
     {
         private IPublishing subscriber;
 
-        private Delta delta;
+        private SCADAUpdateModel update;
 
 
-        public PublishThreadData(IPublishing subscriber, Delta delta)
+        public PublishThreadData(IPublishing subscriber, SCADAUpdateModel update)
         {
           
             this.subscriber = subscriber;
-            this.delta = delta;
+            this.update = update;
 
         }
-        public Delta Delta
+        public SCADAUpdateModel Update
         {
             get
             {
-                return delta;
+                return update;
             }
 
             set
             {
-                delta = value;
+                update = value;
             }
         }
 
@@ -73,7 +74,7 @@ namespace PubSubscribeService.Services
         {
             try
             {
-                subscriber.Publish(Delta);
+                subscriber.Publish(Update);
             }
             catch (Exception e)
             {

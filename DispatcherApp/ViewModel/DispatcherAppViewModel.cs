@@ -88,14 +88,15 @@ namespace DispatcherApp.ViewModel
 
         public DispatcherAppViewModel(List<string> ele)
         {
+            Thread.Sleep(7000);
             #region Init
             //Elements = ele;
             //DataGridElements = new List<MeasResult>();
             model = new ModelGda();
 
-            //subscriber = new Subscriber();
-            //subscriber.Subscribe();
-            ////subscriber.PublishDeltaEvent += GetDelta;
+            subscriber = new Subscriber();
+            subscriber.Subscribe();
+            subscriber.publishUpdateEvent += GetUpdate;
 
             TreeViewItem tvi1 = new TreeViewItem() { Header = "ES_1" };
             TreeViewItem tvi2 = new TreeViewItem() { Header = "ES_2" };
@@ -1178,13 +1179,14 @@ namespace DispatcherApp.ViewModel
             //subscriber.PublishDeltaEvent += GetDelta;
         }
 
-        private void GetDelta(Delta delta)
+        private void GetUpdate(SCADAUpdateModel update)
         {
-            Console.WriteLine("Ima li sta: " + delta.TestOperations.Count);
-            if (delta.TestOperations.Count != 0)
-            {
-                ReadResult(delta.TestOperations);
-            }
+            Console.WriteLine("Stiglo je : \n mrID: " + update.MrID + "\n State: " + update.State);
+            //Console.WriteLine("Ima li sta: " + delta.TestOperations.Count);
+            //if (delta.TestOperations.Count != 0)
+            //{
+            //    ReadResult(delta.TestOperations);
+            //}
 
         }
 

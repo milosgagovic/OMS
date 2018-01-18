@@ -1,4 +1,5 @@
-﻿using FTN.Common;
+﻿using DMSCommon.Model;
+using FTN.Common;
 using PubSubContract;
 using System;
 using System.Collections.Generic;
@@ -18,9 +19,9 @@ namespace PubSubscribe
             CreateProxy();
         }
 
-        public void PublishDelta(Delta delta)
+        public void PublishUpdate(SCADAUpdateModel update)
         {
-            proxy.Publish(delta);
+            proxy.Publish(update);
         }
 
         private void CreateProxy()

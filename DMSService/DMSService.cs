@@ -268,6 +268,12 @@ namespace DMSService
             Uri("net.tcp://localhost:8029/DMSDispatcherService"));
             hosts.Add(svc1);
 
+            ServiceHost svc2 = new ServiceHost(typeof(DMSServiceForSCADA));
+            svc2.Description.Name = "DMSServiceForSCADA";
+            svc2.AddServiceEndpoint(typeof(IDMSToSCADAContract), new NetTcpBinding(), new
+            Uri("net.tcp://localhost:8039/IDMSToSCADAContract"));
+            hosts.Add(svc2);
+
 
         }
 
