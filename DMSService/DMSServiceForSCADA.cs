@@ -26,15 +26,8 @@ namespace DMSService
             List<SCADAUpdateModel> energizedList = new List<SCADAUpdateModel>();
 
             bool energized = true;
-            if(state == OMSSCADACommon.States.OPENED)
-            {
-                energized = false;
-            }
-            else if (state == OMSSCADACommon.States.OPENED)
-            {
-                energized = true;
-            }
-            SCADAUpdateModel update = new SCADAUpdateModel(res, energized);
+
+            SCADAUpdateModel update = new SCADAUpdateModel(res, energized) { State = state };
             energizedList.Add(update);
 
             Publisher publisher = new Publisher();

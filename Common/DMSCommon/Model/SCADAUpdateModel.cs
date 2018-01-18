@@ -13,6 +13,7 @@ namespace DMSCommon.Model
     {
         private long gid;
         private bool isEnergized;
+        private States state;
 
         [DataMember]
         public long Gid
@@ -26,6 +27,13 @@ namespace DMSCommon.Model
         {
             get { return isEnergized; }
             set { isEnergized = value; }
+        }
+
+        [DataMember]
+        public States State
+        {
+            get { return state; }
+            set { state = value; }
         }
 
         public SCADAUpdateModel(long mrid, bool isEnergized)

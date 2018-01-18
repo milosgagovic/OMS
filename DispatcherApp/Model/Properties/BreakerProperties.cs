@@ -9,6 +9,8 @@ namespace DispatcherApp.Model.Properties
     {
         private List<string> validCommands;
 
+        private string state;
+
         public List<string> ValidCommands
         {
             get
@@ -19,6 +21,19 @@ namespace DispatcherApp.Model.Properties
             {
                 validCommands = value;
                 RaisePropertyChanged("ValidCommands");
+            }
+        }
+
+        public string State
+        {
+            get
+            {
+                return state;
+            }
+            set
+            {
+                state = value;
+                RaisePropertyChanged("State");
             }
         }
     }

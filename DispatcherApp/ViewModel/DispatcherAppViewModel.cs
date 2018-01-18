@@ -24,6 +24,7 @@ using DMSCommon.TreeGraph;
 using DispatcherApp.Model.Properties;
 using TransactionManagerContract;
 using System.ServiceModel;
+using System.Windows.Data;
 
 namespace DispatcherApp.ViewModel
 {
@@ -313,14 +314,64 @@ namespace DispatcherApp.ViewModel
                         }
                         else if (element is Switch)
                         {
-                            this.properties.Add(element.ElementGID, new BreakerProperties()
+                            BreakerProperties prop = new BreakerProperties()
                             {
                                 GID = rd.GetProperty(ModelCode.IDOBJ_GID).AsLong(),
                                 MRID = rd.GetProperty(ModelCode.IDOBJ_MRID).AsString(),
                                 IsEnergized = element.Marker,
                                 Name = rd.GetProperty(ModelCode.IDOBJ_NAME).AsString(),
                                 //ValidCommands = rd.GetProperty(ModelCode.DISCRETE_VALIDCOMMANDS).AsStrings()
-                            });
+                            };
+
+                            //if (element.Marker)
+                            //{
+                            //    prop.State = "CLOSED";
+                            //}
+                            //else
+                            //{
+                            //    prop.State = "OPENED";
+                            //}
+
+                            this.properties.Add(element.ElementGID, prop);
+                        }
+                    }
+                    else
+                    {
+                        long el = rd.GetProperty(ModelCode.MEASUREMENT_PSR).AsLong();
+                        ElementProperties prop;
+                        properties.TryGetValue(el, out prop);
+
+                        if (prop != null)
+                        {
+                            BreakerProperties prop1 = prop as BreakerProperties;
+                            //prop1.ValidCommands = rd.GetProperty(ModelCode.DISCRETE_VALIDCOMMANDS).AsEnums();
+                        }
+                    }
+                }
+            }
+
+            foreach (ResourceDescription rd in answerFromTransactionManager.ResourceDescriptionsOfMeasurment)
+            {
+                ResourceDescription meas = answerFromTransactionManager.ResourceDescriptions.Where(p => p.GetProperty(ModelCode.IDOBJ_MRID).AsString() == rd.GetProperty(ModelCode.IDOBJ_MRID).AsString()).FirstOrDefault();
+
+                if(meas != null)
+                {
+                    long breaker = meas.GetProperty(ModelCode.MEASUREMENT_PSR).AsLong();
+                    int state = rd.GetProperty(ModelCode.DISCRETE_NORMVAL).AsInt();
+
+                    ElementProperties prop;
+                    properties.TryGetValue(breaker, out prop);
+
+                    if(prop != null)
+                    {
+                        BreakerProperties prop1 = prop as BreakerProperties;
+                        if (state == 0)
+                        {
+                            prop1.State = "CLOSED";
+                        }
+                        else if (state == 1)
+                        {
+                            prop1.State = "OPENED";
                         }
                     }
                 }
@@ -401,7 +452,7 @@ namespace DispatcherApp.ViewModel
                 return;
             }
 
-            Point? point2 = PlaceNode(x, y++, cellWidth, cellHeight, offset, currentNode.ElementGID);
+            Point? point2 = PlaceNode(x, y++, cellWidth, cellHeight, offset, currentNode.ElementGID, currentNode.MRID);
 
             if (point1 != null)
             {
@@ -444,18 +495,19 @@ namespace DispatcherApp.ViewModel
 
                     if (consumer is Consumer)
                     {
-                        PlaceConsumer(y, cellWidth, cellHeight, localOffset, (Point)point2, consumer as Consumer, consumer.ElementGID);
+                        PlaceConsumer(y, cellWidth, cellHeight, localOffset, (Point)point2, consumer as Consumer, consumer.ElementGID, consumer.MRID);
                     }
                 }
             }
         }
 
-        private void PlaceConsumer(int y, double cellWidth, double cellHeight, double offset, Point point1, Consumer consumer, long id)
+        private void PlaceConsumer(int y, double cellWidth, double cellHeight, double offset, Point point1, Consumer consumer, long id, string mrid)
         {
             Button sourceButton = new Button() { Width = cellHeight / 3, Height = cellHeight / 3 };
             sourceButton.Background = Brushes.Transparent;
             sourceButton.BorderThickness = new Thickness(0);
             sourceButton.BorderBrush = Brushes.Transparent;
+            sourceButton.ToolTip = mrid;
             Ellipse ellipse = new Ellipse()
             {
                 Width = sourceButton.Width - 5,
@@ -492,30 +544,60 @@ namespace DispatcherApp.ViewModel
             SetProperties(sourceButton, id);
         }
 
-        private void PlaceSwitch(double cellHeight, Point point1, Point point2, long id, bool isEnergized)
+        private void PlaceSwitch(double cellHeight, Point point1, Point point2, long id, bool isEnergized, string mrid)
         {
             Button button = new Button() { Width = cellHeight / 4, Height = cellHeight / 4 };
             button.Background = Brushes.Transparent;
             button.BorderThickness = new Thickness(0);
             button.BorderBrush = Brushes.Transparent;
 
+            Style style = new Style();
+            style.TargetType = typeof(Button);
+
             if (isEnergized)
             {
-                Canvas canvas = new Canvas();
+                //ElementProperties prop;
+                //properties.TryGetValue(id, out prop);
+
+                //if(prop != null)
+                //{
+                //    BreakerProperties prop1 = prop as BreakerProperties;
+
+                //    DataTrigger trigger = new DataTrigger();
+                //    trigger.Binding = new Binding() { Path = new PropertyPath("properties[0].IsEnergized") };
+                //    trigger.Value = (bool)true;
+
+                //    Setter setter = new Setter();
+
+                //    setter.Property = Button.BackgroundProperty;
+                //    setter.Value = new SolidColorBrush(Color.FromRgb(0, 250, 17));
+
+                //    trigger.Setters.Add(setter);
+
+                //    //style.Triggers.Clear();
+                //    style.Triggers.Add(trigger);
+                //    button.Style = style;
+
+                //    //Canvas canvas = new Canvas();
+                //    //button.Background = new SolidColorBrush(Color.FromRgb(0, 250, 17));
+                //    //button.Content = new Image()
+                //    //{
+                //    //    Source = new BitmapImage(new Uri(Directory.GetCurrentDirectory() + "/../../Resources/Images/energized.png")),
+                //    //    Width = button.Width,
+                //    //    Height = button.Height,
+                //    //    HorizontalAlignment = HorizontalAlignment.Left,
+                //    //    VerticalAlignment = VerticalAlignment.Top
+                //    //};
+                //}
                 button.Background = new SolidColorBrush(Color.FromRgb(0, 250, 17));
-                button.Content = new Image()
-                {
-                    Source = new BitmapImage(new Uri(Directory.GetCurrentDirectory() + "/../../Resources/Images/energized.png")),
-                    Width = button.Width,
-                    Height = button.Height,
-                    HorizontalAlignment = HorizontalAlignment.Left,
-                    VerticalAlignment = VerticalAlignment.Top
-                };
             }
             else
             {
                 button.Background = Brushes.Red;
             }
+
+            button.Style = style;
+            button.ToolTip = mrid;
 
             Canvas.SetLeft(button, point2.X - button.Width / 2);
             Canvas.SetTop(button, point2.Y - (cellHeight / 3) - button.Height / 2);
@@ -525,12 +607,13 @@ namespace DispatcherApp.ViewModel
             SetProperties(button, id);
         }
 
-        private void PlaceACLine(double cellHeight, Point point1, Point point2, long id, bool isEnergized)
+        private void PlaceACLine(double cellHeight, Point point1, Point point2, long id, bool isEnergized, string mrid)
         {
             Button button = new Button() { Width = 5, Height = cellHeight/3 };
             button.Background = Brushes.Transparent;
             button.BorderThickness = new Thickness(0);
             button.BorderBrush = Brushes.Transparent;
+            button.ToolTip = mrid;
 
             Rectangle rectangle = new Rectangle() { Width = button.Width, Height = button.Height };
 
@@ -581,27 +664,28 @@ namespace DispatcherApp.ViewModel
             {
                 if (branch is Source)
                 {
-                    PlaceSource(branch.ElementGID);
+                    PlaceSource(branch.ElementGID, branch.MRID);
                 }
                 else if (branch is Switch)
                 {
-                    PlaceSwitch(cellHeight, point1, point2, branch.ElementGID, branch.Marker);
+                    PlaceSwitch(cellHeight, point1, point2, branch.ElementGID, branch.Marker, branch.MRID);
                 }
                 else if (branch is ACLine)
                 {
-                    PlaceACLine(cellHeight, point1, point2, branch.ElementGID, branch.Marker);
+                    PlaceACLine(cellHeight, point1, point2, branch.ElementGID, branch.Marker, branch.MRID);
                 }
             }
 
             mainCanvas.Children.Add(polyline);
         }
 
-        private Point? PlaceNode(int x, int y, double cellWidth, double cellHeight, double offset, long id)
+        private Point? PlaceNode(int x, int y, double cellWidth, double cellHeight, double offset, long id, string mrid)
         {
             Button sourceButton = new Button() { Width = 10, Height = 10 };
             sourceButton.Background = Brushes.Transparent;
             sourceButton.BorderThickness = new Thickness(0);
             sourceButton.BorderBrush = Brushes.Transparent;
+            sourceButton.ToolTip = mrid;
             Ellipse ellipse = new Ellipse()
             {
                 Fill = Brushes.Black,
@@ -625,12 +709,13 @@ namespace DispatcherApp.ViewModel
             };
         }
 
-        private void PlaceSource(long id)
+        private void PlaceSource(long id, string mrid)
         {
             Button sourceButton = new Button() { Width = 18, Height = 18 };
             sourceButton.Background = Brushes.Transparent;
             sourceButton.BorderThickness = new Thickness(0);
             sourceButton.BorderBrush = Brushes.Transparent;
+            sourceButton.ToolTip = mrid;
             sourceButton.Content = new Image() { Source = new BitmapImage(new Uri(Directory.GetCurrentDirectory() + "/../../Resources/Images/triangle.png")) };
             Canvas.SetLeft(sourceButton, mainCanvas.Width / 2 - sourceButton.Width / 2);
             Canvas.SetZIndex(sourceButton, 5);
@@ -1181,13 +1266,23 @@ namespace DispatcherApp.ViewModel
 
         private void GetUpdate(List<SCADAUpdateModel> update)
         {
-            //Console.WriteLine("Stiglo je : \n mrID: " + update.MrID + "\n State: " + update.State);
-            //Console.WriteLine("Ima li sta: " + delta.TestOperations.Count);
-            //if (delta.TestOperations.Count != 0)
-            //{
-            //    ReadResult(delta.TestOperations);
-            //}
+            foreach (SCADAUpdateModel sum in update)
+            {
+                ElementProperties property;
+                properties.TryGetValue(sum.Gid, out property);
+                if (property != null)
+                {
+                    property.IsEnergized = sum.IsEnergized;
 
+                    Element element;
+                    Network.TryGetValue(sum.Gid, out element);
+                    if (element != null && element is Switch)
+                    {
+                        BreakerProperties prop = property as BreakerProperties;
+                        prop.State = sum.State.ToString();
+                    }
+                }
+            }
         }
 
         private List<MeasResult> ConvertToListOfMeasResults(List<long> list)
