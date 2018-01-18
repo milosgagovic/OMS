@@ -19,7 +19,7 @@ namespace PubSubscribe
             CreateProxy();
         }
 
-        public void PublishUpdate(SCADAUpdateModel update)
+        public void PublishUpdate(List<SCADAUpdateModel> update)
         {
             proxy.Publish(update);
         }

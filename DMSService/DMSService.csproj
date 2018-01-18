@@ -56,6 +56,10 @@
       <Project>{86D0FD27-8DA2-476E-A046-FCB849F12414}</Project>
       <Name>DMSCommon</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Common\OMSSCADACommon\OMSSCADACommon.csproj">
+      <Project>{A7F86CA6-39F1-4B61-BF71-C01E327FA861}</Project>
+      <Name>OMSSCADACommon</Name>
+    </ProjectReference>
     <ProjectReference Include="..\DMSContract\DMSContract.csproj">
       <Project>{c48472d2-bef9-425d-88b1-4f6b2d31fd8c}</Project>
       <Name>DMSContract</Name>

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace PubSubscribe
 {
-    public delegate void PublishUpdateEvent(SCADAUpdateModel update);
+    public delegate void PublishUpdateEvent(List<SCADAUpdateModel> update);
     public class Subscriber : IPublishing
     {
         ISubscription proxy = null;
@@ -67,7 +67,7 @@ namespace PubSubscribe
             }
         }
 
-        public void Publish(SCADAUpdateModel update)
+        public void Publish(List<SCADAUpdateModel> update)
         {
 
             publishUpdateEvent?.Invoke(update);

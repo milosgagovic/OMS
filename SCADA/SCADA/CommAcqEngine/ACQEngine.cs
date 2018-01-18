@@ -338,9 +338,11 @@ namespace SCADA.CommAcqEngine
                                                 {
                                                     if (target.State != target.ValidStates[array[0]])
                                                     {
-                                                        Responser responser = new Responser();
-                                                        responser.DigitalStateChanged(target.Name, target.ValidStates[array[0]]);
+                                                        //Responser responser = new Responser();
+                                                        //responser.DigitalStateChanged(target.Name, target.ValidStates[array[0]]);
                                                         target.State = target.ValidStates[array[0]];
+                                                        DMSClient dMSClient = new DMSClient();
+                                                        dMSClient.ChangeOnSCADA(target.Name, target.State);
                                                     }
                                                 }
                                                 Console.WriteLine("Digital variable {0}, state: {1}", target.Name, target.State);

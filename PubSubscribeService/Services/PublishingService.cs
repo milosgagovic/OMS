@@ -17,7 +17,7 @@ namespace PubSubscribeService.Services
         {
         }
 
-        public void Publish(SCADAUpdateModel update)
+        public void Publish(List<SCADAUpdateModel> update)
         {
             foreach (IPublishing subscriber in PubSubscribeDB.Subscribers)
             {
@@ -34,17 +34,17 @@ namespace PubSubscribeService.Services
     {
         private IPublishing subscriber;
 
-        private SCADAUpdateModel update;
+        private List<SCADAUpdateModel> update;
 
 
-        public PublishThreadData(IPublishing subscriber, SCADAUpdateModel update)
+        public PublishThreadData(IPublishing subscriber, List<SCADAUpdateModel> update)
         {
           
             this.subscriber = subscriber;
             this.update = update;
 
         }
-        public SCADAUpdateModel Update
+        public List<SCADAUpdateModel> Update
         {
             get
             {

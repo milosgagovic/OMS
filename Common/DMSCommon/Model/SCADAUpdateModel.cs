@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OMSSCADACommon;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -10,27 +11,27 @@ namespace DMSCommon.Model
     [DataContract]
     public class SCADAUpdateModel
     {
-        private string mrID;
-        private string state;
+        private long gid;
+        private bool isEnergized;
 
         [DataMember]
-        public string MrID
+        public long Gid
         {
-            get { return mrID; }
-            set {mrID = value; }
+            get { return gid; }
+            set {gid = value; }
         }
 
         [DataMember]
-        public string State
+        public bool IsEnergized
         {
-            get { return state; }
-            set { state = value; }
+            get { return isEnergized; }
+            set { isEnergized = value; }
         }
 
-        public SCADAUpdateModel(string mrid, string state)
+        public SCADAUpdateModel(long mrid, bool isEnergized)
         {
-            MrID = mrid;
-            State = state;
+            Gid = mrid;
+            IsEnergized = isEnergized;
         }
     }
 }

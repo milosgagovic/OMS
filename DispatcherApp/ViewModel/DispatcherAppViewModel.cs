@@ -1179,9 +1179,9 @@ namespace DispatcherApp.ViewModel
             //subscriber.PublishDeltaEvent += GetDelta;
         }
 
-        private void GetUpdate(SCADAUpdateModel update)
+        private void GetUpdate(List<SCADAUpdateModel> update)
         {
-            Console.WriteLine("Stiglo je : \n mrID: " + update.MrID + "\n State: " + update.State);
+            //Console.WriteLine("Stiglo je : \n mrID: " + update.MrID + "\n State: " + update.State);
             //Console.WriteLine("Ima li sta: " + delta.TestOperations.Count);
             //if (delta.TestOperations.Count != 0)
             //{

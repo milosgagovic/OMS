@@ -111,6 +111,55 @@ namespace DMSCommon.Model
             return ids;
         }
 
+        public List<ResourceDescription> GetExtentValuesExtended(ModelCode modelCode)
+        {
+            string message = "Getting extent values method started.";
+            Console.WriteLine(message);
+            CommonTrace.WriteTrace(CommonTrace.TraceError, message);
+            int iteratorId = 0;
+            List<ResourceDescription> resourceDescriptions = new List<ResourceDescription>();
+
+            try
+            {
+                int numberOfResources = 2;
+                int resourcesLeft = 0;
+
+                List<ModelCode> properties = modelResourcesDesc.GetAllPropertyIds(modelCode);
+
+                iteratorId = GdaQueryProxy.GetExtentValues(modelCode, properties);
+                resourcesLeft = GdaQueryProxy.IteratorResourcesLeft(iteratorId);
+
+                while (resourcesLeft > 0)
+                {
+                    List<ResourceDescription> rds = GdaQueryProxy.IteratorNext(numberOfResources, iteratorId);
+
+                    for (int i = 0; i < rds.Count; i++)
+                    {
+                        ResourceDescription rd = new ResourceDescription();
+                        rd.Properties = rds[i].Properties;
+                        resourceDescriptions.Add(rd);
+                    }
+
+                    resourcesLeft = GdaQueryProxy.IteratorResourcesLeft(iteratorId);
+                }
+
+                GdaQueryProxy.IteratorClose(iteratorId);
+
+                message = "Getting extent values method successfully finished.";
+                Console.WriteLine(message);
+                CommonTrace.WriteTrace(CommonTrace.TraceError, message);
+
+            }
+            catch (Exception e)
+            {
+                message = string.Format("Getting extent values method failed for {0}.\n\t{1}", modelCode, e.Message);
+                Console.WriteLine(message);
+                CommonTrace.WriteTrace(CommonTrace.TraceError, message);
+            }
+
+            return resourceDescriptions;
+        }
+
         public List<long> GetRelatedValues(long sourceGlobalId, Association association)
         {
             string message = "Getting related values method started.";
