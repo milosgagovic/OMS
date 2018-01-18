@@ -40,7 +40,7 @@ namespace TransactionManager
         {
             string message = "Getting values method started.";
             Console.WriteLine(message);
-            CommonTrace.WriteTrace(CommonTrace.TraceError, message);
+            //CommonTrace.WriteTrace(CommonTrace.TraceError, message);
             ResourceDescription rd = null;
 
             try
@@ -67,7 +67,7 @@ namespace TransactionManager
         public List<ResourceDescription> GetExtentValues(ModelCode modelCode)
         {
             string message = "Getting extent values method started.";
-            Console.WriteLine(message);
+            //Console.WriteLine(message);
             CommonTrace.WriteTrace(CommonTrace.TraceError, message);
             int iteratorId = 0;
             List<ResourceDescription> resourceDescriptions = new List<ResourceDescription>();
@@ -116,7 +116,7 @@ namespace TransactionManager
         public List<long> GetRelatedValues(long sourceGlobalId, Association association)
         {
             string message = "Getting related values method started.";
-            Console.WriteLine(message);
+           // Console.WriteLine(message);
             CommonTrace.WriteTrace(CommonTrace.TraceError, message);
 
             List<long> resultIds = new List<long>();

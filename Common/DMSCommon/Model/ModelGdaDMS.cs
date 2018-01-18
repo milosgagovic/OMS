@@ -39,7 +39,7 @@ namespace DMSCommon.Model
         public ResourceDescription GetValues(long globalId)
         {
             string message = "Getting values method started.";
-            Console.WriteLine(message);
+            //Console.WriteLine(message);
             CommonTrace.WriteTrace(CommonTrace.TraceError, message);
             ResourceDescription rd = null;
 
@@ -51,13 +51,13 @@ namespace DMSCommon.Model
                 rd = GdaQueryProxy.GetValues(globalId, properties);
 
                 message = "Getting values method successfully finished.";
-                Console.WriteLine(message);
+               // Console.WriteLine(message);
                 CommonTrace.WriteTrace(CommonTrace.TraceError, message);
             }
             catch (Exception e)
             {
                 message = string.Format("Getting values method for entered id = {0} failed.\n\t{1}", globalId, e.Message);
-                Console.WriteLine(message);
+               // Console.WriteLine(message);
                 CommonTrace.WriteTrace(CommonTrace.TraceError, message);
             }
 
@@ -67,7 +67,7 @@ namespace DMSCommon.Model
         public List<long> GetExtentValues(ModelCode modelCode)
         {
             string message = "Getting extent values method started.";
-            Console.WriteLine(message);
+           // Console.WriteLine(message);
             CommonTrace.WriteTrace(CommonTrace.TraceError, message);
             int iteratorId = 0;
             List<long> ids = new List<long>();
@@ -97,14 +97,14 @@ namespace DMSCommon.Model
                 GdaQueryProxy.IteratorClose(iteratorId);
 
                 message = "Getting extent values method successfully finished.";
-                Console.WriteLine(message);
+                //Console.WriteLine(message);
                 CommonTrace.WriteTrace(CommonTrace.TraceError, message);
 
             }
             catch (Exception e)
             {
                 message = string.Format("Getting extent values method failed for {0}.\n\t{1}", modelCode, e.Message);
-                Console.WriteLine(message);
+               // Console.WriteLine(message);
                 CommonTrace.WriteTrace(CommonTrace.TraceError, message);
             }
 
@@ -114,7 +114,7 @@ namespace DMSCommon.Model
         public List<ResourceDescription> GetExtentValuesExtended(ModelCode modelCode)
         {
             string message = "Getting extent values method started.";
-            Console.WriteLine(message);
+            //Console.WriteLine(message);
             CommonTrace.WriteTrace(CommonTrace.TraceError, message);
             int iteratorId = 0;
             List<ResourceDescription> resourceDescriptions = new List<ResourceDescription>();
@@ -146,7 +146,7 @@ namespace DMSCommon.Model
                 GdaQueryProxy.IteratorClose(iteratorId);
 
                 message = "Getting extent values method successfully finished.";
-                Console.WriteLine(message);
+               // Console.WriteLine(message);
                 CommonTrace.WriteTrace(CommonTrace.TraceError, message);
 
             }
@@ -163,7 +163,7 @@ namespace DMSCommon.Model
         public List<long> GetRelatedValues(long sourceGlobalId, Association association)
         {
             string message = "Getting related values method started.";
-            Console.WriteLine(message);
+            //Console.WriteLine(message);
             CommonTrace.WriteTrace(CommonTrace.TraceError, message);
 
             List<long> resultIds = new List<long>();
@@ -193,7 +193,7 @@ namespace DMSCommon.Model
                 GdaQueryProxy.IteratorClose(iteratorId);
 
                 message = "Getting related values method successfully finished.";
-                Console.WriteLine(message);
+               // Console.WriteLine(message);
                 CommonTrace.WriteTrace(CommonTrace.TraceError, message);
             }
             catch (Exception e)

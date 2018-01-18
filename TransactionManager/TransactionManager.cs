@@ -1,8 +1,11 @@
-﻿using CommunicationEngineContract;
+﻿using CommunicationEngine;
+using CommunicationEngineContract;
 using DMSCommon.Model;
 using DMSContract;
 using FTN.Common;
 using FTN.Services.NetworkModelService;
+using OMSSCADACommon.Commands;
+using OMSSCADACommon.Responses;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,7 +24,8 @@ namespace TransactionManager
         List<TransactionCallback> callbacks;
         IDMSContract proxyToDMS;
         ModelGDATMS gdaTMS;
-        private CommEngProxyUpdate proxyToCommunicationEngine; 
+        SCADAClient scadaClient;
+        private CommEngProxyUpdate proxyToCommunicationEngine;
         public List<ITransaction> Proxys { get => proxys; set => proxys = value; }
         public List<TransactionCallback> Callbacks { get => callbacks; set => callbacks = value; }
         public CommEngProxyUpdate ProxyToCommunicationEngine
@@ -65,7 +69,7 @@ namespace TransactionManager
             proxyToDMS = factoryToDMS.CreateChannel();
 
 
-            ProxyToCommunicationEngine = new CommEngProxyUpdate("CommEngineEndpoint");
+            //  ProxyToCommunicationEngine = new CommEngProxyUpdate("CommEngineEndpoint");
         }
 
         public TransactionManager()
@@ -74,6 +78,8 @@ namespace TransactionManager
             Callbacks = new List<TransactionCallback>();
             InitializeChanels();
             gdaTMS = new ModelGDATMS();
+            scadaClient = new SCADAClient();
+            
         }
 
         public void Enlist()
@@ -151,10 +157,11 @@ namespace TransactionManager
             gdaTMS.GetExtentValues(ModelCode.ENERGSOURCE).ForEach(u => resourceDescriptionFromNMS.Add(u));
             gdaTMS.GetExtentValues(ModelCode.ACLINESEGMENT).ForEach(u => resourceDescriptionFromNMS.Add(u));
             GraphDeep = proxyToDMS.GetNetworkDepth();
-            TMSAnswerToClient answer = new TMSAnswerToClient(resourceDescriptionFromNMS, null, GraphDeep);
+            TMSAnswerToClient answer = new TMSAnswerToClient(resourceDescriptionFromNMS, null, GraphDeep, null);
             resourceDescriptions = resourceDescriptionFromNMS;
             DMSElements = listOfDMSElement;
             GraphDeep = proxyToDMS.GetNetworkDepth();
+
             // return resourceDescriptionFromNMS;
         }
 
@@ -162,7 +169,8 @@ namespace TransactionManager
         {
             List<Element> listOfDMSElement = proxyToDMS.GetAllElements();
             List<ResourceDescription> resourceDescriptionFromNMS = new List<ResourceDescription>();
-           // ProxyToCommunicationEngine.ReceiveAllMeasValue(TypeOfSCADACommand.ReadAll);
+            List<ResourceDescription> descMeas = new List<ResourceDescription>();
+            // ProxyToCommunicationEngine.ReceiveAllMeasValue(TypeOfSCADACommand.ReadAll);
 
             gdaTMS.GetExtentValues(ModelCode.BREAKER).ForEach(u => resourceDescriptionFromNMS.Add(u));
             gdaTMS.GetExtentValues(ModelCode.CONNECTNODE).ForEach(u => resourceDescriptionFromNMS.Add(u));
@@ -171,7 +179,20 @@ namespace TransactionManager
             gdaTMS.GetExtentValues(ModelCode.ACLINESEGMENT).ForEach(u => resourceDescriptionFromNMS.Add(u));
             gdaTMS.GetExtentValues(ModelCode.DISCRETE).ForEach(u => resourceDescriptionFromNMS.Add(u));
             int GraphDeep = proxyToDMS.GetNetworkDepth();
-            TMSAnswerToClient answer = new TMSAnswerToClient(resourceDescriptionFromNMS, listOfDMSElement, GraphDeep);
+
+            try
+            {
+                Command c = MappingEngineTransactionManager.Instance.MappCommand(TypeOfSCADACommand.ReadAll);
+                Response r = scadaClient.ExecuteCommand(c);
+                descMeas = MappingEngineTransactionManager.Instance.MappResult(r);
+
+            }
+            catch (Exception e)
+            {
+
+            }
+
+            TMSAnswerToClient answer = new TMSAnswerToClient(resourceDescriptionFromNMS, listOfDMSElement, GraphDeep, descMeas);
             return answer;
         }
     }

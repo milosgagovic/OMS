@@ -8,7 +8,7 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>TransactionManager</RootNamespace>
     <AssemblyName>TransactionManager</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFrameworkProfile />
@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MappingEngineTransactionManager.cs" />
     <Compile Include="ModelGDATMS.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -64,6 +65,18 @@
     <ProjectReference Include="..\Common\DMSCommon\DMSCommon.csproj">
       <Project>{86D0FD27-8DA2-476E-A046-FCB849F12414}</Project>
       <Name>DMSCommon</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Common\OMSSCADACommon\OMSSCADACommon.csproj">
+      <Project>{A7F86CA6-39F1-4B61-BF71-C01E327FA861}</Project>
+      <Name>OMSSCADACommon</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ComunicationEngine\CommunicationEngine\CommunicationEngine.csproj">
+      <Project>{BB454887-1F4B-4712-A2FD-FB1990598EDB}</Project>
+      <Name>CommunicationEngine</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DispatcherApp\DispatcherApp.csproj">
+      <Project>{147E8CD4-1935-4A34-AFF6-ECB0F8F29B7A}</Project>
+      <Name>DispatcherApp</Name>
     </ProjectReference>
     <ProjectReference Include="..\DMSContract\DMSContract.csproj">
       <Project>{C48472D2-BEF9-425D-88B1-4F6B2D31FD8C}</Project>
