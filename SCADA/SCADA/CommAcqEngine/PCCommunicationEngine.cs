@@ -196,7 +196,7 @@ namespace SCADA.CommAcqEngine
                         Console.WriteLine("\nThere is no communication link with {0} rtu. Request will be disposed.", toProcess.RtuName);
                     }
                 }
-                Thread.Sleep(1000);
+                Thread.Sleep(100);
             }
             {
                 foreach (var channel in TcpChannels.Values)

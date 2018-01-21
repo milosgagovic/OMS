@@ -1266,8 +1266,17 @@ namespace DispatcherApp.ViewModel
 
         private void GetUpdate(List<SCADAUpdateModel> update)
         {
+           
             foreach (SCADAUpdateModel sum in update)
             {
+                if (Network[sum.Gid] is Source)
+                {
+                    mainCanvas.Children.Clear();
+                    DrawGraph((Source)Network[sum.Gid]);
+                    break;
+                }
+                Network[sum.Gid].Marker = sum.IsEnergized;
+
                 ElementProperties property;
                 properties.TryGetValue(sum.Gid, out property);
                 if (property != null)
@@ -1283,6 +1292,8 @@ namespace DispatcherApp.ViewModel
                     }
                 }
             }
+           
+
         }
 
         private List<MeasResult> ConvertToListOfMeasResults(List<long> list)

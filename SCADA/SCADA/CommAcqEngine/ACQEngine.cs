@@ -32,7 +32,7 @@ namespace SCADA.CommAcqEngine
         {
             IORequests = IORequestsQueue.GetQueue();
             shutdown = false;
-            timerMsc = 1000;
+            timerMsc = 100;
             dbContext = new DBContext();
         }
 
@@ -361,7 +361,7 @@ namespace SCADA.CommAcqEngine
                     }
                 }
 
-                Thread.Sleep(1000);
+                Thread.Sleep(100);
             }
         }
 
