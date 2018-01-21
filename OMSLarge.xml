@@ -171,7 +171,7 @@
 		<cim:IdentifiedObject.mRID>CN_24</cim:IdentifiedObject.mRID>
 		<cim:IdentifiedObject.name>ConnectivityNode_24</cim:IdentifiedObject.name>
 	</cim:ConnectivityNode>
-	
+	<!--
 	<cim:ConnectivityNode rdf:ID="CN_25">
 		<cim:ConnectivityNode.ConnectivityNodeContainer rdf:resource="#CNC_1"/>
 		<cim:IdentifiedObject.mRID>CN_25</cim:IdentifiedObject.mRID>
@@ -327,7 +327,7 @@
 		<cim:IdentifiedObject.mRID>CN_50</cim:IdentifiedObject.mRID>
 		<cim:IdentifiedObject.name>ConnectivityNode_50</cim:IdentifiedObject.name>
 	</cim:ConnectivityNode>
-	
+	-->
 	
 
 	
@@ -1146,7 +1146,7 @@
 		<cim:IdentifiedObject.mRID>ACLS_15</cim:IdentifiedObject.mRID>
 		<cim:IdentifiedObject.name>ACLineSegment_15</cim:IdentifiedObject.name>
 	</cim:ACLineSegment>
-	
+	<!--
 	<cim:ACLineSegment rdf:ID="ACLS_16">
 		<cim:Conductor.length></cim:Conductor.length>
 		<cim:Equipment.normallyInService>true</cim:Equipment.normallyInService>
@@ -1181,6 +1181,7 @@
 		<cim:IdentifiedObject.mRID>ACLS_20</cim:IdentifiedObject.mRID>
 		<cim:IdentifiedObject.name>ACLineSegment_20</cim:IdentifiedObject.name>
 	</cim:ACLineSegment>
+	-->
 	
 	<!-- Breakers -->
 	<cim:Breaker rdf:ID="BR_1">
@@ -1254,7 +1255,7 @@
 		<cim:IdentifiedObject.mRID>BR_8</cim:IdentifiedObject.mRID>
 		<cim:IdentifiedObject.name>Breaker_8</cim:IdentifiedObject.name>
 	</cim:Breaker>
-	
+	<!--
 	<cim:Breaker rdf:ID="BR_9">
 		<cim:Switch.normalOpen>false</cim:Switch.normalOpen>
 		<cim:Switch.switchOnCount></cim:Switch.switchOnCount>
@@ -1263,14 +1264,21 @@
 		<cim:IdentifiedObject.mRID>BR_9</cim:IdentifiedObject.mRID>
 		<cim:IdentifiedObject.name>Breaker_9</cim:IdentifiedObject.name>
 	</cim:Breaker>
+	-->
 	
 	<cim:Discrete rdf:ID="MEAS_D_1">
 		<cim:Discrete.maxValue>1</cim:Discrete.maxValue>
 		<cim:Discrete.minValue>0</cim:Discrete.minValue>
 		<cim:Discrete.normalValue>1</cim:Discrete.normalValue>
+		<cim:Discrete.validCommands>
+		Open Close
+		</cim:Discrete.validCommands>
+		<cim:Discrete.validStates>
+		Opened Closed
+		</cim:Discrete.validStates>
 		<cim:Measurement.direction>ReadWrite</cim:Measurement.direction>
 		<cim:Measurement.measurementType></cim:Measurement.measurementType>
-		<cim:Measurement.PowerSystemResource rdf:resource="#BR_1"/>
+		<cim:Measurement.PowerSystemResource rdf:resource="#BR_2"/>
 		<cim:Measurement.unitSymbol>none</cim:Measurement.unitSymbol>
 		<cim:IdentifiedObject.mRID>MEAS_D_1</cim:IdentifiedObject.mRID>
 		<cim:IdentifiedObject.name>DiscreteMeasurement_1</cim:IdentifiedObject.name>
@@ -1280,9 +1288,15 @@
 		<cim:Discrete.maxValue>1</cim:Discrete.maxValue>
 		<cim:Discrete.minValue>0</cim:Discrete.minValue>
 		<cim:Discrete.normalValue>1</cim:Discrete.normalValue>
+		<cim:Discrete.validCommands>
+		Open
+		</cim:Discrete.validCommands>
+		<cim:Discrete.validStates>
+		Closed Opened
+		</cim:Discrete.validStates>
 		<cim:Measurement.direction>ReadWrite</cim:Measurement.direction>
 		<cim:Measurement.measurementType></cim:Measurement.measurementType>
-		<cim:Measurement.PowerSystemResource rdf:resource="#BR_2"/>
+		<cim:Measurement.PowerSystemResource rdf:resource="#BR_4"/>
 		<cim:Measurement.unitSymbol>none</cim:Measurement.unitSymbol>
 		<cim:IdentifiedObject.mRID>MEAS_D_2</cim:IdentifiedObject.mRID>
 		<cim:IdentifiedObject.name>DiscreteMeasurement_2</cim:IdentifiedObject.name>
@@ -1292,9 +1306,15 @@
 		<cim:Discrete.maxValue>1</cim:Discrete.maxValue>
 		<cim:Discrete.minValue>0</cim:Discrete.minValue>
 		<cim:Discrete.normalValue>1</cim:Discrete.normalValue>
+		<cim:Discrete.validStates>
+		
+		</cim:Discrete.validStates>
+		<cim:Discrete.validCommands>
+			Open Close
+		</cim:Discrete.validCommands>
 		<cim:Measurement.direction>ReadWrite</cim:Measurement.direction>
 		<cim:Measurement.measurementType></cim:Measurement.measurementType>
-		<cim:Measurement.PowerSystemResource rdf:resource="#BR_3"/>
+		<cim:Measurement.PowerSystemResource rdf:resource="#BR_7"/>
 		<cim:Measurement.unitSymbol>none</cim:Measurement.unitSymbol>
 		<cim:IdentifiedObject.mRID>MEAS_D_3</cim:IdentifiedObject.mRID>
 		<cim:IdentifiedObject.name>DiscreteMeasurement_3</cim:IdentifiedObject.name>
@@ -1540,7 +1560,7 @@
 		<cim:IdentifiedObject.mRID>EC_29</cim:IdentifiedObject.mRID>
 		<cim:IdentifiedObject.name>EnergyConsumer_29</cim:IdentifiedObject.name>
 	</cim:EnergyConsumer>
-	
+	<!--
 	<cim:EnergyConsumer rdf:ID="EC_30">
 		<cim:EnergyConsumer.pfixed></cim:EnergyConsumer.pfixed>
 		<cim:EnergyConsumer.qfixed></cim:EnergyConsumer.qfixed>
@@ -1652,6 +1672,7 @@
 		<cim:IdentifiedObject.mRID>EC_44</cim:IdentifiedObject.mRID>
 		<cim:IdentifiedObject.name>EnergyConsumer_44</cim:IdentifiedObject.name>
 	</cim:EnergyConsumer>
+	-->
 	
 
 	
