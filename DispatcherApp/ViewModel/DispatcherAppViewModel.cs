@@ -1273,7 +1273,6 @@ namespace DispatcherApp.ViewModel
                 {
                     mainCanvas.Children.Clear();
                     DrawGraph((Source)Network[sum.Gid]);
-                    break;
                 }
                 Network[sum.Gid].Marker = sum.IsEnergized;
 

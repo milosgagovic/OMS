@@ -40,6 +40,15 @@ namespace DMSCommon.Model
         {
             Gid = mrid;
             IsEnergized = isEnergized;
+
+            if (isEnergized)
+                State = States.CLOSED;
+            else
+            {
+                State = States.OPENED;
+            }
         }
+
+
     }
 }
