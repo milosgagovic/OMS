@@ -177,7 +177,7 @@ namespace DMSService
                 count++;
             }
             watch.Stop();
-            Console.WriteLine("\nNewtork Initialization end in {0} sec",watch.ElapsedMilliseconds/1000);
+            Console.WriteLine("\nNewtork Initialization finished in {0} sec",watch.ElapsedMilliseconds/1000);
         }
 
         #region GetRelatedMethods

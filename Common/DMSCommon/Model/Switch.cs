@@ -29,10 +29,11 @@ namespace DMSCommon.Model
 
         public Switch(long gid) : base(gid)
         {
-
+            State = SwitchState.Closed;
         }
         public Switch(long gid, string mrid) : base(gid, mrid)
         {
+            State = SwitchState.Closed;
 
         }
 

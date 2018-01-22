@@ -24,32 +24,41 @@ namespace DMSService
             // ovde pozvati algoritam za energizaciju/deenergizaciju koji vraca ovu listu promena (GID, true/false)
             List<SCADAUpdateModel> networkChange = new List<SCADAUpdateModel>();
 
-            Element sw;
-            DMSService.tree.Data.TryGetValue(res, out sw);
-            Switch sw1 = (Switch)sw;
-            
+            Element el;
+            DMSService.tree.Data.TryGetValue(res, out el);
+            Switch sw = (Switch)el;
+
 
             if (state == OMSSCADACommon.States.OPENED)
             {
-                
-                sw1.Marker = false;
-                networkChange.Add(new SCADAUpdateModel(sw.ElementGID,false));
-                Node n = (Node)DMSService.tree.Data[sw1.End2];
+                sw.Marker = false;
+                sw.State = SwitchState.Open;
+                networkChange.Add(new SCADAUpdateModel(sw.ElementGID, false));
+                Node n = (Node)DMSService.tree.Data[sw.End2];
                 n.Marker = false;
-                networkChange.Add(new SCADAUpdateModel(n.ElementGID,false));
-                networkChange = GetNewtworkChange(n, networkChange,false);
+                networkChange.Add(new SCADAUpdateModel(n.ElementGID, false));
+                networkChange = GetNetworkChange(n, networkChange, false);
 
             }
             else if (state == OMSSCADACommon.States.CLOSED)
             {
-                sw1.Marker = true;
-                networkChange.Add(new SCADAUpdateModel(sw1.ElementGID,true));
-                Node n = (Node)DMSService.tree.Data[sw1.End2];
-                n.Marker = true;
-                networkChange.Add(new SCADAUpdateModel(n.ElementGID,true));
-                networkChange = GetNewtworkChange(n, networkChange, true);
+                sw.State = SwitchState.Closed;
+                if (TraceUp((Node)DMSService.tree.Data[sw.End1]))
+                {
+                    
+                    sw.Marker = true;
+                    networkChange.Add(new SCADAUpdateModel(sw.ElementGID, true));
+                    Node n = (Node)DMSService.tree.Data[sw.End2];
+                    n.Marker = true;
+                    networkChange.Add(new SCADAUpdateModel(n.ElementGID, true));
+                    networkChange = GetNetworkChange(n, networkChange, true);
+                }
+                else
+                {
+                    return;
+                }
             }
-            Source s =(Source) DMSService.tree.Data[DMSService.tree.Roots[0]];
+            Source s = (Source)DMSService.tree.Data[DMSService.tree.Roots[0]];
             networkChange.Add(new SCADAUpdateModel(s.ElementGID, true));
 
             if (networkChange.Count > 0)
@@ -58,9 +67,39 @@ namespace DMSService
 
                 publisher.PublishUpdate(networkChange);
             }
-       
+
         }
-        public List<SCADAUpdateModel> GetNewtworkChange(Node n, List<SCADAUpdateModel> networkChange,bool isEnergized)
+
+        private bool TraceUp(Node no)
+        {
+            Element el = DMSService.tree.Data[no.Parent];
+
+            if (DMSService.tree.Data[el.ElementGID] is Source)
+            {
+                return true;
+            }
+            else if (DMSService.tree.Data[el.ElementGID] is Switch)
+            {
+                Switch s = (Switch)DMSService.tree.Data[el.ElementGID];
+                if (s.Marker == true && s.State == SwitchState.Closed)
+                    return true;
+                else
+                    return false;
+            }
+            else if (DMSService.tree.Data[el.ElementGID] is ACLine)
+            {
+                ACLine acl = (ACLine)DMSService.tree.Data[el.ElementGID];
+                Node n = (Node)DMSService.tree.Data[acl.End1];
+
+                if (TraceUp(n))
+                    return true;
+                else
+                    return false;
+            }
+            return false;
+        }
+
+        private List<SCADAUpdateModel> GetNetworkChange(Node n, List<SCADAUpdateModel> networkChange, bool isEnergized)
         {
             foreach (long item in n.Children)
             {
@@ -68,19 +107,24 @@ namespace DMSService
                 if (e is Consumer)
                 {
                     e.Marker = isEnergized;
-                    networkChange.Add(new SCADAUpdateModel(e.ElementGID,isEnergized));
+                    networkChange.Add(new SCADAUpdateModel(e.ElementGID, isEnergized));
                 }
                 else if (e is Switch)
                 {
                     Element switche;
                     DMSService.tree.Data.TryGetValue(e.ElementGID, out switche);
                     Switch s = (Switch)switche;
+                    if (s.State == SwitchState.Open)
+                    {
+                        continue;
+                    }
+
                     s.Marker = isEnergized;
-                    networkChange.Add(new SCADAUpdateModel(s.ElementGID,isEnergized));
+                    networkChange.Add(new SCADAUpdateModel(s.ElementGID, isEnergized));
                     Node node = (Node)DMSService.tree.Data[s.End2];
                     node.Marker = isEnergized;
-                    networkChange.Add(new SCADAUpdateModel(node.ElementGID,isEnergized));
-                    networkChange = GetNewtworkChange(node, networkChange,isEnergized);
+                    networkChange.Add(new SCADAUpdateModel(node.ElementGID, isEnergized));
+                    networkChange = GetNetworkChange(node, networkChange, isEnergized);
                 }
                 else if (e is ACLine)
                 {
@@ -88,11 +132,11 @@ namespace DMSService
                     DMSService.tree.Data.TryGetValue(e.ElementGID, out acl);
                     ACLine ac = (ACLine)acl;
                     ac.Marker = isEnergized;
-                    networkChange.Add(new SCADAUpdateModel(ac.ElementGID,isEnergized));
+                    networkChange.Add(new SCADAUpdateModel(ac.ElementGID, isEnergized));
                     Node node = (Node)DMSService.tree.Data[ac.End2];
                     node.Marker = isEnergized;
-                    networkChange.Add(new SCADAUpdateModel(node.ElementGID,isEnergized));
-                    networkChange = GetNewtworkChange(node, networkChange,isEnergized);
+                    networkChange.Add(new SCADAUpdateModel(node.ElementGID, isEnergized));
+                    networkChange = GetNetworkChange(node, networkChange, isEnergized);
                 }
             }
 
