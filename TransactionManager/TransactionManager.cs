@@ -1,19 +1,14 @@
-﻿using CommunicationEngine;
-using CommunicationEngineContract;
+﻿using CommunicationEngineContract;
 using DMSCommon.Model;
 using DMSContract;
 using FTN.Common;
-using FTN.Services.NetworkModelService;
 using OMSSCADACommon.Commands;
 using OMSSCADACommon.Responses;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.ServiceModel;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-using TelventDMS.Services.NetworkModelService.TestClient.Tests;
 using TransactionManagerContract;
 
 namespace TransactionManager
