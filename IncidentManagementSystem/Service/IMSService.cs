@@ -1,4 +1,5 @@
 ﻿using IMSContract;
+using IncidentManagementSystem.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,26 +12,26 @@ namespace IncidentManagementSystem.Service
 	{
 		public void AddReport(string mrID, DateTime time, string state)
 		{
-			//using (var ctx = new IncidentContext())
-			//{
-			//	IncidentReport report = new IncidentReport() { Time = time, MrID = mrID, State = state };
+            using (var ctx = new IncidentContext())
+            {
+                IncidentReport report = new IncidentReport() { Time = time, MrID = mrID, State = state };
 
-			//	ctx.IncidentReports.Add(report);
-			//	ctx.SaveChanges();
-			//}
-		}
+                ctx.IncidentReports.Add(report);
+                ctx.SaveChanges();
+            }
+        }
 
 		public List<IncidentReport> GetAllReports()
 		{
 			List<IncidentReport> retVal = new List<IncidentReport>();
-			//using (var ctx = new IncidentContext())
-			//{
-			//	foreach (IncidentReport ir in ctx.IncidentReports)
-			//	{
-			//		retVal.Add(ir);
-			//	}
-			//}
-			return retVal;
+            using (var ctx = new IncidentContext())
+            {
+                foreach (IncidentReport ir in ctx.IncidentReports)
+                {
+                    retVal.Add(ir);
+                }
+            }
+            return retVal;
 		}
 	}
 }

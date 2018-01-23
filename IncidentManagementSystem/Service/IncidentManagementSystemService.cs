@@ -1,6 +1,8 @@
 ﻿using IMSContract;
+using IncidentManagementSystem.Model;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.ServiceModel;
 using System.Text;
@@ -13,7 +15,7 @@ namespace IncidentManagementSystem.Service
 		private ServiceHost svc = null;
 		public void Start()
 		{
-			//Database.SetInitializer<IncidentContext>(new DropCreateDatabaseIfModelChanges<IncidentContext>());
+			Database.SetInitializer<IncidentContext>(new DropCreateDatabaseIfModelChanges<IncidentContext>());
 			svc = new ServiceHost(typeof(IMSService));
 			var binding = new NetTcpBinding();
 			svc.AddServiceEndpoint(typeof(IIMSContract), binding, new
