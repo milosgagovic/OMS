@@ -20,7 +20,7 @@ namespace DMSService
 
         public void ChangeOnSCADA(string mrID, OMSSCADACommon.States state)
         {
-			proxyToIMS.AddReport(mrID, DateTime.Now, state.ToString());
+			
             ModelGdaDMS gda = new ModelGdaDMS();
             List<ResourceDescription> rdl = gda.GetExtentValuesExtended(ModelCode.DISCRETE);
             ResourceDescription rd = rdl.Where(r => r.GetProperty(ModelCode.IDOBJ_MRID).AsString() == mrID).FirstOrDefault();
@@ -33,9 +33,9 @@ namespace DMSService
             Element el;
             DMSService.tree.Data.TryGetValue(res, out el);
             Switch sw = (Switch)el;
+			proxyToIMS.AddReport(sw.MRID, DateTime.Now, state.ToString());
 
-
-            if (state == OMSSCADACommon.States.OPENED)
+			if (state == OMSSCADACommon.States.OPENED)
             {
                 sw.Marker = false;
                 sw.State = SwitchState.Open;
