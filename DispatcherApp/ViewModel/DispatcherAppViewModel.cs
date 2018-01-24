@@ -1,5 +1,4 @@
-﻿using CommunicationEngineContract;
-using DispatcherApp.Model;
+﻿using DispatcherApp.Model;
 using DispatcherApp.View;
 using DispatcherApp;
 using FTN.Common;
@@ -38,7 +37,6 @@ namespace DispatcherApp.ViewModel
 
         #region Subscriber
         private Subscriber subscriber;
-        private CommEngProxyUpdate proxy = new CommEngProxyUpdate("CommEngineEndpoint");
         #endregion
 
         private IOMSClient proxyToTransactionManager;
@@ -1218,12 +1216,6 @@ namespace DispatcherApp.ViewModel
                 RaisePropertyChanged("CurrentPropertyMRID");
             }
         }
-
-        public CommEngProxyUpdate Proxy
-        {
-            get { return proxy; }
-            set { proxy = value; }
-        }
         #endregion Properties
 
         private void GetElementsFromNMS()
@@ -1348,7 +1340,6 @@ namespace DispatcherApp.ViewModel
             ///
             /// otvori vezu ka CommEngine i dobavi mjerenja
             ////
-            Proxy.ReceiveAllMeasValue(TypeOfSCADACommand.ReadAll);
 
             //List<MeasResult> rezultat = new List<MeasResult>();
             //ResourceDescription rd1 = new ResourceDescription();

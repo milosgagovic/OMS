@@ -216,10 +216,6 @@
       <Project>{36299cc7-43ba-4f75-af82-96a54dd3d0e9}</Project>
       <Name>PubSubscribe</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ServiceContracts\CommunicationEngineContract\CommunicationEngineContract.csproj">
-      <Project>{F4F76A34-3088-41D6-ACEF-47D2DDC94441}</Project>
-      <Name>CommunicationEngineContract</Name>
-    </ProjectReference>
     <ProjectReference Include="..\ServiceContracts\NetworkModelQueryContract\NetworkModelGDAContract.csproj">
       <Project>{B726FB71-D295-41EE-9644-B2B0B1BC8911}</Project>
       <Name>NetworkModelGDAContract</Name>

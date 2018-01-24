@@ -1,5 +1,4 @@
-﻿using CommunicationEngineContract;
-using DMSCommon.Model;
+﻿using DMSCommon.Model;
 using DMSContract;
 using FTN.Common;
 using OMSSCADACommon.Commands;
@@ -20,14 +19,8 @@ namespace TransactionManager
         IDMSContract proxyToDMS;
         ModelGDATMS gdaTMS;
         SCADAClient scadaClient;
-        private CommEngProxyUpdate proxyToCommunicationEngine;
         public List<ITransaction> Proxys { get => proxys; set => proxys = value; }
         public List<TransactionCallback> Callbacks { get => callbacks; set => callbacks = value; }
-        public CommEngProxyUpdate ProxyToCommunicationEngine
-        {
-            get { return proxyToCommunicationEngine; }
-            set { proxyToCommunicationEngine = value; }
-        }
         void IOMSClient.UpdateSystem(Delta d)
         {
             Console.WriteLine("Update System started." + d.Id);

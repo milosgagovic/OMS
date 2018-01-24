@@ -1,5 +1,4 @@
-﻿using CommunicationEngineContract;
-using OMSSCADACommon;
+﻿using OMSSCADACommon;
 using SCADA.ClientHandler;
 using SCADA.CommAcqEngine;
 using SCADA.RealtimeDatabase;
@@ -17,27 +16,9 @@ namespace SCADA
 {
     public class Program
     {
-        private static InstanceContext instanceContext;
-        public static string commEngineAdress = "net.tcp://localhost:4100/CommunEngine";
-        public static InstanceContext InstanceContext
-        {
-            get
-            {
-                return instanceContext;
-            }
-
-            set
-            {
-                instanceContext = value;
-            }
-        }
         static void Main(string[] args)
         {
-            InstanceContext = new InstanceContext(new SCADACommuncEngineService());
-
             DBContext dbContext = new DBContext();
-
-            Console.WriteLine("Setting ProcessController CommunicationEngine");
             PCCommunicationEngine PCCommEng;
 
             while (true)
