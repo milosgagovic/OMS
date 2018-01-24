@@ -13,17 +13,31 @@ using TransactionManagerContract;
 
 namespace TransactionManager
 {
-    public class TransactionManager : IOMSClient
-    {
-        List<ITransaction> proxys;
-        List<TransactionCallback> callbacks;
-        IDMSContract proxyToDMS;
-        ModelGDATMS gdaTMS;
-        SCADAClient scadaClient;
-        public List<ITransaction> Proxys { get => proxys; set => proxys = value; }
-        public List<TransactionCallback> Callbacks { get => callbacks; set => callbacks = value; }
-		ChannelFactory<IIMSContract> factoryToIMS;// = new ChannelFactory<IIMSContract>(new NetTcpBinding(), new EndpointAddress("net.tcp://localhost:6090/IncidentManagementSystemService"));
-		IIMSContract proxyToIMS; // = factoryToIMS.CreateChannel();
+	public class TransactionManager : IOMSClient
+	{
+		List<ITransaction> proxys;
+		List<TransactionCallback> callbacks;
+		IDMSContract proxyToDMS;
+		ModelGDATMS gdaTMS;
+		SCADAClient scadaClient;
+		public List<ITransaction> Proxys { get => proxys; set => proxys = value; }
+		public List<TransactionCallback> Callbacks { get => callbacks; set => callbacks = value; }
+		ChannelFactory<IIMSContract> factoryToIMS;
+		IIMSContract proxyToIMS;
+
+
+		private SCADAClient SCADAClientInstance
+		{
+			get
+			{
+				if(scadaClient == null)
+				{
+					scadaClient = new SCADAClient();
+				}
+				return scadaClient;
+			}
+		}
+
 		public bool UpdateSystem(Delta d)
         {
             Console.WriteLine("Update System started." + d.Id);
@@ -177,7 +191,7 @@ namespace TransactionManager
             try
             {
                 Command c = MappingEngineTransactionManager.Instance.MappCommand(TypeOfSCADACommand.ReadAll);
-                Response r = scadaClient.ExecuteCommand(c);
+                Response r = SCADAClientInstance.ExecuteCommand(c);
                 descMeas = MappingEngineTransactionManager.Instance.MappResult(r);
 
             }
@@ -213,6 +227,20 @@ namespace TransactionManager
 		public List<IncidentReport> GetReportsForSpecificMrIDAndSpecificTimeInterval(string mrID, DateTime startTime, DateTime endTime)
 		{
 			return proxyToIMS.GetReportsForSpecificMrIDAndSpecificTimeInterval(mrID, startTime, endTime);
+		}
+
+		public void SendCommandToSCADA(TypeOfSCADACommand command)
+		{
+			try
+			{
+				Command c = MappingEngineTransactionManager.Instance.MappCommand(command);
+				Response r = SCADAClientInstance.ExecuteCommand(c);
+
+			}
+			catch (Exception e)
+			{
+
+			}
 		}
 	}
 }

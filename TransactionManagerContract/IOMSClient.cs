@@ -36,5 +36,8 @@ namespace TransactionManagerContract
 
 		[OperationContract]
 		List<IncidentReport> GetReportsForSpecificMrIDAndSpecificTimeInterval(string mrID, DateTime startTime, DateTime endTime);
+
+		[OperationContract]
+		void SendCommandToSCADA(TypeOfSCADACommand command);
 	}
 }
