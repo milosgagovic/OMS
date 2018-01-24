@@ -8,9 +8,10 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>ConsoleApp1</RootNamespace>
     <AssemblyName>ConsoleApp1</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -53,6 +54,10 @@
     <ProjectReference Include="..\IMSContract\IMSContract.csproj">
       <Project>{DB3DA680-83F3-422A-9C7D-7F3F883472A2}</Project>
       <Name>IMSContract</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TransactionManagerContract\TransactionManagerContract.csproj">
+      <Project>{72a5dd5a-5613-49cb-8351-3ce33a86fc01}</Project>
+      <Name>TransactionManagerContract</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

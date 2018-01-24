@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
+using System.ServiceModel;
 using System.Threading;
 using CIM.Model;
 using CIMParser;
@@ -8,18 +9,35 @@ using FTN.Common;
 using FTN.ESI.SIMES.CIM.CIMAdapter.Importer;
 using FTN.ESI.SIMES.CIM.CIMAdapter.Manager;
 using FTN.ServiceContracts;
+using TransactionManagerContract;
 
 namespace FTN.ESI.SIMES.CIM.CIMAdapter
 {
 	public class CIMAdapter
 	{
         private NetworkModelGDAProxy gdaQueryProxy = null;
-       
+		private IOMSClient proxyToTransactionManager;
+		private ChannelFactory<IOMSClient> factoryToTMS = null;
+
 		public CIMAdapter()
 		{
 		}
 
-        private NetworkModelGDAProxy GdaQueryProxy
+		private IOMSClient ProxyToTransactionManager
+		{
+			get
+			{
+				if (proxyToTransactionManager == null && factoryToTMS == null)
+				{
+					factoryToTMS = new ChannelFactory<IOMSClient>(new NetTcpBinding(), new EndpointAddress("net.tcp://localhost:6080/TransactionManagerService"));
+					proxyToTransactionManager = factoryToTMS.CreateChannel();
+				}
+
+				return proxyToTransactionManager;
+			}
+		}
+
+		private NetworkModelGDAProxy GdaQueryProxy
         {
             get
             {
@@ -62,6 +80,8 @@ namespace FTN.ESI.SIMES.CIM.CIMAdapter
 			if ((delta != null) && (delta.NumberOfOperations != 0))
 			{
 				//// NetworkModelService->ApplyUpdates
+				//updateResult = ProxyToTransactionManager.UpdateSystem(delta).ToString();
+				//call Transaction manager
                 updateResult = GdaQueryProxy.ApplyUpdate(delta).ToString();
 			}
 

@@ -8,7 +8,7 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>TransactionManager</RootNamespace>
     <AssemblyName>TransactionManager</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFrameworkProfile />
@@ -79,6 +79,10 @@
     <ProjectReference Include="..\DMSContract\DMSContract.csproj">
       <Project>{C48472D2-BEF9-425D-88B1-4F6B2D31FD8C}</Project>
       <Name>DMSContract</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\IMSContract\IMSContract.csproj">
+      <Project>{db3da680-83f3-422a-9c7d-7f3f883472a2}</Project>
+      <Name>IMSContract</Name>
     </ProjectReference>
     <ProjectReference Include="..\NetworkModelService\DataModel\DataModel.csproj">
       <Project>{ADE96497-7C11-40B6-AE82-57F956C9F104}</Project>

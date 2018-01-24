@@ -5,6 +5,7 @@ using System.Linq;
 using System.ServiceModel;
 using System.Text;
 using System.Threading.Tasks;
+using TransactionManagerContract;
 
 namespace ConsoleApp1
 {
@@ -12,8 +13,11 @@ namespace ConsoleApp1
 	{
 		static void Main(string[] args)
 		{
-			  ChannelFactory<IIMSContract> factoryToIMS = new ChannelFactory<IIMSContract>(new NetTcpBinding(), new EndpointAddress("net.tcp://localhost:6090/IncidentManagementSystemService"));
-		  IIMSContract proxyToIMS = factoryToIMS.CreateChannel();
+			//ChannelFactory<IIMSContract> factoryToIMS = new ChannelFactory<IIMSContract>(new NetTcpBinding(), new EndpointAddress("net.tcp://localhost:6090/IncidentManagementSystemService"));
+			//IIMSContract proxyToIMS = factoryToIMS.CreateChannel();
+
+			ChannelFactory<IOMSClient>  factoryToTMS = new ChannelFactory<IOMSClient>(new NetTcpBinding(), new EndpointAddress("net.tcp://localhost:6080/TransactionManagerService"));
+			IOMSClient proxyToTransactionManager = factoryToTMS.CreateChannel();
 			while (true)
 			{
 				printMeni();
@@ -24,7 +28,7 @@ namespace ConsoleApp1
 					string mrid = Console.ReadLine();
 					Console.WriteLine("State:");
 					string state = Console.ReadLine();
-					proxyToIMS.AddReport(mrid, DateTime.UtcNow, state);
+					proxyToTransactionManager.AddReport(mrid, DateTime.UtcNow, state);
 				}
 				else if (odg == "2")
 				{
@@ -33,13 +37,13 @@ namespace ConsoleApp1
 					List<IncidentReport> reports = new List<IncidentReport>(); // = proxyToIMS.GetAllReports();
 					if (odg2 == "1")
 					{
-						 reports = proxyToIMS.GetAllReports();
+						reports = proxyToTransactionManager.GetAllReports();
 					}
-					else if(odg2 == "2")
+					else if (odg2 == "2")
 					{
 						Console.WriteLine("Unesite MrID:");
 						string mrid2 = Console.ReadLine();
-						reports = proxyToIMS.GetReportsForMrID(mrid2);
+						reports = proxyToTransactionManager.GetReportsForMrID(mrid2);
 					}
 					else if (odg2 == "3")
 					{
@@ -50,8 +54,8 @@ namespace ConsoleApp1
 						Console.WriteLine("EndTime:");
 						string endTime = Console.ReadLine();
 						DateTime endDateTime = DateTime.Parse(endTime);
-						reports = proxyToIMS.GetReportsForSpecificTimeInterval(startDateTime, endDateTime);
-						
+						reports = proxyToTransactionManager.GetReportsForSpecificTimeInterval(startDateTime, endDateTime);
+
 					}
 					else if (odg2 == "4")
 					{
@@ -64,7 +68,7 @@ namespace ConsoleApp1
 						Console.WriteLine("EndTime:");
 						string endTime2 = Console.ReadLine();
 						DateTime endDateTime2 = DateTime.Parse(endTime2);
-						reports = proxyToIMS.GetReportsForSpecificMrIDAndSpecificTimeInterval(mrid3,startDateTime2, endDateTime2);
+						reports = proxyToTransactionManager.GetReportsForSpecificMrIDAndSpecificTimeInterval(mrid3, startDateTime2, endDateTime2);
 
 					}
 

@@ -1,5 +1,6 @@
 ﻿using DMSCommon.Model;
 using FTN.Common;
+using IMSContract;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,12 +14,27 @@ namespace TransactionManagerContract
    public interface IOMSClient
     {
         [OperationContract]
-        void UpdateSystem(Delta d);
+        bool UpdateSystem(Delta d);
 
         [OperationContract]
         void GetNetworkWithOutParam(out List<Element> DMSElements, out List<ResourceDescription> resourceDescriptions, out int GraphDeep);
 
         [OperationContract]
         TMSAnswerToClient GetNetwork();
-    }
+
+		[OperationContract]
+		void AddReport(string mrID, DateTime time, string state);
+
+		[OperationContract]
+		List<IncidentReport> GetAllReports();
+
+		[OperationContract]
+		List<IncidentReport> GetReportsForMrID(string mrID);
+
+		[OperationContract]
+		List<IncidentReport> GetReportsForSpecificTimeInterval(DateTime startTime, DateTime endTime);
+
+		[OperationContract]
+		List<IncidentReport> GetReportsForSpecificMrIDAndSpecificTimeInterval(string mrID, DateTime startTime, DateTime endTime);
+	}
 }

@@ -1,6 +1,7 @@
 ﻿using DMSCommon.Model;
 using DMSContract;
 using FTN.Common;
+using IMSContract;
 using OMSSCADACommon.Commands;
 using OMSSCADACommon.Responses;
 using System;
@@ -21,11 +22,14 @@ namespace TransactionManager
         SCADAClient scadaClient;
         public List<ITransaction> Proxys { get => proxys; set => proxys = value; }
         public List<TransactionCallback> Callbacks { get => callbacks; set => callbacks = value; }
-        void IOMSClient.UpdateSystem(Delta d)
+		ChannelFactory<IIMSContract> factoryToIMS;// = new ChannelFactory<IIMSContract>(new NetTcpBinding(), new EndpointAddress("net.tcp://localhost:6090/IncidentManagementSystemService"));
+		IIMSContract proxyToIMS; // = factoryToIMS.CreateChannel();
+		public bool UpdateSystem(Delta d)
         {
             Console.WriteLine("Update System started." + d.Id);
             Enlist();
             Prepare(d);
+			return true;
         }
 
         private void InitializeChanels()
@@ -56,9 +60,11 @@ namespace TransactionManager
             ChannelFactory<IDMSContract> factoryToDMS = new ChannelFactory<IDMSContract>(new NetTcpBinding(), new EndpointAddress("net.tcp://localhost:8029/DMSDispatcherService"));
             proxyToDMS = factoryToDMS.CreateChannel();
 
+			factoryToIMS = new ChannelFactory<IIMSContract>(new NetTcpBinding(), new EndpointAddress("net.tcp://localhost:6090/IncidentManagementSystemService"));
+			proxyToIMS = factoryToIMS.CreateChannel();
 
-            //  ProxyToCommunicationEngine = new CommEngProxyUpdate("CommEngineEndpoint");
-        }
+			//  ProxyToCommunicationEngine = new CommEngProxyUpdate("CommEngineEndpoint");
+		}
 
         public TransactionManager()
         {
@@ -183,5 +189,30 @@ namespace TransactionManager
             TMSAnswerToClient answer = new TMSAnswerToClient(resourceDescriptionFromNMS, listOfDMSElement, GraphDeep, descMeas);
             return answer;
         }
-    }
+
+		public void AddReport(string mrID, DateTime time, string state)
+		{
+			proxyToIMS.AddReport(mrID, time, state);
+		}
+
+		public List<IncidentReport> GetAllReports()
+		{
+			return proxyToIMS.GetAllReports();
+		}
+
+		public List<IncidentReport> GetReportsForMrID(string mrID)
+		{
+			return proxyToIMS.GetReportsForMrID(mrID);
+		}
+
+		public List<IncidentReport> GetReportsForSpecificTimeInterval(DateTime startTime, DateTime endTime)
+		{
+			return proxyToIMS.GetReportsForSpecificTimeInterval(startTime, endTime);
+		}
+
+		public List<IncidentReport> GetReportsForSpecificMrIDAndSpecificTimeInterval(string mrID, DateTime startTime, DateTime endTime)
+		{
+			return proxyToIMS.GetReportsForSpecificMrIDAndSpecificTimeInterval(mrID, startTime, endTime);
+		}
+	}
 }
