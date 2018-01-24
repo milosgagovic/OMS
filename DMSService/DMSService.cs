@@ -256,23 +256,23 @@ namespace DMSService
         private void InitializeHosts()
         {
             hosts = new List<ServiceHost>();
-            ServiceHost svc = new ServiceHost(typeof(DMSTransactionService));
-            svc.Description.Name = "DMSTransactionService";
-            svc.AddServiceEndpoint(typeof(ITransaction), new NetTcpBinding(), new
+            ServiceHost transactionHost = new ServiceHost(typeof(DMSTransactionService));
+            transactionHost.Description.Name = "DMSTransactionService";
+            transactionHost.AddServiceEndpoint(typeof(ITransaction), new NetTcpBinding(), new
             Uri("net.tcp://localhost:8028/DMSTransactionService"));
-            hosts.Add(svc);
+            hosts.Add(transactionHost);
 
-            ServiceHost svc1 = new ServiceHost(typeof(DMSDispatcherService));
-            svc1.Description.Name = "DMSDispatcherService";
-            svc1.AddServiceEndpoint(typeof(IDMSContract), new NetTcpBinding(), new
+            ServiceHost dispatcherHost = new ServiceHost(typeof(DMSDispatcherService));
+            dispatcherHost.Description.Name = "DMSDispatcherService";
+            dispatcherHost.AddServiceEndpoint(typeof(IDMSContract), new NetTcpBinding(), new
             Uri("net.tcp://localhost:8029/DMSDispatcherService"));
-            hosts.Add(svc1);
+            hosts.Add(dispatcherHost);
 
-            ServiceHost svc2 = new ServiceHost(typeof(DMSServiceForSCADA));
-            svc2.Description.Name = "DMSServiceForSCADA";
-            svc2.AddServiceEndpoint(typeof(IDMSToSCADAContract), new NetTcpBinding(), new
+            ServiceHost scadaHost = new ServiceHost(typeof(DMSServiceForSCADA));
+            scadaHost.Description.Name = "DMSServiceForSCADA";
+            scadaHost.AddServiceEndpoint(typeof(IDMSToSCADAContract), new NetTcpBinding(), new
             Uri("net.tcp://localhost:8039/IDMSToSCADAContract"));
-            hosts.Add(svc2);
+            hosts.Add(scadaHost);
 
 
         }

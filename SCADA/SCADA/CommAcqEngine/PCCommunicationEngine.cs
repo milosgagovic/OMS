@@ -19,7 +19,6 @@ namespace SCADA.CommAcqEngine
         int timerMsc;
 
         private Dictionary<string, ProcessController> processControllers { get; set; }
-
         private Dictionary<string, TcpClient> TcpChannels { get; set; }
 
 
@@ -28,10 +27,9 @@ namespace SCADA.CommAcqEngine
             IORequests = IORequestsQueue.GetQueue();
 
             shutdown = false;
-            timerMsc = 1000;
+            timerMsc = 100;
 
             processControllers = new Dictionary<string, ProcessController>();
-
             TcpChannels = new Dictionary<string, TcpClient>();
         }
 
@@ -64,15 +62,15 @@ namespace SCADA.CommAcqEngine
             };
 
             processControllers.Add(rtu1.Name, rtu1);
-            processControllers.Add(rtu2.Name, rtu2);
-            processControllers.Add(rtu3.Name, rtu3);
+            //processControllers.Add(rtu2.Name, rtu2);
+            //processControllers.Add(rtu3.Name, rtu3);
 
             return CreateChannels();
         }
 
         bool CreateChannels()
         {
-            List<ProcessController> failedRtus = new List<ProcessController>();
+            List<ProcessController> failedProcessControllers = new List<ProcessController>();
 
             // za svaki RTU pravimo kokretan komunikacioni link
             foreach (var rtu in processControllers)
@@ -80,16 +78,16 @@ namespace SCADA.CommAcqEngine
                 if (!EstablishCommunication(rtu.Value))
                 {
                     Console.WriteLine("\nEstablishing communication with RTU - {0} failed.", rtu.Value.Name);
-                    failedRtus.Add(rtu.Value);
+                    failedProcessControllers.Add(rtu.Value);
                 }
                 Console.WriteLine("\nSuccessfully established communication with RTU - {0}.", rtu.Value.Name);
             }
 
-            foreach (var failedRTU in failedRtus)
+            foreach (var failedProcessController in failedProcessControllers)
             {
-                processControllers.Remove(failedRTU.Name);
+                processControllers.Remove(failedProcessController.Name);
             }
-            failedRtus.Clear();
+            failedProcessControllers.Clear();
 
             // ako nije povezano sa kontrolerima 
             // ni ne pocinjati StartProcessing
@@ -123,7 +121,6 @@ namespace SCADA.CommAcqEngine
             }
             catch (Exception e)
             {
-
                 Console.WriteLine(e.Message);
             }
             finally
@@ -160,12 +157,6 @@ namespace SCADA.CommAcqEngine
         {
             while (!shutdown)
             {
-                //Console.WriteLine("StartProcessing");
-
-                // treba mi concurent queueu a ne blocking collection, bas
-                // ovako sa isSuccessfull
-                // da ne blokiram ceo pccommunicationengine ako nema zahteva
-                // da ogu da se obraduju odgovori od modbusa
                 bool isSuccessful;
                 IORequestBlock toProcess = IORequests.GetRequest(out isSuccessful);
                 if (isSuccessful)
@@ -174,29 +165,46 @@ namespace SCADA.CommAcqEngine
 
                     if (TcpChannels.TryGetValue(toProcess.RtuName, out client))
                     {
-                        NetworkStream stream = client.GetStream();
-                        int offset = 0;
+                        // ovde try catch oabvezno. ako ides na crveno dugme tu pada
+                        try
+                        {
 
-                        stream.Write(toProcess.SendBuff, offset, toProcess.SendMsgLength);
+                            NetworkStream stream = client.GetStream();
+                            int offset = 0;
+
+                            stream.Write(toProcess.SendBuff, offset, toProcess.SendMsgLength);
+
+                            // kasnije razmisliti da li poruke dolaze cele, ili u
+                            // delovima ako su velike...da li je potrebno u petlji
+                            // citati
+
+                            toProcess.RcvBuff = new byte[client.ReceiveBufferSize];
+
+                            var length = stream.Read(toProcess.RcvBuff, offset, client.ReceiveBufferSize);
+                            toProcess.RcvMsgLength = length;
+
+                            IORequests.EnqueueIOAnswerForProcess(toProcess);
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine(e.Message);
+                            //throw;
+
+                            // kanal sa kontrolerom je zatvoren
+                            if (client.Connected)
+                                client.Close();
+
+                            TcpChannels.Remove(toProcess.RtuName);
+                        }
 
 
-                        // kasnije razmisliti da li poruke dolaze cele, ili u
-                        // delovima ako su velike...da li je potrebno u petlji
-                        // citati
-
-                        toProcess.RcvBuff = new byte[client.ReceiveBufferSize];
-
-                        var length = stream.Read(toProcess.RcvBuff, offset, client.ReceiveBufferSize);
-                        toProcess.RcvMsgLength = length;
-
-                        IORequests.EnqueueIOAnswerForProcess(toProcess);
                     }
                     else
                     {
                         Console.WriteLine("\nThere is no communication link with {0} rtu. Request will be disposed.", toProcess.RtuName);
                     }
                 }
-                Thread.Sleep(100);
+                Thread.Sleep(millisecondsTimeout: timerMsc);
             }
             {
                 foreach (var channel in TcpChannels.Values)
@@ -206,8 +214,8 @@ namespace SCADA.CommAcqEngine
                     channel.Close();
                     channel.Client.Disconnect(true);
                 }
-                TcpChannels.Clear();
 
+                TcpChannels.Clear();
             }
         }
 

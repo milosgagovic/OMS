@@ -13,107 +13,110 @@ using TransactionManagerContract;
 
 namespace TransactionManager
 {
-	public class TransactionManager : IOMSClient
-	{
-		List<ITransaction> proxys;
-		List<TransactionCallback> callbacks;
-		IDMSContract proxyToDMS;
-		ModelGDATMS gdaTMS;
-		SCADAClient scadaClient;
-		public List<ITransaction> Proxys { get => proxys; set => proxys = value; }
-		public List<TransactionCallback> Callbacks { get => callbacks; set => callbacks = value; }
-		ChannelFactory<IIMSContract> factoryToIMS;
-		IIMSContract proxyToIMS;
+    public class TransactionManager : IOMSClient
+    {
+        List<ITransaction> transactionProxys;
+        List<TransactionCallback> transactionCallbacks;
 
+        IDMSContract proxyToDispatcherDMS;
+        ModelGDATMS gdaTMS;
 
-		private SCADAClient SCADAClientInstance
-		{
-			get
-			{
-				if(scadaClient == null)
-				{
-					scadaClient = new SCADAClient();
-				}
-				return scadaClient;
-			}
-		}
+        SCADAClient scadaClient;
 
-		public bool UpdateSystem(Delta d)
+        public List<ITransaction> TransactionProxys { get => transactionProxys; set => transactionProxys = value; }
+        public List<TransactionCallback> TransactionCallbacks { get => transactionCallbacks; set => transactionCallbacks = value; }
+
+        ChannelFactory<IIMSContract> factoryToIMS;
+        IIMSContract proxyToIMS;
+
+        private SCADAClient SCADAClientInstance
         {
-            Console.WriteLine("Update System started." + d.Id);
-            Enlist();
-            Prepare(d);
-			return true;
+            get
+            {
+                if (scadaClient == null)
+                {
+                    scadaClient = new SCADAClient();
+                }
+                return scadaClient;
+            }
+        }
+
+        public TransactionManager()
+        {
+            TransactionProxys = new List<ITransaction>();
+            TransactionCallbacks = new List<TransactionCallback>();
+            InitializeChanels();
+            gdaTMS = new ModelGDATMS();
+            scadaClient = new SCADAClient();
         }
 
         private void InitializeChanels()
         {
-            TransactionCallback callBackNMS = new TransactionCallback();
-            Callbacks.Add(callBackNMS);
-            DuplexChannelFactory<ITransaction> factory = new DuplexChannelFactory<ITransaction>(callBackNMS, new NetTcpBinding(),
-            new EndpointAddress("net.tcp://localhost:8018/NetworkModelTransactionService"));
-            ITransaction proxy = factory.CreateChannel();
-            Proxys.Add(proxy);
+            // duplex channel for NMS transaction
+            TransactionCallback callBackTransactionNMS = new TransactionCallback();
+            TransactionCallbacks.Add(callBackTransactionNMS);
+            DuplexChannelFactory<ITransaction> factoryTransactionNMS = new DuplexChannelFactory<ITransaction>(callBackTransactionNMS,
+                                                         new NetTcpBinding(),
+                                                         new EndpointAddress("net.tcp://localhost:8018/NetworkModelTransactionService"));
+            ITransaction proxyTransactionNMS = factoryTransactionNMS.CreateChannel();
+            TransactionProxys.Add(proxyTransactionNMS);
 
-            TransactionCallback callBackDMS = new TransactionCallback();
-            Callbacks.Add(callBackDMS);
+            // duplex channel for DMS transaction
+            TransactionCallback callBackTransactionDMS = new TransactionCallback();
+            TransactionCallbacks.Add(callBackTransactionDMS);
+            DuplexChannelFactory<ITransaction> factoryTransactionDMS = new DuplexChannelFactory<ITransaction>(callBackTransactionDMS,
+                                                            new NetTcpBinding(),
+                                                            new EndpointAddress("net.tcp://localhost:8028/DMSTransactionService"));
+            ITransaction proxyTransactionDMS = factoryTransactionDMS.CreateChannel();
+            TransactionProxys.Add(proxyTransactionDMS);
 
-            DuplexChannelFactory<ITransaction> factoryDMS = new DuplexChannelFactory<ITransaction>(callBackDMS, new NetTcpBinding(),
-           new EndpointAddress("net.tcp://localhost:8028/DMSTransactionService"));
-            ITransaction proxyDMS = factoryDMS.CreateChannel();
-            Proxys.Add(proxyDMS);
 
-            TransactionCallback callBackCommunicationEngine = new TransactionCallback();
-            Callbacks.Add(callBackCommunicationEngine);
+            //  zar nije communcation engine izbrisan?
+            // TransactionCallback callBackCommunicationEngine = new TransactionCallback();
+            // Callbacks.Add(callBackCommunicationEngine);
 
-            DuplexChannelFactory<ITransaction> factoryCommEngine = new DuplexChannelFactory<ITransaction>(callBackCommunicationEngine, new NetTcpBinding(),
-           new EndpointAddress("net.tcp://localhost:8038/CommunicationEngineTransactionService"));
-            ITransaction proxyCommEngine = factoryCommEngine.CreateChannel();
-            Proxys.Add(proxyCommEngine);
+            // DuplexChannelFactory<ITransaction> factoryCommEngine = new DuplexChannelFactory<ITransaction>(callBackCommunicationEngine, new NetTcpBinding(),
+            //new EndpointAddress("net.tcp://localhost:8038/CommunicationEngineTransactionService"));
+            // ITransaction proxyCommEngine = factoryCommEngine.CreateChannel();
+            // Proxys.Add(proxyCommEngine);
 
-            ChannelFactory<IDMSContract> factoryToDMS = new ChannelFactory<IDMSContract>(new NetTcpBinding(), new EndpointAddress("net.tcp://localhost:8029/DMSDispatcherService"));
-            proxyToDMS = factoryToDMS.CreateChannel();
 
-			factoryToIMS = new ChannelFactory<IIMSContract>(new NetTcpBinding(), new EndpointAddress("net.tcp://localhost:6090/IncidentManagementSystemService"));
-			proxyToIMS = factoryToIMS.CreateChannel();
+            // client channel for DMSDispatcherService
+            ChannelFactory<IDMSContract> factoryDispatcherDMS = new ChannelFactory<IDMSContract>(new NetTcpBinding(), new EndpointAddress("net.tcp://localhost:8029/DMSDispatcherService"));
+            proxyToDispatcherDMS = factoryDispatcherDMS.CreateChannel();
 
-			//  ProxyToCommunicationEngine = new CommEngProxyUpdate("CommEngineEndpoint");
-		}
 
-        public TransactionManager()
-        {
-            Proxys = new List<ITransaction>();
-            Callbacks = new List<TransactionCallback>();
-            InitializeChanels();
-            gdaTMS = new ModelGDATMS();
-            scadaClient = new SCADAClient();
-            
+            factoryToIMS = new ChannelFactory<IIMSContract>(new NetTcpBinding(), new EndpointAddress("net.tcp://localhost:6090/IncidentManagementSystemService"));
+            proxyToIMS = factoryToIMS.CreateChannel();
+
+            //  ProxyToCommunicationEngine = new CommEngProxyUpdate("CommEngineEndpoint");
         }
 
         public void Enlist()
         {
             Console.WriteLine("Transaction Manager calling enlist");
-            foreach (ITransaction svc in Proxys)
+            foreach (ITransaction svc in TransactionProxys)
             {
                 svc.Enlist();
             }
         }
+
         public void Prepare(Delta delta)
         {
             Console.WriteLine("Transaction Manager calling prepare");
-            foreach (ITransaction svc in Proxys)
+            foreach (ITransaction svc in TransactionProxys)
             {
                 svc.Prepare(delta);
             }
 
             while (true)
             {
-                if (Callbacks.Where(k => k.Answer == TransactionAnswer.Unanswered).Count() > 0)
+                if (TransactionCallbacks.Where(k => k.Answer == TransactionAnswer.Unanswered).Count() > 0)
                 {
                     Thread.Sleep(1000);
                     continue;
                 }
-                else if (Callbacks.Where(u => u.Answer == TransactionAnswer.Unprepared).Count() > 0)
+                else if (TransactionCallbacks.Where(u => u.Answer == TransactionAnswer.Unprepared).Count() > 0)
                 {
                     Rollback();
                     break;
@@ -128,7 +131,7 @@ namespace TransactionManager
         private void Commit()
         {
             Console.WriteLine("Transaction Manager calling commit");
-            foreach (ITransaction svc in Proxys)
+            foreach (ITransaction svc in TransactionProxys)
             {
                 svc.Commit();
             }
@@ -137,21 +140,31 @@ namespace TransactionManager
         public void Rollback()
         {
             Console.WriteLine("Transaction Manager calling rollback");
-            foreach (ITransaction svc in Proxys)
+            foreach (ITransaction svc in TransactionProxys)
             {
                 svc.Rollback();
             }
+        }
+
+        #region IOMSClient Methods
+
+        public bool UpdateSystem(Delta d)
+        {
+            Console.WriteLine("Update System started." + d.Id);
+            Enlist();
+            Prepare(d);
+            return true;
         }
 
         public void GetNetworkWithOutParam(out List<Element> DMSElements, out List<ResourceDescription> resourceDescriptions, out int GraphDeep)
         {
             List<Element> listOfDMSElement = new List<Element>();//proxyToDMS.GetAllElements();
             List<ResourceDescription> resourceDescriptionFromNMS = new List<ResourceDescription>();
-            List<ACLine> acList = proxyToDMS.GetAllACLines();
-            List<Node> nodeList = proxyToDMS.GetAllNodes();
-            List<Source> sourceList = proxyToDMS.GetAllSource();
-            List<Switch> switchList = proxyToDMS.GetAllSwitches();
-            List<Consumer> consumerList = proxyToDMS.GetAllConsumers();
+            List<ACLine> acList = proxyToDispatcherDMS.GetAllACLines();
+            List<Node> nodeList = proxyToDispatcherDMS.GetAllNodes();
+            List<Source> sourceList = proxyToDispatcherDMS.GetAllSource();
+            List<Switch> switchList = proxyToDispatcherDMS.GetAllSwitches();
+            List<Consumer> consumerList = proxyToDispatcherDMS.GetAllConsumers();
 
             acList.ForEach(u => listOfDMSElement.Add(u));
             nodeList.ForEach(u => listOfDMSElement.Add(u));
@@ -164,18 +177,18 @@ namespace TransactionManager
             gdaTMS.GetExtentValues(ModelCode.ENERGCONSUMER).ForEach(u => resourceDescriptionFromNMS.Add(u));
             gdaTMS.GetExtentValues(ModelCode.ENERGSOURCE).ForEach(u => resourceDescriptionFromNMS.Add(u));
             gdaTMS.GetExtentValues(ModelCode.ACLINESEGMENT).ForEach(u => resourceDescriptionFromNMS.Add(u));
-            GraphDeep = proxyToDMS.GetNetworkDepth();
+            GraphDeep = proxyToDispatcherDMS.GetNetworkDepth();
             TMSAnswerToClient answer = new TMSAnswerToClient(resourceDescriptionFromNMS, null, GraphDeep, null);
             resourceDescriptions = resourceDescriptionFromNMS;
             DMSElements = listOfDMSElement;
-            GraphDeep = proxyToDMS.GetNetworkDepth();
+            GraphDeep = proxyToDispatcherDMS.GetNetworkDepth();
 
             // return resourceDescriptionFromNMS;
         }
 
         public TMSAnswerToClient GetNetwork()
         {
-            List<Element> listOfDMSElement = proxyToDMS.GetAllElements();
+            List<Element> listOfDMSElement = proxyToDispatcherDMS.GetAllElements();
             List<ResourceDescription> resourceDescriptionFromNMS = new List<ResourceDescription>();
             List<ResourceDescription> descMeas = new List<ResourceDescription>();
             // ProxyToCommunicationEngine.ReceiveAllMeasValue(TypeOfSCADACommand.ReadAll);
@@ -186,7 +199,7 @@ namespace TransactionManager
             gdaTMS.GetExtentValues(ModelCode.ENERGSOURCE).ForEach(u => resourceDescriptionFromNMS.Add(u));
             gdaTMS.GetExtentValues(ModelCode.ACLINESEGMENT).ForEach(u => resourceDescriptionFromNMS.Add(u));
             gdaTMS.GetExtentValues(ModelCode.DISCRETE).ForEach(u => resourceDescriptionFromNMS.Add(u));
-            int GraphDeep = proxyToDMS.GetNetworkDepth();
+            int GraphDeep = proxyToDispatcherDMS.GetNetworkDepth();
 
             try
             {
@@ -204,43 +217,45 @@ namespace TransactionManager
             return answer;
         }
 
-		public void AddReport(string mrID, DateTime time, string state)
-		{
-			proxyToIMS.AddReport(mrID, time, state);
-		}
+        public void AddReport(string mrID, DateTime time, string state)
+        {
+            proxyToIMS.AddReport(mrID, time, state);
+        }
 
-		public List<IncidentReport> GetAllReports()
-		{
-			return proxyToIMS.GetAllReports();
-		}
+        public List<IncidentReport> GetAllReports()
+        {
+            return proxyToIMS.GetAllReports();
+        }
 
-		public List<IncidentReport> GetReportsForMrID(string mrID)
-		{
-			return proxyToIMS.GetReportsForMrID(mrID);
-		}
+        public List<IncidentReport> GetReportsForMrID(string mrID)
+        {
+            return proxyToIMS.GetReportsForMrID(mrID);
+        }
 
-		public List<IncidentReport> GetReportsForSpecificTimeInterval(DateTime startTime, DateTime endTime)
-		{
-			return proxyToIMS.GetReportsForSpecificTimeInterval(startTime, endTime);
-		}
+        public List<IncidentReport> GetReportsForSpecificTimeInterval(DateTime startTime, DateTime endTime)
+        {
+            return proxyToIMS.GetReportsForSpecificTimeInterval(startTime, endTime);
+        }
 
-		public List<IncidentReport> GetReportsForSpecificMrIDAndSpecificTimeInterval(string mrID, DateTime startTime, DateTime endTime)
-		{
-			return proxyToIMS.GetReportsForSpecificMrIDAndSpecificTimeInterval(mrID, startTime, endTime);
-		}
+        public List<IncidentReport> GetReportsForSpecificMrIDAndSpecificTimeInterval(string mrID, DateTime startTime, DateTime endTime)
+        {
+            return proxyToIMS.GetReportsForSpecificMrIDAndSpecificTimeInterval(mrID, startTime, endTime);
+        }
 
-		public void SendCommandToSCADA(TypeOfSCADACommand command)
-		{
-			try
-			{
-				Command c = MappingEngineTransactionManager.Instance.MappCommand(command);
-				Response r = SCADAClientInstance.ExecuteCommand(c);
+        public void SendCommandToSCADA(TypeOfSCADACommand command)
+        {
+            try
+            {
+                Command c = MappingEngineTransactionManager.Instance.MappCommand(command);
+                Response r = SCADAClientInstance.ExecuteCommand(c);
 
-			}
-			catch (Exception e)
-			{
+            }
+            catch (Exception e)
+            {
 
-			}
-		}
-	}
+            }
+        }
+
+        #endregion
+    }
 }

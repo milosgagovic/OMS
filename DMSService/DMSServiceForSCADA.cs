@@ -31,6 +31,8 @@ namespace DMSService
             List<SCADAUpdateModel> networkChange = new List<SCADAUpdateModel>();
 
             Element el;
+            // error ako ne ugasis modbus simulator nakon gasenja sistema, i onda
+            // opet pokrenes sve
             DMSService.tree.Data.TryGetValue(res, out el);
             Switch sw = (Switch)el;
 			proxyToIMS.AddReport(sw.MRID, DateTime.UtcNow, state.ToString());

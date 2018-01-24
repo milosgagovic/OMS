@@ -10,12 +10,13 @@ namespace TransactionManager
 {
     class Program
     {
-
-
         static void Main(string[] args)
         {
             TransactionManagerService tms = new TransactionManagerService();
             Console.WriteLine("Transaction Manager is started");
+
+            // zbog cega se ovde instancira transaction manager, 
+            // kada je vec deo transaction manager service-a??
             TransactionManager transactionManager = new TransactionManager();
             //transactionManager.Enlist();
             //transactionManager.Prepare();
@@ -26,8 +27,5 @@ namespace TransactionManager
 
             tms.Stop();
         }
-
-
-
     }
 }

@@ -20,6 +20,7 @@ namespace SCADA.ClientHandler
         public void ChangeOnSCADA(string mrID, States state)
         {
             proxy.ChangeOnSCADA(mrID, state);
+            Console.WriteLine("Scada changed time {0}", DateTime.Now.ToLongTimeString());
         }
     }
 }

@@ -19,9 +19,7 @@ namespace SCADA.CommAcqEngine
     // Acquisition engine
     public class ACQEngine : ICommandReceiver
     {
-        private static IIndustryProtocolHandler protHandler;
         private static IORequestsQueue IORequests;
-
         private bool shutdown;
         private int timerMsc;
 
@@ -30,9 +28,9 @@ namespace SCADA.CommAcqEngine
 
         public ACQEngine()
         {
-            IORequests = IORequestsQueue.GetQueue();
+            IORequests = IORequestsQueue.GetQueue();       
             shutdown = false;
-            timerMsc = 100;
+            timerMsc = 10;
             dbContext = new DBContext();
         }
 
@@ -191,7 +189,6 @@ namespace SCADA.CommAcqEngine
             //rtu2.AddProcessVariable(d7);
             //rtu2.AddProcessVariable(d8);
 
-            // pitanje, ako uradim delete variajble iz baze, da li se brise i iz rtu-a?
             dbContext.AddProcessVariable(d1);
             dbContext.AddProcessVariable(d2);
             dbContext.AddProcessVariable(d3);
@@ -202,19 +199,6 @@ namespace SCADA.CommAcqEngine
             //dbContext.AddProcessVariable(d8);
 
             //d1.Name = "PromenaD1";
-        }
-
-        public void SetupRTUs()
-        {
-            RTU rtu1 = new RTU();
-            rtu1.Address = 1;
-            rtu1.Name = "RTU-1";
-            RTUs.Add(rtu1.Name, rtu1);
-
-            RTU rtu2 = new RTU();
-            rtu2.Address = 1;
-            rtu2.Name = "RTU-2";
-            RTUs.Add(rtu2.Name, rtu2);
         }
 
         public void StartAcquisition()
@@ -318,17 +302,10 @@ namespace SCADA.CommAcqEngine
                                 {
                                     case FunctionCodes.ReadDiscreteInput:
                                         BitReadResponse response = (BitReadResponse)mdbHandler.Response;
-
-                                        // sad treba skontati na koju varijablu namapirati
-                                        // ono sto jednoznacno identifikuje variajblu to je njena pripadnost
-                                        // rtu-u i adresa u njemu
-                                        //Digital target = (Digital)db.GetProcessVariableByAddress(answer.ReqAddress);
                                         Digital target = (Digital)rtu.GetProcessVariableByAddress(answer.ReqAddress);
 
                                         if (target != null)
-                                        {
-                                            int bitNumber = (int)Math.Floor((Math.Log(target.ValidStates.Count, 2)));
-
+                                        {                                           
                                             int[] array = new int[1];
                                             response.BitValues.CopyTo(array, 0);
 
@@ -345,11 +322,11 @@ namespace SCADA.CommAcqEngine
                                                         dMSClient.ChangeOnSCADA(target.Name, target.State);
                                                     }
                                                 }
-                                                Console.WriteLine("Digital variable {0}, state: {1}", target.Name, target.State);
+                                                //Console.WriteLine("Digital variable {0}, state: {1}", target.Name, target.State);
                                             }
                                             catch
                                             {
-                                                Console.WriteLine("Digital variable {0}, state: INVALID", target.Name);
+                                               // Console.WriteLine("Digital variable {0}, state: INVALID", target.Name);
                                             }
                                         }
 

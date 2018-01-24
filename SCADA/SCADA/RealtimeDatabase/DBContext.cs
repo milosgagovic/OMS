@@ -34,6 +34,8 @@ namespace SCADA.RealtimeDatabase
         {
             return Database.RTUs;
         }
+
+
         public void AddProcessVariable(ProcessVariable pv)
         {
             Database.Instance.ProcessVariablesName.Add(pv.Name, pv);

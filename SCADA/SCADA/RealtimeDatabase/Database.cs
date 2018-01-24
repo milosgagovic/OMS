@@ -13,7 +13,6 @@ namespace SCADA.RealtimeDatabase
 
         public Dictionary<ushort, ProcessVariable> ProcessVariablesAddress = null;
 
-        // mora RTU da bude osnovni element u bazi ako zelimo da ih imamo vise?
         public Dictionary<string, RTU> RTUs = null;
 
         private static Database instance;

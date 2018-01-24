@@ -16,7 +16,6 @@ namespace SCADA.ClientHandler
         public SCADAService()
         {
             host = new ServiceHost(typeof(Invoker));
-            
         }
 
         public void Start()
@@ -36,7 +35,6 @@ namespace SCADA.ClientHandler
             message = "SCADA service is up and running.";
 
             Console.WriteLine("\n{0}", message);
-            
         }
 
         public void Dispose()

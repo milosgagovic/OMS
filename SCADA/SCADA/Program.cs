@@ -19,8 +19,9 @@ namespace SCADA
         static void Main(string[] args)
         {
             DBContext dbContext = new DBContext();
-            PCCommunicationEngine PCCommEng;
 
+
+            PCCommunicationEngine PCCommEng;
             while (true)
             {
                 PCCommEng = new PCCommunicationEngine();
@@ -33,14 +34,11 @@ namespace SCADA
                 }
                 break;
             }
-
             Thread requestConsumer = new Thread(PCCommEng.StartProcessing);
 
-            Console.WriteLine("Setting Acquisition Engine");
+
             ACQEngine AcqEngine = new ACQEngine();
-
             AcqEngine.Configure("AcqConfiguration.xml");
-
             Thread reqProducer = new Thread(AcqEngine.StartAcquisition);
             Thread answConsumer = new Thread(AcqEngine.ProcessPCAnwers);
 
