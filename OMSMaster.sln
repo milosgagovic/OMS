@@ -92,6 +92,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IncidentManagementSystem", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IMSContract", "IMSContract\IMSContract.csproj", "{DB3DA680-83F3-422A-9C7D-7F3F883472A2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApp1", "ConsoleApp1\ConsoleApp1.csproj", "{BAF2A13C-94D3-40E2-B594-12742750A3CC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -430,6 +432,18 @@ Global
 		{DB3DA680-83F3-422A-9C7D-7F3F883472A2}.Release|x64.Build.0 = Release|Any CPU
 		{DB3DA680-83F3-422A-9C7D-7F3F883472A2}.Release|x86.ActiveCfg = Release|Any CPU
 		{DB3DA680-83F3-422A-9C7D-7F3F883472A2}.Release|x86.Build.0 = Release|Any CPU
+		{BAF2A13C-94D3-40E2-B594-12742750A3CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BAF2A13C-94D3-40E2-B594-12742750A3CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BAF2A13C-94D3-40E2-B594-12742750A3CC}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{BAF2A13C-94D3-40E2-B594-12742750A3CC}.Debug|x64.Build.0 = Debug|Any CPU
+		{BAF2A13C-94D3-40E2-B594-12742750A3CC}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{BAF2A13C-94D3-40E2-B594-12742750A3CC}.Debug|x86.Build.0 = Debug|Any CPU
+		{BAF2A13C-94D3-40E2-B594-12742750A3CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BAF2A13C-94D3-40E2-B594-12742750A3CC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BAF2A13C-94D3-40E2-B594-12742750A3CC}.Release|x64.ActiveCfg = Release|Any CPU
+		{BAF2A13C-94D3-40E2-B594-12742750A3CC}.Release|x64.Build.0 = Release|Any CPU
+		{BAF2A13C-94D3-40E2-B594-12742750A3CC}.Release|x86.ActiveCfg = Release|Any CPU
+		{BAF2A13C-94D3-40E2-B594-12742750A3CC}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

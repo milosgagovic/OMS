@@ -33,7 +33,7 @@ namespace DMSService
             Element el;
             DMSService.tree.Data.TryGetValue(res, out el);
             Switch sw = (Switch)el;
-			proxyToIMS.AddReport(sw.MRID, DateTime.Now, state.ToString());
+			proxyToIMS.AddReport(sw.MRID, DateTime.UtcNow, state.ToString());
 
 			if (state == OMSSCADACommon.States.OPENED)
             {

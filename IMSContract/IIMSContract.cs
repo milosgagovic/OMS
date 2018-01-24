@@ -18,6 +18,15 @@ namespace IMSContract
 		[OperationContract]
 		List<IncidentReport> GetAllReports();
 
+		[OperationContract]
+		List<IncidentReport> GetReportsForMrID(string mrID);
+
+		[OperationContract]
+		List<IncidentReport> GetReportsForSpecificTimeInterval(DateTime startTime, DateTime endTime);
+
+		[OperationContract]
+		List<IncidentReport> GetReportsForSpecificMrIDAndSpecificTimeInterval(string mrID, DateTime startTime, DateTime endTime);
+
 	}
 
 }
