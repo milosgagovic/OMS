@@ -18,6 +18,8 @@ namespace IncidentManagementSystem.Service
 
                 ctx.IncidentReports.Add(report);
                 ctx.SaveChanges();
+
+				Console.WriteLine("Upisano:\n MRID: " + mrID + ", Date Time: " + time.ToString() + ", State: " + state);
             }
         }
 

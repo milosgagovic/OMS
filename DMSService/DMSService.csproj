@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>DMSService</RootNamespace>
     <AssemblyName>DMSService</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -63,6 +64,10 @@
     <ProjectReference Include="..\DMSContract\DMSContract.csproj">
       <Project>{c48472d2-bef9-425d-88b1-4f6b2d31fd8c}</Project>
       <Name>DMSContract</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\IMSContract\IMSContract.csproj">
+      <Project>{db3da680-83f3-422a-9c7d-7f3f883472a2}</Project>
+      <Name>IMSContract</Name>
     </ProjectReference>
     <ProjectReference Include="..\PubSubscribe\PubSubscribe.csproj">
       <Project>{36299CC7-43BA-4F75-AF82-96A54DD3D0E9}</Project>

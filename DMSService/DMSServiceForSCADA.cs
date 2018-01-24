@@ -1,11 +1,13 @@
 ﻿using DMSCommon.Model;
 using DMSContract;
 using FTN.Common;
+using IMSContract;
 using OMSSCADACommon;
 using PubSubscribe;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.ServiceModel;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -13,8 +15,12 @@ namespace DMSService
 {
     public class DMSServiceForSCADA : IDMSToSCADAContract
     {
+		private static ChannelFactory<IIMSContract> factoryToIMS = new ChannelFactory<IIMSContract>(new NetTcpBinding(), new EndpointAddress("net.tcp://localhost:6090/IncidentManagementSystemService"));
+		private static IIMSContract proxyToIMS = factoryToIMS.CreateChannel();
+
         public void ChangeOnSCADA(string mrID, OMSSCADACommon.States state)
         {
+			proxyToIMS.AddReport(mrID, DateTime.Now, state.ToString());
             ModelGdaDMS gda = new ModelGdaDMS();
             List<ResourceDescription> rdl = gda.GetExtentValuesExtended(ModelCode.DISCRETE);
             ResourceDescription rd = rdl.Where(r => r.GetProperty(ModelCode.IDOBJ_MRID).AsString() == mrID).FirstOrDefault();
