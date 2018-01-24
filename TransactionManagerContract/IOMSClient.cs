@@ -39,5 +39,8 @@ namespace TransactionManagerContract
 
 		[OperationContract]
 		void SendCommandToSCADA(TypeOfSCADACommand command);
-	}
+
+        [OperationContract]
+        void SendCrew(string mrid);
+    }
 }

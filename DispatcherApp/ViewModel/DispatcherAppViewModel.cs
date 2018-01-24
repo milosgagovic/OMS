@@ -96,6 +96,7 @@ namespace DispatcherApp.ViewModel
             subscriber = new Subscriber();
             subscriber.Subscribe();
             subscriber.publishUpdateEvent += GetUpdate;
+            subscriber.publishCrewEvent += GetCrewUpdate;
 
             TreeViewItem tvi1 = new TreeViewItem() { Header = "ES_1" };
             TreeViewItem tvi2 = new TreeViewItem() { Header = "ES_2" };
@@ -408,6 +409,7 @@ namespace DispatcherApp.ViewModel
                     DrawGraph(source as Source);
                 }
             }
+        
         }
 
         #region DrawGraph
@@ -1284,6 +1286,13 @@ namespace DispatcherApp.ViewModel
                 }
             }
            
+
+        }
+
+        private void GetCrewUpdate(SCADAUpdateModel update)
+        {
+            
+            Console.WriteLine(update.Response.ToString());
 
         }
 

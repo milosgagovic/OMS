@@ -24,6 +24,11 @@ namespace PubSubscribe
             proxy.Publish(update);
         }
 
+        public void PublishCrew(SCADAUpdateModel update)
+        {
+            proxy.PublishCrewUpdate(update);
+        }
+
         private void CreateProxy()
         {
             string address = "";

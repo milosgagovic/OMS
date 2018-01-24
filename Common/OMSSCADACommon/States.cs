@@ -12,4 +12,11 @@ namespace OMSSCADACommon
         CLOSED,
         UNKNOWN
     }
+    public enum CrewResponse
+    {
+        ShortCircuit = 0,
+        GroundFault,
+        Overload,
+
+    }
 }

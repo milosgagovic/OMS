@@ -14,6 +14,7 @@ namespace DMSCommon.Model
         private long gid;
         private bool isEnergized;
         private States state;
+        private CrewResponse response;
 
         [DataMember]
         public long Gid
@@ -35,11 +36,27 @@ namespace DMSCommon.Model
             get { return state; }
             set { state = value; }
         }
+        [DataMember]
+        public CrewResponse Response { get => response; set => response = value; }
 
         public SCADAUpdateModel(long mrid, bool isEnergized)
         {
             Gid = mrid;
             IsEnergized = isEnergized;
+
+            if (isEnergized)
+                State = States.CLOSED;
+            else
+            {
+                State = States.OPENED;
+            }
+        }
+
+        public SCADAUpdateModel(long mrid,bool isEnergised,CrewResponse response )
+        {
+            Gid = mrid;
+            IsEnergized = isEnergised;
+            Response = response;
 
             if (isEnergized)
                 State = States.CLOSED;

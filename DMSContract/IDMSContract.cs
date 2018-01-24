@@ -38,5 +38,8 @@ namespace DMSContract
         int GetNetworkDepth();
         [OperationContract]
         List<Element> GetAllElements();
+
+        [OperationContract]
+        void SendCrewToDms(string mrid);
     }
 }

@@ -11,6 +11,7 @@ namespace DMSCommon.Model
     {
         [EnumMember]
         private SwitchState _state;
+        private bool canCommand;
 
 
         public SwitchState State
@@ -25,6 +26,8 @@ namespace DMSCommon.Model
             }
         }
 
+        public bool CanCommand { get => canCommand; set => canCommand = value; }
+
         public Switch() { }
 
         public Switch(long gid) : base(gid)
@@ -34,6 +37,7 @@ namespace DMSCommon.Model
         public Switch(long gid, string mrid) : base(gid, mrid)
         {
             State = SwitchState.Closed;
+            CanCommand = true;
 
         }
 

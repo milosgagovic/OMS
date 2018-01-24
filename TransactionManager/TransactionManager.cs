@@ -13,37 +13,37 @@ using TransactionManagerContract;
 
 namespace TransactionManager
 {
-	public class TransactionManager : IOMSClient
-	{
-		List<ITransaction> proxys;
-		List<TransactionCallback> callbacks;
-		IDMSContract proxyToDMS;
-		ModelGDATMS gdaTMS;
-		SCADAClient scadaClient;
-		public List<ITransaction> Proxys { get => proxys; set => proxys = value; }
-		public List<TransactionCallback> Callbacks { get => callbacks; set => callbacks = value; }
-		ChannelFactory<IIMSContract> factoryToIMS;
-		IIMSContract proxyToIMS;
+    public class TransactionManager : IOMSClient
+    {
+        List<ITransaction> proxys;
+        List<TransactionCallback> callbacks;
+        IDMSContract proxyToDMS;
+        ModelGDATMS gdaTMS;
+        SCADAClient scadaClient;
+        public List<ITransaction> Proxys { get => proxys; set => proxys = value; }
+        public List<TransactionCallback> Callbacks { get => callbacks; set => callbacks = value; }
+        ChannelFactory<IIMSContract> factoryToIMS;
+        IIMSContract proxyToIMS;
 
 
-		private SCADAClient SCADAClientInstance
-		{
-			get
-			{
-				if(scadaClient == null)
-				{
-					scadaClient = new SCADAClient();
-				}
-				return scadaClient;
-			}
-		}
+        private SCADAClient SCADAClientInstance
+        {
+            get
+            {
+                if (scadaClient == null)
+                {
+                    scadaClient = new SCADAClient();
+                }
+                return scadaClient;
+            }
+        }
 
-		public bool UpdateSystem(Delta d)
+        public bool UpdateSystem(Delta d)
         {
             Console.WriteLine("Update System started." + d.Id);
             Enlist();
             Prepare(d);
-			return true;
+            return true;
         }
 
         private void InitializeChanels()
@@ -74,11 +74,11 @@ namespace TransactionManager
             ChannelFactory<IDMSContract> factoryToDMS = new ChannelFactory<IDMSContract>(new NetTcpBinding(), new EndpointAddress("net.tcp://localhost:8029/DMSDispatcherService"));
             proxyToDMS = factoryToDMS.CreateChannel();
 
-			factoryToIMS = new ChannelFactory<IIMSContract>(new NetTcpBinding(), new EndpointAddress("net.tcp://localhost:6090/IncidentManagementSystemService"));
-			proxyToIMS = factoryToIMS.CreateChannel();
+            factoryToIMS = new ChannelFactory<IIMSContract>(new NetTcpBinding(), new EndpointAddress("net.tcp://localhost:6090/IncidentManagementSystemService"));
+            proxyToIMS = factoryToIMS.CreateChannel();
 
-			//  ProxyToCommunicationEngine = new CommEngProxyUpdate("CommEngineEndpoint");
-		}
+            //  ProxyToCommunicationEngine = new CommEngProxyUpdate("CommEngineEndpoint");
+        }
 
         public TransactionManager()
         {
@@ -87,7 +87,7 @@ namespace TransactionManager
             InitializeChanels();
             gdaTMS = new ModelGDATMS();
             scadaClient = new SCADAClient();
-            
+
         }
 
         public void Enlist()
@@ -204,43 +204,49 @@ namespace TransactionManager
             return answer;
         }
 
-		public void AddReport(string mrID, DateTime time, string state)
-		{
-			proxyToIMS.AddReport(mrID, time, state);
-		}
+        public void AddReport(string mrID, DateTime time, string state)
+        {
+            proxyToIMS.AddReport(mrID, time, state);
+        }
 
-		public List<IncidentReport> GetAllReports()
-		{
-			return proxyToIMS.GetAllReports();
-		}
+        public List<IncidentReport> GetAllReports()
+        {
+            return proxyToIMS.GetAllReports();
+        }
 
-		public List<IncidentReport> GetReportsForMrID(string mrID)
-		{
-			return proxyToIMS.GetReportsForMrID(mrID);
-		}
+        public List<IncidentReport> GetReportsForMrID(string mrID)
+        {
+            return proxyToIMS.GetReportsForMrID(mrID);
+        }
 
-		public List<IncidentReport> GetReportsForSpecificTimeInterval(DateTime startTime, DateTime endTime)
-		{
-			return proxyToIMS.GetReportsForSpecificTimeInterval(startTime, endTime);
-		}
+        public List<IncidentReport> GetReportsForSpecificTimeInterval(DateTime startTime, DateTime endTime)
+        {
+            return proxyToIMS.GetReportsForSpecificTimeInterval(startTime, endTime);
+        }
 
-		public List<IncidentReport> GetReportsForSpecificMrIDAndSpecificTimeInterval(string mrID, DateTime startTime, DateTime endTime)
-		{
-			return proxyToIMS.GetReportsForSpecificMrIDAndSpecificTimeInterval(mrID, startTime, endTime);
-		}
+        public List<IncidentReport> GetReportsForSpecificMrIDAndSpecificTimeInterval(string mrID, DateTime startTime, DateTime endTime)
+        {
+            return proxyToIMS.GetReportsForSpecificMrIDAndSpecificTimeInterval(mrID, startTime, endTime);
+        }
 
-		public void SendCommandToSCADA(TypeOfSCADACommand command)
-		{
-			try
-			{
-				Command c = MappingEngineTransactionManager.Instance.MappCommand(command);
-				Response r = SCADAClientInstance.ExecuteCommand(c);
+        public void SendCommandToSCADA(TypeOfSCADACommand command)
+        {
+            try
+            {
+                Command c = MappingEngineTransactionManager.Instance.MappCommand(command);
+                Response r = SCADAClientInstance.ExecuteCommand(c);
 
-			}
-			catch (Exception e)
-			{
+            }
+            catch (Exception e)
+            {
 
-			}
-		}
-	}
+            }
+        }
+
+        public void SendCrew(string mrid)
+        {
+            proxyToDMS.SendCrewToDms(mrid);
+            return;
+        }
+    }
 }
