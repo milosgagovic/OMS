@@ -17,6 +17,7 @@ namespace FTN.Services.NetworkModelService
         private static Dictionary<int, ResourceIterator> resourceItMap = new Dictionary<int, ResourceIterator>();
         private static int resourceItId = 0;
         protected static NetworkModel nm = null;
+		private static NetworkModel newNetworkModel = null;
 
         public GenericDataAccess()
         {
@@ -30,17 +31,21 @@ namespace FTN.Services.NetworkModelService
             }
         }
 
-        public UpdateResult ApplyUpdate(Delta delta)
+		public static NetworkModel NewNetworkModel { get => newNetworkModel; set => newNetworkModel = value; }
+
+		public UpdateResult ApplyUpdate(Delta delta)
         {
-            return nm.ApplyDelta(delta);
-        }
+			return NewNetworkModel.ApplyDelta(delta);
+			//return nm.ApplyDelta(delta);
+		}
 
         public ResourceDescription GetValues(long resourceId, List<ModelCode> propIds)
         {
             try
             {
-                ResourceDescription retVal = nm.GetValues(resourceId, propIds);
-                return retVal;
+				ResourceDescription retVal = nm.GetValues(resourceId, propIds);
+				//ResourceDescription retVal = NewNetworkModel.GetValues(resourceId, propIds);
+				return retVal;
             }
             catch (Exception ex)
             {
@@ -196,9 +201,9 @@ namespace FTN.Services.NetworkModelService
             }
         }
 
-        public NetworkModel GetCopyOfNetworkModel()
+        public void GetCopyOfNetworkModel()
         {
-            return nm.GetCopyOfNetworkModel();
+			NewNetworkModel = nm.GetCopyOfNetworkModel();
         }
     }
 }

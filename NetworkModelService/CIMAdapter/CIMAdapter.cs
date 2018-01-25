@@ -80,9 +80,9 @@ namespace FTN.ESI.SIMES.CIM.CIMAdapter
 			if ((delta != null) && (delta.NumberOfOperations != 0))
 			{
 				//// NetworkModelService->ApplyUpdates
-				//updateResult = ProxyToTransactionManager.UpdateSystem(delta).ToString();
+				updateResult = ProxyToTransactionManager.UpdateSystem(delta).ToString();
 				//call Transaction manager
-                updateResult = GdaQueryProxy.ApplyUpdate(delta).ToString();
+               // updateResult = GdaQueryProxy.ApplyUpdate(delta).ToString();
 			}
 
 			Thread.CurrentThread.CurrentCulture = culture;
