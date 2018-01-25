@@ -28,6 +28,17 @@ namespace PubSubscribeService.Services
             }
 
         }
+
+        public void PublishCrewUpdate(SCADAUpdateModel update)
+        {
+            foreach (IPublishing subscriber in PubSubscribeDB.Subscribers)
+            {
+                PublishThreadData threadObj = new PublishThreadData(subscriber, update);
+
+                Thread thread = new Thread(threadObj.PublishCrewDelta);
+                thread.Start();
+            }
+        }
     }
 
     internal class PublishThreadData
@@ -36,14 +47,25 @@ namespace PubSubscribeService.Services
 
         private List<SCADAUpdateModel> update;
 
+        private SCADAUpdateModel crewUpdate;
+
 
         public PublishThreadData(IPublishing subscriber, List<SCADAUpdateModel> update)
         {
-          
+
             this.subscriber = subscriber;
             this.update = update;
 
         }
+        public PublishThreadData(IPublishing subscriber, SCADAUpdateModel update)
+        {
+
+            this.subscriber = subscriber;
+            this.crewUpdate = update;
+
+        }
+
+
         public List<SCADAUpdateModel> Update
         {
             get
@@ -70,11 +92,25 @@ namespace PubSubscribeService.Services
             }
         }
 
+        public SCADAUpdateModel CrewUpdate { get => crewUpdate; set => crewUpdate = value; }
+
         public void PublishDelta()
         {
             try
             {
                 subscriber.Publish(Update);
+            }
+            catch (Exception e)
+            {
+                PubSubscribeDB.RemoveSubsriber(subscriber);
+            }
+        }
+
+        public void PublishCrewDelta()
+        {
+            try
+            {
+                subscriber.PublishCrewUpdate(CrewUpdate);
             }
             catch (Exception e)
             {

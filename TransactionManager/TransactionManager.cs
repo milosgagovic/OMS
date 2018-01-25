@@ -256,6 +256,12 @@ namespace TransactionManager
             }
         }
 
+        public void SendCrew(string mrid)
+        {
+            proxyToDispatcherDMS.SendCrewToDms(mrid);
+            return;
+        }
+
         #endregion
     }
 }

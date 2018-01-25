@@ -11,11 +11,14 @@ using System.Threading.Tasks;
 namespace PubSubscribe
 {
     public delegate void PublishUpdateEvent(List<SCADAUpdateModel> update);
+
+    public delegate void PublishCrewEvent(SCADAUpdateModel update);
     public class Subscriber : IPublishing
     {
         ISubscription proxy = null;
 
         public event PublishUpdateEvent publishUpdateEvent;
+        public event PublishCrewEvent publishCrewEvent;
         public Subscriber()
         {
             CreateProxy();
@@ -74,6 +77,9 @@ namespace PubSubscribe
 
         }
 
-
+        public void PublishCrewUpdate(SCADAUpdateModel update)
+        {
+            publishCrewEvent?.Invoke(update);
+        }
     }
 }

@@ -16,6 +16,9 @@ namespace PubSubContract
         [OperationContract(IsOneWay = true)]
         void Publish(List<SCADAUpdateModel> update);
 
+        [OperationContract(IsOneWay = true)]
+        void PublishCrewUpdate(SCADAUpdateModel update);
+
 
     }
 }

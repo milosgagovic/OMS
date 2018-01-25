@@ -1,9 +1,12 @@
 ﻿using DMSCommon.Model;
 using DMSContract;
+using OMSSCADACommon;
+using PubSubscribe;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DMSService
@@ -99,6 +102,41 @@ namespace DMSService
                 retVal.Add(e);
             }
             return retVal;
+        }
+
+        public void SendCrewToDms(string mrid)
+        {
+            /*Logic dms*/
+            Thread crewprocess = new Thread(() => ProcessCrew(mrid));
+            crewprocess.Start();
+            return;
+
+        }
+
+        private void ProcessCrew(string v)
+        {
+            Thread.Sleep(10000);
+
+            Switch sw = null;
+            foreach (var item in DMSService.tree.Data.Values)
+            {
+                if (item.MRID == v)
+                {
+                    sw = (Switch)item;
+                    sw.CanCommand = true;
+                    break;
+                }
+            }
+            Array values = Enum.GetValues(typeof(CrewResponse));
+            Random rand = new Random();
+            CrewResponse res = (CrewResponse)values.GetValue(rand.Next(values.Length));
+
+
+            Publisher publisher = new Publisher();
+
+            publisher.PublishCrew(new SCADAUpdateModel(sw.ElementGID, true, res));
+
+
         }
     }
 }
