@@ -1,10 +1,12 @@
 ﻿using DMSCommon.Model;
 using DMSContract;
+using IMSContract;
 using OMSSCADACommon;
 using PubSubscribe;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.ServiceModel;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,6 +15,9 @@ namespace DMSService
 {
     public class DMSDispatcherService : IDMSContract
     {
+        private static ChannelFactory<IIMSContract> factoryToIMS = new ChannelFactory<IIMSContract>(new NetTcpBinding(), new EndpointAddress("net.tcp://localhost:6090/IncidentManagementSystemService"));
+        private static IIMSContract proxyToIMS = factoryToIMS.CreateChannel();
+
         public List<ACLine> GetAllACLines()
         {
             List<ACLine> pom = new List<ACLine>();
@@ -104,39 +109,56 @@ namespace DMSService
             return retVal;
         }
 
-        public void SendCrewToDms(string mrid)
+        public void SendCrewToDms(DateTime id)
         {
             /*Logic dms*/
-            Thread crewprocess = new Thread(() => ProcessCrew(mrid));
+            Thread crewprocess = new Thread(() => ProcessCrew(id));
             crewprocess.Start();
             return;
 
         }
 
-        private void ProcessCrew(string v)
+        private void ProcessCrew(DateTime id)
         {
-            Thread.Sleep(10000);
+            IncidentReport report = proxyToIMS.GetReport(id);
 
-            Switch sw = null;
-            foreach (var item in DMSService.tree.Data.Values)
+            if(report != null)
             {
-                if (item.MRID == v)
+                var rnd = new Random(DateTime.Now.Second);
+                int repairtime = rnd.Next(5, 180);
+
+                Thread.Sleep(repairtime*100);
+
+                Switch sw = null;
+                foreach (var item in DMSService.tree.Data.Values)
                 {
-                    sw = (Switch)item;
-                    sw.CanCommand = true;
-                    break;
+                    if (item.MRID == report.MrID)
+                    {
+                        sw = (Switch)item;
+                        sw.CanCommand = true;
+                        break;
+                    }
                 }
+
+                Array values = Enum.GetValues(typeof(CrewResponse));
+                Random rand = new Random();
+                ReasonForIncident res = (ReasonForIncident)values.GetValue(rand.Next(1, values.Length));
+
+                report.Reason = res;
+                report.RepairTime = TimeSpan.FromMinutes(repairtime);
+                report.CrewSent = true;
+
+                Array values1 = Enum.GetValues(typeof(IncidentState));
+                report.IncidentState = (IncidentState)values1.GetValue(rand.Next(2, values.Length));
+
+                proxyToIMS.UpdateReport(report);
+
+                Publisher publisher = new Publisher();
+                publisher.PublishIncident(report);
+
+                //Publisher publisher = new Publisher();
+                //publisher.PublishCrew(new SCADAUpdateModel(sw.ElementGID, true, res));
             }
-            Array values = Enum.GetValues(typeof(CrewResponse));
-            Random rand = new Random();
-            CrewResponse res = (CrewResponse)values.GetValue(rand.Next(values.Length));
-
-
-            Publisher publisher = new Publisher();
-
-            publisher.PublishCrew(new SCADAUpdateModel(sw.ElementGID, true, res));
-
-
         }
     }
 }

@@ -11,6 +11,11 @@ namespace DispatcherApp.Model.Properties
 
         private string state;
 
+        public BreakerProperties()
+        {
+            ValidCommands = new List<string>();
+        }
+
         public List<string> ValidCommands
         {
             get

@@ -24,6 +24,7 @@ using DispatcherApp.Model.Properties;
 using TransactionManagerContract;
 using System.ServiceModel;
 using System.Windows.Data;
+using IMSContract;
 
 namespace DispatcherApp.ViewModel
 {
@@ -59,6 +60,10 @@ namespace DispatcherApp.ViewModel
         private int rightTabControlIndex = 0;
         private Visibility rightTabControlVisibility = Visibility.Collapsed;
 
+        private ObservableCollection<TabItem> bottomTabControlTabs = new ObservableCollection<TabItem>();
+        private int bottomTabControlIndex = 0;
+        private Visibility bottomTabControlVisibility = Visibility.Collapsed;
+
         private ObservableCollection<TreeViewItem> networkMapsBySource = new ObservableCollection<TreeViewItem>();
         private ObservableCollection<Button> networkMapsBySourceButton = new ObservableCollection<Button>();
 
@@ -66,12 +71,19 @@ namespace DispatcherApp.ViewModel
         private int centerTabControlIndex = 0;
 
         private NetworkExplorerControl networkExplorer = new NetworkExplorerControl();
+        private IncidentExplorer incidentExplorer = new IncidentExplorer();
+        private OutputControl output = new OutputControl();
         private Dictionary<long, NetworkModelControlExtended> networModelControls = new Dictionary<long, NetworkModelControlExtended>();
 
         private Dictionary<long, ElementProperties> properties = new Dictionary<long, ElementProperties>();
         private Dictionary<long, ResourceDescription> resourceProperties = new Dictionary<long, ResourceDescription>();
         private ElementProperties currentProperty;
         private long currentPropertyMRID;
+
+        private int commandsIndex = 0;
+        private bool test = true;
+
+        private ObservableCollection<IncidentReport> incidentReports = new ObservableCollection<IncidentReport>();
 
         #endregion
 
@@ -82,6 +94,8 @@ namespace DispatcherApp.ViewModel
         private RelayCommand _closeControlCommand;
 
         private RelayCommand _propertiesCommand;
+
+        private RelayCommand _sendCrewCommand;
 
         #endregion
 
@@ -97,11 +111,14 @@ namespace DispatcherApp.ViewModel
             subscriber.Subscribe();
             subscriber.publishUpdateEvent += GetUpdate;
             subscriber.publishCrewEvent += GetCrewUpdate;
+            subscriber.publishIncident += GetIncident;
 
             TreeViewItem tvi1 = new TreeViewItem() { Header = "ES_1" };
             TreeViewItem tvi2 = new TreeViewItem() { Header = "ES_2" };
             networkMapsBySource.Add(tvi1);
             networkMapsBySource.Add(tvi2);
+
+            //IncidentReports.Add(new IncidentReport() { Id = 10 });
 
             //Button but1 = new Button() { Content = "ES_1", Command = OpenControlCommand, CommandParameter = "ES_1" };
             //Button but2 = new Button() { Content = "ES_2", Command = OpenControlCommand, CommandParameter = "ES_2" };
@@ -255,7 +272,7 @@ namespace DispatcherApp.ViewModel
 
             if (answerFromTransactionManager != null && answerFromTransactionManager.Elements != null && answerFromTransactionManager.ResourceDescriptions != null)
             {
-                
+
 
                 foreach (Element element in answerFromTransactionManager.Elements)
                 {
@@ -267,7 +284,7 @@ namespace DispatcherApp.ViewModel
                     Element element = null;
                     this.Network.TryGetValue(rd.GetProperty(ModelCode.IDOBJ_GID).AsLong(), out element);
 
-                    if(element != null)
+                    if (element != null)
                     {
                         if (element is Source)
                         {
@@ -318,9 +335,11 @@ namespace DispatcherApp.ViewModel
                                 GID = rd.GetProperty(ModelCode.IDOBJ_GID).AsLong(),
                                 MRID = rd.GetProperty(ModelCode.IDOBJ_MRID).AsString(),
                                 IsEnergized = element.Marker,
-                                Name = rd.GetProperty(ModelCode.IDOBJ_NAME).AsString(),
-                                //ValidCommands = rd.GetProperty(ModelCode.DISCRETE_VALIDCOMMANDS).AsStrings()
+                                Name = rd.GetProperty(ModelCode.IDOBJ_NAME).AsString()
                             };
+
+                            prop.ValidCommands.Add("CLOSE");
+                            this.CommandIndex = 0;
 
                             //if (element.Marker)
                             //{
@@ -353,7 +372,7 @@ namespace DispatcherApp.ViewModel
             {
                 ResourceDescription meas = answerFromTransactionManager.ResourceDescriptions.Where(p => p.GetProperty(ModelCode.IDOBJ_MRID).AsString() == rd.GetProperty(ModelCode.IDOBJ_MRID).AsString()).FirstOrDefault();
 
-                if(meas != null)
+                if (meas != null)
                 {
                     long breaker = meas.GetProperty(ModelCode.MEASUREMENT_PSR).AsLong();
                     int state = rd.GetProperty(ModelCode.DISCRETE_NORMVAL).AsInt();
@@ -361,7 +380,7 @@ namespace DispatcherApp.ViewModel
                     ElementProperties prop;
                     properties.TryGetValue(breaker, out prop);
 
-                    if(prop != null)
+                    if (prop != null)
                     {
                         BreakerProperties prop1 = prop as BreakerProperties;
                         if (state == 0)
@@ -410,7 +429,6 @@ namespace DispatcherApp.ViewModel
                 }
             }
         }
-        
 
         #region DrawGraph
         private void DrawGraph(Source source)
@@ -547,56 +565,79 @@ namespace DispatcherApp.ViewModel
         private void PlaceSwitch(double cellHeight, Point point1, Point point2, long id, bool isEnergized, string mrid)
         {
             Button button = new Button() { Width = cellHeight / 4, Height = cellHeight / 4 };
-            button.Background = Brushes.Transparent;
             button.BorderThickness = new Thickness(0);
             button.BorderBrush = Brushes.Transparent;
 
             Style style = new Style();
             style.TargetType = typeof(Button);
 
-            if (isEnergized)
-            {
-                //ElementProperties prop;
-                //properties.TryGetValue(id, out prop);
+            //if (isEnergized)
+            //{
+            ElementProperties prop;
+            properties.TryGetValue(id, out prop);
 
-                //if(prop != null)
+            if (prop != null)
+            {
+                BreakerProperties prop1 = prop as BreakerProperties;
+
+                Setter setter3 = new Setter();
+                setter3.Property = Button.TemplateProperty;
+
+                ControlTemplate template = new ControlTemplate(typeof(Button));
+                FrameworkElementFactory elemFactory = new FrameworkElementFactory(typeof(Border));
+                elemFactory.Name = "Border";
+                //elemFactory.SetValue(Border.CornerRadiusProperty, new CornerRadius(5));
+                elemFactory.SetValue(Border.BackgroundProperty, new SolidColorBrush(Color.FromRgb(0, 250, 17)));
+                template.VisualTree = elemFactory;
+
+                Trigger trigger1 = new Trigger();
+                trigger1.Property = Button.IsMouseOverProperty;
+                trigger1.Value = true;
+
+                Setter setter1 = new Setter();
+                setter1.Property = Border.BackgroundProperty;
+                setter1.Value = Brushes.Yellow;
+                setter1.TargetName = "Border";
+                trigger1.Setters.Add(setter1);
+
+                template.Triggers.Add(trigger1);
+
+                DataTrigger trigger2 = new DataTrigger();
+                trigger2.Binding = new Binding("Properties[" + id + "].IsEnergized");
+                trigger2.Value = false;
+
+                Setter setter2 = new Setter();
+                setter2.Property = Border.BackgroundProperty;
+                setter2.Value = Brushes.Red;
+                setter2.TargetName = "Border";
+                trigger2.Setters.Add(setter2);
+
+                template.Triggers.Add(trigger2);
+
+                setter3.Value = template;
+
+                style.Triggers.Clear();
+                style.Setters.Add(setter3);
+                button.Style = style;
+
+                //Canvas canvas = new Canvas();
+                //button.Background = new SolidColorBrush(Color.FromRgb(0, 250, 17));
+                //button.Content = new Image()
                 //{
-                //    BreakerProperties prop1 = prop as BreakerProperties;
-
-                //    DataTrigger trigger = new DataTrigger();
-                //    trigger.Binding = new Binding() { Path = new PropertyPath("properties[0].IsEnergized") };
-                //    trigger.Value = (bool)true;
-
-                //    Setter setter = new Setter();
-
-                //    setter.Property = Button.BackgroundProperty;
-                //    setter.Value = new SolidColorBrush(Color.FromRgb(0, 250, 17));
-
-                //    trigger.Setters.Add(setter);
-
-                //    //style.Triggers.Clear();
-                //    style.Triggers.Add(trigger);
-                //    button.Style = style;
-
-                //    //Canvas canvas = new Canvas();
-                //    //button.Background = new SolidColorBrush(Color.FromRgb(0, 250, 17));
-                //    //button.Content = new Image()
-                //    //{
-                //    //    Source = new BitmapImage(new Uri(Directory.GetCurrentDirectory() + "/../../Resources/Images/energized.png")),
-                //    //    Width = button.Width,
-                //    //    Height = button.Height,
-                //    //    HorizontalAlignment = HorizontalAlignment.Left,
-                //    //    VerticalAlignment = VerticalAlignment.Top
-                //    //};
-                //}
-                button.Background = new SolidColorBrush(Color.FromRgb(0, 250, 17));
+                //    Source = new BitmapImage(new Uri(Directory.GetCurrentDirectory() + "/../../Resources/Images/energized.png")),
+                //    Width = button.Width,
+                //    Height = button.Height,
+                //    HorizontalAlignment = HorizontalAlignment.Left,
+                //    VerticalAlignment = VerticalAlignment.Top
+                //};
             }
-            else
-            {
-                button.Background = Brushes.Red;
-            }
+            //button.Background = new SolidColorBrush(Color.FromRgb(0, 250, 17));
+            //}
+            //else
+            //{
+            //    //button.Background = Brushes.Red;
+            //}
 
-            button.Style = style;
             button.ToolTip = mrid;
 
             Canvas.SetLeft(button, point2.X - button.Width / 2);
@@ -609,7 +650,7 @@ namespace DispatcherApp.ViewModel
 
         private void PlaceACLine(double cellHeight, Point point1, Point point2, long id, bool isEnergized, string mrid)
         {
-            Button button = new Button() { Width = 5, Height = cellHeight/3 };
+            Button button = new Button() { Width = 5, Height = cellHeight / 3 };
             button.Background = Brushes.Transparent;
             button.BorderThickness = new Thickness(0);
             button.BorderBrush = Brushes.Transparent;
@@ -794,6 +835,36 @@ namespace DispatcherApp.ViewModel
                     });
             }
         }
+
+        public RelayCommand SendCrewCommand
+        {
+            get
+            {
+                return _sendCrewCommand ?? new RelayCommand(
+                    (parameter) =>
+                    {
+                        ExecuteSendCrewCommand(parameter);
+                    });
+            }
+        }
+
+        private void ExecuteSendCrewCommand(object parameter)
+        {
+            IncidentReport report = new IncidentReport();
+            foreach (IncidentReport ir in IncidentReports)
+            {
+                if (DateTime.Compare(ir.Time, (DateTime)parameter) == 0)
+                {
+                    report = ir;
+                    break;
+                }
+            }
+            report.CrewSent = true;
+            report.IncidentState = IncidentState.PENDING;
+
+            proxyToTransactionManager.SendCrew((DateTime)parameter);
+        }
+
         private void ExecutePropertiesCommand(object parameter)
         {
             Element element;
@@ -920,6 +991,42 @@ namespace DispatcherApp.ViewModel
 
                 this.RightTabControlVisibility = Visibility.Visible;
             }
+            else if (parameter as string == "Incident Explorer" || parameter as string == "Output")
+            {
+                bool exists = false;
+                int i = 0;
+
+                for (i = 0; i < BottomTabControlTabs.Count; i++)
+                {
+                    if (BottomTabControlTabs[i].Header == parameter)
+                    {
+                        exists = true;
+                        this.BottomTabControlIndex = i;
+                        break;
+                    }
+                }
+
+                if (!exists)
+                {
+                    TabItem ti = new TabItem() { Header = parameter };
+                    if (parameter as string == "Incident Explorer")
+                    {
+                        ti.Content = incidentExplorer;
+                    }
+                    else if (parameter as string == "Output")
+                    {
+                        ti.Content = output;
+                    }
+
+                    if (!BottomTabControlTabs.Contains(ti))
+                    {
+                        this.BottomTabControlTabs.Add(ti);
+                        this.BottomTabControlIndex = this.BottomTabControlTabs.Count - 1;
+                    }
+                }
+
+                this.BottomTabControlVisibility = Visibility.Visible;
+            }
             else
             {
                 bool exists = false;
@@ -982,7 +1089,6 @@ namespace DispatcherApp.ViewModel
                     this.LeftTabControlVisibility = Visibility.Collapsed;
                 }
             }
-
             else if ((string)parameter == "Properties")
             {
                 int i = 0;
@@ -1001,6 +1107,26 @@ namespace DispatcherApp.ViewModel
                 if (RightTabControlTabs.Count == 0)
                 {
                     this.RightTabControlVisibility = Visibility.Collapsed;
+                }
+            }
+            else if ((string)parameter == "Incident Explorer" || (string)parameter == "Output")
+            {
+                int i = 0;
+
+                for (i = 0; i < BottomTabControlTabs.Count; i++)
+                {
+                    if ((string)BottomTabControlTabs[i].Header == (string)parameter)
+                    {
+                        BottomTabControlTabs[i].Content = null;
+                        BottomTabControlTabs[i].Visibility = Visibility.Collapsed;
+                        BottomTabControlTabs.RemoveAt(i);
+                        break;
+                    }
+                }
+
+                if (BottomTabControlTabs.Count == 0)
+                {
+                    this.BottomTabControlVisibility = Visibility.Collapsed;
                 }
             }
         }
@@ -1055,6 +1181,31 @@ namespace DispatcherApp.ViewModel
             }
         }
 
+        public ObservableCollection<TabItem> BottomTabControlTabs
+        {
+            get
+            {
+                return bottomTabControlTabs;
+            }
+            set
+            {
+                bottomTabControlTabs = value;
+            }
+        }
+
+        public int BottomTabControlIndex
+        {
+            get
+            {
+                return bottomTabControlIndex;
+            }
+            set
+            {
+                bottomTabControlIndex = value;
+                RaisePropertyChanged("BottomTabControlIndex");
+            }
+        }
+
         public int CenterTabControlIndex
         {
             get
@@ -1065,6 +1216,19 @@ namespace DispatcherApp.ViewModel
             {
                 centerTabControlIndex = value;
                 RaisePropertyChanged("CenterTabControlIndex");
+            }
+        }
+
+        public int CommandIndex
+        {
+            get
+            {
+                return commandsIndex;
+            }
+            set
+            {
+                commandsIndex = value;
+                RaisePropertyChanged("CommandIndex");
             }
         }
 
@@ -1094,6 +1258,19 @@ namespace DispatcherApp.ViewModel
             }
         }
 
+        public Visibility BottomTabControlVisibility
+        {
+            get
+            {
+                return bottomTabControlVisibility;
+            }
+            set
+            {
+                bottomTabControlVisibility = value;
+                RaisePropertyChanged("BottomTabControlVisibility");
+            }
+        }
+
         public ObservableCollection<TabItem> CenterTabControlTabs
         {
             get
@@ -1103,6 +1280,18 @@ namespace DispatcherApp.ViewModel
             set
             {
                 centerTabControlTabs = value;
+            }
+        }
+
+        public ObservableCollection<IncidentReport> IncidentReports
+        {
+            get
+            {
+                return incidentReports;
+            }
+            set
+            {
+                incidentReports = value;
             }
         }
 
@@ -1151,6 +1340,19 @@ namespace DispatcherApp.ViewModel
             set
             {
                 uiNetworks = value;
+            }
+        }
+
+        public Dictionary<long, ElementProperties> Properties
+        {
+            get
+            {
+                return properties;
+            }
+            set
+            {
+                properties = value;
+                RaisePropertyChanged("Properties");
             }
         }
 
@@ -1203,6 +1405,19 @@ namespace DispatcherApp.ViewModel
             {
                 currentProperty = value;
                 RaisePropertyChanged("CurrentProperty");
+            }
+        }
+
+        public bool Test
+        {
+            get
+            {
+                return test;
+            }
+            set
+            {
+                test = value;
+                RaisePropertyChanged("Test");
             }
         }
 
@@ -1260,39 +1475,68 @@ namespace DispatcherApp.ViewModel
 
         private void GetUpdate(List<SCADAUpdateModel> update)
         {
-           
-            foreach (SCADAUpdateModel sum in update)
+            if (update != null)
             {
-                if (Network[sum.Gid] is Source)
+                foreach (SCADAUpdateModel sum in update)
                 {
-                    mainCanvas.Children.Clear();
-                    DrawGraph((Source)Network[sum.Gid]);
-                }
-                Network[sum.Gid].Marker = sum.IsEnergized;
-
-                ElementProperties property;
-                properties.TryGetValue(sum.Gid, out property);
-                if (property != null)
-                {
-                    property.IsEnergized = sum.IsEnergized;
-
-                    Element element;
-                    Network.TryGetValue(sum.Gid, out element);
-                    if (element != null && element is Switch)
+                    if (Network[sum.Gid] is Source)
                     {
-                        BreakerProperties prop = property as BreakerProperties;
-                        prop.State = sum.State.ToString();
+                        mainCanvas.Children.Clear();
+                        DrawGraph((Source)Network[sum.Gid]);
+                    }
+                    Network[sum.Gid].Marker = sum.IsEnergized;
+
+                    //if (Test == true)
+                    //    Test = false;
+                    //else
+                    //    Test = true;
+
+                    ElementProperties property;
+                    properties.TryGetValue(sum.Gid, out property);
+                    if (property != null)
+                    {
+                        property.IsEnergized = sum.IsEnergized;
+
+                        Element element;
+                        Network.TryGetValue(sum.Gid, out element);
+                        if (element != null && element is Switch)
+                        {
+                            BreakerProperties prop = property as BreakerProperties;
+                            prop.State = sum.State.ToString();
+                        }
                     }
                 }
             }
-
         }
 
         private void GetCrewUpdate(SCADAUpdateModel update)
         {
-
             Console.WriteLine(update.Response.ToString());
+        }
 
+        private void GetIncident(IncidentReport report)
+        {
+            IncidentReport temp = new IncidentReport();
+            bool found = false;
+            foreach (IncidentReport ir in IncidentReports)
+            {
+                if (DateTime.Compare(ir.Time, report.Time) == 0)
+                {
+                    temp = ir;
+                    found = true;
+                    break;
+                }
+            }
+            if (found)
+            {
+                temp.Reason = report.Reason;
+                temp.RepairTime = report.RepairTime;
+                temp.IncidentState = report.IncidentState;
+            }
+            else
+            {
+                IncidentReports.Add(report);
+            }
         }
 
         private List<MeasResult> ConvertToListOfMeasResults(List<long> list)

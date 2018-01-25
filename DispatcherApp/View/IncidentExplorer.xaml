@@ -1,0 +1,50 @@
+﻿<UserControl x:Class="DispatcherApp.View.IncidentExplorer"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:DispatcherApp.View"
+             mc:Ignorable="d" 
+             d:DesignHeight="300">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="20"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="20"/>
+        </Grid.ColumnDefinitions>
+        <Grid Grid.Row="0" Grid.ColumnSpan="2" Background="#16BCB1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="20"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Text="Incident Explorer" Foreground="White" Margin="7, 0, 0, 0"/>
+            <Button Grid.Row="0" Grid.Column="1" Command="{Binding CloseControlCommand}" CommandParameter="Incident Explorer">X
+            </Button>
+        </Grid>
+        <ScrollViewer BorderThickness="0" Grid.Row="1" VerticalAlignment="Stretch" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible" Grid.RowSpan="2" Grid.ColumnSpan="2">
+            <DataGrid ItemsSource="{Binding IncidentReports}" AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserResizeRows="False">
+                <DataGrid.Columns>
+                    <!--<DataGridTextColumn Header="ID" Binding="{Binding Id}"/>-->
+                    <DataGridTextColumn Header="Time Stamp" Binding="{Binding Time}"/>
+                    <DataGridTextColumn Header="Element ID" Binding="{Binding MrID}"/>
+                    <DataGridTextColumn Header="Num of Consumers without Power" Binding="{Binding NumOfConsumersNoPower}"/>
+                    <DataGridTextColumn Header="Incident State" Binding="{Binding IncidentState}"/>
+                    <DataGridTextColumn Header="Repair Time" Binding="{Binding RepairTime}"/>
+                    <DataGridTextColumn Header="Reason for Incident" Binding="{Binding Reason}"/>
+                    <DataGridCheckBoxColumn Header="Crew Sent" Binding="{Binding CrewSent}"/>
+                    <DataGridTemplateColumn Header="Send Crew">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button IsEnabled="{Binding !CrewSent}" Command="{Binding DataContext.SendCrewCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type DataGrid}}}" CommandParameter="{Binding Time}">Send Crew
+                                </Button>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

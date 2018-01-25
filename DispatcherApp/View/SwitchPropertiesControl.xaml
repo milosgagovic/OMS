@@ -93,9 +93,9 @@
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
-                            <Label Grid.Row="0">Select:
+                            <Label Grid.Row="0">
                             </Label>
-                            <ComboBox Grid.Row="1" Margin="5, 0, 10, 0" ItemsSource="{Binding CurrentProperty }"/>
+                            <ComboBox Grid.Row="1" Margin="5, 0, 10, 0" ItemsSource="{Binding CurrentProperty.ValidCommands }" SelectedIndex="{Binding CommandIndex}"/>
                             <Button Grid.Row="1" Grid.Column="1" Width="Auto" Margin="30, 0, 30, 0">Execute
                             </Button>
                         </Grid>

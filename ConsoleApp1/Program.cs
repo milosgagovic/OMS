@@ -28,7 +28,7 @@ namespace ConsoleApp1
 					string mrid = Console.ReadLine();
 					Console.WriteLine("State:");
 					string state = Console.ReadLine();
-					proxyToTransactionManager.AddReport(mrid, DateTime.UtcNow, state);
+					//proxyToTransactionManager.AddReport(mrid, DateTime.UtcNow, state);
 				}
 				else if (odg == "2")
 				{
@@ -75,7 +75,7 @@ namespace ConsoleApp1
 					// reports = proxyToIMS.GetAllReports();
 					foreach (IncidentReport ir in reports)
 					{
-						Console.WriteLine("MrID: " + ir.MrID + ", State:" + ir.State + ", DateTime: " + ir.Time.ToUniversalTime());
+						//Console.WriteLine("MrID: " + ir.MrID + ", State:" + ir.State + ", DateTime: " + ir.Time.ToUniversalTime());
 					}
 				}
 				else

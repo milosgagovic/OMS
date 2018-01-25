@@ -12,13 +12,22 @@ namespace IMSContract
 	[ServiceContract]
 	public interface IIMSContract
 	{
-		[OperationContract]
-		void AddReport(string mrID, DateTime time, string state);
+        //[OperationContract]
+        //void AddReport(string mrID, DateTime time, string state);
 
-		[OperationContract]
+        [OperationContract]
+        void AddReport(IncidentReport report);
+
+        [OperationContract]
 		List<IncidentReport> GetAllReports();
 
-		[OperationContract]
+        [OperationContract]
+        IncidentReport GetReport(DateTime id);
+
+        [OperationContract]
+        void UpdateReport(IncidentReport report);
+
+        [OperationContract]
 		List<IncidentReport> GetReportsForMrID(string mrID);
 
 		[OperationContract]

@@ -1,5 +1,6 @@
 ﻿using DMSCommon.Model;
 using FTN.Common;
+using IMSContract;
 using PubSubContract;
 using System;
 using System.Collections.Generic;
@@ -11,14 +12,17 @@ using System.Threading.Tasks;
 namespace PubSubscribe
 {
     public delegate void PublishUpdateEvent(List<SCADAUpdateModel> update);
-
     public delegate void PublishCrewEvent(SCADAUpdateModel update);
+    public delegate void PublishReportIncident(IncidentReport report);
+
     public class Subscriber : IPublishing
     {
         ISubscription proxy = null;
 
         public event PublishUpdateEvent publishUpdateEvent;
         public event PublishCrewEvent publishCrewEvent;
+        public event PublishReportIncident publishIncident;
+
         public Subscriber()
         {
             CreateProxy();
@@ -80,6 +84,11 @@ namespace PubSubscribe
         public void PublishCrewUpdate(SCADAUpdateModel update)
         {
             publishCrewEvent?.Invoke(update);
+        }
+
+        public void PublishIncident(IncidentReport report)
+        {
+            publishIncident?.Invoke(report);
         }
     }
 }

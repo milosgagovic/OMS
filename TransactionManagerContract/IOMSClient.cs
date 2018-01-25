@@ -22,10 +22,13 @@ namespace TransactionManagerContract
         [OperationContract]
         TMSAnswerToClient GetNetwork();
 
-		[OperationContract]
-		void AddReport(string mrID, DateTime time, string state);
+		//[OperationContract]
+		//void AddReport(string mrID, DateTime time, string state);
 
-		[OperationContract]
+        [OperationContract]
+        void AddReport(IncidentReport report);
+
+        [OperationContract]
 		List<IncidentReport> GetAllReports();
 
 		[OperationContract]
@@ -40,7 +43,10 @@ namespace TransactionManagerContract
 		[OperationContract]
 		void SendCommandToSCADA(TypeOfSCADACommand command);
 
+        //[OperationContract]
+        //void SendCrew(string mrid);
+
         [OperationContract]
-        void SendCrew(string mrid);
+        void SendCrew(DateTime id);
     }
 }

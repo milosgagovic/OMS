@@ -1,5 +1,6 @@
 ﻿using DMSCommon.Model;
 using FTN.Common;
+using IMSContract;
 using PubSubContract;
 using System;
 using System.Collections.Generic;
@@ -21,12 +22,29 @@ namespace PubSubscribe
 
         public void PublishUpdate(List<SCADAUpdateModel> update)
         {
-            proxy.Publish(update);
+            try
+            {
+                proxy.Publish(update);
+            }
+            catch { }
         }
 
         public void PublishCrew(SCADAUpdateModel update)
         {
-            proxy.PublishCrewUpdate(update);
+            try
+            {
+                proxy.PublishCrewUpdate(update);
+            }
+            catch { }
+        }
+
+        public void PublishIncident(IncidentReport report)
+        {
+            try
+            {
+                proxy.PublishIncident(report);
+            }
+            catch { }
         }
 
         private void CreateProxy()

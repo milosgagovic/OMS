@@ -39,7 +39,10 @@ namespace DMSContract
         [OperationContract]
         List<Element> GetAllElements();
 
+        //[OperationContract]
+        //void SendCrewToDms(string mrid);
+
         [OperationContract]
-        void SendCrewToDms(string mrid);
+        void SendCrewToDms(DateTime id);
     }
 }

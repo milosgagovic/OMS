@@ -85,8 +85,6 @@
                     <TabControl BorderBrush="Transparent" Background="Gray" Margin="0,0,-0.2,0" Grid.RowSpan="3" ItemsSource="{Binding CenterTabControlTabs}" SelectedIndex="{Binding CenterTabControlIndex}">
                     </TabControl>
                 </Grid>
-                <GridSplitter Grid.Row="4" Grid.ColumnSpan="3" Height="7" VerticalAlignment="Center" HorizontalAlignment="Stretch" Background="#393535">
-                </GridSplitter>
                 <Grid Grid.Column="3" Grid.Row="3" Visibility="{Binding RightTabControlVisibility}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*">
@@ -119,29 +117,19 @@
                     <GridSplitter Grid.Column="1" Width="7" VerticalAlignment="Stretch" HorizontalAlignment="Center" Background="#393535" Visibility="{Binding RightTabControlVisibility}">
                     </GridSplitter>
                 </Grid>
-                <Grid Grid.Row="5" Grid.ColumnSpan="{StaticResource NumOfColumns}">
-                    <TabControl BorderBrush="Transparent" TabStripPlacement="Bottom">
-                        <TabItem Header="Output" BorderBrush="Transparent">
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="20"/>
-                                    <RowDefinition/>
-                                    <RowDefinition Height="20"/>
-                                </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition/>
-                                    <ColumnDefinition Width="20"/>
-                                </Grid.ColumnDefinitions>
-                                <Grid Grid.Row="0" Grid.ColumnSpan="2" Background="#16BCB1">
-                                    <TextBlock Text="Output" Foreground="White" Margin="7, 0, 0, 0"/>
-                                </Grid>
-                                <Button Grid.Row="0" Grid.Column="1">X
-                                </Button>
-                                <ScrollViewer Grid.Column="1" Grid.Row="1" HorizontalScrollBarVisibility="Visible" Grid.RowSpan="2"/>
-                                <ScrollViewer Grid.Row="2" HorizontalScrollBarVisibility="Visible" Grid.ColumnSpan="2"/>
-                            </Grid>
-                        </TabItem>
+                <Grid Grid.Row="5" Grid.ColumnSpan="{StaticResource NumOfColumns}" Visibility="{Binding BottomTabControlVisibility}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*">
+                        </RowDefinition>
+                        <RowDefinition Height="7">
+                        </RowDefinition>
+                        <RowDefinition Height="Auto" MinHeight="200" MaxHeight="450" >
+                        </RowDefinition>
+                    </Grid.RowDefinitions>
+                    <TabControl BorderBrush="Transparent" Grid.Row="2" TabStripPlacement="Bottom" ItemsSource="{Binding BottomTabControlTabs}" SelectedIndex="{Binding BottomTabControlIndex}" Visibility="{Binding BottomTabControlVisibility}">
                     </TabControl>
+                    <GridSplitter Grid.Row="1" Grid.ColumnSpan="3" Height="7" VerticalAlignment="Center" HorizontalAlignment="Stretch" Background="#393535">
+                    </GridSplitter>
                 </Grid>
             </Grid>
         </Border>

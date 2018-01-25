@@ -83,6 +83,9 @@
     <Compile Include="View\EmptyPropertiesControl.xaml.cs">
       <DependentUpon>EmptyPropertiesControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\IncidentExplorer.xaml.cs">
+      <DependentUpon>IncidentExplorer.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\NetworkExplorerControl.xaml.cs">
       <DependentUpon>NetworkExplorerControl.xaml</DependentUpon>
     </Compile>
@@ -92,6 +95,9 @@
     <Compile Include="View\NetworkModelControlExtended.cs" />
     <Compile Include="View\NodePropertiesControl.xaml.cs">
       <DependentUpon>NodePropertiesControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\OutputControl.xaml.cs">
+      <DependentUpon>OutputControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\SourcePropertiesControl.xaml.cs">
       <DependentUpon>SourcePropertiesControl.xaml</DependentUpon>
@@ -134,6 +140,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="View\IncidentExplorer.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="View\NetworkExplorerControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -143,6 +153,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\NodePropertiesControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\OutputControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -203,6 +217,10 @@
     <ProjectReference Include="..\DMSContract\DMSContract.csproj">
       <Project>{C48472D2-BEF9-425D-88B1-4F6B2D31FD8C}</Project>
       <Name>DMSContract</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\IMSContract\IMSContract.csproj">
+      <Project>{DB3DA680-83F3-422A-9C7D-7F3F883472A2}</Project>
+      <Name>IMSContract</Name>
     </ProjectReference>
     <ProjectReference Include="..\NetworkModelService\DataModel\DataModel.csproj">
       <Project>{ADE96497-7C11-40B6-AE82-57F956C9F104}</Project>

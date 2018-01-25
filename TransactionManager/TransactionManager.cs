@@ -217,9 +217,14 @@ namespace TransactionManager
             return answer;
         }
 
-        public void AddReport(string mrID, DateTime time, string state)
+        //public void AddReport(string mrID, DateTime time, string state)
+        //{
+        //    proxyToIMS.AddReport(mrID, time, state);
+        //}
+
+        public void AddReport(IncidentReport report)
         {
-            proxyToIMS.AddReport(mrID, time, state);
+            proxyToIMS.AddReport(report);
         }
 
         public List<IncidentReport> GetAllReports()
@@ -256,10 +261,21 @@ namespace TransactionManager
             }
         }
 
+        //public void SendCrew(string mrid)
+        //{
+        //    proxyToDispatcherDMS.SendCrewToDms(mrid);
+        //    return;
+        //}
+
+        public void SendCrew(DateTime id)
+        {
+            proxyToDispatcherDMS.SendCrewToDms(id);
+            return;
+        }
+
         public void SendCrew(string mrid)
         {
-            proxyToDispatcherDMS.SendCrewToDms(mrid);
-            return;
+            throw new NotImplementedException();
         }
 
         #endregion

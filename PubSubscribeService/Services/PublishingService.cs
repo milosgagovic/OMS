@@ -1,5 +1,6 @@
 ﻿using DMSCommon.Model;
 using FTN.Common;
+using IMSContract;
 using PubSubContract;
 using System;
 using System.Collections.Generic;
@@ -39,6 +40,17 @@ namespace PubSubscribeService.Services
                 thread.Start();
             }
         }
+
+        public void PublishIncident(IncidentReport report)
+        {
+            foreach (IPublishing subscriber in PubSubscribeDB.Subscribers)
+            {
+                PublishThreadData threadObj = new PublishThreadData(subscriber, report);
+
+                Thread thread = new Thread(threadObj.PublishIncidentDelta);
+                thread.Start();
+            }
+        }
     }
 
     internal class PublishThreadData
@@ -48,6 +60,8 @@ namespace PubSubscribeService.Services
         private List<SCADAUpdateModel> update;
 
         private SCADAUpdateModel crewUpdate;
+
+        private IncidentReport report;
 
 
         public PublishThreadData(IPublishing subscriber, List<SCADAUpdateModel> update)
@@ -65,6 +79,11 @@ namespace PubSubscribeService.Services
 
         }
 
+        public PublishThreadData(IPublishing subscriber, IncidentReport report)
+        {
+            this.subscriber = subscriber;
+            this.report = report;
+        }
 
         public List<SCADAUpdateModel> Update
         {
@@ -94,6 +113,8 @@ namespace PubSubscribeService.Services
 
         public SCADAUpdateModel CrewUpdate { get => crewUpdate; set => crewUpdate = value; }
 
+        public IncidentReport Report { get => report; set => report = value; }
+
         public void PublishDelta()
         {
             try
@@ -111,6 +132,18 @@ namespace PubSubscribeService.Services
             try
             {
                 subscriber.PublishCrewUpdate(CrewUpdate);
+            }
+            catch (Exception e)
+            {
+                PubSubscribeDB.RemoveSubsriber(subscriber);
+            }
+        }
+
+        public void PublishIncidentDelta()
+        {
+            try
+            {
+                subscriber.PublishIncident(Report);
             }
             catch (Exception e)
             {

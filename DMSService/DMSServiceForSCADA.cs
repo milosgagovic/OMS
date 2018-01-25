@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.ServiceModel;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DMSService
@@ -26,8 +27,7 @@ namespace DMSService
             ResourceDescription rd = rdl.Where(r => r.GetProperty(ModelCode.IDOBJ_MRID).AsString() == mrID).FirstOrDefault();
 
             long res = rd.GetProperty(ModelCode.MEASUREMENT_PSR).AsLong();
-
-            // ovde pozvati algoritam za energizaciju/deenergizaciju koji vraca ovu listu promena (GID, true/false)
+            
             List<SCADAUpdateModel> networkChange = new List<SCADAUpdateModel>();
 
             Element el;
@@ -35,10 +35,16 @@ namespace DMSService
             // opet pokrenes sve
             DMSService.tree.Data.TryGetValue(res, out el);
             Switch sw = (Switch)el;
-			proxyToIMS.AddReport(sw.MRID, DateTime.UtcNow, state.ToString());
+            //proxyToIMS.AddReport(sw.MRID, DateTime.UtcNow, state.ToString());
 
-			if (state == OMSSCADACommon.States.OPENED)
+            bool isIncident = false;
+            IncidentReport incident = new IncidentReport() { MrID = sw.MRID };
+
+            if (state == OMSSCADACommon.States.OPENED)
             {
+                proxyToIMS.AddReport(incident);
+                isIncident = true;
+
                 sw.Marker = false;
                 sw.State = SwitchState.Open;
                 networkChange.Add(new SCADAUpdateModel(sw.ElementGID, false));
@@ -46,7 +52,6 @@ namespace DMSService
                 n.Marker = false;
                 networkChange.Add(new SCADAUpdateModel(n.ElementGID, false));
                 networkChange = GetNetworkChange(n, networkChange, false);
-
             }
             else if (state == OMSSCADACommon.States.CLOSED)
             {
@@ -69,13 +74,16 @@ namespace DMSService
             Source s = (Source)DMSService.tree.Data[DMSService.tree.Roots[0]];
             networkChange.Add(new SCADAUpdateModel(s.ElementGID, true));
 
+            Publisher publisher = new Publisher();
             if (networkChange.Count > 0)
             {
-                Publisher publisher = new Publisher();
-
                 publisher.PublishUpdate(networkChange);
             }
-
+            if (isIncident)
+            {
+                //Thread.Sleep(1000);
+                publisher.PublishIncident(incident);
+            }
         }
 
         private bool TraceUp(Node no)
