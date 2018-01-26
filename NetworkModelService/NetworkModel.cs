@@ -57,7 +57,24 @@ namespace FTN.Services.NetworkModelService
 			return false;
 		}
 
-		public IdentifiedObject GetEntity(long globalId)
+        public bool EntityExistsMrid(long globalId, string mrid)
+        {
+            DMSType type = (DMSType)ModelCodeHelper.ExtractTypeFromGlobalId(globalId);
+
+            if (ContainerExists(type))
+            {
+                Container container = GetContainer(type);
+
+                if (container.EntityExistsMrid(mrid))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public IdentifiedObject GetEntity(long globalId)
 		{
 			if (EntityExists(globalId))
 			{
@@ -236,8 +253,8 @@ namespace FTN.Services.NetworkModelService
 		{
 			bool applyingStarted = false;
 			UpdateResult updateResult = new UpdateResult();
-
-			try
+            //RepackDelta(delta);
+            try
 			{
 				CommonTrace.WriteTrace(CommonTrace.TraceInfo, "Applying  delta to network model.");
 
@@ -785,7 +802,28 @@ namespace FTN.Services.NetworkModelService
 
 			return newNetworkModel;
 		}
-		/*
+
+        
+        private void RepackDelta(Delta delta)
+        {
+            List<ResourceDescription> pomList = new List<ResourceDescription>();
+            foreach (ResourceDescription rd in delta.InsertOperations)
+            {
+                if (this.EntityExistsMrid(rd.Id, rd.GetProperty(ModelCode.IDOBJ_MRID).ToString()))
+                {
+                    pomList.Add(rd);
+                }
+            }
+
+            foreach (ResourceDescription rd in pomList)
+            {
+                delta.InsertOperations.Remove(rd);
+                delta.UpdateOperations.Add(rd);
+            }
+           // return delta;
+        }
+
+        /*
 		public Dictionary<DMSType, Container> DeepCopy()
 		{
 			Dictionary<DMSType, Container> retVal = new Dictionary<DMSType, Container>();
@@ -823,5 +861,5 @@ namespace FTN.Services.NetworkModelService
 			return retVal;
 		}
 		*/
-	}
+    }
 }

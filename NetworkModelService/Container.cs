@@ -172,14 +172,29 @@ namespace FTN.Services.NetworkModelService
 		public bool EntityExists(long globalId)
 		{
 			return entities.ContainsKey(globalId);
-		}	
+		}
 
-		/// <summary>
-		/// Returns entity (identified object) on the specified index. Throws an exception if entity does not exist. 
-		/// </summary>
-		/// <param name="index">Index of the entity that should be returned</param>
-		/// <returns>Instance of the entity in case it is found on specified position, otherwise throws exception</returns>
-		public IdentifiedObject GetEntity(long globalId)
+        /// <summary>
+        /// Checks if entity exists in container.
+        /// </summary>
+        /// <param name="globalId">Global id of the entity that should be checked</param>
+        /// <returns>TRUE if the entity is found.</returns>
+        public bool EntityExistsMrid(string mrid)
+        { 
+            if(entities.Values.Where(u => u.Mrid == mrid).FirstOrDefault()!=null)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Returns entity (identified object) on the specified index. Throws an exception if entity does not exist. 
+        /// </summary>
+        /// <param name="index">Index of the entity that should be returned</param>
+        /// <returns>Instance of the entity in case it is found on specified position, otherwise throws exception</returns>
+        public IdentifiedObject GetEntity(long globalId)
 		{
 			if (EntityExists(globalId))
 			{
