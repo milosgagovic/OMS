@@ -21,7 +21,12 @@ namespace FTN.Services.NetworkModelService
         {
             Console.WriteLine("Pozvan je Commit na NMS-u");
 			//GenericDataAccess.NetworkModel = NewNetworkModel;
-			GenericDataAccess.NetworkModel = GenericDataAccess.NewNetworkModel;
+			if (GenericDataAccess.NewNetworkModel!=null)
+			{
+				GenericDataAccess.NetworkModel = GenericDataAccess.NewNetworkModel;
+			}
+
+			
             ITransactionCallback callback = OperationContext.Current.GetCallbackChannel<ITransactionCallback>();
             callback.CallbackCommit("Uspjesno je prosao commit na NMS-u");
         }
@@ -54,7 +59,7 @@ namespace FTN.Services.NetworkModelService
                 UpdateResult updateResult = gda.ApplyUpdate(delta);
                 if (updateResult.Result == ResultType.Succeeded)
                 {
-                    Commit();
+                 //   Commit();
                     callback.CallbackPrepare(true);
                 }
                 else

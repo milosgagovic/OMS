@@ -78,6 +78,10 @@ namespace ConsoleApp1
 						//Console.WriteLine("MrID: " + ir.MrID + ", State:" + ir.State + ", DateTime: " + ir.Time.ToUniversalTime());
 					}
 				}
+				else if(odg=="3")
+				{
+
+				}
 				else
 				{
 					break;
@@ -90,6 +94,7 @@ namespace ConsoleApp1
 			Console.WriteLine("Izaberite opciju:\n");
 			Console.WriteLine("1. Upisi\n");
 			Console.WriteLine("2. Procitaj\n");
+			Console.WriteLine("3. Dodaj novi element\n");
 			Console.WriteLine("Opcija:");
 		}
 

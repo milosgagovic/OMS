@@ -26,6 +26,8 @@ namespace FTN.Services.NetworkModelService
 		/// </summary>
 		private ModelResourcesDesc resourcesDescs;
 
+		public Dictionary<DMSType, Container> NetworkDataModel { get => networkDataModel; set => networkDataModel = value; }
+
 		/// <summary>
 		/// Initializes a new instance of the Model class.
 		/// </summary>
@@ -79,7 +81,7 @@ namespace FTN.Services.NetworkModelService
 		/// <returns>True if container exists, otherwise FALSE.</returns>
 		private bool ContainerExists(DMSType type)
 		{
-			if (networkDataModel.ContainsKey(type))
+			if (NetworkDataModel.ContainsKey(type))
 			{
 				return true;
 			}
