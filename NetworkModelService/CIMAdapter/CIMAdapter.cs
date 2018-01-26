@@ -27,7 +27,7 @@ namespace FTN.ESI.SIMES.CIM.CIMAdapter
 		{
 			get
 			{
-				if (proxyToTransactionManager == null && factoryToTMS == null)
+				if (proxyToTransactionManager == null /*&& factoryToTMS == null*/)
 				{
 					factoryToTMS = new ChannelFactory<IOMSClient>(new NetTcpBinding(), new EndpointAddress("net.tcp://localhost:6080/TransactionManagerService"));
 					proxyToTransactionManager = factoryToTMS.CreateChannel();
@@ -80,9 +80,9 @@ namespace FTN.ESI.SIMES.CIM.CIMAdapter
 			if ((delta != null) && (delta.NumberOfOperations != 0))
 			{
 				//// NetworkModelService->ApplyUpdates
-				updateResult = ProxyToTransactionManager.UpdateSystem(delta).ToString();
+				//updateResult = ProxyToTransactionManager.UpdateSystem(delta).ToString();
 				//call Transaction manager
-               // updateResult = GdaQueryProxy.ApplyUpdate(delta).ToString();
+                updateResult = GdaQueryProxy.ApplyUpdate(delta).ToString();
 			}
 
 			Thread.CurrentThread.CurrentCulture = culture;

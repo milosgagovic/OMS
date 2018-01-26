@@ -253,7 +253,14 @@ namespace FTN.Services.NetworkModelService
 		{
 			bool applyingStarted = false;
 			UpdateResult updateResult = new UpdateResult();
-            //RepackDelta(delta);
+            
+            RepackDelta(delta);
+            List<ResourceDescription> originalInsert = delta.InsertOperations;
+            List<ResourceDescription> originalUpdate = delta.UpdateOperations;
+
+            ResetReferences(delta, originalInsert, originalUpdate);
+            ResetGids(delta);
+
             try
 			{
 				CommonTrace.WriteTrace(CommonTrace.TraceInfo, "Applying  delta to network model.");
@@ -263,8 +270,7 @@ namespace FTN.Services.NetworkModelService
 				delta.FixNegativeToPositiveIds(ref typesCounters, ref globalIdPairs);
 				updateResult.GlobalIdPairs = globalIdPairs;
 				delta.SortOperations();
-
-				applyingStarted = true;
+                applyingStarted = true;
 
 				foreach (ResourceDescription rd in delta.InsertOperations)
 				{
@@ -821,6 +827,77 @@ namespace FTN.Services.NetworkModelService
                 delta.UpdateOperations.Add(rd);
             }
            // return delta;
+        }
+
+        private void ResetGids(Delta delta)
+        {
+            foreach (ResourceDescription rd in delta.UpdateOperations)
+            {
+                if (this.EntityExistsMrid(rd.Id, rd.GetProperty(ModelCode.IDOBJ_MRID).ToString()))
+                {
+                    DMSType type = (DMSType)ModelCodeHelper.ExtractTypeFromGlobalId(rd.Id);
+                    Container container = GetContainer(type);
+                    rd.Id = container.GetEntityMrid(rd.GetProperty(ModelCode.IDOBJ_MRID).ToString()).GlobalId;
+                }
+            }
+        }
+
+        private void ResetReferences(Delta delta, List<ResourceDescription> originalInsert, List<ResourceDescription> originalUpdate)
+        {
+            foreach (ResourceDescription rd in delta.InsertOperations)
+            {
+                foreach (Property p in rd.Properties)
+                {
+                    if (p.Type == PropertyType.Reference)
+                    {
+                        var res = (long)p.GetValue();
+                        ResourceDescription reference = originalInsert.Where(r => r.Id == res).FirstOrDefault();
+                        if (reference == null)
+                        {
+                            reference = originalUpdate.Where(r => r.Id == res).FirstOrDefault();
+                        }
+
+                        if (this.EntityExistsMrid(res, reference.GetProperty(ModelCode.IDOBJ_MRID).ToString()))
+                        {
+                            DMSType type = (DMSType)ModelCodeHelper.ExtractTypeFromGlobalId(reference.Id);
+                            Container container = GetContainer(type);
+                            IdentifiedObject io = container.GetEntityMrid(reference.GetProperty(ModelCode.IDOBJ_MRID).ToString());
+                            p.SetValue(io.GlobalId);
+                        }
+                    }
+                    else if (p.Type == PropertyType.ReferenceVector)
+                    {
+                        // not implemented
+                    }
+                }
+            }
+            foreach (ResourceDescription rdu in delta.UpdateOperations)
+            {
+                foreach (Property p in rdu.Properties)
+                {
+                    if (p.Type == PropertyType.Reference)
+                    {
+                        var res = (long)p.GetValue();
+                        ResourceDescription reference = originalInsert.Where(r => r.Id == res).FirstOrDefault();
+                        if (reference == null)
+                        {
+                            reference = originalUpdate.Where(r => r.Id == res).FirstOrDefault();
+                        }
+
+                        if (this.EntityExistsMrid(res, reference.GetProperty(ModelCode.IDOBJ_MRID).ToString()))
+                        {
+                            DMSType type = (DMSType)ModelCodeHelper.ExtractTypeFromGlobalId(reference.Id);
+                            Container container = GetContainer(type);
+                            IdentifiedObject io = container.GetEntityMrid(reference.GetProperty(ModelCode.IDOBJ_MRID).ToString());
+                            p.SetValue(io.GlobalId);
+                        }
+                    }
+                    else if (p.Type == PropertyType.ReferenceVector)
+                    {
+                        // not implemented
+                    }
+                }
+            }
         }
 
         /*

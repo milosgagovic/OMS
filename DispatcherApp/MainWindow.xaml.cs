@@ -24,7 +24,7 @@ namespace DispatcherApp
         public MainWindow()
         {
             InitializeComponent();
-            this.DataContext = new DispatcherAppViewModel(new List<string> { "Breaker", "ACLineSegment", "EnergySource", "EnergyConsumer" });
+            this.DataContext = new DispatcherAppViewModel();
         }
     }
 }

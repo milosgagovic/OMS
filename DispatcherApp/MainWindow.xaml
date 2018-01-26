@@ -7,7 +7,7 @@
         xmlns:local="clr-namespace:DispatcherApp"
         xmlns:views = "clr-namespace:DispatcherApp.View"
         mc:Ignorable="d"
-        Title="OMS Client" Icon="Resources/Images/sun.png"
+        Title="OMS Client" Icon="View/Resources/Images/sun.png"
         Height="{Binding SystemParameters.PrimaryScreenHeight}" 
         Width="{Binding SystemParameters.PrimaryScreenWidth}"
         WindowState="Maximized" 
@@ -40,7 +40,7 @@
                 <Grid Grid.Row="1" Grid.ColumnSpan="{StaticResource NumOfColumns}" Background="#393535">
                     <StackPanel Height="Auto" Width="Auto" HorizontalAlignment="Left">
                         <Button Height="30" Background="Transparent">
-                            <Image Source="Resources/Images/sun.png"/>
+                            <Image Source="View/Resources/Images/sun.png"/>
                         </Button>
                     </StackPanel>
                 </Grid>

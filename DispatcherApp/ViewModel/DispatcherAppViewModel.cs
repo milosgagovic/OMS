@@ -30,27 +30,22 @@ namespace DispatcherApp.ViewModel
 {
     public class DispatcherAppViewModel : INotifyPropertyChanged
     {
-        private List<string> elements;
-        private List<MeasResult> dataGridElements;
-        private string selectedItem;
         public event PropertyChangedEventHandler PropertyChanged;
-        private ModelGda model;
+
+        private IOMSClient proxyToTransactionManager;
 
         #region Subscriber
         private Subscriber subscriber;
         #endregion
 
-        private IOMSClient proxyToTransactionManager;
-
+        #region Bindings
         private Dictionary<long, Element> Network = new Dictionary<long, Element>();
         private List<long> Sources = new List<long>();
-
+        
         private Dictionary<long, ObservableCollection<UIElement>> uiNetworks = new Dictionary<long, ObservableCollection<UIElement>>();
         private ObservableCollection<UIElement> mainCanvases = new ObservableCollection<UIElement>();
         private Dictionary<long, int> networkDepth = new Dictionary<long, int>();
         private Canvas mainCanvas;
-
-        #region Bindings
 
         private ObservableCollection<TabItem> leftTabControlTabs = new ObservableCollection<TabItem>();
         private int leftTabControlIndex = 0;
@@ -99,13 +94,10 @@ namespace DispatcherApp.ViewModel
 
         #endregion
 
-        public DispatcherAppViewModel(List<string> ele)
+        #region Constructor
+        public DispatcherAppViewModel()
         {
             Thread.Sleep(7000);
-            #region Init
-            //Elements = ele;
-            //DataGridElements = new List<MeasResult>();
-            model = new ModelGda();
 
             subscriber = new Subscriber();
             subscriber.Subscribe();
@@ -117,15 +109,6 @@ namespace DispatcherApp.ViewModel
             TreeViewItem tvi2 = new TreeViewItem() { Header = "ES_2" };
             networkMapsBySource.Add(tvi1);
             networkMapsBySource.Add(tvi2);
-
-            //IncidentReports.Add(new IncidentReport() { Id = 10 });
-
-            //Button but1 = new Button() { Content = "ES_1", Command = OpenControlCommand, CommandParameter = "ES_1" };
-            //Button but2 = new Button() { Content = "ES_2", Command = OpenControlCommand, CommandParameter = "ES_2" };
-
-            //this.NetworkMapsBySourceButton.Add(but1);
-            //this.NetworkMapsBySourceButton.Add(but2);
-            #endregion
 
             NetTcpBinding binding = new NetTcpBinding();
             binding.CloseTimeout = new TimeSpan(1, 0, 0, 0);
@@ -146,134 +129,131 @@ namespace DispatcherApp.ViewModel
             catch (Exception e) { }
 
             #region FakeNetwork
+            //Source s1 = new Source(0, -1, "ES_2") { ElementGID = 0 };
+            //Source s2 = new Source(0, -1, "ES_3") { ElementGID = 23 };
+            //s2.Marker = false;
+            //Node n10 = new Node(24, "CN_10");
+            //n10.Parent = s2.ElementGID;
+            //s2.End2 = n10.ElementGID;
+            //ACLine b15 = new ACLine(25, "ACLS_1");
+            //b15.End1 = n10.ElementGID;
+            //n10.Children.Add(b15.ElementGID);
+            //Consumer b16 = new Consumer(27, "EC_4");
+            //b16.End1 = n10.ElementGID;
+            //b16.End2 = -1;
+            //n10.Children.Add(b16.ElementGID);
+            //Node n11 = new Node(26, "CN_2");
+            //b15.End2 = n11.ElementGID;
+            //n11.Parent = b15.ElementGID;
+            //Consumer b17 = new Consumer(28, "EC_4");
+            //b17.End1 = n11.ElementGID;
+            //b17.End2 = -1;
+            //n11.Children.Add(b17.ElementGID);
+            //Consumer b18 = new Consumer(29, "EC_4");
+            //b18.End1 = n11.ElementGID;
+            //b18.End2 = -1;
+            //n11.Children.Add(b18.ElementGID);
+            //Node n1 = new Node(1, "CN_1") { ElementGID = 1 };
+            //n1.Parent = s1.ElementGID;
+            //s1.End2 = n1.ElementGID;
+            //ACLine b1 = new ACLine(2, "ACLS_1");
+            //b1.End1 = n1.ElementGID;
+            //n1.Children.Add(b1.ElementGID);
+            //Node n2 = new Node(3, "CN_2");
+            //b1.End2 = n2.ElementGID;
+            //n2.Parent = b1.ElementGID;
+            //Switch b2 = new Switch(4, "BR_1");
+            //b2.End1 = n2.ElementGID;
+            //n2.Children.Add(b2.ElementGID);
+            //ACLine b3 = new ACLine(5, "ACLS_3");
+            //b3.End1 = n2.ElementGID;
+            //n2.Children.Add(b3.ElementGID);
+            //Consumer b10 = new Consumer(17, "EC_4");
+            //b10.End1 = n2.ElementGID;
+            //b10.End2 = -1;
+            //n2.Children.Add(b10.ElementGID);
+            //Node n3 = new Node(6, "CN_3");
+            //b2.End2 = n3.ElementGID;
+            //n3.Parent = b2.ElementGID;
+            //Switch b4 = new Switch(7, "BR_2");
+            //b4.End1 = n3.ElementGID;
+            //n3.Children.Add(b4.ElementGID);
+            //ACLine b5 = new ACLine(8, "ACLS_2");
+            //b5.End1 = n3.ElementGID;
+            //b5.Marker = false;
+            //n3.Children.Add(b5.ElementGID);
+            //Node n4 = new Node(9, "CN_4");
+            //b4.End2 = n4.ElementGID;
+            //n4.Parent = b4.ElementGID;
+            //Consumer b6 = new Consumer(10, "EC_1");
+            //b6.End1 = n4.ElementGID;
+            //n4.Children.Add(b6.ElementGID);
+            //Node n5 = new Node(11, "CN_5");
+            //b5.End2 = n5.ElementGID;
+            //n5.Parent = b5.ElementGID;
+            //Consumer b7 = new Consumer(12, "EC_2");
+            //b7.End1 = n5.ElementGID;
+            //n5.Children.Add(b7.ElementGID);
+            //b7.Marker = false;
+            //Node n6 = new Node(13, "CN_6");
+            //b3.End2 = n6.ElementGID;
+            //n6.Parent = b3.ElementGID;
+            //n6.Marker = false;
+            //Switch b8 = new Switch(14, "BR_3");
+            //b8.End1 = n6.ElementGID;
+            //b8.Marker = false;
+            //n6.Children.Add(b8.ElementGID);
+            //Node n7 = new Node(15, "CN_7");
+            //b8.End2 = n7.ElementGID;
+            //n7.Parent = b8.ElementGID;
+            //Consumer b9 = new Consumer(16, "EC_3");
+            //b9.End1 = n7.ElementGID;
+            //b9.End2 = -1;
+            //n7.Children.Add(b9.ElementGID);
+            //Consumer b11 = new Consumer(20, "EC_5");
+            //b11.End1 = n7.ElementGID;
+            //b11.End2 = -1;
+            //n7.Children.Add(b11.ElementGID);
+            ////Consumer b12 = new Consumer(21, "EC_5");
+            ////b12.End1 = n1.ElementGID;
+            ////b12.End2 = -1;
+            ////n1.Children.Add(b12.ElementGID);
 
-            Source s1 = new Source(0, -1, "ES_2") { ElementGID = 0 };
-            Source s2 = new Source(0, -1, "ES_3") { ElementGID = 23 };
-            s2.Marker = false;
-            Node n10 = new Node(24, "CN_10");
-            n10.Parent = s2.ElementGID;
-            s2.End2 = n10.ElementGID;
-            ACLine b15 = new ACLine(25, "ACLS_1");
-            b15.End1 = n10.ElementGID;
-            n10.Children.Add(b15.ElementGID);
-            Consumer b16 = new Consumer(27, "EC_4");
-            b16.End1 = n10.ElementGID;
-            b16.End2 = -1;
-            n10.Children.Add(b16.ElementGID);
-            Node n11 = new Node(26, "CN_2");
-            b15.End2 = n11.ElementGID;
-            n11.Parent = b15.ElementGID;
-            Consumer b17 = new Consumer(28, "EC_4");
-            b17.End1 = n11.ElementGID;
-            b17.End2 = -1;
-            n11.Children.Add(b17.ElementGID);
-            Consumer b18 = new Consumer(29, "EC_4");
-            b18.End1 = n11.ElementGID;
-            b18.End2 = -1;
-            n11.Children.Add(b18.ElementGID);
-            Node n1 = new Node(1, "CN_1") { ElementGID = 1 };
-            n1.Parent = s1.ElementGID;
-            s1.End2 = n1.ElementGID;
-            ACLine b1 = new ACLine(2, "ACLS_1");
-            b1.End1 = n1.ElementGID;
-            n1.Children.Add(b1.ElementGID);
-            Node n2 = new Node(3, "CN_2");
-            b1.End2 = n2.ElementGID;
-            n2.Parent = b1.ElementGID;
-            Switch b2 = new Switch(4, "BR_1");
-            b2.End1 = n2.ElementGID;
-            n2.Children.Add(b2.ElementGID);
-            ACLine b3 = new ACLine(5, "ACLS_3");
-            b3.End1 = n2.ElementGID;
-            n2.Children.Add(b3.ElementGID);
-            Consumer b10 = new Consumer(17, "EC_4");
-            b10.End1 = n2.ElementGID;
-            b10.End2 = -1;
-            n2.Children.Add(b10.ElementGID);
-            Node n3 = new Node(6, "CN_3");
-            b2.End2 = n3.ElementGID;
-            n3.Parent = b2.ElementGID;
-            Switch b4 = new Switch(7, "BR_2");
-            b4.End1 = n3.ElementGID;
-            n3.Children.Add(b4.ElementGID);
-            ACLine b5 = new ACLine(8, "ACLS_2");
-            b5.End1 = n3.ElementGID;
-            b5.Marker = false;
-            n3.Children.Add(b5.ElementGID);
-            Node n4 = new Node(9, "CN_4");
-            b4.End2 = n4.ElementGID;
-            n4.Parent = b4.ElementGID;
-            Consumer b6 = new Consumer(10, "EC_1");
-            b6.End1 = n4.ElementGID;
-            n4.Children.Add(b6.ElementGID);
-            Node n5 = new Node(11, "CN_5");
-            b5.End2 = n5.ElementGID;
-            n5.Parent = b5.ElementGID;
-            Consumer b7 = new Consumer(12, "EC_2");
-            b7.End1 = n5.ElementGID;
-            n5.Children.Add(b7.ElementGID);
-            b7.Marker = false;
-            Node n6 = new Node(13, "CN_6");
-            b3.End2 = n6.ElementGID;
-            n6.Parent = b3.ElementGID;
-            n6.Marker = false;
-            Switch b8 = new Switch(14, "BR_3");
-            b8.End1 = n6.ElementGID;
-            b8.Marker = false;
-            n6.Children.Add(b8.ElementGID);
-            Node n7 = new Node(15, "CN_7");
-            b8.End2 = n7.ElementGID;
-            n7.Parent = b8.ElementGID;
-            Consumer b9 = new Consumer(16, "EC_3");
-            b9.End1 = n7.ElementGID;
-            b9.End2 = -1;
-            n7.Children.Add(b9.ElementGID);
-            Consumer b11 = new Consumer(20, "EC_5");
-            b11.End1 = n7.ElementGID;
-            b11.End2 = -1;
-            n7.Children.Add(b11.ElementGID);
-            //Consumer b12 = new Consumer(21, "EC_5");
-            //b12.End1 = n1.ElementGID;
-            //b12.End2 = -1;
-            //n1.Children.Add(b12.ElementGID);
+            //Sources.Add(s1.ElementGID);
+            //Sources.Add(s2.ElementGID);
 
-            Sources.Add(s1.ElementGID);
-            Sources.Add(s2.ElementGID);
-
-            Network.Add(s1.ElementGID, s1);
-            Network.Add(s2.ElementGID, s2);
-            Network.Add(n1.ElementGID, n1);
-            Network.Add(n2.ElementGID, n2);
-            Network.Add(n3.ElementGID, n3);
-            Network.Add(n4.ElementGID, n4);
-            Network.Add(n5.ElementGID, n5);
-            Network.Add(n6.ElementGID, n6);
-            Network.Add(n7.ElementGID, n7);
-            Network.Add(b1.ElementGID, b1);
-            Network.Add(b2.ElementGID, b2);
-            Network.Add(b3.ElementGID, b3);
-            Network.Add(b4.ElementGID, b4);
-            Network.Add(b5.ElementGID, b5);
-            Network.Add(b6.ElementGID, b6);
-            Network.Add(b7.ElementGID, b7);
-            Network.Add(b8.ElementGID, b8);
-            Network.Add(b9.ElementGID, b9);
-            Network.Add(b10.ElementGID, b10);
-            Network.Add(b11.ElementGID, b11);
-            Network.Add(b15.ElementGID, b15);
-            Network.Add(n10.ElementGID, n10);
-            Network.Add(n11.ElementGID, n11);
-            Network.Add(b16.ElementGID, b16);
-            Network.Add(b17.ElementGID, b17);
-            Network.Add(b18.ElementGID, b18);
-            //Network.Add(b12.ElementGID, b12);
-            //Network.Add(n8.ElementGID, n8);
+            //Network.Add(s1.ElementGID, s1);
+            //Network.Add(s2.ElementGID, s2);
+            //Network.Add(n1.ElementGID, n1);
+            //Network.Add(n2.ElementGID, n2);
+            //Network.Add(n3.ElementGID, n3);
+            //Network.Add(n4.ElementGID, n4);
+            //Network.Add(n5.ElementGID, n5);
+            //Network.Add(n6.ElementGID, n6);
+            //Network.Add(n7.ElementGID, n7);
+            //Network.Add(b1.ElementGID, b1);
+            //Network.Add(b2.ElementGID, b2);
+            //Network.Add(b3.ElementGID, b3);
+            //Network.Add(b4.ElementGID, b4);
+            //Network.Add(b5.ElementGID, b5);
+            //Network.Add(b6.ElementGID, b6);
+            //Network.Add(b7.ElementGID, b7);
+            //Network.Add(b8.ElementGID, b8);
+            //Network.Add(b9.ElementGID, b9);
+            //Network.Add(b10.ElementGID, b10);
+            //Network.Add(b11.ElementGID, b11);
+            //Network.Add(b15.ElementGID, b15);
+            //Network.Add(n10.ElementGID, n10);
+            //Network.Add(n11.ElementGID, n11);
+            //Network.Add(b16.ElementGID, b16);
+            //Network.Add(b17.ElementGID, b17);
+            //Network.Add(b18.ElementGID, b18);
+            ////Network.Add(b12.ElementGID, b12);
+            ////Network.Add(n8.ElementGID, n8);
             #endregion
 
             if (answerFromTransactionManager != null && answerFromTransactionManager.Elements != null && answerFromTransactionManager.ResourceDescriptions != null)
             {
-
-
                 foreach (Element element in answerFromTransactionManager.Elements)
                 {
                     this.Network.Add(element.ElementGID, element);
@@ -341,15 +321,6 @@ namespace DispatcherApp.ViewModel
                             prop.ValidCommands.Add("CLOSE");
                             this.CommandIndex = 0;
 
-                            //if (element.Marker)
-                            //{
-                            //    prop.State = "CLOSED";
-                            //}
-                            //else
-                            //{
-                            //    prop.State = "OPENED";
-                            //}
-
                             this.properties.Add(element.ElementGID, prop);
                         }
                     }
@@ -395,9 +366,6 @@ namespace DispatcherApp.ViewModel
                 }
             }
 
-            //this.networkDepth.Add(0, 5);
-            //this.networkDepth.Add(23, 3);
-
             foreach (long sourceGid in Sources)
             {
                 Element element = null;
@@ -429,6 +397,7 @@ namespace DispatcherApp.ViewModel
                 }
             }
         }
+        #endregion
 
         #region DrawGraph
         private void DrawGraph(Source source)
@@ -757,7 +726,7 @@ namespace DispatcherApp.ViewModel
             sourceButton.BorderThickness = new Thickness(0);
             sourceButton.BorderBrush = Brushes.Transparent;
             sourceButton.ToolTip = mrid;
-            sourceButton.Content = new Image() { Source = new BitmapImage(new Uri(Directory.GetCurrentDirectory() + "/../../Resources/Images/triangle.png")) };
+            sourceButton.Content = new Image() { Source = new BitmapImage(new Uri(Directory.GetCurrentDirectory() + "/../../View/Resources/Images/triangle.png")) };
             Canvas.SetLeft(sourceButton, mainCanvas.Width / 2 - sourceButton.Width / 2);
             Canvas.SetZIndex(sourceButton, 5);
             mainCanvas.Children.Add(sourceButton);
@@ -790,16 +759,7 @@ namespace DispatcherApp.ViewModel
         }
         #endregion
 
-        #region Properties
-        public RelayCommand MeasCommand
-        {
-            // get { return _measCommand = new ReadAll(); }
-            get
-            {
-                return _measCommand ?? new RelayCommand(ExecuteReadAll);
-            }
-        }
-
+        #region Command execution
         public RelayCommand OpenControlCommand
         {
             get
@@ -1130,7 +1090,9 @@ namespace DispatcherApp.ViewModel
                 }
             }
         }
+        #endregion
 
+        #region Properties
         public ObservableCollection<TabItem> LeftTabControlTabs
         {
             get
@@ -1356,45 +1318,6 @@ namespace DispatcherApp.ViewModel
             }
         }
 
-        public string SelectedItem
-        {
-            get
-            {
-                return selectedItem;
-            }
-
-            set
-            {
-                selectedItem = value;
-                GetElementsFromNMS();
-            }
-        }
-        public List<string> Elements
-        {
-            get
-            {
-                return elements;
-            }
-            set
-            {
-                elements = value;
-            }
-
-        }
-        public List<MeasResult> DataGridElements
-        {
-            get
-            {
-                return dataGridElements;
-            }
-            set
-            {
-                dataGridElements = value;
-                RaisePropertyChanged("DataGridElements");
-            }
-
-        }
-
         public ElementProperties CurrentProperty
         {
             get
@@ -1435,29 +1358,7 @@ namespace DispatcherApp.ViewModel
         }
         #endregion Properties
 
-        private void GetElementsFromNMS()
-        {
-            switch (SelectedItem)
-            {
-
-                case "Breaker":
-                    DataGridElements = ConvertToListOfMeasResults(model.GetExtentValues(FTN.Common.ModelCode.BREAKER));
-                    break;
-                case "ACLineSegment":
-                    DataGridElements = ConvertToListOfMeasResults(model.GetExtentValues(FTN.Common.ModelCode.ACLINESEGMENT));
-                    break;
-                case "EnergySource":
-                    DataGridElements = ConvertToListOfMeasResults(model.GetExtentValues(FTN.Common.ModelCode.ENERGSOURCE));
-                    break;
-                case "EnergyConsumer":
-                    DataGridElements = ConvertToListOfMeasResults(model.GetExtentValues(FTN.Common.ModelCode.ENERGCONSUMER));
-                    break;
-                default:
-                    break;
-            }
-
-        }
-
+        #region Miscelaneous
         private void RaisePropertyChanged(string property)
         {
             if (PropertyChanged != null)
@@ -1465,14 +1366,9 @@ namespace DispatcherApp.ViewModel
                 PropertyChanged(this, new PropertyChangedEventArgs(property));
             }
         }
+        #endregion
 
-        public DispatcherAppViewModel()
-        {
-            subscriber = new Subscriber();
-            subscriber.Subscribe();
-            //subscriber.PublishDeltaEvent += GetDelta;
-        }
-
+        #region Publish methods
         private void GetUpdate(List<SCADAUpdateModel> update)
         {
             if (update != null)
@@ -1538,94 +1434,6 @@ namespace DispatcherApp.ViewModel
                 IncidentReports.Add(report);
             }
         }
-
-        private List<MeasResult> ConvertToListOfMeasResults(List<long> list)
-        {
-            List<MeasResult> retValue = new List<MeasResult>();
-            ResourceDescription rd = new ResourceDescription();
-            foreach (long l in list)
-            {
-                rd = model.GetValues(l);
-                retValue.Add(new MeasResult(rd.Id.ToString(), "Unknown"));
-            }
-            return retValue;
-        }
-
-        private void ReadResult(List<ResourceDescription> result)
-        {
-
-            //List<MeasResult> rezultat = new List<MeasResult>();
-            //string status = "";
-            //foreach (ResourceDescription rd in result)
-            //{
-            //    MeasResult measResult = new MeasResult();
-            //    if (rd.ContainsProperty(ModelCode.IDOBJ_MRID))
-            //    {
-            //        measResult.MrID = rd.GetProperty(ModelCode.IDOBJ_MRID).AsString();
-            //    }
-            //    if (rd.ContainsProperty(ModelCode.DISCRETE_NORMVAL))
-            //    {
-
-            //        switch (rd.GetProperty(ModelCode.DISCRETE_NORMVAL).AsLong())
-            //        {
-            //            case 0:
-            //                status = "CLOSED";
-            //                break;
-            //            case 1:
-            //                status = "OPEN";
-            //                break;
-            //            default:
-            //                status = "Unkonown";
-            //                break;
-
-            //        }
-
-            //        measResult.MeasValue = status;
-            //    }
-            //    rezultat.Add(measResult);
-            //}
-            //DataGridElements = rezultat;
-        }
-
-        private void ExecuteReadAll(object parameter)
-        {
-            ///
-            /// otvori vezu ka CommEngine i dobavi mjerenja
-            ////
-
-            //List<MeasResult> rezultat = new List<MeasResult>();
-            //ResourceDescription rd1 = new ResourceDescription();
-            //rd1.Id = 1;
-            //rd1.Properties.Add(new Property(ModelCode.DISCRETE_NORMVAL, 1));
-
-            //ResourceDescription rd2 = new ResourceDescription();
-            //rd2.Id = 2;
-            //rd2.Properties.Add(new Property(ModelCode.DISCRETE_NORMVAL, 0));
-            //// ResourceDescription result = proxyToComm().GetaAll();
-            //List<ResourceDescription> result = new List<ResourceDescription>();
-            //result.Add(rd1);
-            //result.Add(rd2);
-            //string status = "";
-            ////napunjeno zbog testiranjaa
-            //foreach (ResourceDescription rd in result)
-            //{
-            //    switch (rd.Properties[0].PropertyValue.LongValues[0])
-            //    {
-            //        case 0:
-            //            status = "CLOSED";
-            //            break;
-            //        case 1:
-            //            status = "OPEN";
-            //            break;
-            //        default:
-            //            status = "Unkonown";
-            //            break;
-
-            //    }
-
-            //    rezultat.Add(new MeasResult(rd.Id.ToString(), status));
-            //}
-            //DataGridElements = rezultat;
-        }
+        #endregion
     }
 }

@@ -208,12 +208,26 @@ namespace FTN.Services.NetworkModelService
 			}
 		}
 
-		/// <summary>
-		/// Adds entity on the first free position in the container.
-		/// </summary>
-		/// <param name="io">Entity (identified object) that should be added</param>
-		/// <returns>Index of the entity that is just added.</returns>
-		public void AddEntity(IdentifiedObject io)
+        public IdentifiedObject GetEntityMrid(string mrid)
+        {
+            if (EntityExistsMrid(mrid))
+            {
+                return entities.Values.Where(u => u.Mrid == mrid).FirstOrDefault();
+            }
+            else
+            {
+                string message = String.Format("Failed to retrieve entity (GID = 0x{1:x16}) because entity doesn't exist.", mrid);
+                CommonTrace.WriteTrace(CommonTrace.TraceError, message);
+                throw new Exception(message);
+            }
+        }
+
+        /// <summary>
+        /// Adds entity on the first free position in the container.
+        /// </summary>
+        /// <param name="io">Entity (identified object) that should be added</param>
+        /// <returns>Index of the entity that is just added.</returns>
+        public void AddEntity(IdentifiedObject io)
 		{
 			if (!EntityExists(io.GlobalId))
 			{

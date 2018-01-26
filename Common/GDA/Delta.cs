@@ -52,14 +52,14 @@ namespace FTN.Common
 	
 		public Delta()
 		{
-			this.positiveIdsAllowed = false;
+			this.positiveIdsAllowed = true; // promenila, ne znam ni sta predstavlja
 		}
 
 		public Delta(long id)
 		{
 			this.id = id;
-			this.positiveIdsAllowed = false;
-		}		
+			this.positiveIdsAllowed = true; // promenila, ne znam ni sta predstavlja
+        }		
 
 		public Delta(Delta toCopy)
 		{

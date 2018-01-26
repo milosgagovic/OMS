@@ -17,7 +17,7 @@ namespace FTN.Services.NetworkModelService
         private static Dictionary<int, ResourceIterator> resourceItMap = new Dictionary<int, ResourceIterator>();
         private static int resourceItId = 0;
         protected static NetworkModel nm = null;
-		private static NetworkModel newNetworkModel = null;
+		private static NetworkModel newNetworkModel = new NetworkModel();
 
         public GenericDataAccess()
         {
