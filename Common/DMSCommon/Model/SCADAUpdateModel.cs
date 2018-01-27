@@ -15,12 +15,13 @@ namespace DMSCommon.Model
         private bool isEnergized;
         private States state;
         private CrewResponse response;
+        private bool isElementAdded;
 
         [DataMember]
         public long Gid
         {
             get { return gid; }
-            set {gid = value; }
+            set { gid = value; }
         }
 
         [DataMember]
@@ -38,6 +39,8 @@ namespace DMSCommon.Model
         }
         [DataMember]
         public CrewResponse Response { get => response; set => response = value; }
+        [DataMember]
+        public bool IsElementAdded { get => isElementAdded; set => isElementAdded = value; }
 
         public SCADAUpdateModel(long mrid, bool isEnergized)
         {
@@ -50,6 +53,7 @@ namespace DMSCommon.Model
             {
                 State = States.OPENED;
             }
+            isElementAdded = false;
         }
         public SCADAUpdateModel(long mrid, bool isEnergised, CrewResponse response)
         {
@@ -63,6 +67,13 @@ namespace DMSCommon.Model
             {
                 State = States.OPENED;
             }
+            isElementAdded = false;
+        }
+
+        public SCADAUpdateModel(bool isElementAdded, long mrid)
+        {
+            Gid = mrid;
+            this.isElementAdded = isElementAdded;
         }
 
 

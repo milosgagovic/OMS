@@ -19,14 +19,12 @@ namespace DMSServiceHost
                 CommonTrace.WriteTrace(CommonTrace.TraceInfo, message);
                 Console.WriteLine("\n{0}\n", message);
 
-                using (DMSService.DMSService dms = new DMSService.DMSService())
-                {
-                    dms.Start();
-                    message = "Press <Enter> to stop the service.";
-                    CommonTrace.WriteTrace(CommonTrace.TraceInfo, message);
-                    Console.WriteLine(message);
-                    Console.ReadLine();
-                }
+                DMSService.DMSService.Instance.Start();
+                message = "Press <Enter> to stop the service.";
+                CommonTrace.WriteTrace(CommonTrace.TraceInfo, message);
+                Console.WriteLine(message);
+                Console.ReadLine();
+
             }
             catch (Exception ex)
             {

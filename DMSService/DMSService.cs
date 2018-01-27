@@ -24,6 +24,23 @@ namespace DMSService
         private ModelResourcesDesc modelResourcesDesc = new ModelResourcesDesc();
         private ModelGdaDMS gda = new ModelGdaDMS();
 
+        private static DMSService instance = null;
+        private DMSService()
+        {
+            InitializeHosts();
+        }
+        public static DMSService Instance
+        {
+            get
+            {
+                if (instance == null)
+                {
+                    instance = new DMSService();
+                }
+                return instance;
+            }
+        }
+        public static int updatesCount = 0;
 
         #region Properties
         public List<Source> Sources { get => _sources; set => _sources = value; }
@@ -34,10 +51,7 @@ namespace DMSService
         public static Tree<Element> tree;
         #endregion
 
-        public DMSService()
-        {
-            InitializeHosts();
-        }
+
 
         public void Start()
         {
@@ -45,9 +59,15 @@ namespace DMSService
             InitializeNetwork();
         }
 
-        private void InitializeNetwork()
+        public void InitializeNetwork()
         {
+            ClearLists();
             List<long> eSources = gda.GetExtentValues(ModelCode.ENERGSOURCE);
+            if (eSources.Count == 0)
+            {
+                return;
+            }
+
             List<long> terminals = gda.GetExtentValues(ModelCode.TERMINAL);
             ResourceDescription rd;
             string mrid = "";
@@ -177,7 +197,17 @@ namespace DMSService
                 count++;
             }
             watch.Stop();
-            Console.WriteLine("\nNewtork Initialization finished in {0} sec",watch.ElapsedMilliseconds/1000);
+            updatesCount += 1;
+            Console.WriteLine("\nNewtork Initialization finished in {0} sec", watch.ElapsedMilliseconds / 1000);
+        }
+
+        private void ClearLists()
+        {
+            this.Aclines.Clear();
+            this.ConnecNodes.Clear();
+            this.Consumers.Clear();
+            this.Switches.Clear();
+            this.Sources.Clear();
         }
 
         #region GetRelatedMethods

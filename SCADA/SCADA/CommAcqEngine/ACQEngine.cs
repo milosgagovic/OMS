@@ -338,7 +338,7 @@ namespace SCADA.CommAcqEngine
                     }
                 }
 
-                Thread.Sleep(100);
+                Thread.Sleep(10);
             }
         }
 

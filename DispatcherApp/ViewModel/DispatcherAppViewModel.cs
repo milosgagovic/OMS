@@ -41,7 +41,7 @@ namespace DispatcherApp.ViewModel
         #region Bindings
         private Dictionary<long, Element> Network = new Dictionary<long, Element>();
         private List<long> Sources = new List<long>();
-        
+
         private Dictionary<long, ObservableCollection<UIElement>> uiNetworks = new Dictionary<long, ObservableCollection<UIElement>>();
         private ObservableCollection<UIElement> mainCanvases = new ObservableCollection<UIElement>();
         private Dictionary<long, int> networkDepth = new Dictionary<long, int>();
@@ -119,15 +119,31 @@ namespace DispatcherApp.ViewModel
             binding.MaxReceivedMessageSize = 2147483647;
             binding.MaxBufferSize = 2147483647;
 
-            ChannelFactory<IOMSClient> factoryToTMS = new ChannelFactory<IOMSClient>(binding, new EndpointAddress("net.tcp://localhost:6080/TransactionManagerService"));
-            proxyToTransactionManager = factoryToTMS.CreateChannel();
+            ChannelFactory<IOMSClient> factoryToTMS = new ChannelFactory<IOMSClient>(binding,
+                new EndpointAddress("net.tcp://localhost:6080/TransactionManagerService"));
+            ProxyToTransactionManager = factoryToTMS.CreateChannel();
             TMSAnswerToClient answerFromTransactionManager = new TMSAnswerToClient();
             try
             {
-                answerFromTransactionManager = proxyToTransactionManager.GetNetwork();
+                answerFromTransactionManager = ProxyToTransactionManager.GetNetwork();
             }
             catch (Exception e) { }
 
+
+            InitNetwork();
+            InitElementsAndProp(answerFromTransactionManager);
+            DrawElementsOnGraph(answerFromTransactionManager);
+        }
+        public void InitNetwork()
+        {
+            this.Network = new Dictionary<long, Element>();
+            this.properties = new Dictionary<long, ElementProperties>();
+            this.UINetworks = new Dictionary<long, ObservableCollection<UIElement>>();
+            this.networModelControls = new Dictionary<long, NetworkModelControlExtended>();
+            this.NetworkMapsBySourceButton = new ObservableCollection<Button>();
+            this.networkDepth = new Dictionary<long, int>();
+            Sources.Clear();
+            this.MainCanvases = new ObservableCollection<UIElement>();
             #region FakeNetwork
             //Source s1 = new Source(0, -1, "ES_2") { ElementGID = 0 };
             //Source s2 = new Source(0, -1, "ES_3") { ElementGID = 23 };
@@ -252,6 +268,11 @@ namespace DispatcherApp.ViewModel
             ////Network.Add(n8.ElementGID, n8);
             #endregion
 
+
+
+        }
+        public void InitElementsAndProp(TMSAnswerToClient answerFromTransactionManager)
+        {
             if (answerFromTransactionManager != null && answerFromTransactionManager.Elements != null && answerFromTransactionManager.ResourceDescriptions != null)
             {
                 foreach (Element element in answerFromTransactionManager.Elements)
@@ -365,6 +386,9 @@ namespace DispatcherApp.ViewModel
                     }
                 }
             }
+        }
+        public void DrawElementsOnGraph(TMSAnswerToClient answerFromTransactionManager)
+        {
 
             foreach (long sourceGid in Sources)
             {
@@ -398,6 +422,8 @@ namespace DispatcherApp.ViewModel
             }
         }
         #endregion
+
+
 
         #region DrawGraph
         private void DrawGraph(Source source)
@@ -822,7 +848,7 @@ namespace DispatcherApp.ViewModel
             report.CrewSent = true;
             report.IncidentState = IncidentState.PENDING;
 
-            proxyToTransactionManager.SendCrew((DateTime)parameter);
+            ProxyToTransactionManager.SendCrew((DateTime)parameter);
         }
 
         private void ExecutePropertiesCommand(object parameter)
@@ -1356,8 +1382,14 @@ namespace DispatcherApp.ViewModel
                 RaisePropertyChanged("CurrentPropertyMRID");
             }
         }
-        #endregion Properties
 
+        public IOMSClient ProxyToTransactionManager
+        {
+            get { return proxyToTransactionManager; }
+            set { proxyToTransactionManager = value; }
+        }
+
+        #endregion Properties
         #region Miscelaneous
         private void RaisePropertyChanged(string property)
         {
@@ -1373,37 +1405,71 @@ namespace DispatcherApp.ViewModel
         {
             if (update != null)
             {
-                foreach (SCADAUpdateModel sum in update)
+
+                if (update.ElementAt(0).IsElementAdded == true)
                 {
-                    if (Network[sum.Gid] is Source)
+
+                    NetTcpBinding binding = new NetTcpBinding();
+                    binding.CloseTimeout = new TimeSpan(1, 0, 0, 0);
+                    binding.OpenTimeout = new TimeSpan(1, 0, 0, 0);
+                    binding.ReceiveTimeout = new TimeSpan(1, 0, 0, 0);
+                    binding.SendTimeout = new TimeSpan(1, 0, 0, 0);
+                    binding.MaxBufferPoolSize = 2147483647;
+                    binding.MaxReceivedMessageSize = 2147483647;
+                    binding.MaxBufferSize = 2147483647;
+
+                    ChannelFactory<IOMSClient> factoryToTMS = new ChannelFactory<IOMSClient>(binding,
+                        new EndpointAddress("net.tcp://localhost:6080/TransactionManagerService"));
+                    ProxyToTransactionManager = factoryToTMS.CreateChannel();
+                    TMSAnswerToClient answerFromTransactionManager = new TMSAnswerToClient();
+                    try
                     {
-                        mainCanvas.Children.Clear();
-                        DrawGraph((Source)Network[sum.Gid]);
+                        answerFromTransactionManager = ProxyToTransactionManager.GetNetwork();
                     }
-                    Network[sum.Gid].Marker = sum.IsEnergized;
+                    catch (Exception e) { }
 
-                    //if (Test == true)
-                    //    Test = false;
-                    //else
-                    //    Test = true;
+                    Source source = (Source)Network[update.ElementAt(0).Gid];
+                    mainCanvas.Children.Clear();
+                    InitNetwork();
+                    InitElementsAndProp(answerFromTransactionManager);
+                    this.networkDepth.Add(source.ElementGID, answerFromTransactionManager.GraphDeep);
+                    DrawGraph(source);
 
-                    ElementProperties property;
-                    properties.TryGetValue(sum.Gid, out property);
-                    if (property != null)
+                    return;
+                }
+            }
+
+            foreach (SCADAUpdateModel sum in update)
+            {
+                if (Network[sum.Gid] is Source)
+                {
+                    mainCanvas.Children.Clear();
+                    DrawGraph((Source)Network[sum.Gid]);
+                }
+                Network[sum.Gid].Marker = sum.IsEnergized;
+
+                //if (Test == true)
+                //    Test = false;
+                //else
+                //    Test = true;
+
+                ElementProperties property;
+                properties.TryGetValue(sum.Gid, out property);
+                if (property != null)
+                {
+                    property.IsEnergized = sum.IsEnergized;
+
+                    Element element;
+                    Network.TryGetValue(sum.Gid, out element);
+                    if (element != null && element is Switch)
                     {
-                        property.IsEnergized = sum.IsEnergized;
-
-                        Element element;
-                        Network.TryGetValue(sum.Gid, out element);
-                        if (element != null && element is Switch)
-                        {
-                            BreakerProperties prop = property as BreakerProperties;
-                            prop.State = sum.State.ToString();
-                        }
+                        BreakerProperties prop = property as BreakerProperties;
+                        prop.State = sum.State.ToString();
                     }
                 }
             }
         }
+
 
         private void GetCrewUpdate(SCADAUpdateModel update)
         {
@@ -1434,6 +1500,86 @@ namespace DispatcherApp.ViewModel
                 IncidentReports.Add(report);
             }
         }
+
+
+
+        private void ReadResult(List<ResourceDescription> result)
+        {
+
+            //List<MeasResult> rezultat = new List<MeasResult>();
+            //string status = "";
+            //foreach (ResourceDescription rd in result)
+            //{
+            //    MeasResult measResult = new MeasResult();
+            //    if (rd.ContainsProperty(ModelCode.IDOBJ_MRID))
+            //    {
+            //        measResult.MrID = rd.GetProperty(ModelCode.IDOBJ_MRID).AsString();
+            //    }
+            //    if (rd.ContainsProperty(ModelCode.DISCRETE_NORMVAL))
+            //    {
+
+            //        switch (rd.GetProperty(ModelCode.DISCRETE_NORMVAL).AsLong())
+            //        {
+            //            case 0:
+            //                status = "CLOSED";
+            //                break;
+            //            case 1:
+            //                status = "OPEN";
+            //                break;
+            //            default:
+            //                status = "Unkonown";
+            //                break;
+
+            //        }
+
+            //        measResult.MeasValue = status;
+            //    }
+            //    rezultat.Add(measResult);
+            //}
+            //DataGridElements = rezultat;
+        }
+
+        private void ExecuteReadAll(object parameter)
+        {
+            ///
+            /// otvori vezu ka CommEngine i dobavi mjerenja
+            ////
+
+            //List<MeasResult> rezultat = new List<MeasResult>();
+            //ResourceDescription rd1 = new ResourceDescription();
+            //rd1.Id = 1;
+            //rd1.Properties.Add(new Property(ModelCode.DISCRETE_NORMVAL, 1));
+
+            //ResourceDescription rd2 = new ResourceDescription();
+            //rd2.Id = 2;
+            //rd2.Properties.Add(new Property(ModelCode.DISCRETE_NORMVAL, 0));
+            //// ResourceDescription result = proxyToComm().GetaAll();
+            //List<ResourceDescription> result = new List<ResourceDescription>();
+            //result.Add(rd1);
+            //result.Add(rd2);
+            //string status = "";
+            ////napunjeno zbog testiranjaa
+            //foreach (ResourceDescription rd in result)
+            //{
+            //    switch (rd.Properties[0].PropertyValue.LongValues[0])
+            //    {
+            //        case 0:
+            //            status = "CLOSED";
+            //            break;
+            //        case 1:
+            //            status = "OPEN";
+            //            break;
+            //        default:
+            //            status = "Unkonown";
+            //            break;
+
+            //    }
+
+            //    rezultat.Add(new MeasResult(rd.Id.ToString(), status));
+            //}
+            //DataGridElements = rezultat;
+        }
         #endregion
     }
 }
+

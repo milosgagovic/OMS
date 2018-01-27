@@ -12,21 +12,21 @@ namespace FTN.Services.NetworkModelService
     [ServiceBehavior(InstanceContextMode = InstanceContextMode.PerCall)]
     public class NetworkModelTransactionService : ITransaction
     {
-		private static  GenericDataAccess gda = new GenericDataAccess();
-		private static NetworkModel newNetworkModel;
+        private static GenericDataAccess gda = new GenericDataAccess();
+        private static NetworkModel newNetworkModel;
 
-		private static NetworkModel NewNetworkModel { get => newNetworkModel; set => newNetworkModel = value; }
+        private static NetworkModel NewNetworkModel { get => newNetworkModel; set => newNetworkModel = value; }
 
-		public void Commit()
+        public void Commit()
         {
             Console.WriteLine("Pozvan je Commit na NMS-u");
-			//GenericDataAccess.NetworkModel = NewNetworkModel;
-			if (GenericDataAccess.NewNetworkModel!=null)
-			{
-				GenericDataAccess.NetworkModel = GenericDataAccess.NewNetworkModel;
-			}
+            if (GenericDataAccess.NewNetworkModel != null)
+            {
+                GenericDataAccess.NetworkModel = GenericDataAccess.NewNetworkModel;
+                ResourceIterator.NetworkModel = GenericDataAccess.NewNetworkModel;
+            }
 
-			
+
             ITransactionCallback callback = OperationContext.Current.GetCallbackChannel<ITransactionCallback>();
             callback.CallbackCommit("Uspjesno je prosao commit na NMS-u");
         }
@@ -36,9 +36,9 @@ namespace FTN.Services.NetworkModelService
             Console.WriteLine("Pozvan je enlist na NMS-u");
             try
             {
-               
-				gda.GetCopyOfNetworkModel();
-               // NewNetworkModel = gda.GetCopyOfNetworkModel();
+
+                gda.GetCopyOfNetworkModel();
+                // NewNetworkModel = gda.GetCopyOfNetworkModel();
             }
             catch (Exception ex)
             {
@@ -59,7 +59,7 @@ namespace FTN.Services.NetworkModelService
                 UpdateResult updateResult = gda.ApplyUpdate(delta);
                 if (updateResult.Result == ResultType.Succeeded)
                 {
-                 //   Commit();
+                    Commit();
                     callback.CallbackPrepare(true);
                 }
                 else
