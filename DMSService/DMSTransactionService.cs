@@ -37,7 +37,7 @@ namespace DMSService
             Console.WriteLine("Pozvan je enlist na DMS-u");
 
             ITransactionCallback callback = OperationContext.Current.GetCallbackChannel<ITransactionCallback>();
-            callback.CallbackEnlist();
+            callback.CallbackEnlist(true);
         }
 
         public void Prepare(Delta delta)

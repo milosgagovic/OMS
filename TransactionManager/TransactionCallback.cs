@@ -10,21 +10,26 @@ namespace TransactionManager
 {
     public class TransactionCallback : ITransactionCallback
     {
-        private TransactionAnswer answer;
+        private TransactionAnswer answerForEnlist;
+        private TransactionAnswer answerForPrepare;
         public TransactionCallback()
         {
-            Answer = TransactionAnswer.Unanswered;
+            AnswerForEnlist = TransactionAnswer.Unanswered;
+            answerForPrepare = TransactionAnswer.Unanswered;
+                                                         
         }
-        public TransactionAnswer Answer { get => answer; set => answer = value; }
+        public TransactionAnswer AnswerForEnlist { get => answerForEnlist; set => answerForEnlist = value; }
+        public TransactionAnswer AnswerForPrepare { get => answerForPrepare; set => answerForPrepare = value; }
 
-        public void CallbackEnlist()
+        public void CallbackEnlist(bool prepare)
         {
+            AnswerForEnlist = prepare ? TransactionAnswer.Prepared : TransactionAnswer.Unprepared;
             Console.WriteLine("Vratio za enlist");
         }
 
         public void CallbackPrepare(bool prepare)
         {
-            Answer = prepare ? TransactionAnswer.Prepared : TransactionAnswer.Unprepared;
+            AnswerForPrepare = prepare ? TransactionAnswer.Prepared : TransactionAnswer.Unprepared;
             Console.WriteLine("Odogovrio je: " + prepare);
         }
 

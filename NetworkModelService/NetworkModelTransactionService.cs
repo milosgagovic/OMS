@@ -33,20 +33,23 @@ namespace FTN.Services.NetworkModelService
 
         public void Enlist()
         {
+            ITransactionCallback callback = OperationContext.Current.GetCallbackChannel<ITransactionCallback>();
             Console.WriteLine("Pozvan je enlist na NMS-u");
             try
             {
 
                 gda.GetCopyOfNetworkModel();
                 // NewNetworkModel = gda.GetCopyOfNetworkModel();
+                callback.CallbackEnlist(true);
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
+                callback.CallbackEnlist(false);
             }
 
-            ITransactionCallback callback = OperationContext.Current.GetCallbackChannel<ITransactionCallback>();
-            callback.CallbackEnlist();
+            
+           
         }
 
         public void Prepare(Delta delta)
@@ -59,7 +62,7 @@ namespace FTN.Services.NetworkModelService
                 UpdateResult updateResult = gda.ApplyUpdate(delta);
                 if (updateResult.Result == ResultType.Succeeded)
                 {
-                    Commit();
+                    //Commit();
                     callback.CallbackPrepare(true);
                 }
                 else

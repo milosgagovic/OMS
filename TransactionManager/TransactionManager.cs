@@ -17,17 +17,22 @@ namespace TransactionManager
     {
         List<ITransaction> transactionProxys;
         List<TransactionCallback> transactionCallbacks;
-
+        ChannelFactory<IIMSContract> factoryToIMS;
+        IIMSContract proxyToIMS;
+        ITransaction proxyTransactionNMS;
+        ITransaction proxyTransactionDMS;
         IDMSContract proxyToDispatcherDMS;
         ModelGDATMS gdaTMS;
-
         SCADAClient scadaClient;
+        TransactionCallback callBackTransactionNMS;
+        TransactionCallback callBackTransactionDMS;
 
         public List<ITransaction> TransactionProxys { get => transactionProxys; set => transactionProxys = value; }
         public List<TransactionCallback> TransactionCallbacks { get => transactionCallbacks; set => transactionCallbacks = value; }
-
-        ChannelFactory<IIMSContract> factoryToIMS;
-        IIMSContract proxyToIMS;
+        public ITransaction ProxyTransactionNMS { get => proxyTransactionNMS; set => proxyTransactionNMS = value; }
+        public ITransaction ProxyTransactionDMS { get => proxyTransactionDMS; set => proxyTransactionDMS = value; }
+        public TransactionCallback CallBackTransactionNMS { get => callBackTransactionNMS; set => callBackTransactionNMS = value; }
+        public TransactionCallback CallBackTransactionDMS { get => callBackTransactionDMS; set => callBackTransactionDMS = value; }
 
         private SCADAClient SCADAClientInstance
         {
@@ -41,6 +46,8 @@ namespace TransactionManager
             }
         }
 
+       
+
         public TransactionManager()
         {
             TransactionProxys = new List<ITransaction>();
@@ -53,32 +60,23 @@ namespace TransactionManager
         private void InitializeChanels()
         {
             // duplex channel for NMS transaction
-            TransactionCallback callBackTransactionNMS = new TransactionCallback();
-            TransactionCallbacks.Add(callBackTransactionNMS);
-            DuplexChannelFactory<ITransaction> factoryTransactionNMS = new DuplexChannelFactory<ITransaction>(callBackTransactionNMS,
+            CallBackTransactionNMS = new TransactionCallback();
+            TransactionCallbacks.Add(CallBackTransactionNMS);
+            DuplexChannelFactory<ITransaction> factoryTransactionNMS = new DuplexChannelFactory<ITransaction>(CallBackTransactionNMS,
                                                          new NetTcpBinding(),
                                                          new EndpointAddress("net.tcp://localhost:8018/NetworkModelTransactionService"));
-            ITransaction proxyTransactionNMS = factoryTransactionNMS.CreateChannel();
-            TransactionProxys.Add(proxyTransactionNMS);
+            ProxyTransactionNMS = factoryTransactionNMS.CreateChannel();
+            TransactionProxys.Add(ProxyTransactionNMS);
 
             // duplex channel for DMS transaction
-            TransactionCallback callBackTransactionDMS = new TransactionCallback();
-            TransactionCallbacks.Add(callBackTransactionDMS);
-            DuplexChannelFactory<ITransaction> factoryTransactionDMS = new DuplexChannelFactory<ITransaction>(callBackTransactionDMS,
+            CallBackTransactionDMS = new TransactionCallback();
+            TransactionCallbacks.Add(CallBackTransactionDMS);
+            DuplexChannelFactory<ITransaction> factoryTransactionDMS = new DuplexChannelFactory<ITransaction>(CallBackTransactionDMS,
                                                             new NetTcpBinding(),
                                                             new EndpointAddress("net.tcp://localhost:8028/DMSTransactionService"));
-            ITransaction proxyTransactionDMS = factoryTransactionDMS.CreateChannel();
-            TransactionProxys.Add(proxyTransactionDMS);
+            ProxyTransactionDMS = factoryTransactionDMS.CreateChannel();
+            TransactionProxys.Add(ProxyTransactionDMS);
 
-
-            //  zar nije communcation engine izbrisan?
-            // TransactionCallback callBackCommunicationEngine = new TransactionCallback();
-            // Callbacks.Add(callBackCommunicationEngine);
-
-            // DuplexChannelFactory<ITransaction> factoryCommEngine = new DuplexChannelFactory<ITransaction>(callBackCommunicationEngine, new NetTcpBinding(),
-            //new EndpointAddress("net.tcp://localhost:8038/CommunicationEngineTransactionService"));
-            // ITransaction proxyCommEngine = factoryCommEngine.CreateChannel();
-            // Proxys.Add(proxyCommEngine);
 
 
             // client channel for DMSDispatcherService
@@ -88,44 +86,73 @@ namespace TransactionManager
 
             factoryToIMS = new ChannelFactory<IIMSContract>(new NetTcpBinding(), new EndpointAddress("net.tcp://localhost:6090/IncidentManagementSystemService"));
             proxyToIMS = factoryToIMS.CreateChannel();
-
-            //  ProxyToCommunicationEngine = new CommEngProxyUpdate("CommEngineEndpoint");
         }
 
-        public void Enlist()
+        public void Enlist(Delta d)
         {
             Console.WriteLine("Transaction Manager calling enlist");
             foreach (ITransaction svc in TransactionProxys)
             {
                 svc.Enlist();
             }
+
+            while (true)
+            {
+                if (TransactionCallbacks.Where(k => k.AnswerForEnlist == TransactionAnswer.Unanswered).Count() > 0)
+                {
+                    Thread.Sleep(1000);
+                    continue;
+                }
+                else
+                {
+                    Prepare(d);
+                    break;
+                }
+            }
         }
 
         public void Prepare(Delta delta)
         {
             Console.WriteLine("Transaction Manager calling prepare");
-            foreach (ITransaction svc in TransactionProxys)
-            {
-                svc.Prepare(delta);
-            }
 
-            while (true)
+            proxyTransactionNMS.Prepare(delta);
+
+            do
             {
-                if (TransactionCallbacks.Where(k => k.Answer == TransactionAnswer.Unanswered).Count() > 0)
+                Thread.Sleep(50);
+            } while (CallBackTransactionNMS.AnswerForPrepare.Equals(TransactionAnswer.Unanswered));
+
+            if (CallBackTransactionNMS.AnswerForPrepare.Equals(TransactionAnswer.Unprepared))
+            {
+                Rollback();
+            }
+            else
+            {
+
+                TransactionProxys.Where(u => !u.Equals(ProxyTransactionNMS)).ToList().ForEach(x => x.Prepare(delta));
+                //foreach (ITransaction svc in TransactionProxys.Where(u => !u.Equals(ProxyTransactionNMS)))
+                //{
+                //    Console.WriteLine("Type of proxy in prepare:" + svc.GetType().Assembly);
+                //    svc.Prepare(delta);
+                //}
+
+                while (true)
                 {
-                    Thread.Sleep(1000);
-                    continue;
-                }
-                else if (TransactionCallbacks.Where(u => u.Answer == TransactionAnswer.Unprepared).Count() > 0)
-                {
-                    Rollback();
+                    if (TransactionCallbacks.Where(k => k.AnswerForPrepare == TransactionAnswer.Unanswered).Count() > 0)
+                    {
+                        Thread.Sleep(1000);
+                        continue;
+                    }
+                    else if (TransactionCallbacks.Where(u => u.AnswerForPrepare == TransactionAnswer.Unprepared).Count() > 0)
+                    {
+                        Rollback();
+                        break;
+                    }
+
+                    Commit();
                     break;
                 }
-
-                Commit();
-                break;
             }
-
         }
 
         private void Commit()
@@ -151,8 +178,8 @@ namespace TransactionManager
         public bool UpdateSystem(Delta d)
         {
             Console.WriteLine("Update System started." + d.Id);
-            Enlist();
-            Prepare(d);
+            Enlist(d);
+          //  Prepare(d);
             return true;
         }
 

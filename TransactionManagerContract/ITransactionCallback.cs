@@ -10,7 +10,7 @@ namespace TransactionManagerContract
     public interface ITransactionCallback
     {
         [OperationContract(IsOneWay = true)]
-        void CallbackEnlist();
+        void CallbackEnlist(bool prepare);
 
         [OperationContract(IsOneWay = true)]
         void CallbackPrepare(bool prepare);
