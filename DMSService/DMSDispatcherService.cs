@@ -21,92 +21,172 @@ namespace DMSService
         public List<ACLine> GetAllACLines()
         {
             List<ACLine> pom = new List<ACLine>();
-            foreach (var item in DMSService.tree.Data.Values)
+            try
             {
-                if (item is ACLine)
+                foreach (var item in DMSService.tree.Data.Values)
                 {
-                    pom.Add((ACLine)item);
+                    if (item is ACLine)
+                    {
+                        pom.Add((ACLine)item);
+                    }
                 }
+                return pom;
             }
-            return pom;
+            catch (Exception)
+            {
+
+                return new List<ACLine>();
+            }
+          
         }
 
         public List<Consumer> GetAllConsumers()
         {
             List<Consumer> pom = new List<Consumer>();
-            foreach (var item in DMSService.tree.Data.Values)
+            try
             {
-                if (item is Consumer)
+                foreach (var item in DMSService.tree.Data.Values)
                 {
-                    pom.Add((Consumer)item);
+                    if (item is Consumer)
+                    {
+                        pom.Add((Consumer)item);
+                    }
                 }
+                return pom;
             }
-            return pom;
+            catch (Exception)
+            {
+
+                return new List<Consumer>();
+            }
+          
         }
 
         public List<Node> GetAllNodes()
         {
             List<Node> pom = new List<Node>();
-            foreach (var item in DMSService.tree.Data.Values)
+            try
             {
-                if (item is Node)
+                foreach (var item in DMSService.tree.Data.Values)
                 {
-                    pom.Add((Node)item);
+                    if (item is Node)
+                    {
+                        pom.Add((Node)item);
+                    }
                 }
+                return pom;
             }
-            return pom;
+            catch (Exception)
+            {
+
+                return new List<Node>();
+            }
+          
         }
 
         public List<Source> GetAllSource()
         {
             List<Source> pom = new List<Source>();
-            foreach (var item in DMSService.tree.Data.Values)
+            try
             {
-                if (item is Source)
+                foreach (var item in DMSService.tree.Data.Values)
                 {
-                    pom.Add((Source)item);
+                    if (item is Source)
+                    {
+                        pom.Add((Source)item);
+                    }
                 }
+                return pom;
             }
-            return pom;
+            catch (Exception)
+            {
+
+                return new List<Source>();
+            }
+        
         }
 
         public List<Switch> GetAllSwitches()
         {
             List<Switch> pom = new List<Switch>();
-            foreach (var item in DMSService.tree.Data.Values)
+            try
             {
-                if (item is Switch)
+                foreach (var item in DMSService.tree.Data.Values)
                 {
-                    pom.Add((Switch)item);
+                    if (item is Switch)
+                    {
+                        pom.Add((Switch)item);
+                    }
                 }
+                return pom;
             }
-            return pom;
+            catch (Exception)
+            {
+
+                return new List<Switch>();
+            }
+          
         }
 
         public int GetNetworkDepth()
         {
-            return DMSService.tree.Links.Max(x => x.Value.Depth)+1;
+            try
+            {
+                return DMSService.tree.Links.Max(x => x.Value.Depth) + 1;
+
+            }
+            catch (Exception)
+            {
+                return 1;
+            }
         }
 
         public Source GetTreeRoot()
         {
-            Source s = (Source)DMSService.tree.Data[DMSService.tree.Roots[0]];
-            return s;
+            try
+            {
+                Source s = (Source)DMSService.tree.Data[DMSService.tree.Roots[0]];
+                return s;
+
+
+            }
+            catch (Exception)
+            {
+
+                return new Source();
+            }
         }
 
         public Dictionary<long, Element> InitNetwork()
         {
-            return DMSService.tree.Data;
+            try
+            {
+                return DMSService.tree.Data;
+            }
+            catch (Exception)
+            {
+
+                return new Dictionary<long, Element>();      
+            }
         }
 
         public List<Element> GetAllElements()
         {
             List<Element> retVal = new List<Element>();
-            foreach(Element e in DMSService.tree.Data.Values)
+            try
             {
-                retVal.Add(e);
+                foreach (Element e in DMSService.tree.Data.Values)
+                {
+                    retVal.Add(e);
+                }
+                return retVal;
             }
-            return retVal;
+            catch (Exception)
+            {
+
+                return new List<Element>();
+            }
+           
         }
 
         public void SendCrewToDms(DateTime id)

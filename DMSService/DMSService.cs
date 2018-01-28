@@ -62,16 +62,15 @@ namespace DMSService
         public void InitializeNetwork()
         {
             ClearLists();
+            tree = new Tree<Element>();
             List<long> eSources = gda.GetExtentValues(ModelCode.ENERGSOURCE);
             if (eSources.Count == 0)
             {
                 return;
             }
-
             List<long> terminals = gda.GetExtentValues(ModelCode.TERMINAL);
             ResourceDescription rd;
             string mrid = "";
-            tree = new Tree<Element>();
             List<NodeLink> links = new List<NodeLink>();
             //Petlja za prikupljanje svih ES i njihovo povezivanje sa CN
             //Imacemo za sad jedan ES
