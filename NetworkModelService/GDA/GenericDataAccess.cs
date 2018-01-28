@@ -35,9 +35,18 @@ namespace FTN.Services.NetworkModelService
 
 		public UpdateResult ApplyUpdate(Delta delta)
         {
-			return NewNetworkModel.ApplyDelta(delta);
-			//return nm.ApplyDelta(delta);
-		}
+			UpdateResult res  =  NewNetworkModel.ApplyDelta(delta);
+            if (res.Result == ResultType.Succeeded)
+            {
+                return nm.ApplyDelta(delta);
+            }
+            else
+            {
+                res.Result = ResultType.Failed;
+                return res;
+            }
+
+        }
 
         public ResourceDescription GetValues(long resourceId, List<ModelCode> propIds)
         {
