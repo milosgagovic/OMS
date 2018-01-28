@@ -13,6 +13,7 @@ using SCADA.SecondaryDataProcessing;
 using OMSSCADACommon.Responses;
 using SCADA.ClientHandler;
 using SCADA.RealtimeDatabase.Catalogs;
+using System.Net.Sockets;
 
 namespace SCADA.CommAcqEngine
 {
@@ -20,22 +21,31 @@ namespace SCADA.CommAcqEngine
     public class ACQEngine : ICommandReceiver
     {
         private static IORequestsQueue IORequests;
-        private bool shutdown;
+        private bool isShutdown;
         private int timerMsc;
 
         private DBContext dbContext = null;
         public static Dictionary<string, RTU> RTUs { get; set; }
 
+        bool x = true;
+        object xlock = new object();
+
         public ACQEngine()
         {
-            IORequests = IORequestsQueue.GetQueue();       
-            shutdown = false;
-            timerMsc = 10;
+            IORequests = IORequestsQueue.GetQueue();
+
+            isShutdown = false;
+            timerMsc = 1000;
+
             dbContext = new DBContext();
         }
 
-        // ovde konfigurisati varijable, rtu-ove. celu rtdb
-        public void Configure(string path)
+        /// <summary>
+        /// Reading database data from configPath,
+        /// configuring RTUs and Process Variables
+        /// </summary>
+        /// <param name="configPath"></param>
+        public void Configure(string configPath)
         {
             RTUs = dbContext.GettAllRTUs();
 
@@ -118,29 +128,29 @@ namespace SCADA.CommAcqEngine
                 State = States.CLOSED,
             };
 
-            //Digital d4 = new Digital()
-            //{
-            //    ProcContrName = "RTU-1",
-            //    Name = "TEST1",
-            //    RelativeAddress = 3,
-            //    Class = DigitalDeviceClasses.SWITCH,
-            //    ValidCommands = { CommandTypes.CLOSE, CommandTypes.OPEN },
-            //    ValidStates = { States.CLOSED, States.OPENED, States.UNKNOWN },
-            //    Command = CommandTypes.OPEN,
-            //    State = States.CLOSED,
-            //};
+            Digital d4 = new Digital()
+            {
+                ProcContrName = "RTU-1",
+                Name = "MEAS_D_3",
+                RelativeAddress = 3,
+                Class = DigitalDeviceClasses.SWITCH,
+                ValidCommands = { CommandTypes.CLOSE, CommandTypes.OPEN },
+                ValidStates = { States.CLOSED, States.OPENED },
+                Command = CommandTypes.OPEN,
+                State = States.CLOSED,
+            };
 
-            //Digital d5 = new Digital()
-            //{
-            //    ProcContrName = "RTU-1",
-            //    Name = "TEST2",
-            //    RelativeAddress = 4,
-            //    Class = DigitalDeviceClasses.SWITCH,
-            //    ValidCommands = { CommandTypes.CLOSE, CommandTypes.OPEN },
-            //    ValidStates = { States.CLOSED, States.OPENED },
-            //    Command = CommandTypes.OPEN,
-            //    State = States.CLOSED,
-            //};
+            Digital d5 = new Digital()
+            {
+                ProcContrName = "RTU-1",
+                Name = "MEAS_D_4",
+                RelativeAddress = 4,
+                Class = DigitalDeviceClasses.SWITCH,
+                ValidCommands = { CommandTypes.CLOSE, CommandTypes.OPEN },
+                ValidStates = { States.CLOSED, States.OPENED },
+                Command = CommandTypes.OPEN,
+                State = States.CLOSED,
+            };
 
             // rtu 2
             //Digital d6 = new Digital()
@@ -201,24 +211,31 @@ namespace SCADA.CommAcqEngine
             //d1.Name = "PromenaD1";
         }
 
+        /// <summary>
+        /// Producing IORB requests for automatic data acquistion
+        /// </summary>
         public void StartAcquisition()
         {
+            int processing = 0;
             List<ProcessVariable> pvs = dbContext.GetAllProcessVariables();
 
-            while (!shutdown)
+            while (!isShutdown)
             {
                 foreach (ProcessVariable pv in pvs)
                 {
+                    //Console.WriteLine("** StartAcquisition(){0}, IORequests.Count = {1}", processing, IORequests.IORequests.Count);
+
                     IORequestBlock iorb = new IORequestBlock()
                     {
                         RequestType = RequestType.SEND_RECV,
-                        RtuName = pv.ProcContrName
+                        ProcessControllerName = pv.ProcContrName
                     };
 
                     RTU rtu;
-                    if (RTUs.TryGetValue(iorb.RtuName, out rtu))
+                    if (RTUs.TryGetValue(pv.ProcContrName, out rtu))
                     {
                         iorb.ReqAddress = (ushort)rtu.GetAcqAddress(pv);
+
                         switch (rtu.Protocol)
                         {
                             case IndustryProtocols.ModbusTCP:
@@ -257,38 +274,57 @@ namespace SCADA.CommAcqEngine
                                         break;
                                 }
 
+
                                 iorb.SendBuff = mdbHandler.PackData();
+                                //Console.WriteLine("packed data iorb.sendBuff= {0}", BitConverter.ToString(iorb.SendBuff, 0, 12));
+
                                 break;
                         }
 
                         iorb.SendMsgLength = iorb.SendBuff.Length;
 
-                        IORequests.EnqueueIOReqForProcess(iorb);
+                        //Console.WriteLine("*** StartAcquisition(){0}, IORequests.Count = {1},  REQUEST for enqueue= ", processing, IORequests.IORequests.Count, BitConverter.ToString(iorb.SendBuff, 0, iorb.SendMsgLength));
+                        IORequests.EnqueueRequest(iorb);
+                        Console.WriteLine("**** StartAcquisition(){0}, IORequests.Count = {1},  REQUEST ENQUEUED = ", processing, IORequests.IORequests.Count, BitConverter.ToString(iorb.SendBuff, 0, iorb.SendMsgLength));
                     }
                     else
-                    {
-                        // dodati message da je nevalidno podesavanje PV, da taj RTU ne postoji bla bla
-                        // ishedlovati nekako tu pv ili rtu....
+                    {   // ne postoji taj rtu sa tim imenom. izbrisati te procesne varijable sa rtu-om tog imena
+                        // dodati message da je nevalidno podesavanje PV
                         continue;
                     }
+                    processing++;
                 }
 
-                Thread.Sleep(millisecondsTimeout: timerMsc); // a ovo je timeout acq ciklusa
+                Thread.Sleep(millisecondsTimeout: timerMsc);
             }
+            // to do: close all communication channels
+            // delete...
+
+            return;
         }
 
+        /// <summary>
+        /// Processing answers from Simulator - Process Controller
+        /// </summary>
         public void ProcessPCAnwers()
         {
-            // kad bude shutdown uraditi clean...          
-            while (!shutdown)
+
+            int processing = 0;
+
+            while (!isShutdown)
             {
+
                 bool isSuccessful;
-                IORequestBlock answer = IORequests.GetAnswer(out isSuccessful);
+                IORequestBlock answer = IORequests.DequeueAnswer(out isSuccessful);
+                Console.WriteLine("\n* ProcessPCAnswers {0}, DequeueAnswer={1}, IOAnswer count = {2}", processing, isSuccessful, IORequests.IOAnswers.Count);
 
                 if (isSuccessful)
                 {
+
+                    Console.WriteLine("** ProcessPCAnswers {0},  ANSWER=", processing, BitConverter.ToString(answer.RcvBuff, 0, answer.RcvMsgLength));
+
                     RTU rtu;
-                    if (RTUs.TryGetValue((answer.RtuName), out rtu))
+                    if (RTUs.TryGetValue((answer.ProcessControllerName), out rtu))
                     {
                         switch (rtu.Protocol)
                         {
@@ -305,12 +341,13 @@ namespace SCADA.CommAcqEngine
                                         Digital target = (Digital)rtu.GetProcessVariableByAddress(answer.ReqAddress);
 
                                         if (target != null)
-                                        {                                           
+                                        {
                                             int[] array = new int[1];
                                             response.BitValues.CopyTo(array, 0);
 
                                             try
                                             {
+                                                // locking?
                                                 lock (dbContext.Database.SyncObject)
                                                 {
                                                     if (target.State != target.ValidStates[array[0]])
@@ -326,7 +363,7 @@ namespace SCADA.CommAcqEngine
                                             }
                                             catch
                                             {
-                                               // Console.WriteLine("Digital variable {0}, state: INVALID", target.Name);
+                                                // Console.WriteLine("Digital variable {0}, state: INVALID", target.Name);
                                             }
                                         }
 
@@ -336,15 +373,21 @@ namespace SCADA.CommAcqEngine
                                 break;
                         }
                     }
+                    else
+                    {
+                        // ...deleted rtu?
+                    }
                 }
 
-                Thread.Sleep(10);
+                Thread.Sleep(100);
             }
+            // to do: close all communication channels
+            // delete...
+
+            return;
         }
 
-        // CommandReceiver methods
-        //-------------------------
-
+        #region Command Receiver methods
         public OMSSCADACommon.Responses.Response ReadAllAnalog(OMSSCADACommon.DeviceTypes type)
         {
             throw new NotImplementedException();
@@ -414,83 +457,145 @@ namespace SCADA.CommAcqEngine
 
         public OMSSCADACommon.Responses.Response WriteSingleDigital(string id, CommandTypes command)
         {
-            //Digital digital = null;
+            Digital digital = null;
+            OMSSCADACommon.Responses.Response response = new OMSSCADACommon.Responses.Response();
 
-            //// is ID set in the request
-            //try
-            //{
-            //    digital = (Digital)dbContext.GetProcessVariableByName(id);
-            //}
-            //catch (Exception e)
-            //{
-            //    return ResultMessage.ID_NOT_SET;
-            //}
+            digital = (Digital)dbContext.GetProcessVariableByName(id);
 
-            //// does this ID exist in the database
-            //if (digital == null)
-            //{
-            //    return ResultMessage.INVALID_ID;
-            //}
+            // does this ID exist in the database
+            if (digital == null)
+            {
+                response.ResultMessage = ResultMessage.INVALID_ID;
+                return response;
+            }
 
-            //// is this a valid command for this digital device
-            //if (!CommandValidator.ValidateDigitalCommand(digital, command))
-            //{
-            //    return ResultMessage.INVALID_DIG_COMM;
-            //}
+            // is this a valid command for this digital device
+            if (!CommandValidator.ValidateDigitalCommand(digital, command))
+            {
+                response.ResultMessage = ResultMessage.INVALID_DIG_COMM;
+                return response;
+            }
 
-            //// execute command if it's different from current command
-            //if (digital.Command != command)
-            //{
-            //    digital.Command = command;
-            //    RTU rtu;
-            //    RTUs.TryGetValue(digital.ProcContrName, out rtu);
+            // execute command if it's different from current command
+            if (digital.Command != command)
+            {
+                RTU rtu;
+                RTUs.TryGetValue(digital.ProcContrName, out rtu);
 
-            //    IORequestBlock iorb = new IORequestBlock()
-            //    {
-            //        RequestType = RequestType.SEND,
+                IORequestBlock iorb = new IORequestBlock()
+                {
+                    RequestType = RequestType.SEND,
+                    ProcessControllerName = digital.ProcContrName
+                };
 
-            //    };
+                iorb.ReqAddress = (ushort)rtu.GetCommandAddress(digital);
 
-            //    protHandler = new ModbusHandler();
+                switch (rtu.Protocol)
+                {
+                    case IndustryProtocols.ModbusTCP:
 
-            //    switch (rtu.Protocol)
-            //    {
-            //        case IndustryProtocols.ModbusTCP:
-            //            ModbusHandler mdbHandler = (ModbusHandler)protHandler;
+                        ModbusHandler mdbHandler = new ModbusHandler
+                        {
+                            Header = new ModbusApplicationHeader()
+                            {
+                                TransactionId = 0,
+                                Length = 5,
+                                ProtocolId = (ushort)IndustryProtocols.ModbusTCP,
+                                DeviceAddress = rtu.Address
+                            },
 
-            //            mdbHandler.Header = new ModbusApplicationHeader()
-            //            {
-            //                TransactionId = 0,
-            //                Length = 0,
-            //                ProtocolId = (ushort)IndustryProtocols.ModbusTCP,
-            //                DeviceAddress = rtu.Address
-            //            };
+                            Request = new WriteRequest()
+                            {
+                                FunCode = FunctionCodes.WriteSingleCoil,
+                                StartAddr = (ushort)rtu.GetCommandAddress(digital),
+                                Value = (ushort)command
+                            }
+                        };
 
-            //            mdbHandler.Request = new WriteRequest()
-            //            {
-            //                FunCode = FunctionCodes.WriteSingleCoil,
-            //                StartAddr = (ushort)rtu.GetAcqAddress(digital),
-            //                Value = (ushort)command
-            //            };
+                        iorb.SendBuff = mdbHandler.PackData();
+                        iorb.SendMsgLength = iorb.SendBuff.Length;
+                        // iorb.SendMsgLength = 12;
+                        break;
+                }
 
-            //            iorb.SendBuff = mdbHandler.PackData();
-            //            break;
-            //    }
+                IORequests.EnqueueRequest(iorb);
+                Console.WriteLine("enqued {0}", BitConverter.ToString(iorb.SendBuff, 0, 12));
 
-            //    IORequests.EnqueueIOReqForProcess(iorb);
+                digital.Command = command;
 
-            //    // yet to be implemented
-            //    //CommandValidator.CheckCommandExecution();
+                CommandValidator.CheckCommandExecution();
 
-            //    IORequests.EnqueueIOReqForProcess(iorb);
+                response.ResultMessage = ResultMessage.OK;
+            }
 
-            //    CommandValidator.CheckCommandExecution();
-
-            //    return ResultMessage.OK;
-            //}
-
-            //return ResultMessage.OK;
-            return new OMSSCADACommon.Responses.Response();
+            return response;
         }
+
+        #endregion
+
+        // test
+        public void TestWriteSingleDigital()
+        {
+            int processing = 0;
+
+            while (!isShutdown)
+            {
+                Console.WriteLine("** TestWriteSingleDigital(){0}, IORequests.Count = {1}", processing, IORequests.IORequests.Count);
+
+                try
+                {
+                    IORequestBlock iorb = new IORequestBlock()
+                    {
+                        RequestType = RequestType.SEND,
+                        ProcessControllerName = "RTU-1"
+                    };
+
+
+                    iorb.ReqAddress = 0x00;
+                    byte[] send;
+                    send = new byte[12]
+                       {
+                         00,00,00,00,00,05,01,05,00,00,00,00
+                       };
+
+
+                    if (x)
+                    {
+
+                        send = new byte[12]
+                         {
+                           00,00,00,00,00,05,01,05,00,00,00,01
+                         };
+                    }
+                    lock (xlock)
+                    {
+                        x = !x;
+                    }
+
+                    iorb.SendBuff = send;
+                    iorb.SendMsgLength = 12;
+
+                    IORequests.EnqueueRequest(iorb);
+                    Console.WriteLine("enqued {0}", BitConverter.ToString(send, 0, 12));
+
+
+                }
+                catch (SocketException e)
+                {
+                    // ako MdbSim nije podignut to dobijes -no connection can  be made because target machine activelly refused it
+                    Console.WriteLine("ErrorCode = {0}", e.ErrorCode);
+                    Console.WriteLine(e.Message);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                }
+
+                Thread.Sleep(millisecondsTimeout: timerMsc);
+            }
+
+            return;
+        }
+
     }
 }

@@ -49,6 +49,8 @@ namespace DMSService
             DMSService.Instance.InitializeNetwork();
             DMSService.updatesCount += 1;
             ITransactionCallback callback = OperationContext.Current.GetCallbackChannel<ITransactionCallback>();
+
+            // i ovde puca nekad
             if (DMSService.tree.Data.Values.Count != 0)
             {
                 callback.CallbackPrepare(true);

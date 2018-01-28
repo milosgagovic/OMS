@@ -18,36 +18,24 @@ namespace SCADA.RealtimeDatabase
         public IndustryProtocols Protocol { get; set; }
 
         // (Modbus slave address) 
-        // this will be value in range 1 - 247 (0 - broadcast)
+        //  value in range 1 - 247 (0 - broadcast)
         public Byte Address { get; set; }
 
         public string Name { get; set; }
 
-        // adrese na kojima pocinju registri kontrolera
-        // registers starting Addresses
+        // controller pI/O starting Addresses
         public int DigOutStartAddr { get; set; }
         public int DigInStartAddr { get; set; }
         public int AnaInStartAddr { get; set; }
         public int AnaOutStartAddr { get; set; }
         public int CounterStartAddr { get; set; }
 
-        // number of registers
+        // number of pI/O
         public int DigOutCount { get; set; }
         public int DigInCount { get; set; }
         public int AnaInCount { get; set; }
         public int AnaOutCount { get; set; }
         public int CounterCount { get; set; }
-
-        //// arrays of mapped adresses
-        //// reading Addresses
-        //private int[] digitalInAddresses;
-        //private int[] analogInAddresses;
-
-        //// commanding Addresses
-        //private int[] digitalOutAddresses;
-        //private int[] analogOutAddresses;
-
-        //private int[] counterAddresses;
 
         // arrays of mapped adresses
         // reading Addresses
@@ -62,7 +50,6 @@ namespace SCADA.RealtimeDatabase
 
         public RTU()
         {
-            // mozda da ovde vallue bude process variable name... da se samou bazi cuvaju pv, ne u rtu..
             this.ProcessVariables = new Dictionary<ushort, ProcessVariable>();
 
             digitalInAddresses = new List<int>(DigInCount);
@@ -75,12 +62,6 @@ namespace SCADA.RealtimeDatabase
         public void Configure(string configPath)
         {
             // read from cofigPath.xml
-
-            //digitalInAddresses = new int[DigInCount];
-            //analogInAddresses = new int[AnaInCount];
-            //digitalOutAddresses = new int[DigOutCount];
-            //analogOutAddresses = new int[AnaOutCount];
-            //counterAddresses = new int[CounterCount];
 
             //setting starting addresses
             digitalInAddresses[0] = DigInStartAddr;
@@ -131,7 +112,7 @@ namespace SCADA.RealtimeDatabase
         // u memoriji odgovarajuceg kontrolera
         // mapiramo na InAdresses - adrese za citanje (akvizicija je u pitanju)
         // mapiranje se vrsi na osnovu relativne adrese promenljive
-        // i broja registara koje ona zauzima. relativna adresa je pozicija
+        // i broja pI/O koje ona zauzima. relativna adresa je pozicija
         // promenljive u nizu promenljivih istog tipa
         public int MapToAcqAddress(ProcessVariable variable)
         {
@@ -143,9 +124,8 @@ namespace SCADA.RealtimeDatabase
                     Digital digital = variable as Digital;
 
                     // ovo je prva promenljiva tipa digital, i ona pocinje na
-                    // startnom registru tog tipa
+                    // prvoj adresi tog tipa 
                     if (digital.RelativeAddress == 0)
-                        //digitalInAddresses[digital.RelativeAddress] = DigInStartAddr;
                         digitalInAddresses.Insert(digital.RelativeAddress, DigInStartAddr);
 
                     // racunanje adrese sledece promenljive istog tipa
@@ -160,7 +140,6 @@ namespace SCADA.RealtimeDatabase
                     if (nextAddress >= DigInStartAddr + DigInCount)
                         break;  // error, out of range
 
-                    //digitalInAddresses[digital.RelativeAddress + 1] = nextAddress;
                     digitalInAddresses.Insert(digital.RelativeAddress + 1, nextAddress);
                     break;
 
@@ -185,7 +164,6 @@ namespace SCADA.RealtimeDatabase
                     Digital digital = variable as Digital;
 
                     if (digital.RelativeAddress == 0)
-                        //digitalOutAddresses[digital.RelativeAddress] = DigOutStartAddr;
                         digitalOutAddresses.Insert(digital.RelativeAddress, DigOutStartAddr);
 
                     var currentAddress = digitalOutAddresses[digital.RelativeAddress];
@@ -196,7 +174,6 @@ namespace SCADA.RealtimeDatabase
                     if (nextAddress >= DigOutStartAddr + DigInCount)
                         break;  // error, out of range
 
-                    //digitalOutAddresses[digital.RelativeAddress + 1] = nextAddress;
                     digitalOutAddresses.Insert(digital.RelativeAddress + 1, nextAddress);
                     break;
 

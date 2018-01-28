@@ -17,22 +17,21 @@ namespace PCCommon
     }
 
     /* 
-     * Communication/Acquisition request description
+     * Commanding/Acquisition request description
      * 
      * Request defines single (or broadcast) communication transaction
      * between SCADA sw and process controller(s).    
-     * 
      */
     public class IORequestBlock
     {
         // transaction type.
         public RequestType RequestType { get; set; }
 
-        // register address
+        // request address in ProcessController address map
         public ushort ReqAddress { get; set; }
-         
+
         // target slave device Id - RTU address
-        public string RtuName { get; set; }
+        public string ProcessControllerName { get; set; }
 
 
         /* request parameters*/

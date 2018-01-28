@@ -9,6 +9,10 @@ using System.Threading.Tasks;
 
 namespace SCADA.CommAcqEngine
 {
+    /// <summary>
+    /// Used for inter-thread communication
+    /// (between ACQEngine and PCCommunicationEngine)
+    /// </summary>
     public class IORequestsQueue
     {
         private static object syncObj = new object();
@@ -31,7 +35,6 @@ namespace SCADA.CommAcqEngine
                 }
             }
         }
-
         public ConcurrentQueue<IORequestBlock> IOAnswers
         {
             get
@@ -46,11 +49,11 @@ namespace SCADA.CommAcqEngine
                 }
             }
         }
+
         private IORequestsQueue()
         {
             IORequests = new ConcurrentQueue<IORequestBlock>();
             IOAnswers = new ConcurrentQueue<IORequestBlock>();
-
         }
 
         public static IORequestsQueue GetQueue()
@@ -68,39 +71,43 @@ namespace SCADA.CommAcqEngine
             return instance;
         }
 
-        public void EnqueueIOReqForProcess(IORequestBlock iorb)
+        /* IORequests queue methods */
+        public void EnqueueRequest(IORequestBlock iorb)
         {
             IORequests.Enqueue(iorb);
         }
 
-        public IORequestBlock GetRequest(out bool isSuccessful)
+        // procitati kako ove metode rade
+        public IORequestBlock DequeueRequest(out bool isSuccessful)
         {
             IORequestBlock req;
             isSuccessful = IORequests.TryDequeue(out req);
-            IORequests.Take(1);
+            //IORequests.Take(1);
             return req;
         }
 
-        public bool IsIORequstEmpty()
-        {
-            return IORequests.IsEmpty;
-        }
+        //public bool IsIORequestsEmpty()
+        //{
+        //    return IORequests.IsEmpty;
+        //}
 
-        public void EnqueueIOAnswerForProcess(IORequestBlock iorb)
+
+        /* IOAnswers queue methods */
+        public void EnqueueAnswer(IORequestBlock iorb)
         {
             IOAnswers.Enqueue(iorb);
         }
 
-        public IORequestBlock GetAnswer(out bool isSuccessful)
+        public IORequestBlock DequeueAnswer(out bool isSuccessful)
         {
             IORequestBlock answ;
             isSuccessful = IOAnswers.TryDequeue(out answ);
             return answ;
         }
 
-        public bool IsIOAnswersEmpty()
-        {
-            return IOAnswers.Count == 0;
-        }
+        //public bool IsIOAnswersEmpty()
+        //{
+        //    return IOAnswers.Count == 0;
+        //}
     }
 }

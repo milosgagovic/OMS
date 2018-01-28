@@ -26,6 +26,7 @@ namespace DMSService
             List<ResourceDescription> rdl = gda.GetExtentValuesExtended(ModelCode.DISCRETE);
             ResourceDescription rd = rdl.Where(r => r.GetProperty(ModelCode.IDOBJ_MRID).AsString() == mrID).FirstOrDefault();
 
+            // ovde puca ako nemas .data => try catch dodati!
             long res = rd.GetProperty(ModelCode.MEASUREMENT_PSR).AsLong();
             
             List<SCADAUpdateModel> networkChange = new List<SCADAUpdateModel>();

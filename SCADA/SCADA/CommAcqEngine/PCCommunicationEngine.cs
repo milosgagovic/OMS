@@ -15,7 +15,7 @@ namespace SCADA.CommAcqEngine
     public class PCCommunicationEngine
     {
         IORequestsQueue IORequests;
-        bool shutdown;
+        bool isShutdown;
         int timerMsc;
 
         private Dictionary<string, ProcessController> processControllers { get; set; }
@@ -26,14 +26,22 @@ namespace SCADA.CommAcqEngine
         {
             IORequests = IORequestsQueue.GetQueue();
 
-            shutdown = false;
-            timerMsc = 100;
+            isShutdown = false;
+            timerMsc = 1000;
 
             processControllers = new Dictionary<string, ProcessController>();
             TcpChannels = new Dictionary<string, TcpClient>();
         }
 
-        // Komunikacioni sloj treba da konfigurise samo deo vezan bas za komunikaciju
+
+        #region Establishing communication 
+
+        /// <summary>
+        /// Reading communication paremeters from configPath,
+        /// and establishing communication links with Process Controllers
+        /// </summary>
+        /// <param name="configPath"></param>
+        /// <returns></returns>
         public bool Configure(string configPath)
         {
 
@@ -68,11 +76,14 @@ namespace SCADA.CommAcqEngine
             return CreateChannels();
         }
 
-        bool CreateChannels()
+        /// <summary>
+        /// Creating concrete communication channel for each Process Controller
+        /// </summary>
+        /// <returns></returns>
+        private bool CreateChannels()
         {
             List<ProcessController> failedProcessControllers = new List<ProcessController>();
 
-            // za svaki RTU pravimo kokretan komunikacioni link
             foreach (var rtu in processControllers)
             {
                 if (!EstablishCommunication(rtu.Value))
@@ -89,8 +100,7 @@ namespace SCADA.CommAcqEngine
             }
             failedProcessControllers.Clear();
 
-            // ako nije povezano sa kontrolerima 
-            // ni ne pocinjati StartProcessing
+            // if there is no any controller, do not start Processing
             if (processControllers.Count == 0)
                 return false;
 
@@ -103,7 +113,7 @@ namespace SCADA.CommAcqEngine
 
             try
             {
-                TcpClient tcpClient = new TcpClient() { SendTimeout = 1000, ReceiveTimeout = 1000 };
+                TcpClient tcpClient = new TcpClient();
 
                 // connecting to slave
                 tcpClient.Connect(rtu.HostName, rtu.HostPort);
@@ -114,8 +124,7 @@ namespace SCADA.CommAcqEngine
             }
             catch (SocketException e)
             {
-                // no connection can  be made because target machine activelly refused it
-                // ako MdbSim nije podignut to dobijes
+                // ako MdbSim nije podignut to dobijes -no connection can  be made because target machine activelly refused it
                 Console.WriteLine("ErrorCode = {0}", e.ErrorCode);
                 Console.WriteLine(e.Message);
             }
@@ -153,75 +162,98 @@ namespace SCADA.CommAcqEngine
             return retval;
         }
 
-        public void StartProcessing()
+        #endregion
+
+
+        /// <summary>
+        /// Getting IORB requests from IORequests queue, sending it to Simulator;
+        /// Receiving Simulator answers, enqueing it to IOAnswers queue.
+        /// </summary>
+        public void ProcessRequestsFromQueue()
         {
-            while (!shutdown)
+            int processing = 0;
+
+            while (!isShutdown)
             {
+
                 bool isSuccessful;
-                IORequestBlock toProcess = IORequests.GetRequest(out isSuccessful);
+                IORequestBlock forProcess = IORequests.DequeueRequest(out isSuccessful);
+                Console.WriteLine("* ProcessRequests(){0}, DequeueRequest= {1}, IORequests.Count = {2}", processing, isSuccessful, IORequests.IORequests.Count);
+
                 if (isSuccessful)
                 {
+
+                    Console.WriteLine("** ProcessRequests(){0}, REQUEST = ", processing, BitConverter.ToString(forProcess.SendBuff, 0, forProcess.SendMsgLength));
+
                     TcpClient client;
 
-                    if (TcpChannels.TryGetValue(toProcess.RtuName, out client))
+                    if (TcpChannels.TryGetValue(forProcess.ProcessControllerName, out client))
                     {
-                        // ovde try catch oabvezno. ako ides na crveno dugme tu pada
+
                         try
                         {
+                            // to do: test this case...connection lasts forever? 
+                            if (!client.Connected)
+                            {
+                                processControllers.TryGetValue(forProcess.ProcessControllerName, out ProcessController rtu);
+                                client.Connect(rtu.HostName, rtu.HostPort);
+                            }
 
                             NetworkStream stream = client.GetStream();
                             int offset = 0;
 
-                            stream.Write(toProcess.SendBuff, offset, toProcess.SendMsgLength);
+                            stream.Write(forProcess.SendBuff, offset, forProcess.SendMsgLength);
 
-                            // kasnije razmisliti da li poruke dolaze cele, ili u
-                            // delovima ako su velike...da li je potrebno u petlji
-                            // citati
+                            Console.WriteLine("*** REQUEST <SEND> = ", BitConverter.ToString(forProcess.SendBuff, 0, forProcess.SendMsgLength));
 
-                            toProcess.RcvBuff = new byte[client.ReceiveBufferSize];
+                            // to do: processing big messages.  whole, or in parts?
+                            // ...
 
-                            var length = stream.Read(toProcess.RcvBuff, offset, client.ReceiveBufferSize);
-                            toProcess.RcvMsgLength = length;
+                            forProcess.RcvBuff = new byte[client.ReceiveBufferSize];
 
-                            IORequests.EnqueueIOAnswerForProcess(toProcess);
+                            var length = stream.Read(forProcess.RcvBuff, offset, client.ReceiveBufferSize);
+                            forProcess.RcvMsgLength = length;
+
+                            Console.WriteLine("*** ANSWER <READ> = ", BitConverter.ToString(forProcess.RcvBuff, 0, forProcess.RcvMsgLength));
+
+                            IORequests.EnqueueAnswer(forProcess);
+                            Console.WriteLine("**** ProcessRequests(){0}, Answer enqueued IOAnswers.Count = {1}", processing, IORequests.IOAnswers.Count);
+
                         }
                         catch (Exception e)
                         {
+                            // to do: handle this...
+
+
                             Console.WriteLine(e.Message);
                             //throw;
 
                             // kanal sa kontrolerom je zatvoren
-                            if (client.Connected)
-                                client.Close();
+                            //if (client.Connected)
+                            //  client.Close();
 
-                            TcpChannels.Remove(toProcess.RtuName);
+                            // TcpChannels.Remove(toProcess.RtuName);
                         }
-
-
                     }
                     else
                     {
-                        Console.WriteLine("\nThere is no communication link with {0} rtu. Request will be disposed.", toProcess.RtuName);
+                        Console.WriteLine("\nThere is no communication link with {0} rtu. Request is disposed.", forProcess.ProcessControllerName);
                     }
                 }
+
+                processing++;
                 Thread.Sleep(millisecondsTimeout: timerMsc);
             }
+
+            foreach (var channel in TcpChannels.Values)
             {
-                foreach (var channel in TcpChannels.Values)
-                {
-                    // ne treba sve
-                    channel.GetStream().Close();
-                    channel.Close();
-                    channel.Client.Disconnect(true);
-                }
-
-                TcpChannels.Clear();
+                // !!! change this. not valid calling all methods
+                channel.GetStream().Close();
+                channel.Close();
+                channel.Client.Disconnect(true);
             }
-        }
 
-        public void AddIOReqForProcess(IORequestBlock iorb)
-        {
-            IORequests.EnqueueIOReqForProcess(iorb);
+            TcpChannels.Clear();
         }
 
     }

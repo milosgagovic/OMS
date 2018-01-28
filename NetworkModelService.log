@@ -22023,3 +22023,411 @@ Parameter name: source
 1/26/2018 11:27:15 PM : Trace level: Info
 1/26/2018 11:27:15 PM : The Network Model Service is started.
 1/26/2018 11:27:15 PM : Press <Enter> to stop the service.
+1/28/2018 10:15:59 PM : Starting Network Model Service...
+1/28/2018 10:16:07 PM : The WCF service GenericDataAccess is ready.
+1/28/2018 10:16:07 PM : Endpoints:
+1/28/2018 10:16:07 PM : net.tcp://localhost:10000/NetworkModelService/GDA/
+1/28/2018 10:16:07 PM : The WCF service NetworkModelTransactionService is ready.
+1/28/2018 10:16:07 PM : Endpoints:
+1/28/2018 10:16:07 PM : Connection string: ../NetworkModelData.data
+1/28/2018 10:16:07 PM : Trace level: Info
+1/28/2018 10:16:07 PM : The Network Model Service is started.
+1/28/2018 10:16:07 PM : Press <Enter> to stop the service.
+1/28/2018 10:23:13 PM : Starting Network Model Service...
+1/28/2018 10:23:14 PM : The WCF service GenericDataAccess is ready.
+1/28/2018 10:23:14 PM : Endpoints:
+1/28/2018 10:23:14 PM : net.tcp://localhost:10000/NetworkModelService/GDA/
+1/28/2018 10:23:14 PM : The WCF service NetworkModelTransactionService is ready.
+1/28/2018 10:23:14 PM : Endpoints:
+1/28/2018 10:23:14 PM : Connection string: ../NetworkModelData.data
+1/28/2018 10:23:14 PM : Trace level: Info
+1/28/2018 10:23:14 PM : The Network Model Service is started.
+1/28/2018 10:23:14 PM : Press <Enter> to stop the service.
+1/28/2018 10:26:22 PM : Applying  delta to network model.
+1/28/2018 10:26:22 PM : Inserting entity with GID (0000000100000001).
+1/28/2018 10:26:22 PM : Inserting entity with GID (0000000200000001).
+1/28/2018 10:26:22 PM : Inserting entity with GID (0000000200000002).
+1/28/2018 10:26:22 PM : Inserting entity with GID (0000000200000003).
+1/28/2018 10:26:22 PM : Inserting entity with GID (0000000200000004).
+1/28/2018 10:26:22 PM : Inserting entity with GID (0000000200000005).
+1/28/2018 10:26:22 PM : Inserting entity with GID (0000000200000006).
+1/28/2018 10:26:22 PM : Inserting entity with GID (0000000200000007).
+1/28/2018 10:26:22 PM : Inserting entity with GID (0000000300000001).
+1/28/2018 10:26:22 PM : Inserting entity with GID (0000000400000001).
+1/28/2018 10:26:22 PM : Inserting entity with GID (0000000400000002).
+1/28/2018 10:26:22 PM : Inserting entity with GID (0000000400000003).
+1/28/2018 10:26:22 PM : Inserting entity with GID (0000000500000001).
+1/28/2018 10:26:22 PM : Inserting entity with GID (0000000500000002).
+1/28/2018 10:26:22 PM : Inserting entity with GID (0000000500000003).
+1/28/2018 10:26:22 PM : Inserting entity with GID (0000000600000001).
+1/28/2018 10:26:22 PM : Inserting entity with GID (0000000600000002).
+1/28/2018 10:26:22 PM : Inserting entity with GID (0000000600000003).
+1/28/2018 10:26:22 PM : Inserting entity with GID (0000000700000001).
+1/28/2018 10:26:22 PM : Inserting entity with GID (0000000700000002).
+1/28/2018 10:26:22 PM : Inserting entity with GID (0000000700000003).
+1/28/2018 10:26:22 PM : Inserting entity with GID (0000000700000004).
+1/28/2018 10:26:22 PM : Inserting entity with GID (0000000700000005).
+1/28/2018 10:26:22 PM : Inserting entity with GID (0000000700000006).
+1/28/2018 10:26:22 PM : Inserting entity with GID (0000000700000007).
+1/28/2018 10:26:22 PM : Inserting entity with GID (0000000700000008).
+1/28/2018 10:26:22 PM : Inserting entity with GID (0000000700000009).
+1/28/2018 10:26:22 PM : Inserting entity with GID (000000070000000a).
+1/28/2018 10:26:22 PM : Inserting entity with GID (000000070000000b).
+1/28/2018 10:26:22 PM : Inserting entity with GID (000000070000000c).
+1/28/2018 10:26:22 PM : Inserting entity with GID (000000070000000d).
+1/28/2018 10:26:22 PM : Inserting entity with GID (000000070000000e).
+1/28/2018 10:26:22 PM : Inserting entity with GID (000000070000000f).
+1/28/2018 10:26:22 PM : Inserting entity with GID (0000000700000010).
+1/28/2018 10:26:22 PM : Inserting entity with GID (0000000800000001).
+1/28/2018 10:26:22 PM : Inserting entity with GID (0000000800000002).
+1/28/2018 10:26:22 PM : Inserting entity with GID (0000000800000003).
+1/28/2018 10:26:22 PM : Applying delta to network model successfully finished.
+1/28/2018 10:27:07 PM : Starting Network Model Service...
+1/28/2018 10:27:07 PM : Inserting entity with GID (0000000100000001).
+1/28/2018 10:27:07 PM : Inserting entity with GID (0000000200000001).
+1/28/2018 10:27:07 PM : Inserting entity with GID (0000000200000002).
+1/28/2018 10:27:07 PM : Inserting entity with GID (0000000200000003).
+1/28/2018 10:27:07 PM : Inserting entity with GID (0000000200000004).
+1/28/2018 10:27:07 PM : Inserting entity with GID (0000000200000005).
+1/28/2018 10:27:07 PM : Inserting entity with GID (0000000200000006).
+1/28/2018 10:27:07 PM : Inserting entity with GID (0000000200000007).
+1/28/2018 10:27:07 PM : Inserting entity with GID (0000000300000001).
+1/28/2018 10:27:07 PM : Inserting entity with GID (0000000400000001).
+1/28/2018 10:27:08 PM : Inserting entity with GID (0000000400000002).
+1/28/2018 10:27:08 PM : Inserting entity with GID (0000000400000003).
+1/28/2018 10:27:08 PM : Inserting entity with GID (0000000500000001).
+1/28/2018 10:27:08 PM : Inserting entity with GID (0000000500000002).
+1/28/2018 10:27:08 PM : Inserting entity with GID (0000000500000003).
+1/28/2018 10:27:08 PM : Inserting entity with GID (0000000600000001).
+1/28/2018 10:27:08 PM : Inserting entity with GID (0000000600000002).
+1/28/2018 10:27:08 PM : Inserting entity with GID (0000000600000003).
+1/28/2018 10:27:08 PM : Inserting entity with GID (0000000700000001).
+1/28/2018 10:27:08 PM : Inserting entity with GID (0000000700000002).
+1/28/2018 10:27:08 PM : Inserting entity with GID (0000000700000003).
+1/28/2018 10:27:08 PM : Inserting entity with GID (0000000700000004).
+1/28/2018 10:27:08 PM : Inserting entity with GID (0000000700000005).
+1/28/2018 10:27:08 PM : Inserting entity with GID (0000000700000006).
+1/28/2018 10:27:08 PM : Inserting entity with GID (0000000700000007).
+1/28/2018 10:27:08 PM : Inserting entity with GID (0000000700000008).
+1/28/2018 10:27:08 PM : Inserting entity with GID (0000000700000009).
+1/28/2018 10:27:08 PM : Inserting entity with GID (000000070000000a).
+1/28/2018 10:27:08 PM : Inserting entity with GID (000000070000000b).
+1/28/2018 10:27:08 PM : Inserting entity with GID (000000070000000c).
+1/28/2018 10:27:08 PM : Inserting entity with GID (000000070000000d).
+1/28/2018 10:27:08 PM : Inserting entity with GID (000000070000000e).
+1/28/2018 10:27:08 PM : Inserting entity with GID (000000070000000f).
+1/28/2018 10:27:08 PM : Inserting entity with GID (0000000700000010).
+1/28/2018 10:27:08 PM : Inserting entity with GID (0000000800000001).
+1/28/2018 10:27:08 PM : Inserting entity with GID (0000000800000002).
+1/28/2018 10:27:09 PM : Inserting entity with GID (0000000800000003).
+1/28/2018 10:27:09 PM : Inserting entity with GID (0000000100000001).
+1/28/2018 10:27:09 PM : Inserting entity with GID (0000000200000001).
+1/28/2018 10:27:09 PM : Inserting entity with GID (0000000200000002).
+1/28/2018 10:27:09 PM : Inserting entity with GID (0000000200000003).
+1/28/2018 10:27:09 PM : Inserting entity with GID (0000000200000004).
+1/28/2018 10:27:09 PM : Inserting entity with GID (0000000200000005).
+1/28/2018 10:27:09 PM : Inserting entity with GID (0000000200000006).
+1/28/2018 10:27:09 PM : Inserting entity with GID (0000000200000007).
+1/28/2018 10:27:09 PM : Inserting entity with GID (0000000300000001).
+1/28/2018 10:27:09 PM : Inserting entity with GID (0000000400000001).
+1/28/2018 10:27:09 PM : Inserting entity with GID (0000000400000002).
+1/28/2018 10:27:09 PM : Inserting entity with GID (0000000400000003).
+1/28/2018 10:27:09 PM : Inserting entity with GID (0000000500000001).
+1/28/2018 10:27:09 PM : Inserting entity with GID (0000000500000002).
+1/28/2018 10:27:09 PM : Inserting entity with GID (0000000500000003).
+1/28/2018 10:27:09 PM : Inserting entity with GID (0000000600000001).
+1/28/2018 10:27:09 PM : Inserting entity with GID (0000000600000002).
+1/28/2018 10:27:09 PM : Inserting entity with GID (0000000600000003).
+1/28/2018 10:27:09 PM : Inserting entity with GID (0000000700000001).
+1/28/2018 10:27:09 PM : Inserting entity with GID (0000000700000002).
+1/28/2018 10:27:09 PM : Inserting entity with GID (0000000700000003).
+1/28/2018 10:27:09 PM : Inserting entity with GID (0000000700000004).
+1/28/2018 10:27:09 PM : Inserting entity with GID (0000000700000005).
+1/28/2018 10:27:09 PM : Inserting entity with GID (0000000700000006).
+1/28/2018 10:27:09 PM : Inserting entity with GID (0000000700000007).
+1/28/2018 10:27:10 PM : Inserting entity with GID (0000000700000008).
+1/28/2018 10:27:10 PM : Inserting entity with GID (0000000700000009).
+1/28/2018 10:27:10 PM : Inserting entity with GID (000000070000000a).
+1/28/2018 10:27:10 PM : Inserting entity with GID (000000070000000b).
+1/28/2018 10:27:10 PM : Inserting entity with GID (000000070000000c).
+1/28/2018 10:27:10 PM : Inserting entity with GID (000000070000000d).
+1/28/2018 10:27:10 PM : Inserting entity with GID (000000070000000e).
+1/28/2018 10:27:10 PM : Inserting entity with GID (000000070000000f).
+1/28/2018 10:27:10 PM : Inserting entity with GID (0000000700000010).
+1/28/2018 10:27:10 PM : Inserting entity with GID (0000000800000001).
+1/28/2018 10:27:10 PM : Inserting entity with GID (0000000800000002).
+1/28/2018 10:27:10 PM : Inserting entity with GID (0000000800000003).
+1/28/2018 10:27:10 PM : The WCF service GenericDataAccess is ready.
+1/28/2018 10:27:10 PM : Endpoints:
+1/28/2018 10:27:10 PM : net.tcp://localhost:10000/NetworkModelService/GDA/
+1/28/2018 10:27:10 PM : The WCF service NetworkModelTransactionService is ready.
+1/28/2018 10:27:10 PM : Endpoints:
+1/28/2018 10:27:11 PM : Connection string: ../NetworkModelData.data
+1/28/2018 10:27:11 PM : Trace level: Info
+1/28/2018 10:27:11 PM : The Network Model Service is started.
+1/28/2018 10:27:27 PM : Starting Network Model Service...
+1/28/2018 10:27:27 PM : Inserting entity with GID (0000000100000001).
+1/28/2018 10:27:27 PM : Inserting entity with GID (0000000200000001).
+1/28/2018 10:27:27 PM : Inserting entity with GID (0000000200000002).
+1/28/2018 10:27:27 PM : Inserting entity with GID (0000000200000003).
+1/28/2018 10:27:28 PM : Inserting entity with GID (0000000200000004).
+1/28/2018 10:27:28 PM : Inserting entity with GID (0000000200000005).
+1/28/2018 10:27:28 PM : Inserting entity with GID (0000000200000006).
+1/28/2018 10:27:28 PM : Inserting entity with GID (0000000200000007).
+1/28/2018 10:27:28 PM : Inserting entity with GID (0000000300000001).
+1/28/2018 10:27:28 PM : Inserting entity with GID (0000000400000001).
+1/28/2018 10:27:28 PM : Inserting entity with GID (0000000400000002).
+1/28/2018 10:27:28 PM : Inserting entity with GID (0000000400000003).
+1/28/2018 10:27:28 PM : Inserting entity with GID (0000000500000001).
+1/28/2018 10:27:28 PM : Inserting entity with GID (0000000500000002).
+1/28/2018 10:27:28 PM : Inserting entity with GID (0000000500000003).
+1/28/2018 10:27:28 PM : Inserting entity with GID (0000000600000001).
+1/28/2018 10:27:28 PM : Inserting entity with GID (0000000600000002).
+1/28/2018 10:27:28 PM : Inserting entity with GID (0000000600000003).
+1/28/2018 10:27:28 PM : Inserting entity with GID (0000000700000001).
+1/28/2018 10:27:28 PM : Inserting entity with GID (0000000700000002).
+1/28/2018 10:27:28 PM : Inserting entity with GID (0000000700000003).
+1/28/2018 10:27:28 PM : Inserting entity with GID (0000000700000004).
+1/28/2018 10:27:28 PM : Inserting entity with GID (0000000700000005).
+1/28/2018 10:27:28 PM : Inserting entity with GID (0000000700000006).
+1/28/2018 10:27:28 PM : Inserting entity with GID (0000000700000007).
+1/28/2018 10:27:28 PM : Inserting entity with GID (0000000700000008).
+1/28/2018 10:27:28 PM : Inserting entity with GID (0000000700000009).
+1/28/2018 10:27:28 PM : Inserting entity with GID (000000070000000a).
+1/28/2018 10:27:29 PM : Inserting entity with GID (000000070000000b).
+1/28/2018 10:27:29 PM : Inserting entity with GID (000000070000000c).
+1/28/2018 10:27:29 PM : Inserting entity with GID (000000070000000d).
+1/28/2018 10:27:29 PM : Inserting entity with GID (000000070000000e).
+1/28/2018 10:27:29 PM : Inserting entity with GID (000000070000000f).
+1/28/2018 10:27:29 PM : Inserting entity with GID (0000000700000010).
+1/28/2018 10:27:29 PM : Inserting entity with GID (0000000800000001).
+1/28/2018 10:27:29 PM : Inserting entity with GID (0000000800000002).
+1/28/2018 10:27:29 PM : Inserting entity with GID (0000000800000003).
+1/28/2018 10:27:29 PM : Inserting entity with GID (0000000100000001).
+1/28/2018 10:27:29 PM : Inserting entity with GID (0000000200000001).
+1/28/2018 10:27:29 PM : Inserting entity with GID (0000000200000002).
+1/28/2018 10:27:29 PM : Inserting entity with GID (0000000200000003).
+1/28/2018 10:27:29 PM : Inserting entity with GID (0000000200000004).
+1/28/2018 10:27:29 PM : Inserting entity with GID (0000000200000005).
+1/28/2018 10:27:29 PM : Inserting entity with GID (0000000200000006).
+1/28/2018 10:27:29 PM : Inserting entity with GID (0000000200000007).
+1/28/2018 10:27:29 PM : Inserting entity with GID (0000000300000001).
+1/28/2018 10:27:29 PM : Inserting entity with GID (0000000400000001).
+1/28/2018 10:27:29 PM : Inserting entity with GID (0000000400000002).
+1/28/2018 10:27:29 PM : Inserting entity with GID (0000000400000003).
+1/28/2018 10:27:29 PM : Inserting entity with GID (0000000500000001).
+1/28/2018 10:27:29 PM : Inserting entity with GID (0000000500000002).
+1/28/2018 10:27:29 PM : Inserting entity with GID (0000000500000003).
+1/28/2018 10:27:29 PM : Inserting entity with GID (0000000600000001).
+1/28/2018 10:27:30 PM : Inserting entity with GID (0000000600000002).
+1/28/2018 10:27:30 PM : Inserting entity with GID (0000000600000003).
+1/28/2018 10:27:30 PM : Inserting entity with GID (0000000700000001).
+1/28/2018 10:27:30 PM : Inserting entity with GID (0000000700000002).
+1/28/2018 10:27:30 PM : Inserting entity with GID (0000000700000003).
+1/28/2018 10:27:30 PM : Inserting entity with GID (0000000700000004).
+1/28/2018 10:27:30 PM : Inserting entity with GID (0000000700000005).
+1/28/2018 10:27:30 PM : Inserting entity with GID (0000000700000006).
+1/28/2018 10:27:30 PM : Inserting entity with GID (0000000700000007).
+1/28/2018 10:27:30 PM : Inserting entity with GID (0000000700000008).
+1/28/2018 10:27:30 PM : Inserting entity with GID (0000000700000009).
+1/28/2018 10:27:30 PM : Inserting entity with GID (000000070000000a).
+1/28/2018 10:27:30 PM : Inserting entity with GID (000000070000000b).
+1/28/2018 10:27:30 PM : Inserting entity with GID (000000070000000c).
+1/28/2018 10:27:30 PM : Inserting entity with GID (000000070000000d).
+1/28/2018 10:27:30 PM : Inserting entity with GID (000000070000000e).
+1/28/2018 10:27:30 PM : Inserting entity with GID (000000070000000f).
+1/28/2018 10:27:30 PM : Inserting entity with GID (0000000700000010).
+1/28/2018 10:27:30 PM : Inserting entity with GID (0000000800000001).
+1/28/2018 10:27:30 PM : Inserting entity with GID (0000000800000002).
+1/28/2018 10:27:30 PM : Inserting entity with GID (0000000800000003).
+1/28/2018 10:27:30 PM : The WCF service GenericDataAccess is ready.
+1/28/2018 10:27:31 PM : Endpoints:
+1/28/2018 10:27:31 PM : net.tcp://localhost:10000/NetworkModelService/GDA/
+1/28/2018 10:27:31 PM : The WCF service NetworkModelTransactionService is ready.
+1/28/2018 10:27:31 PM : Endpoints:
+1/28/2018 10:27:31 PM : Connection string: ../NetworkModelData.data
+1/28/2018 10:27:31 PM : Trace level: Info
+1/28/2018 10:27:31 PM : The Network Model Service is started.
+1/28/2018 10:27:31 PM : Press <Enter> to stop the service.
+1/28/2018 10:28:31 PM : Starting Network Model Service...
+1/28/2018 10:28:31 PM : Inserting entity with GID (0000000100000001).
+1/28/2018 10:28:31 PM : Inserting entity with GID (0000000200000001).
+1/28/2018 10:28:31 PM : Inserting entity with GID (0000000200000002).
+1/28/2018 10:28:31 PM : Inserting entity with GID (0000000200000003).
+1/28/2018 10:28:31 PM : Inserting entity with GID (0000000200000004).
+1/28/2018 10:28:31 PM : Inserting entity with GID (0000000200000005).
+1/28/2018 10:28:31 PM : Inserting entity with GID (0000000200000006).
+1/28/2018 10:28:32 PM : Inserting entity with GID (0000000200000007).
+1/28/2018 10:28:32 PM : Inserting entity with GID (0000000300000001).
+1/28/2018 10:28:32 PM : Inserting entity with GID (0000000400000001).
+1/28/2018 10:28:32 PM : Inserting entity with GID (0000000400000002).
+1/28/2018 10:28:32 PM : Inserting entity with GID (0000000400000003).
+1/28/2018 10:28:32 PM : Inserting entity with GID (0000000500000001).
+1/28/2018 10:28:32 PM : Inserting entity with GID (0000000500000002).
+1/28/2018 10:28:32 PM : Inserting entity with GID (0000000500000003).
+1/28/2018 10:28:32 PM : Inserting entity with GID (0000000600000001).
+1/28/2018 10:28:32 PM : Inserting entity with GID (0000000600000002).
+1/28/2018 10:28:32 PM : Inserting entity with GID (0000000600000003).
+1/28/2018 10:28:32 PM : Inserting entity with GID (0000000700000001).
+1/28/2018 10:28:33 PM : Inserting entity with GID (0000000700000002).
+1/28/2018 10:28:33 PM : Inserting entity with GID (0000000700000003).
+1/28/2018 10:28:33 PM : Inserting entity with GID (0000000700000004).
+1/28/2018 10:28:33 PM : Inserting entity with GID (0000000700000005).
+1/28/2018 10:28:33 PM : Inserting entity with GID (0000000700000006).
+1/28/2018 10:28:33 PM : Inserting entity with GID (0000000700000007).
+1/28/2018 10:28:33 PM : Inserting entity with GID (0000000700000008).
+1/28/2018 10:28:33 PM : Inserting entity with GID (0000000700000009).
+1/28/2018 10:28:33 PM : Inserting entity with GID (000000070000000a).
+1/28/2018 10:28:34 PM : Inserting entity with GID (000000070000000b).
+1/28/2018 10:28:34 PM : Inserting entity with GID (000000070000000c).
+1/28/2018 10:28:34 PM : Inserting entity with GID (000000070000000d).
+1/28/2018 10:28:34 PM : Inserting entity with GID (000000070000000e).
+1/28/2018 10:28:34 PM : Inserting entity with GID (000000070000000f).
+1/28/2018 10:28:34 PM : Inserting entity with GID (0000000700000010).
+1/28/2018 10:28:34 PM : Inserting entity with GID (0000000800000001).
+1/28/2018 10:28:34 PM : Inserting entity with GID (0000000800000002).
+1/28/2018 10:28:34 PM : Inserting entity with GID (0000000800000003).
+1/28/2018 10:28:34 PM : Inserting entity with GID (0000000100000001).
+1/28/2018 10:28:34 PM : Inserting entity with GID (0000000200000001).
+1/28/2018 10:28:34 PM : Inserting entity with GID (0000000200000002).
+1/28/2018 10:28:34 PM : Inserting entity with GID (0000000200000003).
+1/28/2018 10:28:34 PM : Inserting entity with GID (0000000200000004).
+1/28/2018 10:28:34 PM : Inserting entity with GID (0000000200000005).
+1/28/2018 10:28:34 PM : Inserting entity with GID (0000000200000006).
+1/28/2018 10:28:34 PM : Inserting entity with GID (0000000200000007).
+1/28/2018 10:28:34 PM : Inserting entity with GID (0000000300000001).
+1/28/2018 10:28:34 PM : Inserting entity with GID (0000000400000001).
+1/28/2018 10:28:34 PM : Inserting entity with GID (0000000400000002).
+1/28/2018 10:28:34 PM : Inserting entity with GID (0000000400000003).
+1/28/2018 10:28:35 PM : Inserting entity with GID (0000000500000001).
+1/28/2018 10:28:35 PM : Inserting entity with GID (0000000500000002).
+1/28/2018 10:28:35 PM : Inserting entity with GID (0000000500000003).
+1/28/2018 10:28:35 PM : Inserting entity with GID (0000000600000001).
+1/28/2018 10:28:35 PM : Inserting entity with GID (0000000600000002).
+1/28/2018 10:28:35 PM : Inserting entity with GID (0000000600000003).
+1/28/2018 10:28:35 PM : Inserting entity with GID (0000000700000001).
+1/28/2018 10:28:35 PM : Inserting entity with GID (0000000700000002).
+1/28/2018 10:28:35 PM : Inserting entity with GID (0000000700000003).
+1/28/2018 10:28:35 PM : Inserting entity with GID (0000000700000004).
+1/28/2018 10:28:35 PM : Inserting entity with GID (0000000700000005).
+1/28/2018 10:28:35 PM : Inserting entity with GID (0000000700000006).
+1/28/2018 10:28:35 PM : Inserting entity with GID (0000000700000007).
+1/28/2018 10:28:35 PM : Inserting entity with GID (0000000700000008).
+1/28/2018 10:28:35 PM : Inserting entity with GID (0000000700000009).
+1/28/2018 10:28:35 PM : Inserting entity with GID (000000070000000a).
+1/28/2018 10:28:35 PM : Inserting entity with GID (000000070000000b).
+1/28/2018 10:28:35 PM : Inserting entity with GID (000000070000000c).
+1/28/2018 10:28:35 PM : Inserting entity with GID (000000070000000d).
+1/28/2018 10:28:35 PM : Inserting entity with GID (000000070000000e).
+1/28/2018 10:28:35 PM : Inserting entity with GID (000000070000000f).
+1/28/2018 10:28:35 PM : Inserting entity with GID (0000000700000010).
+1/28/2018 10:28:35 PM : Inserting entity with GID (0000000800000001).
+1/28/2018 10:28:35 PM : Inserting entity with GID (0000000800000002).
+1/28/2018 10:28:35 PM : Inserting entity with GID (0000000800000003).
+1/28/2018 10:28:35 PM : The WCF service GenericDataAccess is ready.
+1/28/2018 10:28:35 PM : Endpoints:
+1/28/2018 10:28:35 PM : net.tcp://localhost:10000/NetworkModelService/GDA/
+1/28/2018 10:28:35 PM : The WCF service NetworkModelTransactionService is ready.
+1/28/2018 10:28:35 PM : Endpoints:
+1/28/2018 10:28:35 PM : Connection string: ../NetworkModelData.data
+1/28/2018 10:28:35 PM : Trace level: Info
+1/28/2018 10:28:35 PM : The Network Model Service is started.
+1/28/2018 10:28:35 PM : Press <Enter> to stop the service.
+1/28/2018 10:31:03 PM : Starting Network Model Service...
+1/28/2018 10:31:04 PM : The WCF service GenericDataAccess is ready.
+1/28/2018 10:31:04 PM : Endpoints:
+1/28/2018 10:31:04 PM : net.tcp://localhost:10000/NetworkModelService/GDA/
+1/28/2018 10:31:04 PM : The WCF service NetworkModelTransactionService is ready.
+1/28/2018 10:31:04 PM : Endpoints:
+1/28/2018 10:31:04 PM : Connection string: ../NetworkModelData.data
+1/28/2018 10:31:04 PM : Trace level: Info
+1/28/2018 10:31:04 PM : The Network Model Service is started.
+1/28/2018 10:31:04 PM : Press <Enter> to stop the service.
+1/28/2018 10:32:22 PM : Applying  delta to network model.
+1/28/2018 10:32:22 PM : Inserting entity with GID (0000000100000001).
+1/28/2018 10:32:22 PM : Inserting entity with GID (0000000200000001).
+1/28/2018 10:32:22 PM : Inserting entity with GID (0000000200000002).
+1/28/2018 10:32:22 PM : Inserting entity with GID (0000000200000003).
+1/28/2018 10:32:22 PM : Inserting entity with GID (0000000200000004).
+1/28/2018 10:32:22 PM : Inserting entity with GID (0000000200000005).
+1/28/2018 10:32:22 PM : Inserting entity with GID (0000000200000006).
+1/28/2018 10:32:22 PM : Inserting entity with GID (0000000200000007).
+1/28/2018 10:32:22 PM : Inserting entity with GID (0000000300000001).
+1/28/2018 10:32:22 PM : Inserting entity with GID (0000000400000001).
+1/28/2018 10:32:22 PM : Inserting entity with GID (0000000400000002).
+1/28/2018 10:32:22 PM : Inserting entity with GID (0000000400000003).
+1/28/2018 10:32:22 PM : Inserting entity with GID (0000000500000001).
+1/28/2018 10:32:22 PM : Inserting entity with GID (0000000500000002).
+1/28/2018 10:32:22 PM : Inserting entity with GID (0000000500000003).
+1/28/2018 10:32:22 PM : Inserting entity with GID (0000000600000001).
+1/28/2018 10:32:22 PM : Inserting entity with GID (0000000600000002).
+1/28/2018 10:32:22 PM : Inserting entity with GID (0000000600000003).
+1/28/2018 10:32:22 PM : Inserting entity with GID (0000000700000001).
+1/28/2018 10:32:22 PM : Inserting entity with GID (0000000700000002).
+1/28/2018 10:32:22 PM : Inserting entity with GID (0000000700000003).
+1/28/2018 10:32:22 PM : Inserting entity with GID (0000000700000004).
+1/28/2018 10:32:22 PM : Inserting entity with GID (0000000700000005).
+1/28/2018 10:32:22 PM : Inserting entity with GID (0000000700000006).
+1/28/2018 10:32:22 PM : Inserting entity with GID (0000000700000007).
+1/28/2018 10:32:22 PM : Inserting entity with GID (0000000700000008).
+1/28/2018 10:32:22 PM : Inserting entity with GID (0000000700000009).
+1/28/2018 10:32:22 PM : Inserting entity with GID (000000070000000a).
+1/28/2018 10:32:22 PM : Inserting entity with GID (000000070000000b).
+1/28/2018 10:32:22 PM : Inserting entity with GID (000000070000000c).
+1/28/2018 10:32:22 PM : Inserting entity with GID (000000070000000d).
+1/28/2018 10:32:22 PM : Inserting entity with GID (000000070000000e).
+1/28/2018 10:32:22 PM : Inserting entity with GID (000000070000000f).
+1/28/2018 10:32:22 PM : Inserting entity with GID (0000000700000010).
+1/28/2018 10:32:22 PM : Inserting entity with GID (0000000800000001).
+1/28/2018 10:32:22 PM : Inserting entity with GID (0000000800000002).
+1/28/2018 10:32:22 PM : Inserting entity with GID (0000000800000003).
+1/28/2018 10:32:22 PM : Applying delta to network model successfully finished.
+1/28/2018 10:42:05 PM : Starting Network Model Service...
+1/28/2018 10:42:07 PM : The WCF service GenericDataAccess is ready.
+1/28/2018 10:42:07 PM : Endpoints:
+1/28/2018 10:42:07 PM : net.tcp://localhost:10000/NetworkModelService/GDA/
+1/28/2018 10:42:07 PM : The WCF service NetworkModelTransactionService is ready.
+1/28/2018 10:42:07 PM : Endpoints:
+1/28/2018 10:42:07 PM : Connection string: ../NetworkModelData.data
+1/28/2018 10:42:07 PM : Trace level: Info
+1/28/2018 10:42:07 PM : The Network Model Service is started.
+1/28/2018 10:42:07 PM : Press <Enter> to stop the service.
+1/28/2018 10:42:40 PM : Applying  delta to network model.
+1/28/2018 10:42:40 PM : Inserting entity with GID (0000000100000001).
+1/28/2018 10:42:40 PM : Inserting entity with GID (0000000200000001).
+1/28/2018 10:42:40 PM : Inserting entity with GID (0000000200000002).
+1/28/2018 10:42:40 PM : Inserting entity with GID (0000000200000003).
+1/28/2018 10:42:40 PM : Inserting entity with GID (0000000200000004).
+1/28/2018 10:42:40 PM : Inserting entity with GID (0000000200000005).
+1/28/2018 10:42:40 PM : Inserting entity with GID (0000000200000006).
+1/28/2018 10:42:40 PM : Inserting entity with GID (0000000200000007).
+1/28/2018 10:42:40 PM : Inserting entity with GID (0000000300000001).
+1/28/2018 10:42:40 PM : Inserting entity with GID (0000000400000001).
+1/28/2018 10:42:40 PM : Inserting entity with GID (0000000400000002).
+1/28/2018 10:42:40 PM : Inserting entity with GID (0000000400000003).
+1/28/2018 10:42:40 PM : Inserting entity with GID (0000000500000001).
+1/28/2018 10:42:40 PM : Inserting entity with GID (0000000500000002).
+1/28/2018 10:42:40 PM : Inserting entity with GID (0000000500000003).
+1/28/2018 10:42:40 PM : Inserting entity with GID (0000000600000001).
+1/28/2018 10:42:40 PM : Inserting entity with GID (0000000600000002).
+1/28/2018 10:42:40 PM : Inserting entity with GID (0000000600000003).
+1/28/2018 10:42:40 PM : Inserting entity with GID (0000000700000001).
+1/28/2018 10:42:40 PM : Inserting entity with GID (0000000700000002).
+1/28/2018 10:42:40 PM : Inserting entity with GID (0000000700000003).
+1/28/2018 10:42:40 PM : Inserting entity with GID (0000000700000004).
+1/28/2018 10:42:40 PM : Inserting entity with GID (0000000700000005).
+1/28/2018 10:42:40 PM : Inserting entity with GID (0000000700000006).
+1/28/2018 10:42:40 PM : Inserting entity with GID (0000000700000007).
+1/28/2018 10:42:40 PM : Inserting entity with GID (0000000700000008).
+1/28/2018 10:42:40 PM : Inserting entity with GID (0000000700000009).
+1/28/2018 10:42:40 PM : Inserting entity with GID (000000070000000a).
+1/28/2018 10:42:40 PM : Inserting entity with GID (000000070000000b).
+1/28/2018 10:42:40 PM : Inserting entity with GID (000000070000000c).
+1/28/2018 10:42:40 PM : Inserting entity with GID (000000070000000d).
+1/28/2018 10:42:40 PM : Inserting entity with GID (000000070000000e).
+1/28/2018 10:42:40 PM : Inserting entity with GID (000000070000000f).
+1/28/2018 10:42:40 PM : Inserting entity with GID (0000000700000010).
+1/28/2018 10:42:40 PM : Inserting entity with GID (0000000800000001).
+1/28/2018 10:42:40 PM : Inserting entity with GID (0000000800000002).
+1/28/2018 10:42:40 PM : Inserting entity with GID (0000000800000003).
+1/28/2018 10:42:40 PM : Applying delta to network model successfully finished.
