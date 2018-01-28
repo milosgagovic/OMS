@@ -39,6 +39,7 @@ namespace DMSService
 
             bool isIncident = false;
             IncidentReport incident = new IncidentReport() { MrID = sw.MRID };
+            ElementStateReport elementStateReport = new ElementStateReport() { MrID = sw.MRID, Time = DateTime.UtcNow, State = state.ToString() };
 
             if (state == OMSSCADACommon.States.OPENED)
             {
@@ -71,6 +72,10 @@ namespace DMSService
                     return;
                 }
             }
+
+            //upisati promijenu stanja elementa
+            proxyToIMS.AddElementStateReport(elementStateReport);
+
             Source s = (Source)DMSService.tree.Data[DMSService.tree.Roots[0]];
             networkChange.Add(new SCADAUpdateModel(s.ElementGID, true));
 

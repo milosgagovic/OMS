@@ -34,16 +34,16 @@ namespace ConsoleApp1
 				{
 					printMeni2();
 					string odg2 = Console.ReadLine();
-					List<IncidentReport> reports = new List<IncidentReport>(); // = proxyToIMS.GetAllReports();
+					List<ElementStateReport> reports = new List<ElementStateReport>(); // = proxyToIMS.GetAllReports();
 					if (odg2 == "1")
 					{
-						reports = proxyToTransactionManager.GetAllReports();
+						reports = proxyToTransactionManager.GetAllElementStateReports();
 					}
 					else if (odg2 == "2")
 					{
 						Console.WriteLine("Unesite MrID:");
 						string mrid2 = Console.ReadLine();
-						reports = proxyToTransactionManager.GetReportsForMrID(mrid2);
+						reports = proxyToTransactionManager.GetElementStateReportsForMrID(mrid2);
 					}
 					else if (odg2 == "3")
 					{
@@ -54,7 +54,7 @@ namespace ConsoleApp1
 						Console.WriteLine("EndTime:");
 						string endTime = Console.ReadLine();
 						DateTime endDateTime = DateTime.Parse(endTime);
-						reports = proxyToTransactionManager.GetReportsForSpecificTimeInterval(startDateTime, endDateTime);
+						reports = proxyToTransactionManager.GetElementStateReportsForSpecificTimeInterval(startDateTime, endDateTime);
 
 					}
 					else if (odg2 == "4")
@@ -68,14 +68,14 @@ namespace ConsoleApp1
 						Console.WriteLine("EndTime:");
 						string endTime2 = Console.ReadLine();
 						DateTime endDateTime2 = DateTime.Parse(endTime2);
-						reports = proxyToTransactionManager.GetReportsForSpecificMrIDAndSpecificTimeInterval(mrid3, startDateTime2, endDateTime2);
+						reports = proxyToTransactionManager.GetElementStateReportsForSpecificMrIDAndSpecificTimeInterval(mrid3, startDateTime2, endDateTime2);
 
 					}
 
 					// reports = proxyToIMS.GetAllReports();
-					foreach (IncidentReport ir in reports)
+					foreach (ElementStateReport ir in reports)
 					{
-						//Console.WriteLine("MrID: " + ir.MrID + ", State:" + ir.State + ", DateTime: " + ir.Time.ToUniversalTime());
+						Console.WriteLine("MrID: " + ir.MrID + ", State:" + ir.State + ", DateTime: " + ir.Time.ToUniversalTime());
 					}
 				}
 				else if(odg=="3")

@@ -48,6 +48,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ElementStateReport.cs" />
     <Compile Include="IIMSContract.cs" />
     <Compile Include="IncidentReport.cs" />
     <Compile Include="IncidentState.cs" />

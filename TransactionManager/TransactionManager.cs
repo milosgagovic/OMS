@@ -305,6 +305,26 @@ namespace TransactionManager
             throw new NotImplementedException();
         }
 
+        public List<ElementStateReport> GetAllElementStateReports()
+        {
+            return proxyToIMS.GetAllElementStateReports();
+        }
+
+        public List<ElementStateReport> GetElementStateReportsForMrID(string mrID)
+        {
+            return proxyToIMS.GetElementStateReportsForMrID(mrID);
+        }
+
+        public List<ElementStateReport> GetElementStateReportsForSpecificTimeInterval(DateTime startTime, DateTime endTime)
+        {
+            return proxyToIMS.GetElementStateReportsForSpecificTimeInterval(startTime, endTime);
+        }
+
+        public List<ElementStateReport> GetElementStateReportsForSpecificMrIDAndSpecificTimeInterval(string mrID, DateTime startTime, DateTime endTime)
+        {
+            return proxyToIMS.GetElementStateReportsForSpecificMrIDAndSpecificTimeInterval(mrID, startTime, endTime);
+        }
+
         #endregion
     }
 }
