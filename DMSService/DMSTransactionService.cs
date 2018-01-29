@@ -9,19 +9,24 @@ using System.Threading;
 using System.Threading.Tasks;
 using TransactionManagerContract;
 using DMSCommon.Model;
+using DMSCommon.TreeGraph;
+
 namespace DMSService
 {
     [ServiceBehavior(InstanceContextMode = InstanceContextMode.PerCall)]
     public class DMSTransactionService : ITransaction
     {
-        public void Commit()
+		private static Tree<Element> newTree;
+		private static Tree<Element> oldTree;
+		public void Commit()
         {
             Console.WriteLine("Pozvan je Commit na DMS-u");
-            if (DMSService.updatesCount > 2)
+            if (DMSService.updatesCount >= 2)
             {
-                Publisher publisher = new Publisher();
+				DMSService.Instance.Tree = newTree;
+				Publisher publisher = new Publisher();
                 List<SCADAUpdateModel> update = new List<SCADAUpdateModel>();
-                Source s = (Source)DMSService.tree.Data[DMSService.tree.Roots[0]];
+                Source s = (Source)DMSService.Instance.Tree.Data[DMSService.Instance.Tree.Roots[0]];
                 update.Add(new SCADAUpdateModel(true, s.ElementGID));
 
                 publisher.PublishUpdate(update);
@@ -35,7 +40,7 @@ namespace DMSService
         public void Enlist()
         {
             Console.WriteLine("Pozvan je enlist na DMS-u");
-
+			oldTree = DMSService.Instance.Tree;
             ITransactionCallback callback = OperationContext.Current.GetCallbackChannel<ITransactionCallback>();
             callback.CallbackEnlist(true);
         }
@@ -43,28 +48,28 @@ namespace DMSService
         public void Prepare(Delta delta)
         {
             Console.WriteLine("Pozvan je prepare na DMS-u");
-            //TO DO Kopije i provjera da li moze da se primjeni delta
-            //NEtwork model = new Network model
-            //model.AppltyDelta();...
-            DMSService.Instance.InitializeNetwork();
+
+			newTree =DMSService.Instance.InitializeNetwork();
             DMSService.updatesCount += 1;
             ITransactionCallback callback = OperationContext.Current.GetCallbackChannel<ITransactionCallback>();
 
             // i ovde puca nekad
-            if (DMSService.tree.Data.Values.Count != 0)
-            {
+            if (newTree.Data.Values.Count != 0)
+            {			
                 callback.CallbackPrepare(true);
-                return;
             }
-
-            callback.CallbackPrepare(false);
+			else
+			{ 
+				callback.CallbackPrepare(false);
+			}  
         }
 
         public void Rollback()
         {
             Console.WriteLine("Pozvan je RollBack na DMSu");
-
-            ITransactionCallback callback = OperationContext.Current.GetCallbackChannel<ITransactionCallback>();
+			newTree = null;
+			DMSService.Instance.Tree = oldTree;
+			ITransactionCallback callback = OperationContext.Current.GetCallbackChannel<ITransactionCallback>();
             callback.CallbackRollabck("Something went wrong on DMS");
         }
     }

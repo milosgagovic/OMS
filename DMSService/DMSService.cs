@@ -23,6 +23,7 @@ namespace DMSService
         private List<Node> _connecnodes = new List<Node>();
         private ModelResourcesDesc modelResourcesDesc = new ModelResourcesDesc();
         private ModelGdaDMS gda = new ModelGdaDMS();
+		private static Tree<Element> tree;
 
         private static DMSService instance = null;
         private DMSService()
@@ -48,25 +49,38 @@ namespace DMSService
         public List<ACLine> Aclines { get => _aclines; set => _aclines = value; }
         public List<Switch> Switches { get => _switches; set => _switches = value; }
         public List<Node> ConnecNodes { get => _connecnodes; set => _connecnodes = value; }
-        public static Tree<Element> tree;
-        #endregion
+		public Tree<Element> Tree
+		{
+			get
+			{
+				return tree;
+			}
+			set
+			{
+				if (value != null)
+				{
+					tree = value;
+				}
+			}
+		}
+		#endregion
 
 
 
-        public void Start()
+		public void Start()
         {
             StartHosts();
-            InitializeNetwork();
+            Tree = InitializeNetwork();
         }
 
-        public void InitializeNetwork()
+		public Tree<Element> InitializeNetwork()
         {
             ClearLists();
-            tree = new Tree<Element>();
+			Tree<Element> retVal = new Tree<Element>();
             List<long> eSources = gda.GetExtentValues(ModelCode.ENERGSOURCE);
             if (eSources.Count == 0)
             {
-                return;
+                return new Tree<Element>();
             }
             List<long> terminals = gda.GetExtentValues(ModelCode.TERMINAL);
             ResourceDescription rd;
@@ -107,9 +121,9 @@ namespace DMSService
                         ESource.End2 = n.ElementGID;
                         ConnecNodes.Add(n);
                         Sources.Add(ESource);
-                        //dodavanje ES u koren stabla i prvog childa
-                        tree.AddRoot(Sources[0].ElementGID, Sources[0]);
-                        tree.AddChild(n.Parent, n.ElementGID, n);
+						//dodavanje ES u koren stabla i prvog childa
+						retVal.AddRoot(Sources[0].ElementGID, Sources[0]);
+						retVal.AddChild(n.Parent, n.ElementGID, n);
                     }
                 }
                 terminals.Remove(terms[0]);
@@ -160,8 +174,8 @@ namespace DMSService
                         ConnecNodes.Add(downNode);
                         terminals.Remove(branchTerminals[0]);
 
-                        tree.AddChild(n.ElementGID, acline.ElementGID, acline);
-                        tree.AddChild(acline.ElementGID, downNode.ElementGID, downNode);
+						retVal.AddChild(n.ElementGID, acline.ElementGID, acline);
+						retVal.AddChild(acline.ElementGID, downNode.ElementGID, downNode);
                     }
                     else if (mc.Equals(DMSType.BREAKER))
                     {
@@ -177,8 +191,8 @@ namespace DMSService
                         ConnecNodes.Add(downNode);
                         terminals.Remove(branchTerminals[0]);
 
-                        tree.AddChild(n.ElementGID, sw.ElementGID, sw);
-                        tree.AddChild(sw.ElementGID, downNode.ElementGID, downNode);
+						retVal.AddChild(n.ElementGID, sw.ElementGID, sw);
+						retVal.AddChild(sw.ElementGID, downNode.ElementGID, downNode);
                     }
                     else if (mc.Equals(DMSType.ENERGCONSUMER))
                     {
@@ -187,7 +201,7 @@ namespace DMSService
                         n.Children.Add(consumer.ElementGID);
                         Consumers.Add(consumer);
 
-                        tree.AddChild(n.ElementGID, consumer.ElementGID, consumer);
+						retVal.AddChild(n.ElementGID, consumer.ElementGID, consumer);
                     }
                     else break;
 
@@ -198,6 +212,7 @@ namespace DMSService
             watch.Stop();
             updatesCount += 1;
             Console.WriteLine("\nNewtork Initialization finished in {0} sec", watch.ElapsedMilliseconds / 1000);
+			return retVal;
         }
 
         private void ClearLists()
