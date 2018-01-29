@@ -23,7 +23,7 @@ namespace DMSService
             List<ACLine> pom = new List<ACLine>();
             try
             {
-                foreach (var item in DMSService.tree.Data.Values)
+                foreach (var item in DMSService.Instance.Tree.Data.Values)
                 {
                     if (item is ACLine)
                     {
@@ -45,7 +45,7 @@ namespace DMSService
             List<Consumer> pom = new List<Consumer>();
             try
             {
-                foreach (var item in DMSService.tree.Data.Values)
+                foreach (var item in DMSService.Instance.Tree.Data.Values)
                 {
                     if (item is Consumer)
                     {
@@ -67,7 +67,7 @@ namespace DMSService
             List<Node> pom = new List<Node>();
             try
             {
-                foreach (var item in DMSService.tree.Data.Values)
+                foreach (var item in DMSService.Instance.Tree.Data.Values)
                 {
                     if (item is Node)
                     {
@@ -89,7 +89,7 @@ namespace DMSService
             List<Source> pom = new List<Source>();
             try
             {
-                foreach (var item in DMSService.tree.Data.Values)
+                foreach (var item in DMSService.Instance.Tree.Data.Values)
                 {
                     if (item is Source)
                     {
@@ -111,7 +111,7 @@ namespace DMSService
             List<Switch> pom = new List<Switch>();
             try
             {
-                foreach (var item in DMSService.tree.Data.Values)
+                foreach (var item in DMSService.Instance.Tree.Data.Values)
                 {
                     if (item is Switch)
                     {
@@ -132,7 +132,7 @@ namespace DMSService
         {
             try
             {
-                return DMSService.tree.Links.Max(x => x.Value.Depth) + 1;
+                return DMSService.Instance.Tree.Links.Max(x => x.Value.Depth) + 1;
 
             }
             catch (Exception)
@@ -145,7 +145,7 @@ namespace DMSService
         {
             try
             {
-                Source s = (Source)DMSService.tree.Data[DMSService.tree.Roots[0]];
+                Source s = (Source)DMSService.Instance.Tree.Data[DMSService.Instance.Tree.Roots[0]];
                 return s;
 
 
@@ -161,7 +161,7 @@ namespace DMSService
         {
             try
             {
-                return DMSService.tree.Data;
+                return DMSService.Instance.Tree.Data;
             }
             catch (Exception)
             {
@@ -175,7 +175,7 @@ namespace DMSService
             List<Element> retVal = new List<Element>();
             try
             {
-                foreach (Element e in DMSService.tree.Data.Values)
+                foreach (Element e in DMSService.Instance.Tree.Data.Values)
                 {
                     retVal.Add(e);
                 }
@@ -210,7 +210,7 @@ namespace DMSService
                 Thread.Sleep(repairtime*100);
 
                 Switch sw = null;
-                foreach (var item in DMSService.tree.Data.Values)
+                foreach (var item in DMSService.Instance.Tree.Data.Values)
                 {
                     if (item.MRID == report.MrID)
                     {

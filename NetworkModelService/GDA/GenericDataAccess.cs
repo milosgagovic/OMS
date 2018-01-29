@@ -18,8 +18,12 @@ namespace FTN.Services.NetworkModelService
         private static int resourceItId = 0;
         protected static NetworkModel nm = null;
 		private static NetworkModel newNetworkModel = new NetworkModel();
+		private static NetworkModel oldNetworkModel;
 
-        public GenericDataAccess()
+		public static NetworkModel OldNetworkModel { get => oldNetworkModel; set => oldNetworkModel = value; }
+		public static NetworkModel NewNetworkModel { get => newNetworkModel; set => newNetworkModel = value; }
+
+		public GenericDataAccess()
         {
         }
 
@@ -31,7 +35,7 @@ namespace FTN.Services.NetworkModelService
             }
         }
 
-		public static NetworkModel NewNetworkModel { get => newNetworkModel; set => newNetworkModel = value; }
+		
 
 		public UpdateResult ApplyUpdate(Delta delta)
         {
@@ -213,6 +217,7 @@ namespace FTN.Services.NetworkModelService
         public void GetCopyOfNetworkModel()
         {
 			NewNetworkModel = nm.GetCopyOfNetworkModel();
+			OldNetworkModel = nm.GetCopyOfNetworkModel();
         }
     }
 }

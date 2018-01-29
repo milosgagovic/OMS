@@ -97,7 +97,7 @@ namespace DispatcherApp.ViewModel
         #region Constructor
         public DispatcherAppViewModel()
         {
-            Thread.Sleep(7000);
+            Thread.Sleep(3000);
 
             subscriber = new Subscriber();
             subscriber.Subscribe();
@@ -347,9 +347,14 @@ namespace DispatcherApp.ViewModel
                     }
                     else
                     {
-                        long el = rd.GetProperty(ModelCode.MEASUREMENT_PSR).AsLong();
-                        ElementProperties prop;
-                        properties.TryGetValue(el, out prop);
+						ElementProperties prop = null;
+						if (rd.ContainsProperty(ModelCode.MEASUREMENT_PSR))
+						{
+							long el = rd.GetProperty(ModelCode.MEASUREMENT_PSR).AsLong();
+							
+							properties.TryGetValue(el, out prop);
+						}
+
 
                         if (prop != null)
                         {
