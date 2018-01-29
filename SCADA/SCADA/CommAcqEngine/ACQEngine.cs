@@ -49,6 +49,8 @@ namespace SCADA.CommAcqEngine
         {
             RTUs = dbContext.GettAllRTUs();
 
+            //  validations: unique name, unique address? protocol. din in di out same number
+
             RTU rtu1 = new RTU()
             {
                 Address = 1,
@@ -61,8 +63,8 @@ namespace SCADA.CommAcqEngine
                 AnaOutStartAddr = 3000,
                 CounterStartAddr = 3500,
 
-                DigOutCount = 8,
-                DigInCount = 8,
+                DigOutCount = 20,
+                DigInCount = 20,
                 AnaInCount = 4,
                 AnaOutCount = 2,
                 CounterCount = 2

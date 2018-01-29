@@ -1,6 +1,20 @@
 <ScadaModel>
 	<RTUS>
-		<RTU></RTU>
+		<RTU>
+			<Address>1</Address>
+			<Name>RTU-1</Name>
+			<Protocol>MODBUS</Protocol>
+			<DigOutStartAddr>0</DigOutStartAddr>
+			<DigInStartAddr>1000</DigInStartAddr>
+			<AnaInStartAddr>2000</AnaInStartAddr>
+			<AnaOutStartAddr>3000</AnaOutStartAddr>
+			<CounterStartAddr>3500</CounterStartAddr>
+			<DigOutCount>20</DigOutCount>
+			<DigInCount>20</DigInCount>
+			<AnaInCount>4</AnaInCount>
+			<AnaOutCount>2</AnaOutCount>
+			<CounterCount>2</CounterCount>
+		</RTU>
 	</RTUS>
 	<ProcessVariables>
 	<Digital>

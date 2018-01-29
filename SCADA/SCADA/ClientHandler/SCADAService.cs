@@ -11,35 +11,70 @@ namespace SCADA.ClientHandler
 {
     public class SCADAService
     {
-        private ServiceHost host;
+        private List<ServiceHost> hosts = null;
 
         public SCADAService()
         {
-            host = new ServiceHost(typeof(Invoker));
+            InitializeHosts();           
+        }
+
+        private void InitializeHosts()
+        {
+            hosts = new List<ServiceHost>();
+
+            // service for handlling client requests
+            ServiceHost invokerhost = new ServiceHost(typeof(Invoker));
+            invokerhost.Description.Name = "SCADA Invoker service";
+            invokerhost.AddServiceEndpoint(typeof(ISCADAContract),
+               new NetTcpBinding(),
+               new Uri("net.tcp://localhost:4000/SCADAService"));
+            hosts.Add(invokerhost);
+
+            // to do: add transaction host
+            // 2PC transaction service
         }
 
         public void Start()
         {
-            if (host == null)
+
+            if (hosts == null || hosts.Count == 0)
             {
                 throw new Exception("SCADA service can not start because it is not initialized.");
             }
 
             string message = string.Empty;
 
-            host.AddServiceEndpoint(typeof(ISCADAContract),
-               new NetTcpBinding(),
-               new Uri("net.tcp://localhost:4000/SCADAService"));
-            host.Open();
+            foreach(ServiceHost host in hosts)
+            {
+                host.Open();
 
-            message = "SCADA service is up and running.";
+                message = string.Format("The WCF service {0} is ready.", host.Description.Name);
+                Console.WriteLine(message);
+                //CommonTrace.WriteTrace(CommonTrace.TraceInfo, message);
 
-            Console.WriteLine("\n{0}", message);
+                message = "Endpoints:";
+                Console.WriteLine(message);
+                //CommonTrace.WriteTrace(CommonTrace.TraceInfo, message);
+
+                foreach (Uri uri in host.BaseAddresses)
+                {
+                    Console.WriteLine(uri);
+                    //CommonTrace.WriteTrace(CommonTrace.TraceInfo, uri.ToString());
+                }
+
+                Console.WriteLine("\n");
+            }
+
         }
 
         public void Dispose()
         {
-            host.Close();
+            foreach(var host in hosts)
+            {
+                host.Close();
+            }
+
+            hosts.Clear();
             GC.SuppressFinalize(this);
         }
     }

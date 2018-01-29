@@ -24,6 +24,7 @@ namespace DMSService
         private ModelResourcesDesc modelResourcesDesc = new ModelResourcesDesc();
         private ModelGdaDMS gda = new ModelGdaDMS();
 
+        // zasto nam je ova promenljiva potrebna? Nigde se ne koristi?
         private static DMSService instance = null;
         private DMSService()
         {

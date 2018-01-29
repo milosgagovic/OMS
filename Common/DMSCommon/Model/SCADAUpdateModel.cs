@@ -7,6 +7,10 @@ using System.Text;
 
 namespace DMSCommon.Model
 {
+    /// <summary>
+    /// Class describes changes on SCADA, used in the 
+    /// process oh their pushing towards the client.
+    /// </summary>
     [Serializable]
     [DataContract]
     public class SCADAUpdateModel
