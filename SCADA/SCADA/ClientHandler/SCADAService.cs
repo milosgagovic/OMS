@@ -24,7 +24,7 @@ namespace SCADA.ClientHandler
 
             // service for handlling client requests
             ServiceHost invokerhost = new ServiceHost(typeof(Invoker));
-            invokerhost.Description.Name = "SCADA Invoker service";
+            invokerhost.Description.Name = "SCADAInvokerservice";
             invokerhost.AddServiceEndpoint(typeof(ISCADAContract),
                new NetTcpBinding(),
                new Uri("net.tcp://localhost:4000/SCADAService"));

@@ -6,6 +6,7 @@
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         xmlns:local="clr-namespace:DispatcherApp"
         xmlns:views = "clr-namespace:DispatcherApp.View"
+        xmlns:cntrl = "clr-namespace:DispatcherApp.View.CustomControls"
         mc:Ignorable="d"
         Title="OMS Client" Icon="View/Resources/Images/sun.png"
         Height="{Binding SystemParameters.PrimaryScreenHeight}" 
@@ -57,7 +58,7 @@
                     </Grid.ColumnDefinitions>
                     <TabControl Name="LeftTabControl" Grid.Column="0" TabStripPlacement="Left" MinWidth="0" BorderThickness="0" ItemsSource="{Binding LeftTabControlTabs}" SelectedIndex="{Binding LeftTabControlIndex}" Visibility="{Binding LeftTabControlVisibility}">
                         <TabControl.Resources>
-                            <Style TargetType="{x:Type TabItem}">
+                            <Style TargetType="{x:Type cntrl:BorderTabItem}">
                                 <Setter Property="HeaderTemplate">
                                     <Setter.Value>
                                         <DataTemplate>
@@ -98,7 +99,7 @@
                     </Grid.ColumnDefinitions>
                     <TabControl Name="RightTabControl" Grid.Column="2" TabStripPlacement="Right" MinWidth="0" BorderThickness="0" ItemsSource="{Binding RightTabControlTabs}" SelectedIndex="{Binding RightTabControlIndex}" Visibility="{Binding RightTabControlVisibility}">
                         <TabControl.Resources>
-                            <Style TargetType="{x:Type TabItem}">
+                            <Style TargetType="{x:Type cntrl:BorderTabItem}">
                                 <Setter Property="HeaderTemplate">
                                     <Setter.Value>
                                         <DataTemplate>

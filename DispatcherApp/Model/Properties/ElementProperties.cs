@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FTN.Common;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -13,6 +14,17 @@ namespace DispatcherApp.Model.Properties
         private string name;
         private bool isEnergized;
         private bool isUnderScada;
+        private bool incident = false;
+        private bool crewSent = false;
+
+        public ElementProperties() { }
+
+        public void ReadFromResourceDescription(ResourceDescription rd)
+        {
+            try { this.GID = rd.GetProperty(ModelCode.IDOBJ_GID).AsLong(); } catch { }
+            try { this.MRID = rd.GetProperty(ModelCode.IDOBJ_MRID).AsString(); } catch { }
+            try { this.Name = rd.GetProperty(ModelCode.IDOBJ_NAME).AsString(); } catch { }
+        }
 
         public long GID
         {
@@ -76,6 +88,32 @@ namespace DispatcherApp.Model.Properties
             {
                 this.isUnderScada = value;
                 RaisePropertyChanged("IsUnderScada");
+            }
+        }
+
+        public bool Incident
+        {
+            get
+            {
+                return this.incident;
+            }
+            set
+            {
+                this.incident = value;
+                RaisePropertyChanged("Incident");
+            }
+        }
+
+        public bool CrewSent
+        {
+            get
+            {
+                return this.crewSent;
+            }
+            set
+            {
+                this.crewSent = value;
+                RaisePropertyChanged("CrewSent");
             }
         }
 

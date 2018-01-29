@@ -59,7 +59,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Model\MeasResult.cs" />
+    <Compile Include="Model\MainModelClass.cs" />
     <Compile Include="Model\Properties\ACLineSegmentProperties.cs" />
     <Compile Include="Model\Properties\BreakerProperties.cs" />
     <Compile Include="Model\Properties\ConnectivityNodeProperties.cs" />
@@ -67,47 +67,51 @@
     <Compile Include="Model\Properties\EnergyConsumerProperties.cs" />
     <Compile Include="Model\Properties\EnergySourceProperties.cs" />
     <Compile Include="Model\RelayCommand.cs" />
+    <Compile Include="ViewModel\BorderTabControlsViewModel.cs" />
     <Compile Include="ViewModel\DispatcherAppViewModel.cs" />
-    <Compile Include="View\ACLinePropertiesControl.xaml.cs">
+    <Compile Include="View\CustomControls\NetworkElementsControls\ACLineControl.cs" />
+    <Compile Include="View\CustomControls\NetworkElementsControls\ConsumerControl.cs" />
+    <Compile Include="View\CustomControls\NetworkElementsControls\NodeControl.cs" />
+    <Compile Include="View\CustomControls\PropertiesControls\ACLinePropertiesControl.xaml.cs">
       <DependentUpon>ACLinePropertiesControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\BasicCommandsControl.xaml.cs">
+    <Compile Include="View\CustomControls\BasicCommandsControl.xaml.cs">
       <DependentUpon>BasicCommandsControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\ConsumerPropertiesControl.xaml.cs">
+    <Compile Include="View\CustomControls\PropertiesControls\ConsumerPropertiesControl.xaml.cs">
       <DependentUpon>ConsumerPropertiesControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\DispatherAppUserControl.xaml.cs">
-      <DependentUpon>DispatherAppUserControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="View\EmptyPropertiesControl.xaml.cs">
+    <Compile Include="View\CustomControls\BorderTabItem.cs" />
+    <Compile Include="View\CustomControls\PropertiesControls\EmptyPropertiesControl.xaml.cs">
       <DependentUpon>EmptyPropertiesControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\IncidentExplorer.xaml.cs">
+    <Compile Include="View\CustomControls\NetworkElementsControls\SwitchControl.cs" />
+    <Compile Include="View\CustomControls\TabContentControls\IncidentExplorer.xaml.cs">
       <DependentUpon>IncidentExplorer.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\NetworkExplorerControl.xaml.cs">
+    <Compile Include="View\CustomControls\TabContentControls\NetworkExplorerControl.xaml.cs">
       <DependentUpon>NetworkExplorerControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\NetworkModelControl.xaml.cs">
+    <Compile Include="View\CustomControls\TabContentControls\NetworkModelControl.xaml.cs">
       <DependentUpon>NetworkModelControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\NetworkModelControlExtended.cs" />
-    <Compile Include="View\NodePropertiesControl.xaml.cs">
+    <Compile Include="View\CustomControls\TabContentControls\NetworkModelControlExtended.cs" />
+    <Compile Include="View\CustomControls\PropertiesControls\NodePropertiesControl.xaml.cs">
       <DependentUpon>NodePropertiesControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\OutputControl.xaml.cs">
+    <Compile Include="View\CustomControls\TabContentControls\OutputControl.xaml.cs">
       <DependentUpon>OutputControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\SourcePropertiesControl.xaml.cs">
+    <Compile Include="View\CustomControls\PropertiesControls\SourcePropertiesControl.xaml.cs">
       <DependentUpon>SourcePropertiesControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\SwitchPropertiesControl.xaml.cs">
+    <Compile Include="View\CustomControls\PropertiesControls\SwitchPropertiesControl.xaml.cs">
       <DependentUpon>SwitchPropertiesControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\TopMenuControl.xaml.cs">
+    <Compile Include="View\CustomControls\TopMenuControl.xaml.cs">
       <DependentUpon>TopMenuControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\Resources\Converters\BoolToVisibility.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -120,62 +124,69 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="View\ACLinePropertiesControl.xaml">
+    <Page Include="View\CustomControls\PropertiesControls\ACLinePropertiesControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\BasicCommandsControl.xaml">
+    <Page Include="View\CustomControls\BasicCommandsControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\ConsumerPropertiesControl.xaml">
+    <Page Include="View\CustomControls\PropertiesControls\ConsumerPropertiesControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="View\DispatherAppUserControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="View\EmptyPropertiesControl.xaml">
+    <Page Include="View\CustomControls\PropertiesControls\EmptyPropertiesControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="View\IncidentExplorer.xaml">
+    <Page Include="View\CustomControls\TabContentControls\IncidentExplorer.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="View\NetworkExplorerControl.xaml">
+    <Page Include="View\CustomControls\TabContentControls\NetworkExplorerControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\NetworkModelControl.xaml">
+    <Page Include="View\CustomControls\TabContentControls\NetworkModelControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\NodePropertiesControl.xaml">
+    <Page Include="View\CustomControls\PropertiesControls\NodePropertiesControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="View\OutputControl.xaml">
+    <Page Include="View\CustomControls\TabContentControls\OutputControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="View\SourcePropertiesControl.xaml">
+    <Page Include="View\Resources\Themes\DarkTheme\ColorPalette.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Resources\Themes\DarkTheme\DarkTheme.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\CustomControls\PropertiesControls\SourcePropertiesControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="View\SwitchPropertiesControl.xaml">
+    <Page Include="View\CustomControls\PropertiesControls\SwitchPropertiesControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="View\TopMenuControl.xaml">
+    <Page Include="View\CustomControls\TopMenuControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Resources\Themes\DarkTheme\NetworkElements.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Model\Config.cs" />
-    <Compile Include="Model\ModelGda.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -250,7 +261,13 @@
     <Resource Include="View\Resources\Images\triangle.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="View\Resources\Images\energized.png" />
+    <Resource Include="View\Resources\Images\close.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="View\Resources\Images\incident.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="View\Resources\Images\crew.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

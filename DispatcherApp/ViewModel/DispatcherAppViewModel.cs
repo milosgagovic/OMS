@@ -25,6 +25,8 @@ using TransactionManagerContract;
 using System.ServiceModel;
 using System.Windows.Data;
 using IMSContract;
+using DispatcherApp.View.CustomControls;
+using DispatcherApp.View.CustomControls.NetworkElementsControls;
 
 namespace DispatcherApp.ViewModel
 {
@@ -33,6 +35,8 @@ namespace DispatcherApp.ViewModel
         public event PropertyChangedEventHandler PropertyChanged;
 
         private IOMSClient proxyToTransactionManager;
+
+        private FrameworkElement frameworkElement = new FrameworkElement();
 
         #region Subscriber
         private Subscriber subscriber;
@@ -47,15 +51,15 @@ namespace DispatcherApp.ViewModel
         private Dictionary<long, int> networkDepth = new Dictionary<long, int>();
         private Canvas mainCanvas;
 
-        private ObservableCollection<TabItem> leftTabControlTabs = new ObservableCollection<TabItem>();
+        private ObservableCollection<BorderTabItem> leftTabControlTabs = new ObservableCollection<BorderTabItem>();
         private int leftTabControlIndex = 0;
         private Visibility leftTabControlVisibility = Visibility.Collapsed;
 
-        private ObservableCollection<TabItem> rightTabControlTabs = new ObservableCollection<TabItem>();
+        private ObservableCollection<BorderTabItem> rightTabControlTabs = new ObservableCollection<BorderTabItem>();
         private int rightTabControlIndex = 0;
         private Visibility rightTabControlVisibility = Visibility.Collapsed;
 
-        private ObservableCollection<TabItem> bottomTabControlTabs = new ObservableCollection<TabItem>();
+        private ObservableCollection<BorderTabItem> bottomTabControlTabs = new ObservableCollection<BorderTabItem>();
         private int bottomTabControlIndex = 0;
         private Visibility bottomTabControlVisibility = Visibility.Collapsed;
 
@@ -105,35 +109,28 @@ namespace DispatcherApp.ViewModel
             subscriber.publishCrewEvent += GetCrewUpdate;
             subscriber.publishIncident += GetIncident;
 
-            TreeViewItem tvi1 = new TreeViewItem() { Header = "ES_1" };
-            TreeViewItem tvi2 = new TreeViewItem() { Header = "ES_2" };
-            networkMapsBySource.Add(tvi1);
-            networkMapsBySource.Add(tvi2);
-
             NetTcpBinding binding = new NetTcpBinding();
             binding.CloseTimeout = new TimeSpan(1, 0, 0, 0);
             binding.OpenTimeout = new TimeSpan(1, 0, 0, 0);
             binding.ReceiveTimeout = new TimeSpan(1, 0, 0, 0);
             binding.SendTimeout = new TimeSpan(1, 0, 0, 0);
-            binding.MaxBufferPoolSize = 2147483647;
-            binding.MaxReceivedMessageSize = 2147483647;
-            binding.MaxBufferSize = 2147483647;
 
             ChannelFactory<IOMSClient> factoryToTMS = new ChannelFactory<IOMSClient>(binding,
                 new EndpointAddress("net.tcp://localhost:6080/TransactionManagerService"));
             ProxyToTransactionManager = factoryToTMS.CreateChannel();
             TMSAnswerToClient answerFromTransactionManager = new TMSAnswerToClient();
+
             try
             {
                 answerFromTransactionManager = ProxyToTransactionManager.GetNetwork();
             }
             catch (Exception e) { }
 
-
             InitNetwork();
-            InitElementsAndProp(answerFromTransactionManager);
-            DrawElementsOnGraph(answerFromTransactionManager);
+            InitElementsAndProperties(answerFromTransactionManager);
+            DrawElementsOnGraph(answerFromTransactionManager.GraphDeep);
         }
+
         public void InitNetwork()
         {
             this.Network = new Dictionary<long, Element>();
@@ -144,6 +141,7 @@ namespace DispatcherApp.ViewModel
             this.networkDepth = new Dictionary<long, int>();
             Sources.Clear();
             this.MainCanvases = new ObservableCollection<UIElement>();
+
             #region FakeNetwork
             //Source s1 = new Source(0, -1, "ES_2") { ElementGID = 0 };
             //Source s2 = new Source(0, -1, "ES_3") { ElementGID = 23 };
@@ -268,10 +266,9 @@ namespace DispatcherApp.ViewModel
             ////Network.Add(n8.ElementGID, n8);
             #endregion
 
-
-
         }
-        public void InitElementsAndProp(TMSAnswerToClient answerFromTransactionManager)
+
+        public void InitElementsAndProperties(TMSAnswerToClient answerFromTransactionManager)
         {
             if (answerFromTransactionManager != null && answerFromTransactionManager.Elements != null && answerFromTransactionManager.ResourceDescriptions != null)
             {
@@ -290,76 +287,37 @@ namespace DispatcherApp.ViewModel
                         if (element is Source)
                         {
                             this.Sources.Add(element.ElementGID);
-                            this.properties.Add(element.ElementGID, new EnergySourceProperties()
-                            {
-                                GID = rd.GetProperty(ModelCode.IDOBJ_GID).AsLong(),
-                                MRID = rd.GetProperty(ModelCode.IDOBJ_MRID).AsString(),
-                                Name = rd.GetProperty(ModelCode.IDOBJ_NAME).AsString(),
-                                IsEnergized = element.Marker
-                            });
+                            EnergySourceProperties properties = new EnergySourceProperties() { IsEnergized = element.Marker };
+                            properties.ReadFromResourceDescription(rd);
+                            this.properties.Add(element.ElementGID, properties);
+
                         }
                         else if (element is Consumer)
                         {
-                            this.properties.Add(element.ElementGID, new EnergyConsumerProperties()
-                            {
-                                GID = rd.GetProperty(ModelCode.IDOBJ_GID).AsLong(),
-                                MRID = rd.GetProperty(ModelCode.IDOBJ_MRID).AsString(),
-                                Name = rd.GetProperty(ModelCode.IDOBJ_NAME).AsString(),
-                                IsEnergized = element.Marker
-                            });
+                            EnergyConsumerProperties properties = new EnergyConsumerProperties() { IsEnergized = element.Marker };
+                            properties.ReadFromResourceDescription(rd);
+                            this.properties.Add(element.ElementGID, properties);
                         }
                         else if (element is ACLine)
                         {
-                            this.properties.Add(element.ElementGID, new ACLineSegmentProperties()
-                            {
-                                GID = rd.GetProperty(ModelCode.IDOBJ_GID).AsLong(),
-                                MRID = rd.GetProperty(ModelCode.IDOBJ_MRID).AsString(),
-                                Name = rd.GetProperty(ModelCode.IDOBJ_NAME).AsString(),
-                                IsEnergized = element.Marker,
-                                Length = rd.GetProperty(ModelCode.CONDUCTOR_LEN).AsFloat()
-                            });
+                            ACLineSegmentProperties properties = new ACLineSegmentProperties() { IsEnergized = element.Marker };
+                            properties.ReadFromResourceDescription(rd);
+                            this.properties.Add(element.ElementGID, properties);
                         }
                         else if (element is Node)
                         {
-                            this.properties.Add(element.ElementGID, new ConnectivityNodeProperties()
-                            {
-                                GID = rd.GetProperty(ModelCode.IDOBJ_GID).AsLong(),
-                                MRID = rd.GetProperty(ModelCode.IDOBJ_MRID).AsString(),
-                                Name = rd.GetProperty(ModelCode.IDOBJ_NAME).AsString(),
-                                IsEnergized = element.Marker
-                            });
+                            ConnectivityNodeProperties properties = new ConnectivityNodeProperties() { IsEnergized = element.Marker };
+                            properties.ReadFromResourceDescription(rd);
+                            this.properties.Add(element.ElementGID, properties);
                         }
                         else if (element is Switch)
                         {
-                            BreakerProperties prop = new BreakerProperties()
-                            {
-                                GID = rd.GetProperty(ModelCode.IDOBJ_GID).AsLong(),
-                                MRID = rd.GetProperty(ModelCode.IDOBJ_MRID).AsString(),
-                                IsEnergized = element.Marker,
-                                Name = rd.GetProperty(ModelCode.IDOBJ_NAME).AsString()
-                            };
-
-                            prop.ValidCommands.Add("CLOSE");
+                            BreakerProperties properties = new BreakerProperties() { IsEnergized = element.Marker };
+                            properties.ValidCommands.Add("CLOSE");
                             this.CommandIndex = 0;
 
-                            this.properties.Add(element.ElementGID, prop);
-                        }
-                    }
-                    else
-                    {
-						ElementProperties prop = null;
-						if (rd.ContainsProperty(ModelCode.MEASUREMENT_PSR))
-						{
-							long el = rd.GetProperty(ModelCode.MEASUREMENT_PSR).AsLong();
-							
-							properties.TryGetValue(el, out prop);
-						}
-
-
-                        if (prop != null)
-                        {
-                            BreakerProperties prop1 = prop as BreakerProperties;
-                            //prop1.ValidCommands = rd.GetProperty(ModelCode.DISCRETE_VALIDCOMMANDS).AsEnums();
+                            properties.ReadFromResourceDescription(rd);
+                            this.properties.Add(element.ElementGID, properties);
                         }
                     }
                 }
@@ -367,12 +325,23 @@ namespace DispatcherApp.ViewModel
 
             foreach (ResourceDescription rd in answerFromTransactionManager.ResourceDescriptionsOfMeasurment)
             {
-                ResourceDescription meas = answerFromTransactionManager.ResourceDescriptions.Where(p => p.GetProperty(ModelCode.IDOBJ_MRID).AsString() == rd.GetProperty(ModelCode.IDOBJ_MRID).AsString()).FirstOrDefault();
+                ResourceDescription meas;
+                try
+                {
+                    meas = answerFromTransactionManager.ResourceDescriptions.Where(p => p.GetProperty(ModelCode.IDOBJ_MRID).AsString() == rd.GetProperty(ModelCode.IDOBJ_MRID).AsString()).FirstOrDefault();
+                }
+                catch { continue; }
 
                 if (meas != null)
                 {
-                    long breaker = meas.GetProperty(ModelCode.MEASUREMENT_PSR).AsLong();
-                    int state = rd.GetProperty(ModelCode.DISCRETE_NORMVAL).AsInt();
+                    long breaker;
+                    int state;
+                    try
+                    {
+                        breaker = meas.GetProperty(ModelCode.MEASUREMENT_PSR).AsLong();
+                        state = rd.GetProperty(ModelCode.DISCRETE_NORMVAL).AsInt();
+                    }
+                    catch { continue; }
 
                     ElementProperties prop;
                     properties.TryGetValue(breaker, out prop);
@@ -392,43 +361,42 @@ namespace DispatcherApp.ViewModel
                 }
             }
         }
-        public void DrawElementsOnGraph(TMSAnswerToClient answerFromTransactionManager)
-        {
 
+        public void DrawElementsOnGraph(int depth)
+        {
             foreach (long sourceGid in Sources)
             {
                 Element element = null;
-
                 Network.TryGetValue(sourceGid, out element);
 
-                Source source = element as Source;
-
-                this.UINetworks.Add(source.ElementGID, new ObservableCollection<UIElement>());
-
-                Canvas canvas = new Canvas() { Width = 400, Height = 400 };
-                this.UINetworks[source.ElementGID].Add(canvas);
-                this.MainCanvases.Add(canvas);
-
-                NetworkModelControlExtended nmc = new NetworkModelControlExtended() { ItemsSourceForCanvas = this.UINetworks[source.ElementGID] };
-                this.networModelControls.Add(source.ElementGID, nmc);
-
-                Button but = new Button() { Content = source.MRID, Command = OpenControlCommand, CommandParameter = source.ElementGID };
-
-                this.NetworkMapsBySourceButton.Add(but);
-
-                this.mainCanvas = canvas;
-
-                this.networkDepth.Add(source.ElementGID, answerFromTransactionManager.GraphDeep);
-
-                if (source != null)
+                if (element != null)
                 {
-                    DrawGraph(source as Source);
+                    Source source = element as Source;
+
+                    this.UINetworks.Add(source.ElementGID, new ObservableCollection<UIElement>());
+
+                    Canvas canvas = new Canvas() { Width = 400, Height = 400 };
+                    this.UINetworks[source.ElementGID].Add(canvas);
+                    this.MainCanvases.Add(canvas);
+
+                    NetworkModelControlExtended nmc = new NetworkModelControlExtended() { ItemsSourceForCanvas = this.UINetworks[source.ElementGID] };
+                    this.networModelControls.Add(source.ElementGID, nmc);
+
+                    Button but = new Button() { Content = source.MRID, Command = OpenControlCommand, CommandParameter = source.ElementGID };
+                    this.NetworkMapsBySourceButton.Add(but);
+
+                    this.mainCanvas = canvas;
+
+                    this.networkDepth.Add(source.ElementGID, depth);
+
+                    if (source != null)
+                    {
+                        DrawGraph(source);
+                    }
                 }
             }
         }
         #endregion
-
-
 
         #region DrawGraph
         private void DrawGraph(Source source)
@@ -451,7 +419,7 @@ namespace DispatcherApp.ViewModel
                 Y = cellHeight
             };
 
-            PlaceBranch(point1, point2, cellHeight, source);
+            PlaceBranch(point1, point2, cellHeight, source, source.ElementGID);
 
             Element end2 = null;
 
@@ -480,7 +448,7 @@ namespace DispatcherApp.ViewModel
 
                 if (parent != null)
                 {
-                    PlaceBranch((Point)point1, (Point)point2, cellHeight, parent as Branch);
+                    PlaceBranch((Point)point1, (Point)point2, cellHeight, parent as Branch, parent.ElementGID);
                 }
             }
 
@@ -521,233 +489,158 @@ namespace DispatcherApp.ViewModel
 
         private void PlaceConsumer(int y, double cellWidth, double cellHeight, double offset, Point point1, Consumer consumer, long id, string mrid)
         {
-            Button sourceButton = new Button() { Width = cellHeight / 3, Height = cellHeight / 3 };
-            sourceButton.Background = Brushes.Transparent;
-            sourceButton.BorderThickness = new Thickness(0);
-            sourceButton.BorderBrush = Brushes.Transparent;
-            sourceButton.ToolTip = mrid;
-            Ellipse ellipse = new Ellipse()
-            {
-                Width = sourceButton.Width - 5,
-                Height = sourceButton.Height - 5
-            };
-            if (consumer.Marker)
-            {
-                ellipse.Fill = new SolidColorBrush(Color.FromRgb(0, 250, 17));
-            }
-            else
-            {
-                ellipse.Fill = Brushes.Blue;
-                //ellipse.StrokeThickness = 1;
-                //ellipse.Stroke = Brushes.LightGray;
-            }
-
-            sourceButton.Content = ellipse;
-            //sourceButton.Content = new Image() { Source = new BitmapImage(new Uri(Directory.GetCurrentDirectory() + "/../../Resources/Images/yellowcircle.png")) };
-            //sourceButton.Content = id;
-            Canvas.SetLeft(sourceButton, offset + /*x * */cellWidth - cellWidth / 2 - sourceButton.Width / 2);
-            Canvas.SetTop(sourceButton, y * cellHeight - sourceButton.Height - 5);
-            Canvas.SetZIndex(sourceButton, 5);
-
-            Point point2 = new Point()
-            {
-                X = offset + /*x * */cellWidth - cellWidth / 2,
-                Y = y * cellHeight - sourceButton.Height
-            };
-
-            PlaceBranch(point1, point2, cellHeight, consumer);
-
-            mainCanvas.Children.Add(sourceButton);
-
-            SetProperties(sourceButton, id);
-        }
-
-        private void PlaceSwitch(double cellHeight, Point point1, Point point2, long id, bool isEnergized, string mrid)
-        {
-            Button button = new Button() { Width = cellHeight / 4, Height = cellHeight / 4 };
-            button.BorderThickness = new Thickness(0);
-            button.BorderBrush = Brushes.Transparent;
-
-            Style style = new Style();
-            style.TargetType = typeof(Button);
-
-            //if (isEnergized)
-            //{
             ElementProperties prop;
             properties.TryGetValue(id, out prop);
 
             if (prop != null)
             {
-                BreakerProperties prop1 = prop as BreakerProperties;
+                ConsumerControl consumercontr = new ConsumerControl(prop, 15);
 
-                Setter setter3 = new Setter();
-                setter3.Property = Button.TemplateProperty;
+                Canvas.SetLeft(consumercontr, offset + /*x * */cellWidth - cellWidth / 2 - consumercontr.Width / 2);
+                Canvas.SetTop(consumercontr, y * cellHeight - consumercontr.Height - 5);
+                Canvas.SetZIndex(consumercontr, 5);
 
-                ControlTemplate template = new ControlTemplate(typeof(Button));
-                FrameworkElementFactory elemFactory = new FrameworkElementFactory(typeof(Border));
-                elemFactory.Name = "Border";
-                //elemFactory.SetValue(Border.CornerRadiusProperty, new CornerRadius(5));
-                elemFactory.SetValue(Border.BackgroundProperty, new SolidColorBrush(Color.FromRgb(0, 250, 17)));
-                template.VisualTree = elemFactory;
+                consumercontr.Command = PropertiesCommand;
+                consumercontr.CommandParameter = prop.GID;
+                consumercontr.ToolTip = prop.MRID;
 
-                Trigger trigger1 = new Trigger();
-                trigger1.Property = Button.IsMouseOverProperty;
-                trigger1.Value = true;
+                Point point2 = new Point()
+                {
+                    X = offset + /*x * */cellWidth - cellWidth / 2,
+                    Y = y * cellHeight - consumercontr.Height
+                };
 
-                Setter setter1 = new Setter();
-                setter1.Property = Border.BackgroundProperty;
-                setter1.Value = Brushes.Yellow;
-                setter1.TargetName = "Border";
-                trigger1.Setters.Add(setter1);
+                PlaceBranch(point1, point2, cellHeight, consumer, id);
 
-                template.Triggers.Add(trigger1);
-
-                DataTrigger trigger2 = new DataTrigger();
-                trigger2.Binding = new Binding("Properties[" + id + "].IsEnergized");
-                trigger2.Value = false;
-
-                Setter setter2 = new Setter();
-                setter2.Property = Border.BackgroundProperty;
-                setter2.Value = Brushes.Red;
-                setter2.TargetName = "Border";
-                trigger2.Setters.Add(setter2);
-
-                template.Triggers.Add(trigger2);
-
-                setter3.Value = template;
-
-                style.Triggers.Clear();
-                style.Setters.Add(setter3);
-                button.Style = style;
-
-                //Canvas canvas = new Canvas();
-                //button.Background = new SolidColorBrush(Color.FromRgb(0, 250, 17));
-                //button.Content = new Image()
-                //{
-                //    Source = new BitmapImage(new Uri(Directory.GetCurrentDirectory() + "/../../Resources/Images/energized.png")),
-                //    Width = button.Width,
-                //    Height = button.Height,
-                //    HorizontalAlignment = HorizontalAlignment.Left,
-                //    VerticalAlignment = VerticalAlignment.Top
-                //};
+                mainCanvas.Children.Add(consumercontr);
             }
-            //button.Background = new SolidColorBrush(Color.FromRgb(0, 250, 17));
-            //}
-            //else
-            //{
-            //    //button.Background = Brushes.Red;
-            //}
+        }
 
-            button.ToolTip = mrid;
+        private void PlaceSwitch(double cellHeight, Point point1, Point point2, long id, bool isEnergized, string mrid)
+        {
+            ElementProperties prop;
+            properties.TryGetValue(id, out prop);
 
-            Canvas.SetLeft(button, point2.X - button.Width / 2);
-            Canvas.SetTop(button, point2.Y - (cellHeight / 3) - button.Height / 2);
-            Canvas.SetZIndex(button, 5);
+            if (prop != null)
+            {
+                SwitchControl switchControl = new SwitchControl(prop, 20);
 
-            mainCanvas.Children.Add(button);
-            SetProperties(button, id);
+                Canvas.SetLeft(switchControl, point2.X - (20) / 2);
+                Canvas.SetTop(switchControl, point2.Y - (cellHeight / 3) - (20) / 2);
+                Canvas.SetZIndex(switchControl, 5);
+
+                switchControl.ButtonCanvas.Command = PropertiesCommand;
+                switchControl.ButtonCanvas.CommandParameter = prop.GID;
+                switchControl.ButtonCanvas.ToolTip = prop.MRID;
+
+                mainCanvas.Children.Add(switchControl);
+            }
         }
 
         private void PlaceACLine(double cellHeight, Point point1, Point point2, long id, bool isEnergized, string mrid)
         {
-            Button button = new Button() { Width = 5, Height = cellHeight / 3 };
-            button.Background = Brushes.Transparent;
-            button.BorderThickness = new Thickness(0);
-            button.BorderBrush = Brushes.Transparent;
-            button.ToolTip = mrid;
+            ElementProperties prop;
+            properties.TryGetValue(id, out prop);
 
-            Rectangle rectangle = new Rectangle() { Width = button.Width, Height = button.Height };
-
-            if (isEnergized)
+            if (prop != null)
             {
-                rectangle.Fill = new SolidColorBrush(Color.FromRgb(0, 250, 17));
+                ACLineControl lineControl = new ACLineControl(prop, 5, cellHeight / 3);
+
+                Canvas.SetLeft(lineControl, point2.X - lineControl.Width / 2);
+                Canvas.SetTop(lineControl, point2.Y - (cellHeight / 3) - lineControl.Height / 2);
+                Canvas.SetZIndex(lineControl, 5);
+
+                lineControl.Command = PropertiesCommand;
+                lineControl.CommandParameter = prop.GID;
+                lineControl.ToolTip = prop.MRID;
+
+                mainCanvas.Children.Add(lineControl);
             }
-            else
-            {
-                rectangle.Fill = Brushes.Blue;
-            }
-
-            button.Content = rectangle;
-
-            Canvas.SetLeft(button, point2.X - button.Width / 2);
-            Canvas.SetTop(button, point2.Y - (cellHeight / 3) - button.Height / 2);
-            Canvas.SetZIndex(button, 5);
-
-            mainCanvas.Children.Add(button);
-            SetProperties(button, id);
         }
 
-        private void PlaceBranch(Point point1, Point point2, double cellHeight, Branch branch)
+        private void PlaceBranch(Point point1, Point point2, double cellHeight, Branch branch, long id)
         {
-            Polyline polyline = new Polyline();
-            polyline.Points.Add(point1);
-            Point point3 = new Point()
-            {
-                X = point2.X,
-                Y = point1.Y + (cellHeight / 3)
-            };
+            ElementProperties prop;
+            properties.TryGetValue(id, out prop);
 
-            polyline.Points.Add(point3);
-            polyline.Points.Add(point2);
-            polyline.StrokeThickness = 1;
-            Canvas.SetZIndex(polyline, 0);
-
-            if (branch.Marker)
+            if (prop != null)
             {
-                polyline.Stroke = new SolidColorBrush(Color.FromRgb(0, 250, 17));
-            }
-            else
-            {
-                polyline.Stroke = Brushes.Blue;
-            }
-
-            if (branch != null)
-            {
-                if (branch is Source)
+                Polyline polyline = new Polyline();
+                polyline.Points.Add(point1);
+                Point point3 = new Point()
                 {
-                    PlaceSource(branch.ElementGID, branch.MRID);
-                }
-                else if (branch is Switch)
-                {
-                    PlaceSwitch(cellHeight, point1, point2, branch.ElementGID, branch.Marker, branch.MRID);
-                }
-                else if (branch is ACLine)
-                {
-                    PlaceACLine(cellHeight, point1, point2, branch.ElementGID, branch.Marker, branch.MRID);
-                }
-            }
+                    X = point2.X,
+                    Y = point1.Y + (cellHeight / 3)
+                };
 
-            mainCanvas.Children.Add(polyline);
+                polyline.Points.Add(point3);
+                polyline.Points.Add(point2);
+                polyline.StrokeThickness = 1;
+                Canvas.SetZIndex(polyline, 0);
+
+                polyline.DataContext = prop;
+
+                Style style = new Style();
+                Setter setter1 = new Setter() { Property = Polyline.StrokeProperty, Value = (SolidColorBrush)frameworkElement.FindResource("SwitchColorClosed") };
+
+                DataTrigger trigger = new DataTrigger() { Binding = new Binding("IsEnergized"), Value = false };
+                Setter setter2 = new Setter() { Property = Polyline.StrokeProperty, Value = Brushes.Blue };
+
+                trigger.Setters.Add(setter2);
+
+                style.Setters.Add(setter1);
+                style.Triggers.Add(trigger);
+
+                polyline.Style = style;
+
+                if (branch != null)
+                {
+                    if (branch is Source)
+                    {
+                        PlaceSource(branch.ElementGID, branch.MRID);
+                    }
+                    else if (branch is Switch)
+                    {
+                        PlaceSwitch(cellHeight, point1, point2, branch.ElementGID, branch.Marker, branch.MRID);
+                    }
+                    else if (branch is ACLine)
+                    {
+                        PlaceACLine(cellHeight, point1, point2, branch.ElementGID, branch.Marker, branch.MRID);
+                    }
+                }
+
+                mainCanvas.Children.Add(polyline);
+            }
         }
 
         private Point? PlaceNode(int x, int y, double cellWidth, double cellHeight, double offset, long id, string mrid)
         {
-            Button sourceButton = new Button() { Width = 10, Height = 10 };
-            sourceButton.Background = Brushes.Transparent;
-            sourceButton.BorderThickness = new Thickness(0);
-            sourceButton.BorderBrush = Brushes.Transparent;
-            sourceButton.ToolTip = mrid;
-            Ellipse ellipse = new Ellipse()
-            {
-                Fill = Brushes.Black,
-                Width = sourceButton.Width - 5,
-                Height = sourceButton.Height - 5
-            };
-            sourceButton.Content = ellipse;
-            //sourceButton.Content = new Image() { Source = new BitmapImage(new Uri(Directory.GetCurrentDirectory() + "/../../Resources/Images/bluecircle.png")) };
-            //sourceButton.Content = id;
-            Canvas.SetLeft(sourceButton, offset + /*x * */cellWidth - cellWidth / 2 - sourceButton.Width / 2);
-            Canvas.SetTop(sourceButton, y * cellHeight - sourceButton.Height / 2);
-            Canvas.SetZIndex(sourceButton, 5);
+            ElementProperties prop;
+            properties.TryGetValue(id, out prop);
 
-            mainCanvas.Children.Add(sourceButton);
-            SetProperties(sourceButton, id);
-
-            return new Point()
+            if (prop != null)
             {
-                X = offset + cellWidth - cellWidth / 2,
-                Y = y * cellHeight
-            };
+                NodeControl node = new NodeControl(5, 5);
+                Canvas.SetLeft(node, offset + /*x * */cellWidth - cellWidth / 2 - node.Width / 2);
+                Canvas.SetTop(node, y * cellHeight - node.Height / 2);
+                Canvas.SetZIndex(node, 5);
+
+                node.Command = PropertiesCommand;
+                node.CommandParameter = prop.GID;
+                node.ToolTip = prop.MRID;
+
+                mainCanvas.Children.Add(node);
+
+                return new Point()
+                {
+                    X = offset + cellWidth - cellWidth / 2,
+                    Y = y * cellHeight
+                };
+            }
+            else
+            {
+                return null;
+            }
         }
 
         private void PlaceSource(long id, string mrid)
@@ -854,6 +747,9 @@ namespace DispatcherApp.ViewModel
             report.IncidentState = IncidentState.PENDING;
 
             ProxyToTransactionManager.SendCrew((DateTime)parameter);
+
+            ElementProperties element = Properties.Where(p => p.Value.MRID == report.MrID).FirstOrDefault().Value;
+            element.CrewSent = true;
         }
 
         private void ExecutePropertiesCommand(object parameter)
@@ -881,7 +777,8 @@ namespace DispatcherApp.ViewModel
 
                 if (!exists)
                 {
-                    TabItem ti = new TabItem() { Header = "Properties" };
+                    BorderTabItem ti = new BorderTabItem() { Header = "Properties" };
+                    ti.Title.Text = "Properties";
                     SetTabContent(ti, element);
                     //if (!RightTabControlTabs.Contains(ti))
                     //{
@@ -894,34 +791,34 @@ namespace DispatcherApp.ViewModel
             }
         }
 
-        private void SetTabContent(TabItem tabItem, Element element)
+        private void SetTabContent(BorderTabItem ti, Element element)
         {
             if (element != null)
             {
                 if (element is Node)
                 {
-                    tabItem.Content = new NodePropertiesControl();
+                    ti.Scroll.Content = new NodePropertiesControl();
                 }
                 else if (element is Switch)
                 {
-                    tabItem.Content = new SwitchPropertiesControl();
+                    ti.Scroll.Content = new SwitchPropertiesControl();
                 }
                 else if (element is Consumer)
                 {
-                    tabItem.Content = new ConsumerPropertiesControl();
+                    ti.Scroll.Content = new ConsumerPropertiesControl();
                 }
                 else if (element is Source)
                 {
-                    tabItem.Content = new SourcePropertiesControl();
+                    ti.Scroll.Content = new SourcePropertiesControl();
                 }
                 else if (element is ACLine)
                 {
-                    tabItem.Content = new ACLinePropertiesControl();
+                    ti.Scroll.Content = new ACLinePropertiesControl();
                 }
             }
             else
             {
-                tabItem.Content = new EmptyPropertiesControl();
+                ti.Scroll.Content = new EmptyPropertiesControl();
             }
         }
 
@@ -944,7 +841,10 @@ namespace DispatcherApp.ViewModel
 
                 if (!exists)
                 {
-                    TabItem ti = new TabItem() { Content = networkExplorer, Header = parameter };
+                    BorderTabItem ti = new BorderTabItem() { Header = parameter };
+                    ti.Scroll.Content = networkExplorer;
+                    ti.Title.Text = (string)parameter;
+
                     if (!leftTabControlTabs.Contains(ti))
                     {
                         this.LeftTabControlTabs.Add(ti);
@@ -971,9 +871,10 @@ namespace DispatcherApp.ViewModel
 
                 if (!exists)
                 {
-                    TabItem ti = new TabItem() { Header = parameter };
+                    BorderTabItem ti = new BorderTabItem() { Header = parameter };
                     if (!RightTabControlTabs.Contains(ti))
                     {
+                        ti.Title.Text = (string)parameter;
                         SetTabContent(ti, null);
                         this.RightTabControlTabs.Add(ti);
                         this.RightTabControlIndex = this.RightTabControlTabs.Count - 1;
@@ -999,14 +900,16 @@ namespace DispatcherApp.ViewModel
 
                 if (!exists)
                 {
-                    TabItem ti = new TabItem() { Header = parameter };
+                    BorderTabItem ti = new BorderTabItem() { Header = parameter };
                     if (parameter as string == "Incident Explorer")
                     {
-                        ti.Content = incidentExplorer;
+                        ti.Scroll.Content = incidentExplorer;
+                        ti.Title.Text = (string)parameter;
                     }
                     else if (parameter as string == "Output")
                     {
-                        ti.Content = output;
+                        ti.Scroll.Content = output;
+                        ti.Title.Text = (string)parameter;
                     }
 
                     if (!BottomTabControlTabs.Contains(ti))
@@ -1124,7 +1027,7 @@ namespace DispatcherApp.ViewModel
         #endregion
 
         #region Properties
-        public ObservableCollection<TabItem> LeftTabControlTabs
+        public ObservableCollection<BorderTabItem> LeftTabControlTabs
         {
             get
             {
@@ -1149,7 +1052,7 @@ namespace DispatcherApp.ViewModel
             }
         }
 
-        public ObservableCollection<TabItem> RightTabControlTabs
+        public ObservableCollection<BorderTabItem> RightTabControlTabs
         {
             get
             {
@@ -1174,7 +1077,7 @@ namespace DispatcherApp.ViewModel
             }
         }
 
-        public ObservableCollection<TabItem> BottomTabControlTabs
+        public ObservableCollection<BorderTabItem> BottomTabControlTabs
         {
             get
             {
@@ -1196,6 +1099,18 @@ namespace DispatcherApp.ViewModel
             {
                 bottomTabControlIndex = value;
                 RaisePropertyChanged("BottomTabControlIndex");
+            }
+        }
+
+        public ObservableCollection<TabItem> CenterTabControlTabs
+        {
+            get
+            {
+                return centerTabControlTabs;
+            }
+            set
+            {
+                centerTabControlTabs = value;
             }
         }
 
@@ -1261,18 +1176,6 @@ namespace DispatcherApp.ViewModel
             {
                 bottomTabControlVisibility = value;
                 RaisePropertyChanged("BottomTabControlVisibility");
-            }
-        }
-
-        public ObservableCollection<TabItem> CenterTabControlTabs
-        {
-            get
-            {
-                return centerTabControlTabs;
-            }
-            set
-            {
-                centerTabControlTabs = value;
             }
         }
 
@@ -1362,19 +1265,6 @@ namespace DispatcherApp.ViewModel
             }
         }
 
-        public bool Test
-        {
-            get
-            {
-                return test;
-            }
-            set
-            {
-                test = value;
-                RaisePropertyChanged("Test");
-            }
-        }
-
         public long CurrentPropertyMRID
         {
             get
@@ -1395,6 +1285,7 @@ namespace DispatcherApp.ViewModel
         }
 
         #endregion Properties
+
         #region Miscelaneous
         private void RaisePropertyChanged(string property)
         {
@@ -1410,7 +1301,6 @@ namespace DispatcherApp.ViewModel
         {
             if (update != null)
             {
-
                 if (update.ElementAt(0).IsElementAdded == true)
                 {
 
@@ -1419,14 +1309,12 @@ namespace DispatcherApp.ViewModel
                     binding.OpenTimeout = new TimeSpan(1, 0, 0, 0);
                     binding.ReceiveTimeout = new TimeSpan(1, 0, 0, 0);
                     binding.SendTimeout = new TimeSpan(1, 0, 0, 0);
-                    binding.MaxBufferPoolSize = 2147483647;
-                    binding.MaxReceivedMessageSize = 2147483647;
-                    binding.MaxBufferSize = 2147483647;
 
                     ChannelFactory<IOMSClient> factoryToTMS = new ChannelFactory<IOMSClient>(binding,
                         new EndpointAddress("net.tcp://localhost:6080/TransactionManagerService"));
                     ProxyToTransactionManager = factoryToTMS.CreateChannel();
                     TMSAnswerToClient answerFromTransactionManager = new TMSAnswerToClient();
+
                     try
                     {
                         answerFromTransactionManager = ProxyToTransactionManager.GetNetwork();
@@ -1436,45 +1324,30 @@ namespace DispatcherApp.ViewModel
                     Source source = (Source)Network[update.ElementAt(0).Gid];
                     mainCanvas.Children.Clear();
                     InitNetwork();
-                    InitElementsAndProp(answerFromTransactionManager);
+                    InitElementsAndProperties(answerFromTransactionManager);
                     this.networkDepth.Add(source.ElementGID, answerFromTransactionManager.GraphDeep);
                     DrawGraph(source);
 
                     return;
                 }
-            }
 
-            foreach (SCADAUpdateModel sum in update)
-            {
-                if (Network[sum.Gid] is Source)
+                foreach (SCADAUpdateModel sum in update)
                 {
-                    mainCanvas.Children.Clear();
-                    DrawGraph((Source)Network[sum.Gid]);
-                }
-                Network[sum.Gid].Marker = sum.IsEnergized;
-
-                //if (Test == true)
-                //    Test = false;
-                //else
-                //    Test = true;
-
-                ElementProperties property;
-                properties.TryGetValue(sum.Gid, out property);
-                if (property != null)
-                {
-                    property.IsEnergized = sum.IsEnergized;
-
-                    Element element;
-                    Network.TryGetValue(sum.Gid, out element);
-                    if (element != null && element is Switch)
+                    ElementProperties property;
+                    properties.TryGetValue(sum.Gid, out property);
+                    if (property != null)
                     {
-                        BreakerProperties prop = property as BreakerProperties;
-                        prop.State = sum.State.ToString();
+                        property.IsEnergized = sum.IsEnergized;
+
+                        if (property is BreakerProperties)
+                        {
+                            BreakerProperties prop = property as BreakerProperties;
+                            prop.State = sum.State.ToString();
+                        }
                     }
                 }
             }
         }
-
 
         private void GetCrewUpdate(SCADAUpdateModel update)
         {
@@ -1504,85 +1377,21 @@ namespace DispatcherApp.ViewModel
             {
                 IncidentReports.Add(report);
             }
-        }
 
-
-
-        private void ReadResult(List<ResourceDescription> result)
-        {
-
-            //List<MeasResult> rezultat = new List<MeasResult>();
-            //string status = "";
-            //foreach (ResourceDescription rd in result)
-            //{
-            //    MeasResult measResult = new MeasResult();
-            //    if (rd.ContainsProperty(ModelCode.IDOBJ_MRID))
-            //    {
-            //        measResult.MrID = rd.GetProperty(ModelCode.IDOBJ_MRID).AsString();
-            //    }
-            //    if (rd.ContainsProperty(ModelCode.DISCRETE_NORMVAL))
-            //    {
-
-            //        switch (rd.GetProperty(ModelCode.DISCRETE_NORMVAL).AsLong())
-            //        {
-            //            case 0:
-            //                status = "CLOSED";
-            //                break;
-            //            case 1:
-            //                status = "OPEN";
-            //                break;
-            //            default:
-            //                status = "Unkonown";
-            //                break;
-
-            //        }
-
-            //        measResult.MeasValue = status;
-            //    }
-            //    rezultat.Add(measResult);
-            //}
-            //DataGridElements = rezultat;
-        }
-
-        private void ExecuteReadAll(object parameter)
-        {
-            ///
-            /// otvori vezu ka CommEngine i dobavi mjerenja
-            ////
-
-            //List<MeasResult> rezultat = new List<MeasResult>();
-            //ResourceDescription rd1 = new ResourceDescription();
-            //rd1.Id = 1;
-            //rd1.Properties.Add(new Property(ModelCode.DISCRETE_NORMVAL, 1));
-
-            //ResourceDescription rd2 = new ResourceDescription();
-            //rd2.Id = 2;
-            //rd2.Properties.Add(new Property(ModelCode.DISCRETE_NORMVAL, 0));
-            //// ResourceDescription result = proxyToComm().GetaAll();
-            //List<ResourceDescription> result = new List<ResourceDescription>();
-            //result.Add(rd1);
-            //result.Add(rd2);
-            //string status = "";
-            ////napunjeno zbog testiranjaa
-            //foreach (ResourceDescription rd in result)
-            //{
-            //    switch (rd.Properties[0].PropertyValue.LongValues[0])
-            //    {
-            //        case 0:
-            //            status = "CLOSED";
-            //            break;
-            //        case 1:
-            //            status = "OPEN";
-            //            break;
-            //        default:
-            //            status = "Unkonown";
-            //            break;
-
-            //    }
-
-            //    rezultat.Add(new MeasResult(rd.Id.ToString(), status));
-            //}
-            //DataGridElements = rezultat;
+            try
+            {
+                ElementProperties element = Properties.Where(p => p.Value.MRID == report.MrID).FirstOrDefault().Value;
+                if (report.IncidentState == IncidentState.REPAIRED)
+                {
+                    element.Incident = false;
+                }
+                else
+                {
+                    element.Incident = true;
+                }
+                element.CrewSent = false;
+            }
+            catch { }
         }
         #endregion
     }
