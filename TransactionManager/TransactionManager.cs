@@ -325,6 +325,16 @@ namespace TransactionManager
             return proxyToIMS.GetElementStateReportsForSpecificMrIDAndSpecificTimeInterval(mrID, startTime, endTime);
         }
 
-        #endregion
-    }
+		public List<Crew> GetCrews()
+		{
+			return proxyToIMS.GetCrews();
+		}
+
+		public bool AddCrew(Crew crew)
+		{
+			return proxyToIMS.AddCrew(crew);
+		}
+
+		#endregion
+	}
 }

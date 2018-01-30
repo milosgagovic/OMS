@@ -20,6 +20,7 @@ namespace IMSContract
         private bool crewSent;
         private TimeSpan repairTime;
         private ReasonForIncident reason;
+		//private Crew crew;
         //private string state;
 
         public IncidentReport()
@@ -41,9 +42,12 @@ namespace IMSContract
         public bool CrewSent { get => crewSent; set { crewSent = value; RaisePropertyChanged("CrewSent"); } }
         public TimeSpan RepairTime { get => repairTime; set { repairTime = value; RaisePropertyChanged("RepairTime"); } }
         public ReasonForIncident Reason { get => reason; set { reason = value; RaisePropertyChanged("Reason"); } }
-        //public string State { get => state; set => state = value; }
 
-        protected void RaisePropertyChanged(string property)
+		//public Crew Crew { get => crew; set => crew = value; }
+
+		//public string State { get => state; set => state = value; }
+
+		protected void RaisePropertyChanged(string property)
         {
             if (PropertyChanged != null)
             {

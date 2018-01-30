@@ -16,5 +16,6 @@ namespace IncidentManagementSystem.Model
         }
         public DbSet<IncidentReport> IncidentReports { get; set; }
         public DbSet<ElementStateReport> ElementStateReports { get; set; }
-    }
+		public DbSet<Crew> Crews { get; set; }
+	}
 }

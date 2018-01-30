@@ -60,5 +60,11 @@ namespace TransactionManagerContract
 
         [OperationContract]
         void SendCrew(DateTime id);
-    }
+
+		[OperationContract]
+        List<Crew> GetCrews();
+
+		[OperationContract]
+		bool AddCrew(Crew crew);
+	}
 }

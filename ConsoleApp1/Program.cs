@@ -71,7 +71,15 @@ namespace ConsoleApp1
 						reports = proxyToTransactionManager.GetElementStateReportsForSpecificMrIDAndSpecificTimeInterval(mrid3, startDateTime2, endDateTime2);
 
 					}
+					else if (odg2 == "5")
+					{
 
+						List<Crew> crews = proxyToTransactionManager.GetCrews();
+						foreach (Crew cr in crews)
+						{
+							Console.WriteLine("Crew: " + cr.CrewName);
+						}
+					}
 					// reports = proxyToIMS.GetAllReports();
 					foreach (ElementStateReport ir in reports)
 					{
@@ -80,7 +88,15 @@ namespace ConsoleApp1
 				}
 				else if(odg=="3")
 				{
+					Console.WriteLine("Unesite ime ekipe:");
+					string ekipa = Console.ReadLine();
+					Console.WriteLine("Unesite id ekipe:");
+					string id = Console.ReadLine();
+					Crew crew = new Crew();
+					crew.Id = id;
+					crew.CrewName = ekipa;
 
+					proxyToTransactionManager.AddCrew(crew);
 				}
 				else
 				{
@@ -94,7 +110,7 @@ namespace ConsoleApp1
 			Console.WriteLine("Izaberite opciju:\n");
 			Console.WriteLine("1. Upisi\n");
 			Console.WriteLine("2. Procitaj\n");
-			Console.WriteLine("3. Dodaj novi element\n");
+			Console.WriteLine("3. Dodaj novi tim\n");
 			Console.WriteLine("Opcija:");
 		}
 
@@ -105,7 +121,7 @@ namespace ConsoleApp1
 			Console.WriteLine("\t\t2. Procitaj za specifican mrID\n");
 			Console.WriteLine("\t\t3. Procitaj za specifican vremenski interval\n");
 			Console.WriteLine("\t\t4. Procitaj za specifican mrID i specifican vremenski interval\n");
-
+			Console.WriteLine("\t\t5. Procitaj timove na terenu\n");
 			Console.WriteLine("Opcija:");
 		}
 	}

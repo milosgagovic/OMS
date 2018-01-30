@@ -10,7 +10,28 @@ namespace IncidentManagementSystem.Service
 {
 	public class IMSService : IIMSContract
 	{
-        public void AddElementStateReport(ElementStateReport report)
+		public bool AddCrew(Crew crew)
+		{
+			using (var ctx = new IncidentContext())
+			{
+				try
+				{
+					ctx.Crews.Add(crew);
+					foreach (Crew c in ctx.Crews)
+					{
+						Console.WriteLine("Added crew: " + c.CrewName + ", crew id: " + c.Id);
+					}
+					ctx.SaveChanges();
+					return true;
+				}
+				catch (Exception e)
+				{
+					return false;
+				}
+			}
+		}
+
+		public void AddElementStateReport(ElementStateReport report)
         {
             using (var ctx = new IncidentContext())
             {
@@ -55,7 +76,17 @@ namespace IncidentManagementSystem.Service
             return retVal;
 		}
 
-        public List<ElementStateReport> GetElementStateReportsForMrID(string mrID)
+		public List<Crew> GetCrews()
+		{
+			List<Crew> retVal = new List<Crew>();
+			using (var ctx = new IncidentContext())
+			{
+				ctx.Crews.ToList().ForEach(u => retVal.Add(u));
+			}
+			return retVal;
+		}
+
+		public List<ElementStateReport> GetElementStateReportsForMrID(string mrID)
         {
             List<ElementStateReport> retVal = new List<ElementStateReport>();
             using (var ctx = new IncidentContext())

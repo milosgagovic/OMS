@@ -52,6 +52,12 @@ namespace IMSContract
 
         [OperationContract]
         List<ElementStateReport> GetElementStateReportsForSpecificMrIDAndSpecificTimeInterval(string mrID, DateTime startTime, DateTime endTime);
-    }
+
+		[OperationContract]
+        List<Crew> GetCrews();
+
+		[OperationContract]
+		bool AddCrew(Crew crew);
+	}
 
 }
