@@ -19,7 +19,7 @@
             <DataGridTemplateColumn Header="Send Crew">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
-                        <Button IsEnabled="{Binding !CrewSent}" Command="{Binding DataContext.SendCrewCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type DataGrid}}}" CommandParameter="{Binding Time}">Send Crew
+                        <Button IsEnabled="{Binding Path=IncidentState}" Command="{Binding DataContext.SendCrewCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type DataGrid}}}" CommandParameter="{Binding Time}">Send Crew
                         </Button>
                     </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>

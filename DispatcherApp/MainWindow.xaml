@@ -7,6 +7,7 @@
         xmlns:local="clr-namespace:DispatcherApp"
         xmlns:views = "clr-namespace:DispatcherApp.View"
         xmlns:cntrl = "clr-namespace:DispatcherApp.View.CustomControls"
+        xmlns:converters="clr-namespace:DispatcherApp.View.Resources.Converters"
         mc:Ignorable="d"
         Title="OMS Client" Icon="View/Resources/Images/sun.png"
         Height="{Binding SystemParameters.PrimaryScreenHeight}" 
@@ -16,6 +17,7 @@
     <Window.Resources>
         <sys:Int32 x:Key="NumOfRows">6</sys:Int32>
         <sys:Int32 x:Key="NumOfColumns">3</sys:Int32>
+        <converters:IncidentStateToBool x:Key="IncidentStateToBool"/>
     </Window.Resources>
     <Grid Background="#393535">
         <Grid.RowDefinitions>

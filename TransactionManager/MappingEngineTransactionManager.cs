@@ -1,5 +1,6 @@
 ﻿using DispatcherApp.Model;
 using FTN.Common;
+using OMSSCADACommon;
 using OMSSCADACommon.Commands;
 using OMSSCADACommon.Responses;
 using System;
@@ -49,16 +50,16 @@ namespace TransactionManager
             return retVal;
         }
 
-        public Command MappCommand(TypeOfSCADACommand typeOfCommand)
+        public Command MappCommand(TypeOfSCADACommand typeOfCommand, string mrid, CommandTypes command, float value)
         {
             switch (typeOfCommand)
             {
                 case TypeOfSCADACommand.ReadAll:
                     return new ReadAll();
                 case TypeOfSCADACommand.WriteAnalog:
-                    return new WriteSingleAnalog();
+                    return new WriteSingleAnalog() { Id = mrid, Value = value };
                 case TypeOfSCADACommand.WriteDigital:
-                    return new WriteSingleDigital();
+                    return new WriteSingleDigital() { Id = mrid, CommandType = command };
             }
 
             return null;

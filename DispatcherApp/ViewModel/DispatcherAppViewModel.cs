@@ -27,6 +27,8 @@ using System.Windows.Data;
 using IMSContract;
 using DispatcherApp.View.CustomControls;
 using DispatcherApp.View.CustomControls.NetworkElementsControls;
+using DispatcherApp.Model.Measurements;
+using OMSSCADACommon;
 
 namespace DispatcherApp.ViewModel
 {
@@ -45,6 +47,18 @@ namespace DispatcherApp.ViewModel
         #region Bindings
         private Dictionary<long, Element> Network = new Dictionary<long, Element>();
         private List<long> Sources = new List<long>();
+
+        private Dictionary<long, ElementProperties> properties = new Dictionary<long, ElementProperties>();
+        private Dictionary<long, ResourceDescription> resourceProperties = new Dictionary<long, ResourceDescription>();
+        private ElementProperties currentProperty;
+        private long currentPropertyMRID;
+
+        private int commandsIndex = 0;
+        private bool test = true;
+
+        private ObservableCollection<IncidentReport> incidentReports = new ObservableCollection<IncidentReport>();
+
+        private Dictionary<long, Measurement> measurements = new Dictionary<long, Measurement>();
 
         private Dictionary<long, ObservableCollection<UIElement>> uiNetworks = new Dictionary<long, ObservableCollection<UIElement>>();
         private ObservableCollection<UIElement> mainCanvases = new ObservableCollection<UIElement>();
@@ -73,17 +87,7 @@ namespace DispatcherApp.ViewModel
         private IncidentExplorer incidentExplorer = new IncidentExplorer();
         private OutputControl output = new OutputControl();
         private Dictionary<long, NetworkModelControlExtended> networModelControls = new Dictionary<long, NetworkModelControlExtended>();
-
-        private Dictionary<long, ElementProperties> properties = new Dictionary<long, ElementProperties>();
-        private Dictionary<long, ResourceDescription> resourceProperties = new Dictionary<long, ResourceDescription>();
-        private ElementProperties currentProperty;
-        private long currentPropertyMRID;
-
-        private int commandsIndex = 0;
-        private bool test = true;
-
-        private ObservableCollection<IncidentReport> incidentReports = new ObservableCollection<IncidentReport>();
-
+        
         #endregion
 
         #region Commands
@@ -95,6 +99,8 @@ namespace DispatcherApp.ViewModel
         private RelayCommand _propertiesCommand;
 
         private RelayCommand _sendCrewCommand;
+
+        private RelayCommand _executeSwitchCommand;
 
         #endregion
 
@@ -313,7 +319,7 @@ namespace DispatcherApp.ViewModel
                         else if (element is Switch)
                         {
                             BreakerProperties properties = new BreakerProperties() { IsEnergized = element.Marker };
-                            properties.ValidCommands.Add("CLOSE");
+                            properties.ValidCommands.Add(CommandTypes.CLOSE);
                             this.CommandIndex = 0;
 
                             properties.ReadFromResourceDescription(rd);
@@ -334,30 +340,29 @@ namespace DispatcherApp.ViewModel
 
                 if (meas != null)
                 {
-                    long breaker;
-                    int state;
+                    Measurement measurement = new Measurement();
                     try
                     {
-                        breaker = meas.GetProperty(ModelCode.MEASUREMENT_PSR).AsLong();
-                        state = rd.GetProperty(ModelCode.DISCRETE_NORMVAL).AsInt();
-                    }
-                    catch { continue; }
+                        long psr = meas.GetProperty(ModelCode.MEASUREMENT_PSR).AsLong();
+                        DMSType type = (DMSType)ModelCodeHelper.ExtractTypeFromGlobalId(psr);
 
-                    ElementProperties prop;
-                    properties.TryGetValue(breaker, out prop);
+                        if (type == DMSType.BREAKER)
+                        {
+                            measurement = new DigitalMeasurement();
+                            measurement.ReadFromResourceDescription(meas);
+                        }
 
-                    if (prop != null)
-                    {
-                        BreakerProperties prop1 = prop as BreakerProperties;
-                        if (state == 0)
+                        ElementProperties properties;
+                        Properties.TryGetValue(psr, out properties);
+
+                        if(properties != null)
                         {
-                            prop1.State = "CLOSED";
+                            properties.Measurements.Add(measurement);
                         }
-                        else if (state == 1)
-                        {
-                            prop1.State = "OPENED";
-                        }
+
+                        this.Measurements.Add(measurement.GID, measurement);
                     }
+                    catch { }
                 }
             }
         }
@@ -730,6 +735,35 @@ namespace DispatcherApp.ViewModel
                         ExecuteSendCrewCommand(parameter);
                     });
             }
+        }
+
+        public RelayCommand ExecuteSwitchCommand
+        {
+            get
+            {
+                return _executeSwitchCommand ?? new RelayCommand(
+                    (parameter) =>
+                    {
+                        ExecuteSwitchCommandd(parameter);
+                    });
+            }
+        }
+
+        private void ExecuteSwitchCommandd(object parameter)
+        {
+            Measurement measurement = this.Measurements.Where(m => m.Value.MRID == parameter).FirstOrDefault().Value;
+            if (measurement != null)
+            {
+                ElementProperties elementProperties;
+                Properties.TryGetValue(measurement.Psr, out elementProperties);
+
+                if (elementProperties != null)
+                {
+                    elementProperties.CanCommand = false;
+                }
+            }
+
+            ProxyToTransactionManager.SendCommandToSCADA(TypeOfSCADACommand.WriteDigital, (string)parameter, CommandTypes.CLOSE, 0);
         }
 
         private void ExecuteSendCrewCommand(object parameter)
@@ -1278,6 +1312,19 @@ namespace DispatcherApp.ViewModel
             }
         }
 
+        public Dictionary<long, Measurement> Measurements
+        {
+            get
+            {
+                return measurements;
+            }
+            set
+            {
+                measurements = value;
+                RaisePropertyChanged("Measurements");
+            }
+        }
+
         public IOMSClient ProxyToTransactionManager
         {
             get { return proxyToTransactionManager; }
@@ -1341,8 +1388,14 @@ namespace DispatcherApp.ViewModel
 
                         if (property is BreakerProperties)
                         {
-                            BreakerProperties prop = property as BreakerProperties;
-                            prop.State = sum.State.ToString();
+                            Measurement measurement;
+                            Measurements.TryGetValue(property.Measurements[0].GID, out measurement);
+                            DigitalMeasurement digitalMeasurement = (DigitalMeasurement)measurement;
+
+                            if (digitalMeasurement != null)
+                            {
+                                digitalMeasurement.State = sum.State;
+                            }
                         }
                     }
                 }
@@ -1384,6 +1437,7 @@ namespace DispatcherApp.ViewModel
                 if (report.IncidentState == IncidentState.REPAIRED)
                 {
                     element.Incident = false;
+                    element.CanCommand = true;
                 }
                 else
                 {

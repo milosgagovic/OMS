@@ -231,7 +231,7 @@ namespace TransactionManager
 
             try
             {
-                Command c = MappingEngineTransactionManager.Instance.MappCommand(TypeOfSCADACommand.ReadAll);
+                Command c = MappingEngineTransactionManager.Instance.MappCommand(TypeOfSCADACommand.ReadAll, "", 0, 0);
                 Response r = SCADAClientInstance.ExecuteCommand(c);
                 descMeas = MappingEngineTransactionManager.Instance.MappResult(r);
 
@@ -275,27 +275,25 @@ namespace TransactionManager
             return proxyToIMS.GetReportsForSpecificMrIDAndSpecificTimeInterval(mrID, startTime, endTime);
         }
 
-        public void SendCommandToSCADA(TypeOfSCADACommand command)
+        public void SendCommandToSCADA(TypeOfSCADACommand command, string mrid, CommandTypes commandtype, float value)
         {
             try
             {
-                Command c = MappingEngineTransactionManager.Instance.MappCommand(command);
+                Command c = MappingEngineTransactionManager.Instance.MappCommand(command, mrid, commandtype, value);
                 Response r = SCADAClientInstance.ExecuteCommand(c);
 
             }
             catch (Exception e)
-            {
-
-            }
+            { }
         }
 
-        //public void SendCrew(string mrid)
-        //{
-        //    proxyToDispatcherDMS.SendCrewToDms(mrid);
-        //    return;
-        //}
+    //public void SendCrew(string mrid)
+    //{
+    //    proxyToDispatcherDMS.SendCrewToDms(mrid);
+    //    return;
+    //}
 
-        public void SendCrew(DateTime id)
+    public void SendCrew(DateTime id)
         {
             proxyToDispatcherDMS.SendCrewToDms(id);
             return;

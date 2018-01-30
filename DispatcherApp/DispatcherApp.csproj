@@ -60,12 +60,14 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Model\MainModelClass.cs" />
+    <Compile Include="Model\Measurements\DigitalMeasurement.cs" />
     <Compile Include="Model\Properties\ACLineSegmentProperties.cs" />
     <Compile Include="Model\Properties\BreakerProperties.cs" />
     <Compile Include="Model\Properties\ConnectivityNodeProperties.cs" />
     <Compile Include="Model\Properties\ElementProperties.cs" />
     <Compile Include="Model\Properties\EnergyConsumerProperties.cs" />
     <Compile Include="Model\Properties\EnergySourceProperties.cs" />
+    <Compile Include="Model\Measurements\Measurement.cs" />
     <Compile Include="Model\RelayCommand.cs" />
     <Compile Include="ViewModel\BorderTabControlsViewModel.cs" />
     <Compile Include="ViewModel\DispatcherAppViewModel.cs" />
@@ -112,6 +114,7 @@
       <DependentUpon>TopMenuControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Resources\Converters\BoolToVisibility.cs" />
+    <Compile Include="View\Resources\Converters\IncidentStateToBool.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

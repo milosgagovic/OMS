@@ -20,6 +20,7 @@ namespace DMSCommon.Model
         private States state;
         private CrewResponse response;
         private bool isElementAdded;
+        private bool canCommand;
 
         [DataMember]
         public long Gid
@@ -33,6 +34,13 @@ namespace DMSCommon.Model
         {
             get { return isEnergized; }
             set { isEnergized = value; }
+        }
+
+        [DataMember]
+        public bool CanCommand
+        {
+            get { return canCommand; }
+            set { canCommand = value; }
         }
 
         [DataMember]
@@ -79,7 +87,5 @@ namespace DMSCommon.Model
             Gid = mrid;
             this.isElementAdded = isElementAdded;
         }
-
-
     }
 }

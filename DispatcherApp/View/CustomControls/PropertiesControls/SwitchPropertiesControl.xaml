@@ -58,16 +58,26 @@
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="3"/>
+                        <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
+                    <!--<Label Grid.Row="0">mRID:
+                    </Label>
+                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding CurrentProperty.Measurements[0].MRID}" Background="LightGray" Margin="0, 2, 2, 2">
+                    </TextBlock>-->
                     <Label Grid.Row="0">State:
                     </Label>
-                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding CurrentProperty.State}" Background="LightGray" Margin="0, 2, 2, 2">
+                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding CurrentProperty.Measurements[0].State}" Background="LightGray" Margin="0, 2, 2, 2">
                     </TextBlock>
+                    <ComboBox Grid.Row="3" Margin="5, 0, 10, 0" ItemsSource="{Binding CurrentProperty.ValidCommands }" IsEnabled="{Binding CurrentProperty.CanCommand }" SelectedIndex="{Binding CommandIndex}"/>
+                    <Button Grid.Row="3" Grid.Column="1" Width="Auto" Margin="30, 0, 30, 0" IsEnabled="{Binding CurrentProperty.CanCommand }" Command="{Binding ExecuteSwitchCommand}" CommandParameter="{Binding CurrentProperty.Measurements[0].MRID}">Execute
+                    </Button>
                 </Grid>
             </Expander>
         </Grid>
         <Grid Grid.Row="2" Background="White">
-            <Expander Header="Commands" IsExpanded="True">
+            <!--<Expander Header="Commands" IsExpanded="True">
                 <Grid Margin="20, 0, 10, 0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition/>
@@ -83,7 +93,7 @@
                     <Button Grid.Row="1" Grid.Column="1" Width="Auto" Margin="30, 0, 30, 0">Execute
                     </Button>
                 </Grid>
-            </Expander>
+            </Expander>-->
         </Grid>
     </Grid>
 </UserControl>

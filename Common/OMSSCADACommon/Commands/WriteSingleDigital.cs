@@ -10,11 +10,11 @@ namespace OMSSCADACommon.Commands
     public class WriteSingleDigital : Command
     {
         [DataMember]
-        public CommandTypes command;
+        public CommandTypes CommandType { get; set; }
 
         public override Response Execute()
         {
-            return this.Receiver.WriteSingleDigital(this.Id, this.command);
+            return this.Receiver.WriteSingleDigital(this.Id, this.CommandType);
         }
     }
 }

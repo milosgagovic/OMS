@@ -229,15 +229,14 @@ namespace DMSService
                 report.CrewSent = true;
 
                 Array values1 = Enum.GetValues(typeof(IncidentState));
-                report.IncidentState = (IncidentState)values1.GetValue(rand.Next(2, values.Length));
+                report.IncidentState = (IncidentState)values1.GetValue(rand.Next(2, values.Length - 1));
 
                 proxyToIMS.UpdateReport(report);
 
                 Publisher publisher = new Publisher();
                 publisher.PublishIncident(report);
-
-                //Publisher publisher = new Publisher();
-                //publisher.PublishCrew(new SCADAUpdateModel(sw.ElementGID, true, res));
+                
+                //publisher.PublishCrew(new SCADAUpdateModel(sw.ElementGID, true));
             }
         }
     }

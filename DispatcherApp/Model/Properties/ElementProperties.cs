@@ -1,4 +1,5 @@
-﻿using FTN.Common;
+﻿using DispatcherApp.Model.Measurements;
+using FTN.Common;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -16,8 +17,13 @@ namespace DispatcherApp.Model.Properties
         private bool isUnderScada;
         private bool incident = false;
         private bool crewSent = false;
+        private bool canCommand = false;
+        private List<Measurement> measurements;
 
-        public ElementProperties() { }
+        public ElementProperties()
+        {
+            measurements = new List<Measurement>();
+        }
 
         public void ReadFromResourceDescription(ResourceDescription rd)
         {
@@ -114,6 +120,32 @@ namespace DispatcherApp.Model.Properties
             {
                 this.crewSent = value;
                 RaisePropertyChanged("CrewSent");
+            }
+        }
+
+        public bool CanCommand
+        {
+            get
+            {
+                return this.canCommand;
+            }
+            set
+            {
+                this.canCommand = value;
+                RaisePropertyChanged("CanCommand");
+            }
+        }
+
+        public List<Measurement> Measurements
+        {
+            get
+            {
+                return this.measurements;
+            }
+            set
+            {
+                this.measurements = value;
+                RaisePropertyChanged("Measurements");
             }
         }
 

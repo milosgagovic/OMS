@@ -1,4 +1,5 @@
 ﻿using FTN.Common;
+using OMSSCADACommon;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,13 +9,11 @@ namespace DispatcherApp.Model.Properties
 {
     public class BreakerProperties : ElementProperties
     {
-        private List<string> validCommands;
-
-        private string state;
+        private List<CommandTypes> validCommands;
 
         public BreakerProperties()
         {
-            ValidCommands = new List<string>();
+            ValidCommands = new List<CommandTypes>();
         }
 
         public new void ReadFromResourceDescription(ResourceDescription rd)
@@ -22,7 +21,7 @@ namespace DispatcherApp.Model.Properties
             base.ReadFromResourceDescription(rd);
         }
 
-        public List<string> ValidCommands
+        public List<CommandTypes> ValidCommands
         {
             get
             {
@@ -32,19 +31,6 @@ namespace DispatcherApp.Model.Properties
             {
                 validCommands = value;
                 RaisePropertyChanged("ValidCommands");
-            }
-        }
-
-        public string State
-        {
-            get
-            {
-                return state;
-            }
-            set
-            {
-                state = value;
-                RaisePropertyChanged("State");
             }
         }
     }

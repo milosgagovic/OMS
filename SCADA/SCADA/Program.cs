@@ -89,7 +89,7 @@ namespace SCADA
             processingRequestsFromQueue.Start();
 
             producingAcquisitonRequests.Start();
-            producingCommandingRequests.Start();
+            //producingCommandingRequests.Start();
 
             processingAnswersFromQueue.Start();
 

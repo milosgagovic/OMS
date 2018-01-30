@@ -53,7 +53,7 @@ namespace TransactionManagerContract
         List<ElementStateReport> GetElementStateReportsForSpecificMrIDAndSpecificTimeInterval(string mrID, DateTime startTime, DateTime endTime);
 
         [OperationContract]
-		void SendCommandToSCADA(TypeOfSCADACommand command);
+        void SendCommandToSCADA(TypeOfSCADACommand command, string mrid, OMSSCADACommon.CommandTypes commandtype, float value);
 
         //[OperationContract]
         //void SendCrew(string mrid);

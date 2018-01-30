@@ -6,7 +6,7 @@ namespace OMSSCADACommon
 {
     public enum CommandTypes
     {
-        OPEN = 0,
-        CLOSE
+        CLOSE = 0,
+        OPEN
     }
 }

@@ -479,8 +479,8 @@ namespace SCADA.CommAcqEngine
             }
 
             // execute command if it's different from current command
-            if (digital.Command != command)
-            {
+            //if (digital.Command != command)
+            //{
                 RTU rtu;
                 RTUs.TryGetValue(digital.ProcContrName, out rtu);
 
@@ -525,10 +525,10 @@ namespace SCADA.CommAcqEngine
 
                 digital.Command = command;
 
-                CommandValidator.CheckCommandExecution();
+                //CommandValidator.CheckCommandExecution();
 
                 response.ResultMessage = ResultMessage.OK;
-            }
+            //}
 
             return response;
         }
