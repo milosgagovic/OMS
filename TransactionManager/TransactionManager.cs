@@ -2,6 +2,7 @@
 using DMSContract;
 using FTN.Common;
 using IMSContract;
+using OMSSCADACommon;
 using OMSSCADACommon.Commands;
 using OMSSCADACommon.Responses;
 using System;
@@ -111,49 +112,49 @@ namespace TransactionManager
             }
         }
 
-        public void Prepare(Delta delta)
-        {
-            Console.WriteLine("Transaction Manager calling prepare");
+		public void Prepare(Delta delta)
+		{
+			Console.WriteLine("Transaction Manager calling prepare");
 
-            proxyTransactionNMS.Prepare(delta);
+			proxyTransactionNMS.Prepare(delta);
+			ScadaDelta scadaDelta = GetDeltaForSCADA(delta);
+			do
+			{
+				Thread.Sleep(50);
+			} while (CallBackTransactionNMS.AnswerForPrepare.Equals(TransactionAnswer.Unanswered));
 
-            do
-            {
-                Thread.Sleep(50);
-            } while (CallBackTransactionNMS.AnswerForPrepare.Equals(TransactionAnswer.Unanswered));
+			if (CallBackTransactionNMS.AnswerForPrepare.Equals(TransactionAnswer.Unprepared))
+			{
+				Rollback();
+			}
+			else
+			{
 
-            if (CallBackTransactionNMS.AnswerForPrepare.Equals(TransactionAnswer.Unprepared))
-            {
-                Rollback();
-            }
-            else
-            {
+				TransactionProxys.Where(u => !u.Equals(ProxyTransactionNMS)).ToList().ForEach(x => x.Prepare(delta));
+				//foreach (ITransaction svc in TransactionProxys.Where(u => !u.Equals(ProxyTransactionNMS)))
+				//{
+				//    Console.WriteLine("Type of proxy in prepare:" + svc.GetType().Assembly);
+				//    svc.Prepare(delta);
+				//}
 
-                TransactionProxys.Where(u => !u.Equals(ProxyTransactionNMS)).ToList().ForEach(x => x.Prepare(delta));
-                //foreach (ITransaction svc in TransactionProxys.Where(u => !u.Equals(ProxyTransactionNMS)))
-                //{
-                //    Console.WriteLine("Type of proxy in prepare:" + svc.GetType().Assembly);
-                //    svc.Prepare(delta);
-                //}
+				while (true)
+				{
+					if (TransactionCallbacks.Where(k => k.AnswerForPrepare == TransactionAnswer.Unanswered).Count() > 0)
+					{
+						Thread.Sleep(1000);
+						continue;
+					}
+					else if (TransactionCallbacks.Where(u => u.AnswerForPrepare == TransactionAnswer.Unprepared).Count() > 0)
+					{
+						Rollback();
+						break;
+					}
 
-                while (true)
-                {
-                    if (TransactionCallbacks.Where(k => k.AnswerForPrepare == TransactionAnswer.Unanswered).Count() > 0)
-                    {
-                        Thread.Sleep(1000);
-                        continue;
-                    }
-                    else if (TransactionCallbacks.Where(u => u.AnswerForPrepare == TransactionAnswer.Unprepared).Count() > 0)
-                    {
-                        Rollback();
-                        break;
-                    }
-
-                    Commit();
-                    break;
-                }
-            }
-        }
+					Commit();
+					break;
+				}
+			}
+		}
 
         private void Commit()
         {
@@ -335,6 +336,38 @@ namespace TransactionManager
 			return proxyToIMS.AddCrew(crew);
 		}
 
+		private ScadaDelta GetDeltaForSCADA(Delta d)
+		{
+			List<ResourceDescription> rescDesc = d.InsertOperations.Where(u => u.ContainsProperty(ModelCode.MEASUREMENT_DIRECTION)).ToList();
+			ScadaDelta scadaDelta = new ScadaDelta();
+
+			foreach (ResourceDescription rd in rescDesc)
+			{
+				ScadaElement element = new ScadaElement();
+				if (rd.ContainsProperty(ModelCode.MEASUREMENT_TYPE))
+				{
+					string type = rd.GetProperty(ModelCode.MEASUREMENT_TYPE).ToString();
+					if (type == "Analog")
+					{
+						element.Type = DeviceTypes.ANALOG;
+					}
+					else if (type == "Discrete")
+					{
+						element.Type = DeviceTypes.DIGITAL;
+					}
+				}
+				
+				element.ValidCommands = new List<CommandTypes>() { CommandTypes.CLOSE, CommandTypes.OPEN };
+				element.ValidStates = new List<OMSSCADACommon.States>() { OMSSCADACommon.States.CLOSED, OMSSCADACommon.States.OPENED };
+				
+				if (rd.ContainsProperty(ModelCode.IDOBJ_MRID))
+				{
+					element.Name = rd.GetProperty(ModelCode.MEASUREMENT).ToString();
+				}
+				scadaDelta.InsertOps.Add(element);
+			}
+			return scadaDelta;
+		}
 		#endregion
 	}
 }
