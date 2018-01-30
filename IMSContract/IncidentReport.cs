@@ -20,8 +20,8 @@ namespace IMSContract
         private bool crewSent;
         private TimeSpan repairTime;
         private ReasonForIncident reason;
-		//private Crew crew;
-        //private string state;
+        private CrewType type;
+        private Crew crew;
 
         public IncidentReport()
         {
@@ -33,21 +33,17 @@ namespace IMSContract
 
         [Key]
         public int Id { get => id; set => id = value; }
-
-        //[Key]
-        public DateTime Time { get => time; set { time = value; RaisePropertyChanged("IsUnderScada"); } }
+        public DateTime Time { get => time; set { time = value; } }
         public string MrID { get => mrID; set => mrID = value; }
         public int NumOfConsumersNoPower { get => numOfConsumersNoPower; set => numOfConsumersNoPower = value; }
         public IncidentState IncidentState { get => incidentState; set { incidentState = value; RaisePropertyChanged("IncidentState"); } }
         public bool CrewSent { get => crewSent; set { crewSent = value; RaisePropertyChanged("CrewSent"); } }
         public TimeSpan RepairTime { get => repairTime; set { repairTime = value; RaisePropertyChanged("RepairTime"); } }
         public ReasonForIncident Reason { get => reason; set { reason = value; RaisePropertyChanged("Reason"); } }
+        public CrewType Crewtype { get => type; set => type = value; }
+        public Crew Crew { get => crew; set => crew = value; }
 
-		//public Crew Crew { get => crew; set => crew = value; }
-
-		//public string State { get => state; set => state = value; }
-
-		protected void RaisePropertyChanged(string property)
+        protected void RaisePropertyChanged(string property)
         {
             if (PropertyChanged != null)
             {

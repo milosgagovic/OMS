@@ -49,6 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Crew.cs" />
+    <Compile Include="CrewType.cs" />
     <Compile Include="ElementStateReport.cs" />
     <Compile Include="IIMSContract.cs" />
     <Compile Include="IncidentReport.cs" />

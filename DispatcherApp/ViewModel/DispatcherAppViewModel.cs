@@ -340,27 +340,26 @@ namespace DispatcherApp.ViewModel
 
                 if (meas != null)
                 {
-                    Measurement measurement = new Measurement();
                     try
                     {
                         long psr = meas.GetProperty(ModelCode.MEASUREMENT_PSR).AsLong();
                         DMSType type = (DMSType)ModelCodeHelper.ExtractTypeFromGlobalId(psr);
-
+                        
                         if (type == DMSType.BREAKER)
                         {
-                            measurement = new DigitalMeasurement();
+                            DigitalMeasurement measurement = new DigitalMeasurement();
                             measurement.ReadFromResourceDescription(meas);
+
+                            ElementProperties properties;
+                            Properties.TryGetValue(psr, out properties);
+
+                            if (properties != null)
+                            {
+                                properties.Measurements.Add(measurement);
+                            }
+
+                            this.Measurements.Add(measurement.GID, measurement);
                         }
-
-                        ElementProperties properties;
-                        Properties.TryGetValue(psr, out properties);
-
-                        if(properties != null)
-                        {
-                            properties.Measurements.Add(measurement);
-                        }
-
-                        this.Measurements.Add(measurement.GID, measurement);
                     }
                     catch { }
                 }

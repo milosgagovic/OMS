@@ -206,7 +206,7 @@ namespace TransactionManager
             gdaTMS.GetExtentValues(ModelCode.ENERGSOURCE).ForEach(u => resourceDescriptionFromNMS.Add(u));
             gdaTMS.GetExtentValues(ModelCode.ACLINESEGMENT).ForEach(u => resourceDescriptionFromNMS.Add(u));
             GraphDeep = proxyToDispatcherDMS.GetNetworkDepth();
-            TMSAnswerToClient answer = new TMSAnswerToClient(resourceDescriptionFromNMS, null, GraphDeep, null);
+            TMSAnswerToClient answer = new TMSAnswerToClient(resourceDescriptionFromNMS, null, GraphDeep, null, null, null);
             resourceDescriptions = resourceDescriptionFromNMS;
             DMSElements = listOfDMSElement;
             GraphDeep = proxyToDispatcherDMS.GetNetworkDepth();
@@ -219,7 +219,6 @@ namespace TransactionManager
             List<Element> listOfDMSElement = proxyToDispatcherDMS.GetAllElements();
             List<ResourceDescription> resourceDescriptionFromNMS = new List<ResourceDescription>();
             List<ResourceDescription> descMeas = new List<ResourceDescription>();
-            // ProxyToCommunicationEngine.ReceiveAllMeasValue(TypeOfSCADACommand.ReadAll);
 
             gdaTMS.GetExtentValues(ModelCode.BREAKER).ForEach(u => resourceDescriptionFromNMS.Add(u));
             gdaTMS.GetExtentValues(ModelCode.CONNECTNODE).ForEach(u => resourceDescriptionFromNMS.Add(u));
@@ -240,8 +239,11 @@ namespace TransactionManager
             {
 
             }
+            
+            //var crews = proxyToIMS.GetCrews();
+            //var incidentReports = proxyToIMS.GetAllReports();
 
-            TMSAnswerToClient answer = new TMSAnswerToClient(resourceDescriptionFromNMS, listOfDMSElement, GraphDeep, descMeas);
+            TMSAnswerToClient answer = new TMSAnswerToClient(resourceDescriptionFromNMS, listOfDMSElement, GraphDeep, descMeas, null, null);
             return answer;
         }
 

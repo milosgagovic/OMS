@@ -36,10 +36,15 @@ namespace DMSService
             // opet pokrenes sve
             DMSService.Instance.Tree.Data.TryGetValue(res, out el);
             Switch sw = (Switch)el;
-            //proxyToIMS.AddReport(sw.MRID, DateTime.UtcNow, state.ToString());
 
             bool isIncident = false;
             IncidentReport incident = new IncidentReport() { MrID = sw.MRID };
+
+            // ***************************************OVDE DODATI LOGIKU ZA BIRANJE TIPA TIMA************************************************************
+            Random rand = new Random();
+            Array values = Enum.GetValues(typeof(CrewType));
+            incident.Crewtype = (CrewType)values.GetValue(rand.Next(0, values.Length));
+
             ElementStateReport elementStateReport = new ElementStateReport() { MrID = sw.MRID, Time = DateTime.UtcNow, State = state.ToString() };
 
             if (state == OMSSCADACommon.States.OPENED)

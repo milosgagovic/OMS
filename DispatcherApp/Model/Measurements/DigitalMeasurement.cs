@@ -13,7 +13,7 @@ namespace DispatcherApp.Model.Measurements
     {
         private OMSSCADACommon.States state;
 
-        public void ReadFromResourceDescription(ResourceDescription rd)
+        public new void ReadFromResourceDescription(ResourceDescription rd)
         {
             try
             {

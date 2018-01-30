@@ -11,10 +11,14 @@ namespace IMSContract
 	{
 		private string id;
 		private string crewName;
-		[Key]
+        private CrewType type;
+
+        [Key]
 		public string Id { get => id; set => id = value; }
 		public string CrewName { get => crewName; set => crewName = value; }
-		public Crew()
+        public CrewType Type { get => type; set => type = value; }
+
+        public Crew()
 		{
 		}
 
@@ -23,7 +27,5 @@ namespace IMSContract
 			this.Id = id;
 			this.CrewName = name;
 		}
-
-
 	}
 }
