@@ -57,6 +57,7 @@ namespace DispatcherApp.ViewModel
         private bool test = true;
 
         private ObservableCollection<IncidentReport> incidentReports = new ObservableCollection<IncidentReport>();
+        private ObservableCollection<Crew> crews = new ObservableCollection<Crew>();
 
         private Dictionary<long, Measurement> measurements = new Dictionary<long, Measurement>();
 
@@ -363,6 +364,16 @@ namespace DispatcherApp.ViewModel
                     }
                     catch { }
                 }
+            }
+
+            foreach (Crew crew in answerFromTransactionManager.Crews)
+            {
+                this.Crews.Add(crew);
+            }
+
+            foreach (IncidentReport report in answerFromTransactionManager.IncidentReports)
+            {
+                this.IncidentReports.Insert(0, report);
             }
         }
 
@@ -767,19 +778,25 @@ namespace DispatcherApp.ViewModel
 
         private void ExecuteSendCrewCommand(object parameter)
         {
+            var values = (object[])parameter;
+            var datetime = (DateTime)values[0];
+            var crew = (Crew)values[1];
+
             IncidentReport report = new IncidentReport();
             foreach (IncidentReport ir in IncidentReports)
             {
-                if (DateTime.Compare(ir.Time, (DateTime)parameter) == 0)
+                if (DateTime.Compare(ir.Time, (DateTime)datetime) == 0)
                 {
                     report = ir;
                     break;
                 }
             }
+
+            report.Crew = crew;
             report.CrewSent = true;
             report.IncidentState = IncidentState.PENDING;
 
-            ProxyToTransactionManager.SendCrew((DateTime)parameter);
+            ProxyToTransactionManager.SendCrew(report);
 
             ElementProperties element = Properties.Where(p => p.Value.MRID == report.MrID).FirstOrDefault().Value;
             element.CrewSent = true;
@@ -1224,6 +1241,18 @@ namespace DispatcherApp.ViewModel
             }
         }
 
+        public ObservableCollection<Crew> Crews
+        {
+            get
+            {
+                return crews;
+            }
+            set
+            {
+                crews = value;
+            }
+        }
+
         public ObservableCollection<TreeViewItem> NetworkMapsBySource
         {
             get
@@ -1427,7 +1456,7 @@ namespace DispatcherApp.ViewModel
             }
             else
             {
-                IncidentReports.Add(report);
+                IncidentReports.Insert(0, report);
             }
 
             try

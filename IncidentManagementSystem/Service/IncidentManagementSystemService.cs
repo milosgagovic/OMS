@@ -16,7 +16,7 @@ namespace IncidentManagementSystem.Service
 		public void Start()
 		{
 			Database.SetInitializer<IncidentContext>(new DropCreateDatabaseIfModelChanges<IncidentContext>());
-			LoadCrews();
+			//LoadCrews();
 			svc = new ServiceHost(typeof(IMSService));
 			var binding = new NetTcpBinding();
 			svc.AddServiceEndpoint(typeof(IIMSContract), binding, new

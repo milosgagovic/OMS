@@ -59,7 +59,7 @@ namespace TransactionManagerContract
         //void SendCrew(string mrid);
 
         [OperationContract]
-        void SendCrew(DateTime id);
+        void SendCrew(IncidentReport report);
 
 		[OperationContract]
         List<Crew> GetCrews();

@@ -239,11 +239,11 @@ namespace TransactionManager
             {
 
             }
-            
-            //var crews = proxyToIMS.GetCrews();
-            //var incidentReports = proxyToIMS.GetAllReports();
 
-            TMSAnswerToClient answer = new TMSAnswerToClient(resourceDescriptionFromNMS, listOfDMSElement, GraphDeep, descMeas, null, null);
+            var crews = proxyToIMS.GetCrews();
+            var incidentReports = proxyToIMS.GetAllReports();
+
+            TMSAnswerToClient answer = new TMSAnswerToClient(resourceDescriptionFromNMS, listOfDMSElement, GraphDeep, descMeas, crews, incidentReports);
             return answer;
         }
 
@@ -295,9 +295,9 @@ namespace TransactionManager
     //    return;
     //}
 
-    public void SendCrew(DateTime id)
+    public void SendCrew(IncidentReport report)
         {
-            proxyToDispatcherDMS.SendCrewToDms(id);
+            proxyToDispatcherDMS.SendCrewToDms(report);
             return;
         }
 

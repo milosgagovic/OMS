@@ -2,6 +2,7 @@
 using IncidentManagementSystem.Model;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -68,7 +69,7 @@ namespace IncidentManagementSystem.Service
 			List<IncidentReport> retVal = new List<IncidentReport>();
             using (var ctx = new IncidentContext())
             {
-                foreach (IncidentReport ir in ctx.IncidentReports)
+                foreach (IncidentReport ir in ctx.IncidentReports.Include("Crew"))
                 {
                     retVal.Add(ir);
                 }
@@ -137,6 +138,11 @@ namespace IncidentManagementSystem.Service
                     break;
                 }
             }
+
+            using (var ctx = new IncidentContext())
+            {
+                res = ctx.IncidentReports.Where(ir => ir.Id == res.Id).Include("Crew").FirstOrDefault();
+            }
             return res;
         }
 
@@ -196,6 +202,7 @@ namespace IncidentManagementSystem.Service
                 res.RepairTime = report.RepairTime;
                 res.CrewSent = report.CrewSent;
                 res.IncidentState = report.IncidentState;
+                res.Crew = ctx.Crews.Where(c => c.Id == report.Crew.Id).FirstOrDefault();
 
                 ctx.SaveChanges();
             }

@@ -1,4 +1,5 @@
 ﻿using DMSCommon.Model;
+using IMSContract;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -43,6 +44,6 @@ namespace DMSContract
         //void SendCrewToDms(string mrid);
 
         [OperationContract]
-        void SendCrewToDms(DateTime id);
+        void SendCrewToDms(IncidentReport report);
     }
 }

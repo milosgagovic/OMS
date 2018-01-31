@@ -189,18 +189,18 @@ namespace DMSService
            
         }
 
-        public void SendCrewToDms(DateTime id)
+        public void SendCrewToDms(IncidentReport report)
         {
             /*Logic dms*/
-            Thread crewprocess = new Thread(() => ProcessCrew(id));
+            Thread crewprocess = new Thread(() => ProcessCrew(report));
             crewprocess.Start();
             return;
 
         }
 
-        private void ProcessCrew(DateTime id)
+        private void ProcessCrew(IncidentReport report)
         {
-            IncidentReport report = proxyToIMS.GetReport(id);
+            report.Id = proxyToIMS.GetReport(report.Time).Id;
 
             if(report != null)
             {

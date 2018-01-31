@@ -27,5 +27,5 @@ namespace IMSContract
 			this.Id = id;
 			this.CrewName = name;
 		}
-	}
+    }
 }

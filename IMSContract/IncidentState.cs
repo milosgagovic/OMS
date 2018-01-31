@@ -11,6 +11,7 @@ namespace IMSContract
         UNRESOLVED,
         PENDING,
         REPAIRED,
-        FAILED_TO_REPAIR
+        FAILED_TO_REPAIR,
+        NO_CREWS
     }
 }
