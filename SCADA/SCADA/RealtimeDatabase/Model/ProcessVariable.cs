@@ -14,6 +14,7 @@ namespace SCADA.RealtimeDatabase.Model
         public string ProcContrName { get; set; }
 
         // Relative address in configuration file
+        // mapping to concrete address is done in RTU
         public ushort RelativeAddress { get; set; }
 
         // Address in associated Process Controller memory.

@@ -35,25 +35,24 @@ namespace SCADA.RealtimeDatabase
             return Database.RTUs;
         }
 
-
+        /// <summary>
+        /// Storing the Process Varible in dictionary. Key= pv.Name, Value=pv
+        /// </summary>
+        /// <param name="pv"></param>
         public void AddProcessVariable(ProcessVariable pv)
         {
             Database.Instance.ProcessVariablesName.Add(pv.Name, pv);
         }
 
-        public ProcessVariable GetProcessVariableByName(string name)
+        /// <summary>
+        /// Return Process Variable if exists; 
+        /// otherwise pv=null
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public bool GetProcessVariableByName(string name, out ProcessVariable pv)
         {
-            ProcessVariable pv;
-            Database.Instance.ProcessVariablesName.TryGetValue(name, out pv);
-
-            return pv;
-        }
-
-        public ProcessVariable GetProcessVariableByAddress(ushort address)
-        {
-            ProcessVariable pv;
-            Database.Instance.ProcessVariablesAddress.TryGetValue(address, out pv);
-            return pv;
+            return (Database.Instance.ProcessVariablesName.TryGetValue(name, out pv));
         }
 
         public List<ProcessVariable> GetAllProcessVariables()

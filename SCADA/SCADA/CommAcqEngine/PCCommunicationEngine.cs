@@ -27,7 +27,7 @@ namespace SCADA.CommAcqEngine
             IORequests = IORequestsQueue.GetQueue();
 
             isShutdown = false;
-            timerMsc = 1000;
+            timerMsc = 200;
 
             processControllers = new Dictionary<string, ProcessController>();
             TcpChannels = new Dictionary<string, TcpClient>();
@@ -177,13 +177,14 @@ namespace SCADA.CommAcqEngine
             {
 
                 bool isSuccessful;
+                //Console.WriteLine("----> ProcessRequests(){0}  IORequests.Count = {1}", processing, IORequests.IORequests.Count);
                 IORequestBlock forProcess = IORequests.DequeueRequest(out isSuccessful);
-                Console.WriteLine("* ProcessRequests(){0}, DequeueRequest= {1}, IORequests.Count = {2}", processing, isSuccessful, IORequests.IORequests.Count);
+                // Console.WriteLine("====> ProcessRequests(){0}, DequeueRequest= {1}, IORequests.Count = {2}", processing, isSuccessful, IORequests.IORequests.Count);
 
                 if (isSuccessful)
                 {
 
-                    Console.WriteLine("** ProcessRequests(){0}, REQUEST = ", processing, BitConverter.ToString(forProcess.SendBuff, 0, forProcess.SendMsgLength));
+                   // Console.WriteLine("** ProcessRequests(){0}, REQUEST = ", processing, BitConverter.ToString(forProcess.SendBuff, 0, forProcess.SendMsgLength));
 
                     TcpClient client;
 
@@ -204,7 +205,7 @@ namespace SCADA.CommAcqEngine
 
                             stream.Write(forProcess.SendBuff, offset, forProcess.SendMsgLength);
 
-                            Console.WriteLine("*** REQUEST <SEND> = ", BitConverter.ToString(forProcess.SendBuff, 0, forProcess.SendMsgLength));
+                            //Console.WriteLine("*** REQUEST <SEND> = ", BitConverter.ToString(forProcess.SendBuff, 0, forProcess.SendMsgLength));
 
                             // to do: processing big messages.  whole, or in parts?
                             // ...
@@ -214,10 +215,10 @@ namespace SCADA.CommAcqEngine
                             var length = stream.Read(forProcess.RcvBuff, offset, client.ReceiveBufferSize);
                             forProcess.RcvMsgLength = length;
 
-                            Console.WriteLine("*** ANSWER <READ> = ", BitConverter.ToString(forProcess.RcvBuff, 0, forProcess.RcvMsgLength));
+                            //Console.WriteLine("*** ANSWER <READ> = ", BitConverter.ToString(forProcess.RcvBuff, 0, forProcess.RcvMsgLength));
 
                             IORequests.EnqueueAnswer(forProcess);
-                            Console.WriteLine("**** ProcessRequests(){0}, Answer enqueued IOAnswers.Count = {1}", processing, IORequests.IOAnswers.Count);
+                            //Console.WriteLine("**** ProcessRequests(){0}, Answer enqueued IOAnswers.Count = {1}", processing, IORequests.IOAnswers.Count);
 
                         }
                         catch (Exception e)

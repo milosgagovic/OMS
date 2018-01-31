@@ -14,6 +14,7 @@ using OMSSCADACommon.Responses;
 using SCADA.ClientHandler;
 using SCADA.RealtimeDatabase.Catalogs;
 using System.Net.Sockets;
+using SCADA.ConfigurationParser;
 
 namespace SCADA.CommAcqEngine
 {
@@ -47,170 +48,14 @@ namespace SCADA.CommAcqEngine
         /// <param name="configPath"></param>
         public void Configure(string configPath)
         {
+            // dodati metode za serijalizaciju baze
+            ScadaModelParser parser = new ScadaModelParser(configPath);
+            if (!parser.DoParse())
+            {
+                // error....
+            }
+
             RTUs = dbContext.GettAllRTUs();
-
-            //  validations: unique name, unique address? protocol. din in di out same number
-
-            RTU rtu1 = new RTU()
-            {
-                Address = 1,
-                Name = "RTU-1",
-                Protocol = PCCommon.IndustryProtocols.ModbusTCP,
-
-                DigOutStartAddr = 0,
-                DigInStartAddr = 1000,
-                AnaInStartAddr = 2000,
-                AnaOutStartAddr = 3000,
-                CounterStartAddr = 3500,
-
-                DigOutCount = 20,
-                DigInCount = 20,
-                AnaInCount = 4,
-                AnaOutCount = 2,
-                CounterCount = 2
-            };
-
-            RTU rtu2 = new RTU()
-            {
-                Address = 1,
-                Name = "RTU-2",
-                Protocol = PCCommon.IndustryProtocols.ModbusTCP,
-
-                DigOutStartAddr = 0,
-                DigInStartAddr = 1000,
-                AnaInStartAddr = 2000,
-                AnaOutStartAddr = 3000,
-                CounterStartAddr = 3500,
-
-                DigOutCount = 8,
-                DigInCount = 8,
-                AnaInCount = 4,
-                AnaOutCount = 2,
-                CounterCount = 2
-
-            };
-
-            RTUs.Add(rtu1.Name, rtu1);
-            RTUs.Add(rtu2.Name, rtu2);
-
-            // rtu 1
-            Digital d1 = new Digital()
-            {
-                ProcContrName = "RTU-1",
-                Name = "MEAS_D_1",
-                RelativeAddress = 0,
-                Class = DigitalDeviceClasses.SWITCH,
-                ValidCommands = { CommandTypes.CLOSE, CommandTypes.OPEN },
-                ValidStates = { States.CLOSED, States.OPENED },
-                Command = CommandTypes.OPEN,
-                State = States.CLOSED,
-            };
-
-            Digital d2 = new Digital()
-            {
-                ProcContrName = "RTU-1",
-                Name = "MEAS_D_2",
-                RelativeAddress = 1,
-                Class = DigitalDeviceClasses.SWITCH,
-                ValidCommands = { CommandTypes.CLOSE, CommandTypes.OPEN },
-                ValidStates = { States.CLOSED, States.OPENED },
-                Command = CommandTypes.OPEN,
-                State = States.CLOSED,
-            };
-
-            Digital d3 = new Digital()
-            {
-                ProcContrName = "RTU-1",
-                Name = "MEAS_D_3",
-                RelativeAddress = 2,
-                Class = DigitalDeviceClasses.SWITCH,
-                ValidCommands = { CommandTypes.CLOSE, CommandTypes.OPEN },
-                ValidStates = { States.CLOSED, States.OPENED },
-                Command = CommandTypes.OPEN,
-                State = States.CLOSED,
-            };
-
-            Digital d4 = new Digital()
-            {
-                ProcContrName = "RTU-1",
-                Name = "MEAS_D_3",
-                RelativeAddress = 3,
-                Class = DigitalDeviceClasses.SWITCH,
-                ValidCommands = { CommandTypes.CLOSE, CommandTypes.OPEN },
-                ValidStates = { States.CLOSED, States.OPENED },
-                Command = CommandTypes.OPEN,
-                State = States.CLOSED,
-            };
-
-            Digital d5 = new Digital()
-            {
-                ProcContrName = "RTU-1",
-                Name = "MEAS_D_4",
-                RelativeAddress = 4,
-                Class = DigitalDeviceClasses.SWITCH,
-                ValidCommands = { CommandTypes.CLOSE, CommandTypes.OPEN },
-                ValidStates = { States.CLOSED, States.OPENED },
-                Command = CommandTypes.OPEN,
-                State = States.CLOSED,
-            };
-
-            // rtu 2
-            //Digital d6 = new Digital()
-            //{
-            //    ProcContrName = "RTU-2",
-            //    Name = "TEST3",
-            //    RelativeAddress = 0,
-            //    Class = DigitalDeviceClasses.SWITCH,
-            //    ValidCommands = { CommandTypes.CLOSE, CommandTypes.OPEN },
-            //    ValidStates = { States.CLOSED, States.OPENED },
-            //    Command = CommandTypes.OPEN,
-            //    State = States.CLOSED,
-            //};
-
-            //Digital d7 = new Digital()
-            //{
-            //    ProcContrName = "RTU-2",
-            //    Name = "TEST4",
-            //    RelativeAddress = 1,
-            //    Class = DigitalDeviceClasses.SWITCH,
-            //    ValidCommands = { CommandTypes.CLOSE, CommandTypes.OPEN },
-            //    ValidStates = { States.CLOSED, States.OPENED },
-            //    Command = CommandTypes.OPEN,
-            //    State = States.CLOSED,
-            //};
-
-            //Digital d8 = new Digital()
-            //{
-            //    ProcContrName = "RTU-2",
-            //    Name = "TEST5",
-            //    RelativeAddress = 2,
-            //    Class = DigitalDeviceClasses.SWITCH,
-            //    ValidCommands = { CommandTypes.CLOSE, CommandTypes.OPEN },
-            //    ValidStates = { States.CLOSED, States.OPENED },
-            //    Command = CommandTypes.OPEN,
-            //    State = States.CLOSED,
-            //};
-
-            rtu1.AddProcessVariable(d1);
-            rtu1.AddProcessVariable(d2);
-            rtu1.AddProcessVariable(d3);
-            //rtu1.AddProcessVariable(d4);
-            //rtu1.AddProcessVariable(d5);
-
-            //rtu2.AddProcessVariable(d6);
-            //rtu2.AddProcessVariable(d7);
-            //rtu2.AddProcessVariable(d8);
-
-            dbContext.AddProcessVariable(d1);
-            dbContext.AddProcessVariable(d2);
-            dbContext.AddProcessVariable(d3);
-            //dbContext.AddProcessVariable(d4);
-            //dbContext.AddProcessVariable(d5);
-            //dbContext.AddProcessVariable(d6);
-            //dbContext.AddProcessVariable(d7);
-            //dbContext.AddProcessVariable(d8);
-
-            //d1.Name = "PromenaD1";
         }
 
         /// <summary>
@@ -287,7 +132,7 @@ namespace SCADA.CommAcqEngine
 
                         //Console.WriteLine("*** StartAcquisition(){0}, IORequests.Count = {1},  REQUEST for enqueue= ", processing, IORequests.IORequests.Count, BitConverter.ToString(iorb.SendBuff, 0, iorb.SendMsgLength));
                         IORequests.EnqueueRequest(iorb);
-                        Console.WriteLine("**** StartAcquisition(){0}, IORequests.Count = {1},  REQUEST ENQUEUED = ", processing, IORequests.IORequests.Count, BitConverter.ToString(iorb.SendBuff, 0, iorb.SendMsgLength));
+                        //Console.WriteLine("**** StartAcquisition(){0}, IORequests.Count = {1},  REQUEST ENQUEUED = ", processing, IORequests.IORequests.Count, BitConverter.ToString(iorb.SendBuff, 0, iorb.SendMsgLength));
                     }
                     else
                     {   // ne postoji taj rtu sa tim imenom. izbrisati te procesne varijable sa rtu-om tog imena
@@ -297,7 +142,8 @@ namespace SCADA.CommAcqEngine
                     processing++;
                 }
 
-                Thread.Sleep(millisecondsTimeout: timerMsc);
+                // Thread.Sleep(millisecondsTimeout: timerMsc);
+                Thread.Sleep(millisecondsTimeout: 3000);
             }
             // to do: close all communication channels
             // delete...
@@ -318,7 +164,7 @@ namespace SCADA.CommAcqEngine
 
                 bool isSuccessful;
                 IORequestBlock answer = IORequests.DequeueAnswer(out isSuccessful);
-                Console.WriteLine("\n* ProcessPCAnswers {0}, DequeueAnswer={1}, IOAnswer count = {2}", processing, isSuccessful, IORequests.IOAnswers.Count);
+                //Console.WriteLine("\n* ProcessPCAnswers {0}, DequeueAnswer={1}, IOAnswer count = {2}", processing, isSuccessful, IORequests.IOAnswers.Count);
 
                 if (isSuccessful)
                 {
@@ -340,8 +186,14 @@ namespace SCADA.CommAcqEngine
                                 {
                                     case FunctionCodes.ReadDiscreteInput:
                                         BitReadResponse response = (BitReadResponse)mdbHandler.Response;
-                                        Digital target = (Digital)rtu.GetProcessVariableByAddress(answer.ReqAddress);
+                                        ProcessVariable pv;
+                                        Digital target = null;
+                                        if (rtu.GetProcessVariableByAddress(answer.ReqAddress, out pv))
+                                        {
+                                            target = (Digital)pv;
+                                        }
 
+                                        // Digital target = (Digital)rtu.GetProcessVariableByAddress(answer.ReqAddress);
                                         if (target != null)
                                         {
                                             int[] array = new int[1];
@@ -354,14 +206,11 @@ namespace SCADA.CommAcqEngine
                                                 {
                                                     if (target.State != target.ValidStates[array[0]])
                                                     {
-                                                        //Responser responser = new Responser();
-                                                        //responser.DigitalStateChanged(target.Name, target.ValidStates[array[0]]);
                                                         target.State = target.ValidStates[array[0]];
                                                         DMSClient dMSClient = new DMSClient();
                                                         dMSClient.ChangeOnSCADA(target.Name, target.State);
                                                     }
                                                 }
-                                                //Console.WriteLine("Digital variable {0}, state: {1}", target.Name, target.State);
                                             }
                                             catch
                                             {
@@ -462,7 +311,12 @@ namespace SCADA.CommAcqEngine
             Digital digital = null;
             OMSSCADACommon.Responses.Response response = new OMSSCADACommon.Responses.Response();
 
-            digital = (Digital)dbContext.GetProcessVariableByName(id);
+            // getting PV from db
+            ProcessVariable pv;
+            if (dbContext.GetProcessVariableByName(id, out pv))
+            {
+                digital = (Digital)pv;
+            }
 
             // does this ID exist in the database
             if (digital == null)
@@ -481,53 +335,53 @@ namespace SCADA.CommAcqEngine
             // execute command if it's different from current command
             //if (digital.Command != command)
             //{
-                RTU rtu;
-                RTUs.TryGetValue(digital.ProcContrName, out rtu);
+            RTU rtu;
+            RTUs.TryGetValue(digital.ProcContrName, out rtu);
 
-                IORequestBlock iorb = new IORequestBlock()
-                {
-                    RequestType = RequestType.SEND,
-                    ProcessControllerName = digital.ProcContrName
-                };
+            IORequestBlock iorb = new IORequestBlock()
+            {
+                RequestType = RequestType.SEND,
+                ProcessControllerName = digital.ProcContrName
+            };
 
-                iorb.ReqAddress = (ushort)rtu.GetCommandAddress(digital);
+            iorb.ReqAddress = (ushort)rtu.GetCommandAddress(digital);
 
-                switch (rtu.Protocol)
-                {
-                    case IndustryProtocols.ModbusTCP:
+            switch (rtu.Protocol)
+            {
+                case IndustryProtocols.ModbusTCP:
 
-                        ModbusHandler mdbHandler = new ModbusHandler
+                    ModbusHandler mdbHandler = new ModbusHandler
+                    {
+                        Header = new ModbusApplicationHeader()
                         {
-                            Header = new ModbusApplicationHeader()
-                            {
-                                TransactionId = 0,
-                                Length = 5,
-                                ProtocolId = (ushort)IndustryProtocols.ModbusTCP,
-                                DeviceAddress = rtu.Address
-                            },
+                            TransactionId = 0,
+                            Length = 5,
+                            ProtocolId = (ushort)IndustryProtocols.ModbusTCP,
+                            DeviceAddress = rtu.Address
+                        },
 
-                            Request = new WriteRequest()
-                            {
-                                FunCode = FunctionCodes.WriteSingleCoil,
-                                StartAddr = (ushort)rtu.GetCommandAddress(digital),
-                                Value = (ushort)command
-                            }
-                        };
+                        Request = new WriteRequest()
+                        {
+                            FunCode = FunctionCodes.WriteSingleCoil,
+                            StartAddr = (ushort)rtu.GetCommandAddress(digital),
+                            Value = (ushort)command
+                        }
+                    };
 
-                        iorb.SendBuff = mdbHandler.PackData();
-                        iorb.SendMsgLength = iorb.SendBuff.Length;
-                        // iorb.SendMsgLength = 12;
-                        break;
-                }
+                    iorb.SendBuff = mdbHandler.PackData();
+                    iorb.SendMsgLength = iorb.SendBuff.Length;
+                    // iorb.SendMsgLength = 12;
+                    break;
+            }
 
-                IORequests.EnqueueRequest(iorb);
-                Console.WriteLine("enqued {0}", BitConverter.ToString(iorb.SendBuff, 0, 12));
+            IORequests.EnqueueRequest(iorb);
+            Console.WriteLine("enqued {0}", BitConverter.ToString(iorb.SendBuff, 0, 12));
 
-                digital.Command = command;
+            digital.Command = command;
 
-                //CommandValidator.CheckCommandExecution();
+            //CommandValidator.CheckCommandExecution();
 
-                response.ResultMessage = ResultMessage.OK;
+            response.ResultMessage = ResultMessage.OK;
             //}
 
             return response;
@@ -542,7 +396,7 @@ namespace SCADA.CommAcqEngine
 
             while (!isShutdown)
             {
-                Console.WriteLine("** TestWriteSingleDigital(){0}, IORequests.Count = {1}", processing, IORequests.IORequests.Count);
+                //Console.WriteLine("** TestWriteSingleDigital(){0}, IORequests.Count = {1}", processing, IORequests.IORequests.Count);
 
                 try
                 {
@@ -578,7 +432,7 @@ namespace SCADA.CommAcqEngine
                     iorb.SendMsgLength = 12;
 
                     IORequests.EnqueueRequest(iorb);
-                    Console.WriteLine("enqued {0}", BitConverter.ToString(send, 0, 12));
+                    //Console.WriteLine("enqued {0}", BitConverter.ToString(send, 0, 12));
 
 
                 }

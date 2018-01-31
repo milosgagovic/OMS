@@ -1,19 +1,19 @@
 ﻿using PCCommon;
 using SCADA.RealtimeDatabase.Model;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace SCADA.RealtimeDatabase
 {
     public class RTU
     {
-        // dovoljno je da procesna varijabla zna
-        // samo svoju relativnu adresu, a mapiranje se vrsi na 
-        // nivou rtu-a
-        public Dictionary<ushort, ProcessVariable> ProcessVariables = null;
+
+        // ne treba
+        private Dictionary<ushort, ProcessVariable> ProcessVariables = null;
+        private ConcurrentDictionary<ushort, string> PVsAddressAndNames = null;
+        private DBContext dbContext = null;
 
         public IndustryProtocols Protocol { get; set; }
 
@@ -51,24 +51,14 @@ namespace SCADA.RealtimeDatabase
         public RTU()
         {
             this.ProcessVariables = new Dictionary<ushort, ProcessVariable>();
+            this.PVsAddressAndNames = new ConcurrentDictionary<ushort, string>();
+            dbContext = new DBContext();
 
             digitalInAddresses = new List<int>(DigInCount);
             analogInAddresses = new List<int>(AnaInCount);
             digitalOutAddresses = new List<int>(DigOutCount);
             analogOutAddresses = new List<int>(AnaOutCount);
             counterAddresses = new List<int>(CounterCount);
-        }
-
-        public void Configure(string configPath)
-        {
-            // read from cofigPath.xml
-
-            //setting starting addresses
-            digitalInAddresses[0] = DigInStartAddr;
-            analogInAddresses[0] = AnaInStartAddr;
-            digitalOutAddresses[0] = DigOutStartAddr;
-            analogOutAddresses[0] = AnaOutStartAddr;
-            counterAddresses[0] = CounterStartAddr;
         }
 
         // get reading address
@@ -108,14 +98,23 @@ namespace SCADA.RealtimeDatabase
             return retAddress;
         }
 
-        // mapiranje - za svaku varijablu racunanje adrese 
-        // u memoriji odgovarajuceg kontrolera
+        // liste ne moraju da budu konkurentne posto im se pristupa samo kad se dodaje, i to sekvencijalno
+
+        // mapiranje - za svaku varijablu racunanje adrese u memoriji odgovarajuceg kontrolera
         // mapiramo na InAdresses - adrese za citanje (akvizicija je u pitanju)
         // mapiranje se vrsi na osnovu relativne adrese promenljive
-        // i broja pI/O koje ona zauzima. relativna adresa je pozicija
-        // promenljive u nizu promenljivih istog tipa
-        public int MapToAcqAddress(ProcessVariable variable)
+        // i broja pI/O koje ona zauzima. 
+        // relativna adresa je pozicija promenljive u nizu promenljivih istog tipa
+
+        // poziva se prvi put na pocetku, na citanju konfiguracije
+        // i posle svaki put kad se dodaje nesto novo. ali to su sve sekvencijalni pozivi!
+        // znaci ne moramo da koristimo konkurent queue
+        private int MapToAcqAddress(ProcessVariable variable, out bool isSuccessfull)
         {
+            isSuccessfull = false;
+
+            // i ovo se mora lockovati. ukoliko vise promenljivih insertujemo odjednom?
+            // mada to realno nije moguce jer samo na jednom mestu, akd dodje delta, se insertuju promenljive. iz jedne niti
             int retAddr = -1;
             switch (variable.Type)
             {
@@ -137,10 +136,14 @@ namespace SCADA.RealtimeDatabase
 
                     retAddr = currentAddress;
 
+                    // error, out of range
                     if (nextAddress >= DigInStartAddr + DigInCount)
-                        break;  // error, out of range
+                        break;
 
                     digitalInAddresses.Insert(digital.RelativeAddress + 1, nextAddress);
+                    isSuccessfull = true;
+
+
                     break;
 
                 case VariableTypes.ANALOGIN:
@@ -154,8 +157,9 @@ namespace SCADA.RealtimeDatabase
         }
 
         // mapiranje na OutAddresses - adrese za pisanje (komandovanje)
-        public int MapToCommandAddress(ProcessVariable variable)
+        private int MapToCommandAddress(ProcessVariable variable, out bool isSuccessfull)
         {
+            isSuccessfull = false;
             int retAddr = -1;
             switch (variable.Type)
             {
@@ -171,10 +175,12 @@ namespace SCADA.RealtimeDatabase
                     var nextAddress = currentAddress + quantity;
                     retAddr = currentAddress;
 
+                    // error, out of range
                     if (nextAddress >= DigOutStartAddr + DigInCount)
-                        break;  // error, out of range
+                        break;
 
                     digitalOutAddresses.Insert(digital.RelativeAddress + 1, nextAddress);
+                    isSuccessfull = true;
                     break;
 
                 case VariableTypes.ANALOGIN:
@@ -186,20 +192,56 @@ namespace SCADA.RealtimeDatabase
             return retAddr;
         }
 
-        public ProcessVariable GetProcessVariableByAddress(ushort address)
+        /// <summary>
+        /// Return Process Variable if exists, null if not.
+        /// </summary>
+        /// <param name="address"></param>
+        /// <returns></returns>
+        public bool GetProcessVariableByAddress(ushort address, out ProcessVariable pv)
         {
-            ProcessVariable pv;
-            ProcessVariables.TryGetValue(address, out pv);
-            return pv;
+            // prvo nadjemo ovde ime promenljive po adresi, i onda u bazi nadjemo promnljivu po imenu.
+            // sticenje u bazi?
+
+            string pvName;
+
+            if (PVsAddressAndNames.TryGetValue(address, out pvName))
+            {
+
+                return (dbContext.GetProcessVariableByName(pvName, out pv));
+            }
+            else
+            {
+                pv = null;
+                return false;
+            }
         }
 
-        public void AddProcessVariable(ProcessVariable variable)
+        // mozda ovde da cuvano samo ime varijable?
+        /// <summary>
+        /// Storing variables by its address in RTU Memory.
+        /// Mapping to reading/commanding address is done in this function.
+        /// </summary>
+        /// <param name="variable"></param>
+        public bool MapProcessVariable(ProcessVariable variable)
         {
-            var readAddr = MapToAcqAddress(variable);
-            var writeAddr = MapToCommandAddress(variable);
+            bool isSuccessfull = false;
 
-            ProcessVariables.Add((ushort)readAddr, variable);
-            ProcessVariables.Add((ushort)writeAddr, variable);
+            var readAddr = MapToAcqAddress(variable, out isSuccessfull);
+            if (isSuccessfull)
+            {
+                var writeAddr = MapToCommandAddress(variable, out isSuccessfull);
+                if (isSuccessfull)
+                {
+                    if (PVsAddressAndNames.TryAdd((ushort)readAddr, variable.Name)
+                        && PVsAddressAndNames.TryAdd((ushort)writeAddr, variable.Name))
+                    {
+                        isSuccessfull = true;
+                    }
+
+                }
+            }
+
+            return isSuccessfull;
         }
 
     }

@@ -11,8 +11,6 @@ namespace SCADA.RealtimeDatabase
     {
         public Dictionary<string, ProcessVariable> ProcessVariablesName = null;
 
-        public Dictionary<ushort, ProcessVariable> ProcessVariablesAddress = null;
-
         public Dictionary<string, RTU> RTUs = null;
 
         private static Database instance;
@@ -20,8 +18,7 @@ namespace SCADA.RealtimeDatabase
 
         private Database()
         {
-            this.ProcessVariablesName = new Dictionary<string, ProcessVariable>();
-            this.ProcessVariablesAddress = new Dictionary<ushort, ProcessVariable>();
+            this.ProcessVariablesName = new Dictionary<string, ProcessVariable>();        
             this.SyncObject = new object();
             this.RTUs = new Dictionary<string, RTU>();
         }
@@ -36,6 +33,11 @@ namespace SCADA.RealtimeDatabase
                 }
                 return instance;
             }
+        }
+
+        public void SerializeData()
+        {
+            // treba sacuvadi rtu-ove i procesne varijable u fajl ScadaModel.xml
         }
     }
 }

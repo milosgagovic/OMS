@@ -6,6 +6,7 @@ using SCADA.RealtimeDatabase.Catalogs;
 using SCADA.RealtimeDatabase.Model;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.ServiceModel;
 using System.Text;
@@ -19,6 +20,9 @@ namespace SCADA
         static void Main(string[] args)
         {
             DBContext dbContext = new DBContext();
+
+            string acqConfig = Path.Combine(Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).Parent.Parent.Parent.FullName, "ScadaModel.xml");
+            string pcConfig = Path.Combine(Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).Parent.Parent.Parent.FullName, "PCConfiguration.xml");
 
             // ovde neku shutdown promenljivu dodati...
 
@@ -70,7 +74,7 @@ namespace SCADA
 
 
             ACQEngine AcqEngine = new ACQEngine();
-            AcqEngine.Configure("AcqConfiguration.xml");
+            AcqEngine.Configure(acqConfig);
 
             // uzimanje zahteva iz reda, i slanje zahteva MDBU-u.
             // dobijanje MDB odgovora i stavljanje u red

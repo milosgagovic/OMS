@@ -362,7 +362,7 @@ namespace TransactionManager
 				
 				if (rd.ContainsProperty(ModelCode.IDOBJ_MRID))
 				{
-					element.Name = rd.GetProperty(ModelCode.MEASUREMENT).ToString();
+					element.Name = rd.GetProperty(ModelCode.IDOBJ_NAME).ToString();
 				}
 				scadaDelta.InsertOps.Add(element);
 			}

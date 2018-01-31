@@ -17,22 +17,18 @@ namespace SCADA.RealtimeDatabase.Model
         public CommandTypes Command { get; set; }
         public States State { get; set; }
 
+        // to do: setovati command. nema smisla bas za neki <ozbiljniji> rad kasnije...sada moze ovako
         public Digital()
         {
             this.Type = VariableTypes.DIGITAL;
             ValidCommands = new List<CommandTypes>();
             ValidStates = new List<States>();
+
+            // kad dodamo uglavnom ga mapiramo na modbus 0, tj. open...
+            Command = CommandTypes.OPEN;
+
+            // i ovo za sada ostaje ovako
+            Class = DigitalDeviceClasses.SWITCH;
         }
-
-        // here should be mapping between Catalogs.States and bit values
-        //public void SetState(BitArray bits)
-        //{
-        //    int bitNumber = (int)Math.Floor((Math.Log(ValidStates.Count, 2)));
-
-        //    int[] array = new int[1];
-        //    bits.CopyTo(array, 0);
-
-        //    this.State = this.ValidStates[array[0]];
-        //}
     }
 }
