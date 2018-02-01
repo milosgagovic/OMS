@@ -33,7 +33,7 @@
                                     <ColumnDefinition Width="2"/>
                                     <ColumnDefinition/>
                                 </Grid.ColumnDefinitions>
-                                <ComboBox x:Name="ComboboxCrews" DisplayMemberPath="CrewName" SelectedIndex="0" IsEnabled="{Binding IncidentState, Converter={StaticResource IncidentStateToBool}}">
+                                <ComboBox x:Name="ComboboxCrews" DisplayMemberPath="CrewName" SelectedIndex="0" SelectedItem="{Binding RelativeSource={RelativeSource Mode=Self}, Path=ItemsSource[0]}" IsEnabled="{Binding IncidentState, Converter={StaticResource IncidentStateToBool}}">
                                     <ComboBox.ItemsSource>
                                         <MultiBinding Converter="{StaticResource CrewTypeToCrews}">
                                             <Binding Path="DataContext.Crews" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=DataGrid}"/>
