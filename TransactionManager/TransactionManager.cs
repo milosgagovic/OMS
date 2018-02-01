@@ -83,12 +83,12 @@ namespace TransactionManager
             TransactionProxys.Add(ProxyTransactionDMS);
 
             //duplex channel for SCADA transaction
-            //CallBackTransactionSCADA = new TransactionCallback();
-            //TransactionCallbacks.Add(CallBackTransactionSCADA);
-            //DuplexChannelFactory<ITransactionSCADA> factoryTransactionSCADA = new DuplexChannelFactory<ITransactionSCADA>(CallBackTransactionSCADA,
-            //                                                new NetTcpBinding(),
-            //                                                new EndpointAddress("net.tcp://localhost:8028/DMSTransactionService"));
-            //ProxyTransactionSCADA = factoryTransactionSCADA.CreateChannel();
+            CallBackTransactionSCADA = new TransactionCallback();
+            TransactionCallbacks.Add(CallBackTransactionSCADA);
+            DuplexChannelFactory<ITransactionSCADA> factoryTransactionSCADA = new DuplexChannelFactory<ITransactionSCADA>(CallBackTransactionSCADA,
+                                                            new NetTcpBinding(),
+                                                            new EndpointAddress("net.tcp://localhost:8058/SCADATransactionService"));
+            ProxyTransactionSCADA = factoryTransactionSCADA.CreateChannel();
 
 
             // client channel for DMSDispatcherService
@@ -108,7 +108,7 @@ namespace TransactionManager
                 svc.Enlist();
             }
 
-            //ProxyTransactionSCADA.Enlist();
+            ProxyTransactionSCADA.Enlist();
 
             while (true)
             {
@@ -145,7 +145,7 @@ namespace TransactionManager
 
 				TransactionProxys.Where(u => !u.Equals(ProxyTransactionNMS)).ToList().ForEach(x => x.PrepareDelta(delta));
 
-                //ProxyTransactionSCADA.Prepare(scadaDelta);
+                ProxyTransactionSCADA.Prepare(scadaDelta);
 
 				while (true)
 				{
@@ -173,6 +173,8 @@ namespace TransactionManager
             {
                 svc.Commit();
             }
+
+            ProxyTransactionSCADA.Commit();
         }
 
         public void Rollback()
@@ -182,6 +184,7 @@ namespace TransactionManager
             {
                 svc.Rollback();
             }
+            ProxyTransactionSCADA.Rollback();
         }
 
         #region IOMSClient Methods

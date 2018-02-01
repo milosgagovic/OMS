@@ -6,6 +6,7 @@ using System.Linq;
 using System.ServiceModel;
 using System.Text;
 using System.Threading.Tasks;
+using TransactionManagerContract;
 
 namespace SCADA.ClientHandler
 {
@@ -32,6 +33,13 @@ namespace SCADA.ClientHandler
 
             // to do: add transaction host
             // 2PC transaction service
+            ServiceHost transactionServiceHost = new ServiceHost(typeof(SCADATransactionService));
+            transactionServiceHost.Description.Name = "SCADATransactionService";
+            transactionServiceHost.AddServiceEndpoint(typeof(ITransactionSCADA),
+                new NetTcpBinding(),
+                new Uri("net.tcp://localhost:8058/SCADATransactionService"));
+
+            hosts.Add(transactionServiceHost);
         }
 
         public void Start()

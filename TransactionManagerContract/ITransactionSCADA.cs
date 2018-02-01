@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace TransactionManagerContract
 {
-    [ServiceContract]
+    [ServiceContract(CallbackContract = typeof(ITransactionCallback))]
     public interface ITransactionSCADA
     {
         [OperationContract]
