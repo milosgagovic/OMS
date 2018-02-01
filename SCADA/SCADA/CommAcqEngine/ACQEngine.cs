@@ -169,7 +169,7 @@ namespace SCADA.CommAcqEngine
                 if (isSuccessful)
                 {
 
-                    Console.WriteLine("** ProcessPCAnswers {0},  ANSWER=", processing, BitConverter.ToString(answer.RcvBuff, 0, answer.RcvMsgLength));
+                    //Console.WriteLine("** ProcessPCAnswers {0},  ANSWER=", processing, BitConverter.ToString(answer.RcvBuff, 0, answer.RcvMsgLength));
 
                     RTU rtu;
                     if (RTUs.TryGetValue((answer.ProcessControllerName), out rtu))
@@ -332,9 +332,7 @@ namespace SCADA.CommAcqEngine
                 return response;
             }
 
-            // execute command if it's different from current command
-            //if (digital.Command != command)
-            //{
+
             RTU rtu;
             RTUs.TryGetValue(digital.ProcContrName, out rtu);
 

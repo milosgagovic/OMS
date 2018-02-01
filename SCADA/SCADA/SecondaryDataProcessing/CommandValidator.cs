@@ -13,16 +13,31 @@ namespace SCADA.SecondaryDataProcessing
     {
         public static bool ValidateDigitalCommand(Digital digital, CommandTypes command)
         {
-            foreach(CommandTypes comm in digital.ValidCommands)
+            bool retVal = true;
+            if (digital.ValidCommands.Contains(command))
             {
-                if(comm == command && digital.Command != command)
+                switch (command)
                 {
-                    digital.Command = command;
-                    return true;
+                    case CommandTypes.CLOSE:
+
+                        //  command is CLOSE, last command was CLOSE, and state is CLOSED -> invalid...
+                        if (digital.State == States.CLOSED && digital.Command == CommandTypes.CLOSE)
+                            retVal = false;
+
+                        // command is CLOSE, last command was CLOSE, but state is OPENED (incident) -> valid
+                       
+                        break;
+
+                    case CommandTypes.OPEN:
+                        if (digital.State == States.OPENED && digital.Command == CommandTypes.OPEN)
+                            retVal = false;
+
+
+                        break;
+
                 }
             }
-
-            return false;
+            return retVal;
         }
 
         public static bool CheckCommandExecution()
