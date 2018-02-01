@@ -50,7 +50,7 @@ namespace DispatcherApp.ViewModel
 
         private Dictionary<long, ElementProperties> properties = new Dictionary<long, ElementProperties>();
         private Dictionary<long, ResourceDescription> resourceProperties = new Dictionary<long, ResourceDescription>();
-        private ElementProperties currentProperty;
+        private ElementProperties currentProperty = new ElementProperties();
         private long currentPropertyMRID;
 
         private int commandsIndex = 0;
@@ -64,7 +64,7 @@ namespace DispatcherApp.ViewModel
         private Dictionary<long, ObservableCollection<UIElement>> uiNetworks = new Dictionary<long, ObservableCollection<UIElement>>();
         private ObservableCollection<UIElement> mainCanvases = new ObservableCollection<UIElement>();
         private Dictionary<long, int> networkDepth = new Dictionary<long, int>();
-        private Canvas mainCanvas;
+        private Canvas mainCanvas = new Canvas();
 
         private ObservableCollection<BorderTabItem> leftTabControlTabs = new ObservableCollection<BorderTabItem>();
         private int leftTabControlIndex = 0;
@@ -140,14 +140,16 @@ namespace DispatcherApp.ViewModel
 
         public void InitNetwork()
         {
-            this.Network = new Dictionary<long, Element>();
-            this.properties = new Dictionary<long, ElementProperties>();
-            this.UINetworks = new Dictionary<long, ObservableCollection<UIElement>>();
-            this.networModelControls = new Dictionary<long, NetworkModelControlExtended>();
-            this.NetworkMapsBySourceButton = new ObservableCollection<Button>();
-            this.networkDepth = new Dictionary<long, int>();
-            Sources.Clear();
-            this.MainCanvases = new ObservableCollection<UIElement>();
+            this.Network.Clear();
+            this.properties.Clear();
+            //this.UINetworks.Clear();
+            //this.networModelControls.Clear();
+            this.NetworkMapsBySourceButton.Clear();
+            this.networkDepth.Clear();
+            this.Sources.Clear();
+            //this.MainCanvases.Clear();
+            this.IncidentReports.Clear();
+            this.mainCanvas.Children.Clear();
 
             #region FakeNetwork
             //Source s1 = new Source(0, -1, "ES_2") { ElementGID = 0 };
@@ -341,6 +343,8 @@ namespace DispatcherApp.ViewModel
 
                 if (meas != null)
                 {
+                    meas.UpdateProperty(rd.GetProperty(ModelCode.DISCRETE_NORMVAL));
+
                     try
                     {
                         long psr = meas.GetProperty(ModelCode.MEASUREMENT_PSR).AsLong();
@@ -388,19 +392,38 @@ namespace DispatcherApp.ViewModel
                 {
                     Source source = element as Source;
 
-                    this.UINetworks.Add(source.ElementGID, new ObservableCollection<UIElement>());
+                    ObservableCollection<UIElement> temp = new ObservableCollection<UIElement>();
+                    if (!this.UINetworks.TryGetValue(source.ElementGID, out temp))
+                    {
+                        this.UINetworks.Add(source.ElementGID, new ObservableCollection<UIElement>());
+                    }
 
                     Canvas canvas = new Canvas() { Width = 400, Height = 400 };
-                    this.UINetworks[source.ElementGID].Add(canvas);
-                    this.MainCanvases.Add(canvas);
+                    
+                    if(this.UINetworks[source.ElementGID].Count > 0)
+                    {
+                        this.mainCanvas = (Canvas)this.UINetworks[source.ElementGID][0];
+                    }
+                    else
+                    {
+                        this.UINetworks[source.ElementGID].Add(canvas);
+                        this.MainCanvases.Add(canvas);
+                        this.mainCanvas = canvas;
+                    }
 
                     NetworkModelControlExtended nmc = new NetworkModelControlExtended() { ItemsSourceForCanvas = this.UINetworks[source.ElementGID] };
-                    this.networModelControls.Add(source.ElementGID, nmc);
+                    if (this.networModelControls.TryGetValue(source.ElementGID, out nmc))
+                    {
+                        nmc = this.networModelControls[source.ElementGID];
+                    }
+                    else
+                    {
+                        nmc = new NetworkModelControlExtended() { ItemsSourceForCanvas = this.UINetworks[source.ElementGID] };
+                        this.networModelControls.Add(source.ElementGID, nmc);
+                    }
 
                     Button but = new Button() { Content = source.MRID, Command = OpenControlCommand, CommandParameter = source.ElementGID };
                     this.NetworkMapsBySourceButton.Add(but);
-
-                    this.mainCanvas = canvas;
 
                     this.networkDepth.Add(source.ElementGID, depth);
 
@@ -1378,7 +1401,6 @@ namespace DispatcherApp.ViewModel
             {
                 if (update.ElementAt(0).IsElementAdded == true)
                 {
-
                     NetTcpBinding binding = new NetTcpBinding();
                     binding.CloseTimeout = new TimeSpan(1, 0, 0, 0);
                     binding.OpenTimeout = new TimeSpan(1, 0, 0, 0);
@@ -1395,13 +1417,10 @@ namespace DispatcherApp.ViewModel
                         answerFromTransactionManager = ProxyToTransactionManager.GetNetwork();
                     }
                     catch (Exception e) { }
-
-                    Source source = (Source)Network[update.ElementAt(0).Gid];
-                    mainCanvas.Children.Clear();
+                    
                     InitNetwork();
                     InitElementsAndProperties(answerFromTransactionManager);
-                    this.networkDepth.Add(source.ElementGID, answerFromTransactionManager.GraphDeep);
-                    DrawGraph(source);
+                    DrawElementsOnGraph(answerFromTransactionManager.GraphDeep);
 
                     return;
                 }
