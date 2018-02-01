@@ -18,7 +18,35 @@ namespace DMSService
     {
 		private static Tree<Element> newTree;
 		private static Tree<Element> oldTree;
-		public void Commit()
+
+        public void Enlist()
+        {
+            Console.WriteLine("Pozvan je enlist na DMS-u");
+            oldTree = DMSService.Instance.Tree;
+            ITransactionCallback callback = OperationContext.Current.GetCallbackChannel<ITransactionCallback>();
+            callback.CallbackEnlist(true);
+        }
+
+        public void Prepare(Delta delta)
+        {
+            Console.WriteLine("Pozvan je prepare na DMS-u");
+
+            newTree = DMSService.Instance.InitializeNetwork();
+            DMSService.updatesCount += 1;
+            ITransactionCallback callback = OperationContext.Current.GetCallbackChannel<ITransactionCallback>();
+
+            // i ovde puca nekad
+            if (newTree.Data.Values.Count != 0)
+            {
+                callback.CallbackPrepare(true);
+            }
+            else
+            {
+                callback.CallbackPrepare(false);
+            }
+        }
+
+        public void Commit()
         {
             Console.WriteLine("Pozvan je Commit na DMS-u");
             if (DMSService.updatesCount >= 2)
@@ -35,34 +63,8 @@ namespace DMSService
 
             ITransactionCallback callback = OperationContext.Current.GetCallbackChannel<ITransactionCallback>();
             callback.CallbackCommit("Uspjesno je prosao commit na DMS-u");
-        }
-
-        public void Enlist()
-        {
-            Console.WriteLine("Pozvan je enlist na DMS-u");
-			oldTree = DMSService.Instance.Tree;
-            ITransactionCallback callback = OperationContext.Current.GetCallbackChannel<ITransactionCallback>();
-            callback.CallbackEnlist(true);
-        }
-
-        public void Prepare(Delta delta)
-        {
-            Console.WriteLine("Pozvan je prepare na DMS-u");
-
-			newTree =DMSService.Instance.InitializeNetwork();
-            DMSService.updatesCount += 1;
-            ITransactionCallback callback = OperationContext.Current.GetCallbackChannel<ITransactionCallback>();
-
-            // i ovde puca nekad
-            if (newTree.Data.Values.Count != 0)
-            {			
-                callback.CallbackPrepare(true);
-            }
-			else
-			{ 
-				callback.CallbackPrepare(false);
-			}  
-        }
+        }       
+       
         public void Rollback()
         {
             Console.WriteLine("Pozvan je RollBack na DMSu");

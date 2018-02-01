@@ -14,27 +14,12 @@ namespace FTN.Services.NetworkModelService
     {
         private static GenericDataAccess gda = new GenericDataAccess();
 
-        public void Commit()
-        {
-            Console.WriteLine("Pozvan je Commit na NMS-u");
-            if (GenericDataAccess.NewNetworkModel != null)
-            {
-                GenericDataAccess.NetworkModel = GenericDataAccess.NewNetworkModel;
-                ResourceIterator.NetworkModel = GenericDataAccess.NewNetworkModel;
-            }
-
-
-            ITransactionCallback callback = OperationContext.Current.GetCallbackChannel<ITransactionCallback>();
-            callback.CallbackCommit("Uspjesno je prosao commit na NMS-u");
-        }
-
         public void Enlist()
         {
             ITransactionCallback callback = OperationContext.Current.GetCallbackChannel<ITransactionCallback>();
             Console.WriteLine("Pozvan je enlist na NMS-u");
             try
             {
-
                 gda.GetCopyOfNetworkModel();
                 callback.CallbackEnlist(true);
             }
@@ -71,6 +56,20 @@ namespace FTN.Services.NetworkModelService
             }
         }
 
+        public void Commit()
+        {
+            Console.WriteLine("Pozvan je Commit na NMS-u");
+
+            if (GenericDataAccess.NewNetworkModel != null)
+            {
+                GenericDataAccess.NetworkModel = GenericDataAccess.NewNetworkModel;
+                ResourceIterator.NetworkModel = GenericDataAccess.NewNetworkModel;
+            }
+
+            ITransactionCallback callback = OperationContext.Current.GetCallbackChannel<ITransactionCallback>();
+            callback.CallbackCommit("Uspjesno je prosao commit na NMS-u");
+        }
+            
         public void Rollback()
         {
             Console.WriteLine("Pozvan je RollBack na NMSu");

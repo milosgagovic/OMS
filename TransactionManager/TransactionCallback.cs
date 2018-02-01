@@ -12,12 +12,13 @@ namespace TransactionManager
     {
         private TransactionAnswer answerForEnlist;
         private TransactionAnswer answerForPrepare;
+
         public TransactionCallback()
         {
             AnswerForEnlist = TransactionAnswer.Unanswered;
-            answerForPrepare = TransactionAnswer.Unanswered;
-                                                         
+            answerForPrepare = TransactionAnswer.Unanswered;                                                        
         }
+
         public TransactionAnswer AnswerForEnlist { get => answerForEnlist; set => answerForEnlist = value; }
         public TransactionAnswer AnswerForPrepare { get => answerForPrepare; set => answerForPrepare = value; }
 

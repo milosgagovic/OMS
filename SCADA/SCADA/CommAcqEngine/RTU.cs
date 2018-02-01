@@ -3,25 +3,25 @@ using SCADA.RealtimeDatabase.Model;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-
+using System.Threading;
 
 namespace SCADA.RealtimeDatabase
 {
     public class RTU
     {
 
-        // ne treba
-        private Dictionary<ushort, ProcessVariable> ProcessVariables = null;
         private ConcurrentDictionary<ushort, string> PVsAddressAndNames = null;
         private DBContext dbContext = null;
 
+
         public IndustryProtocols Protocol { get; set; }
 
-        // (Modbus slave address) 
-        //  value in range 1 - 247 (0 - broadcast)
+        // (Modbus slave address), value in range 1 - 247 (0 - broadcast)
         public Byte Address { get; set; }
 
         public string Name { get; set; }
+
+        public bool FreeSpaceForDigitals { get; set; }
 
         // controller pI/O starting Addresses
         public int DigOutStartAddr { get; set; }
@@ -37,12 +37,20 @@ namespace SCADA.RealtimeDatabase
         public int AnaOutCount { get; set; }
         public int CounterCount { get; set; }
 
-        // arrays of mapped adresses
-        // reading Addresses
+        public int MappedDig { get; set; }
+        // to do: add for analog and counter
+
+        // locks that support single writers and multiple readers
+        private ReaderWriterLockSlim digInLock = new ReaderWriterLockSlim();
+        private ReaderWriterLockSlim digOutLock = new ReaderWriterLockSlim();
+
+        // to do: add locks for analogs and counter 
+
+        // List of mapperd reading Addresses
         private List<int> digitalInAddresses;
         private List<int> analogInAddresses;
 
-        // commanding Addresses
+        // List of mapped commanding Addresses
         private List<int> digitalOutAddresses;
         private List<int> analogOutAddresses;
 
@@ -50,9 +58,11 @@ namespace SCADA.RealtimeDatabase
 
         public RTU()
         {
-            this.ProcessVariables = new Dictionary<ushort, ProcessVariable>();
             this.PVsAddressAndNames = new ConcurrentDictionary<ushort, string>();
             dbContext = new DBContext();
+
+
+            MappedDig = 0;
 
             digitalInAddresses = new List<int>(DigInCount);
             analogInAddresses = new List<int>(AnaInCount);
@@ -61,7 +71,7 @@ namespace SCADA.RealtimeDatabase
             counterAddresses = new List<int>(CounterCount);
         }
 
-        // get reading address
+
         public int GetAcqAddress(ProcessVariable variable)
         {
             int retAddress = -1;
@@ -69,7 +79,11 @@ namespace SCADA.RealtimeDatabase
             {
                 case VariableTypes.DIGITAL:
                     Digital digital = variable as Digital;
+
+                    digInLock.EnterReadLock();
                     retAddress = digitalInAddresses[digital.RelativeAddress];
+                    digInLock.ExitReadLock();
+
                     break;
                 case VariableTypes.ANALOGIN:
                     break;
@@ -87,7 +101,10 @@ namespace SCADA.RealtimeDatabase
             {
                 case VariableTypes.DIGITAL:
                     Digital digital = variable as Digital;
+
+                    digOutLock.EnterReadLock();
                     retAddress = digitalOutAddresses[digital.RelativeAddress];
+                    digOutLock.ExitReadLock();
                     break;
                 case VariableTypes.ANALOGIN:
                     break;
@@ -98,23 +115,19 @@ namespace SCADA.RealtimeDatabase
             return retAddress;
         }
 
-        // liste ne moraju da budu konkurentne posto im se pristupa samo kad se dodaje, i to sekvencijalno
 
-        // mapiranje - za svaku varijablu racunanje adrese u memoriji odgovarajuceg kontrolera
-        // mapiramo na InAdresses - adrese za citanje (akvizicija je u pitanju)
-        // mapiranje se vrsi na osnovu relativne adrese promenljive
-        // i broja pI/O koje ona zauzima. 
-        // relativna adresa je pozicija promenljive u nizu promenljivih istog tipa
-
-        // poziva se prvi put na pocetku, na citanju konfiguracije
-        // i posle svaki put kad se dodaje nesto novo. ali to su sve sekvencijalni pozivi!
-        // znaci ne moramo da koristimo konkurent queue
+        /// <summary>
+        /// Mapping to Acquisition address in memory of concrete RTU. It is based
+        /// on ProcessVariable RelativeAddress property (offset in array of Process
+        /// variables of same type)
+        /// </summary>
+        /// <param name="variable"></param>
+        /// <param name="isSuccessfull"></param>
+        /// <returns></returns>
         private int MapToAcqAddress(ProcessVariable variable, out bool isSuccessfull)
         {
             isSuccessfull = false;
 
-            // i ovo se mora lockovati. ukoliko vise promenljivih insertujemo odjednom?
-            // mada to realno nije moguce jer samo na jednom mestu, akd dodje delta, se insertuju promenljive. iz jedne niti
             int retAddr = -1;
             switch (variable.Type)
             {
@@ -122,15 +135,25 @@ namespace SCADA.RealtimeDatabase
 
                     Digital digital = variable as Digital;
 
-                    // ovo je prva promenljiva tipa digital, i ona pocinje na
-                    // prvoj adresi tog tipa 
+                    // ovo je prva promenljiva tipa digital, i ona pocinje na prvoj adresi tog tipa 
                     if (digital.RelativeAddress == 0)
-                        digitalInAddresses.Insert(digital.RelativeAddress, DigInStartAddr);
+                    {
+                        digInLock.EnterWriteLock();
+                        try
+                        {
+                            digitalInAddresses.Insert(digital.RelativeAddress, DigInStartAddr);
+                        }
+                        finally
+                        {
+                            digInLock.ExitWriteLock();
+                        }
+                    }
 
-                    // racunanje adrese sledece promenljive istog tipa
-                    // sabiranjem broja registara 
-                    // trenutne promenljive sa njenom startnom adrese
+                    // calculating address of next variable of same type. adding number of registers with start address of current variable
+                    digInLock.EnterReadLock();
                     var currentAddress = digitalInAddresses[digital.RelativeAddress];
+                    digInLock.ExitReadLock();
+
                     var quantity = (ushort)(Math.Floor((Math.Log(digital.ValidStates.Count, 2))));
                     var nextAddress = currentAddress + quantity;
 
@@ -138,11 +161,21 @@ namespace SCADA.RealtimeDatabase
 
                     // error, out of range
                     if (nextAddress >= DigInStartAddr + DigInCount)
+                    {
+                        FreeSpaceForDigitals = false;
                         break;
+                    }
 
-                    digitalInAddresses.Insert(digital.RelativeAddress + 1, nextAddress);
-                    isSuccessfull = true;
-
+                    digInLock.EnterWriteLock();
+                    try
+                    {
+                        digitalInAddresses.Insert(digital.RelativeAddress + 1, nextAddress);
+                        isSuccessfull = true;
+                    }
+                    finally
+                    {
+                        digInLock.ExitWriteLock();
+                    }
 
                     break;
 
@@ -156,7 +189,14 @@ namespace SCADA.RealtimeDatabase
             return retAddr;
         }
 
-        // mapiranje na OutAddresses - adrese za pisanje (komandovanje)
+        /// <summary>
+        /// Mapping to Commanding address in memory of concrete RTU. It is based
+        /// on ProcessVariable RelativeAddress property (offset in array of Process
+        /// variables of same type)
+        /// </summary>
+        /// <param name="variable"></param>
+        /// <param name="isSuccessfull"></param>
+        /// <returns></returns>
         private int MapToCommandAddress(ProcessVariable variable, out bool isSuccessfull)
         {
             isSuccessfull = false;
@@ -168,19 +208,46 @@ namespace SCADA.RealtimeDatabase
                     Digital digital = variable as Digital;
 
                     if (digital.RelativeAddress == 0)
-                        digitalOutAddresses.Insert(digital.RelativeAddress, DigOutStartAddr);
+                    {
+                        digOutLock.EnterWriteLock();
+                        try
+                        {
+                            digitalOutAddresses.Insert(digital.RelativeAddress, DigOutStartAddr);
+                        }
+                        finally
+                        {
+                            digOutLock.ExitWriteLock();
+                        }
+                    }
 
+                    digOutLock.EnterReadLock();
                     var currentAddress = digitalOutAddresses[digital.RelativeAddress];
+                    digOutLock.ExitReadLock();
+
                     var quantity = (ushort)(Math.Floor((Math.Log(digital.ValidCommands.Count, 2))));
                     var nextAddress = currentAddress + quantity;
+
                     retAddr = currentAddress;
 
                     // error, out of range
                     if (nextAddress >= DigOutStartAddr + DigInCount)
+                    {
+                        FreeSpaceForDigitals = false;
                         break;
+                    }
 
-                    digitalOutAddresses.Insert(digital.RelativeAddress + 1, nextAddress);
-                    isSuccessfull = true;
+
+                    digOutLock.EnterWriteLock();
+                    try
+                    {
+                        digitalOutAddresses.Insert(digital.RelativeAddress + 1, nextAddress);
+                        isSuccessfull = true;
+                    }
+                    finally
+                    {
+                        digOutLock.ExitWriteLock();
+                    }
+
                     break;
 
                 case VariableTypes.ANALOGIN:
@@ -192,6 +259,7 @@ namespace SCADA.RealtimeDatabase
             return retAddr;
         }
 
+
         /// <summary>
         /// Return Process Variable if exists, null if not.
         /// </summary>
@@ -199,14 +267,10 @@ namespace SCADA.RealtimeDatabase
         /// <returns></returns>
         public bool GetProcessVariableByAddress(ushort address, out ProcessVariable pv)
         {
-            // prvo nadjemo ovde ime promenljive po adresi, i onda u bazi nadjemo promnljivu po imenu.
-            // sticenje u bazi?
-
             string pvName;
 
             if (PVsAddressAndNames.TryGetValue(address, out pvName))
             {
-
                 return (dbContext.GetProcessVariableByName(pvName, out pv));
             }
             else
@@ -216,7 +280,6 @@ namespace SCADA.RealtimeDatabase
             }
         }
 
-        // mozda ovde da cuvano samo ime varijable?
         /// <summary>
         /// Storing variables by its address in RTU Memory.
         /// Mapping to reading/commanding address is done in this function.
@@ -235,6 +298,7 @@ namespace SCADA.RealtimeDatabase
                     if (PVsAddressAndNames.TryAdd((ushort)readAddr, variable.Name)
                         && PVsAddressAndNames.TryAdd((ushort)writeAddr, variable.Name))
                     {
+
                         isSuccessfull = true;
                     }
 
@@ -242,6 +306,36 @@ namespace SCADA.RealtimeDatabase
             }
 
             return isSuccessfull;
+        }
+
+        public bool TryMap(ProcessVariable variable)
+        {
+            bool retVal = false;
+
+            switch (variable.Type)
+            {
+                case VariableTypes.DIGITAL:
+
+                    Digital digital = variable as Digital;
+
+                    // digital.RelativeAddress=
+
+                    int desiredDigIn = (ushort)(Math.Floor((Math.Log(digital.ValidStates.Count, 2))));
+                    int desiredDigOut = (ushort)(Math.Floor((Math.Log(digital.ValidCommands.Count, 2))));
+
+                    if (digitalInAddresses.Count + desiredDigIn <= DigInCount &&
+                        digitalOutAddresses.Count + desiredDigOut <= DigOutCount)
+                    {
+                        digital.RelativeAddress = (ushort)MappedDig;
+                        MappedDig++;
+                        retVal = true;
+                    }
+
+
+                    break;
+            }
+
+            return retVal;
         }
 
     }

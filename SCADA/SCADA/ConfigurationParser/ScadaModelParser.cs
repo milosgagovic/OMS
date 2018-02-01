@@ -30,6 +30,7 @@ namespace SCADA.ConfigurationParser
             dbContext = new DBContext();
         }
 
+        // ako parsiranje padne, obavezno da ne radi dalje...
         public bool DoParse()
         {
             string message = string.Empty;
@@ -57,6 +58,8 @@ namespace SCADA.ConfigurationParser
                         // if does not already exist
                         if ((newRtu = dbContext.GetRTUByName(name)) == null)
                         {
+                            bool freeSpaceForDigitals = (bool)rtu.Element("FreeSpaceForDigitals");
+
                             byte address = (byte)(int)rtu.Element("Address");
 
                             string stringProtocol = (string)rtu.Element("Protocol");
@@ -77,12 +80,16 @@ namespace SCADA.ConfigurationParser
                             if (digOutCount != digInCount)
                             {
                                 // error! mora biti isto...dodati to i za analogne kasnije nekad...
+                                message = string.Format("Invalid config: RTU - {0}: DigOutCount!=DigInCount", name);
+                                Console.WriteLine(message);
+                                return false;
                             }
 
                             newRtu = new RTU()
                             {
                                 Name = name,
                                 Address = address,
+                                FreeSpaceForDigitals = freeSpaceForDigitals,
                                 Protocol = protocol,
 
                                 DigOutStartAddr = digOutStartAddr,
@@ -105,9 +112,13 @@ namespace SCADA.ConfigurationParser
                 }
                 else
                 {
-                    // error: ivalid config, return!
+                    message = string.Format("Invalid config: file must contain at least 1 RTU!");
+                    Console.WriteLine(message);
+                    return false;
                 }
 
+
+                /*
                 // parsing DIGITALS
                 if (digitals.Count != 0)
                 {
@@ -141,6 +152,10 @@ namespace SCADA.ConfigurationParser
                                 States stateValue = (States)Enum.Parse(typeof(States), stringCurrentState);
                                 newDigital.State = stateValue;
 
+
+                                // Dodati za komand
+                                // simualtoru komandovati na pocetku da se proavna sve sa modelom
+
                                 // SETTING Class
                                 string digDevClass = (string)d.Element("Class");
                                 DigitalDeviceClasses devClass = (DigitalDeviceClasses)Enum.Parse(typeof(DigitalDeviceClasses), digDevClass);
@@ -166,6 +181,7 @@ namespace SCADA.ConfigurationParser
                                 else
                                 {
                                     message = string.Format("Invalid config: Variable = {0} does not contain commands.", name);
+                                    Console.WriteLine(message);
                                     return false;
                                 }
 
@@ -185,6 +201,7 @@ namespace SCADA.ConfigurationParser
                                 else
                                 {
                                     message = string.Format("Invalid config: Variable = {0} does not contain commands.", name);
+                                    Console.WriteLine(message);
                                     return false;
                                 }
 
@@ -196,6 +213,7 @@ namespace SCADA.ConfigurationParser
                             else
                             {
                                 message = string.Format("Invalid config: Name = {0} is not unique. Variable already exists", name);
+                                Console.WriteLine(message);
                                 return false;
                             }
 
@@ -203,10 +221,14 @@ namespace SCADA.ConfigurationParser
                         else
                         {
                             message = string.Format("Invalid config: ProcContrName = {0} does not exists.", procContr);
+                            Console.WriteLine(message);
                             return false;
                         }
                     }
                 }
+
+
+                */
 
                 // to do: 
                 if (analogs.Count != 0)

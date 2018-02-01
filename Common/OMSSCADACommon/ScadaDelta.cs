@@ -21,9 +21,6 @@ namespace OMSSCADACommon
         private List<ScadaElement> insertOps = new List<ScadaElement>();
         private List<ScadaElement> updateOps = new List<ScadaElement>();
 
-        // maybe?
-        //private List<ScadaElement> deleteOps = new List<ScadaElement>();
-
         public ScadaDelta()
         {
 
@@ -55,9 +52,6 @@ namespace OMSSCADACommon
                 case DeltaOpType.Update:
                     operations = updateOps;
                     break;
-                    //case DeltaOpType.Delete:
-                    //    operations = deleteOps;
-                    //    break;
             }
 
             if (addAtEnd)
@@ -69,12 +63,5 @@ namespace OMSSCADACommon
                 operations.Insert(0, element);
             }
         }
-     
-        //[DataMember]
-        //public List<ScadaElement> DeleteOps
-        //{
-        //    get { return deleteOps; }
-        //    set { deleteOps = value; }
-        //}
     }
 }

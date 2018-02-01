@@ -16,12 +16,12 @@
 		<cim:Discrete.maxValue>1</cim:Discrete.maxValue>
 		<cim:Discrete.minValue>0</cim:Discrete.minValue>
 		<cim:Discrete.normalValue>1</cim:Discrete.normalValue>
-		<cim:Discrete.validStates>
-		
-		</cim:Discrete.validStates>
 		<cim:Discrete.validCommands>
-			Open Close
+		Open Close
 		</cim:Discrete.validCommands>
+		<cim:Discrete.validStates>
+		Opened Closed
+		</cim:Discrete.validStates>
 		<cim:Measurement.direction>ReadWrite</cim:Measurement.direction>
 		<cim:Measurement.measurementType>Discrete</cim:Measurement.measurementType>
 		<cim:Measurement.PowerSystemResource rdf:resource="#BR_4"/>

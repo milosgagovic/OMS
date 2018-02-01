@@ -21,11 +21,13 @@ namespace SCADA.RealtimeDatabase.Model
         public Digital()
         {
             this.Type = VariableTypes.DIGITAL;
+
             ValidCommands = new List<CommandTypes>();
             ValidStates = new List<States>();
 
             // kad dodamo uglavnom ga mapiramo na modbus 0, tj. open...
-            Command = CommandTypes.OPEN;
+            // PROVERITI
+            //Command = CommandTypes.OPEN;
 
             // i ovo za sada ostaje ovako
             Class = DigitalDeviceClasses.SWITCH;

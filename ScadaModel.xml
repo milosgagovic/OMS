@@ -4,6 +4,7 @@
 		<RTU>
 			<Address>1</Address>
 			<Name>RTU-1</Name>
+			<FreeSpaceForDigitals>True</FreeSpaceForDigitals>
 			<Protocol>ModbusTCP</Protocol>
 			<DigOutStartAddr>0</DigOutStartAddr>
 			<DigInStartAddr>1000</DigInStartAddr>
@@ -19,6 +20,7 @@
 		<RTU>
 			<Address>1</Address>
 			<Name>RTU-2</Name>
+			<FreeSpaceForDigitals>True</FreeSpaceForDigitals>
 			<Protocol>ModbusTCP</Protocol>
 			<DigOutStartAddr>0</DigOutStartAddr>
 			<DigInStartAddr>1000</DigInStartAddr>

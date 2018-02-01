@@ -31,13 +31,19 @@ namespace SCADA.ClientHandler
                new Uri("net.tcp://localhost:4000/SCADAService"));
             hosts.Add(invokerhost);
 
-            // to do: add transaction host
             // 2PC transaction service
             ServiceHost transactionServiceHost = new ServiceHost(typeof(SCADATransactionService));
             transactionServiceHost.Description.Name = "SCADATransactionService";
             transactionServiceHost.AddServiceEndpoint(typeof(ITransactionSCADA),
                 new NetTcpBinding(),
                 new Uri("net.tcp://localhost:8078/SCADATransactionService"));
+
+
+            // u nekom trenutku na debug mi je puklo, kontam da cu ovo dodati negde
+            //binding.CloseTimeout = new TimeSpan(1, 0, 0, 0);
+            //binding.OpenTimeout = new TimeSpan(1, 0, 0, 0);
+            //binding.ReceiveTimeout = new TimeSpan(1, 0, 0, 0);
+            //binding.SendTimeout = new TimeSpan(1, 0, 0, 0);
 
             hosts.Add(transactionServiceHost);
         }
@@ -62,12 +68,10 @@ namespace SCADA.ClientHandler
 
                 message = "Endpoints:";
                 Console.WriteLine(message);
-                //CommonTrace.WriteTrace(CommonTrace.TraceInfo, message);
 
                 foreach (Uri uri in host.BaseAddresses)
                 {
                     Console.WriteLine(uri);
-                    //CommonTrace.WriteTrace(CommonTrace.TraceInfo, uri.ToString());
                 }
 
                 Console.WriteLine("\n");

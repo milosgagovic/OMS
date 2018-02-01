@@ -86,12 +86,6 @@ namespace SCADA.CommAcqEngine
             return req;
         }
 
-        //public bool IsIORequestsEmpty()
-        //{
-        //    return IORequests.IsEmpty;
-        //}
-
-
         /* IOAnswers queue methods */
         public void EnqueueAnswer(IORequestBlock iorb)
         {
