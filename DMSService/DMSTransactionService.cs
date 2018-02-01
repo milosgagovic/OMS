@@ -45,7 +45,7 @@ namespace DMSService
             callback.CallbackEnlist(true);
         }
 
-        public void PrepareDelta(Delta delta)
+        public void Prepare(Delta delta)
         {
             Console.WriteLine("Pozvan je prepare na DMS-u");
 
@@ -63,12 +63,6 @@ namespace DMSService
 				callback.CallbackPrepare(false);
 			}  
         }
-
-        public void Prepare()
-        {
-            throw new NotImplementedException();
-        }
-
         public void Rollback()
         {
             Console.WriteLine("Pozvan je RollBack na DMSu");

@@ -45,7 +45,7 @@ namespace FTN.Services.NetworkModelService
             }
         }
 
-        public void PrepareDelta(Delta delta)
+        public void Prepare(Delta delta)
         {
             Console.WriteLine("Pozvan je prepare na NMS-u");
             ITransactionCallback callback = OperationContext.Current.GetCallbackChannel<ITransactionCallback>();

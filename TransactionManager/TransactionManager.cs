@@ -87,7 +87,7 @@ namespace TransactionManager
             TransactionCallbacks.Add(CallBackTransactionSCADA);
             DuplexChannelFactory<ITransactionSCADA> factoryTransactionSCADA = new DuplexChannelFactory<ITransactionSCADA>(CallBackTransactionSCADA,
                                                             new NetTcpBinding(),
-                                                            new EndpointAddress("net.tcp://localhost:8058/SCADATransactionService"));
+                                                            new EndpointAddress("net.tcp://localhost:8078/SCADATransactionService"));
             ProxyTransactionSCADA = factoryTransactionSCADA.CreateChannel();
 
 
@@ -129,7 +129,7 @@ namespace TransactionManager
 		{
 			Console.WriteLine("Transaction Manager calling prepare");
 
-			proxyTransactionNMS.PrepareDelta(delta);
+			proxyTransactionNMS.Prepare(delta);
 			ScadaDelta scadaDelta = GetDeltaForSCADA(delta);
 			do
 			{
@@ -143,7 +143,7 @@ namespace TransactionManager
 			else
 			{
 
-				TransactionProxys.Where(u => !u.Equals(ProxyTransactionNMS)).ToList().ForEach(x => x.PrepareDelta(delta));
+				TransactionProxys.Where(u => !u.Equals(ProxyTransactionNMS)).ToList().ForEach(x => x.Prepare(delta));
 
                 ProxyTransactionSCADA.Prepare(scadaDelta);
 

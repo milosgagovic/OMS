@@ -37,7 +37,7 @@ namespace SCADA.ClientHandler
             transactionServiceHost.Description.Name = "SCADATransactionService";
             transactionServiceHost.AddServiceEndpoint(typeof(ITransactionSCADA),
                 new NetTcpBinding(),
-                new Uri("net.tcp://localhost:8058/SCADATransactionService"));
+                new Uri("net.tcp://localhost:8078/SCADATransactionService"));
 
             hosts.Add(transactionServiceHost);
         }
