@@ -45,7 +45,7 @@ namespace DMSService
             callback.CallbackEnlist(true);
         }
 
-        public void Prepare(Delta delta)
+        public void PrepareDelta(Delta delta)
         {
             Console.WriteLine("Pozvan je prepare na DMS-u");
 
@@ -64,13 +64,18 @@ namespace DMSService
 			}  
         }
 
+        public void Prepare()
+        {
+            throw new NotImplementedException();
+        }
+
         public void Rollback()
         {
             Console.WriteLine("Pozvan je RollBack na DMSu");
 			newTree = null;
 			DMSService.Instance.Tree = oldTree;
 			ITransactionCallback callback = OperationContext.Current.GetCallbackChannel<ITransactionCallback>();
-            callback.CallbackRollabck("Something went wrong on DMS");
+            callback.CallbackRollback("Something went wrong on DMS");
         }
     }
 }

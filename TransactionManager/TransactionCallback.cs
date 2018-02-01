@@ -38,7 +38,7 @@ namespace TransactionManager
             Console.WriteLine(commit);
         }
 
-        public void CallbackRollabck(string rollback)
+        public void CallbackRollback(string rollback)
         {
             Console.WriteLine(rollback);
         }

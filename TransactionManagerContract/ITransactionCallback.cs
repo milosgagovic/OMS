@@ -19,6 +19,6 @@ namespace TransactionManagerContract
         void CallbackCommit(string commit);
 
         [OperationContract(IsOneWay = true)]
-        void CallbackRollabck(string rollback);
+        void CallbackRollback(string rollback);
     }
 }

@@ -22,18 +22,22 @@ namespace TransactionManager
         IIMSContract proxyToIMS;
         ITransaction proxyTransactionNMS;
         ITransaction proxyTransactionDMS;
+        ITransactionSCADA proxyTransactionSCADA;
         IDMSContract proxyToDispatcherDMS;
         ModelGDATMS gdaTMS;
         SCADAClient scadaClient;
         TransactionCallback callBackTransactionNMS;
         TransactionCallback callBackTransactionDMS;
+        TransactionCallback callBackTransactionSCADA;
 
         public List<ITransaction> TransactionProxys { get => transactionProxys; set => transactionProxys = value; }
         public List<TransactionCallback> TransactionCallbacks { get => transactionCallbacks; set => transactionCallbacks = value; }
         public ITransaction ProxyTransactionNMS { get => proxyTransactionNMS; set => proxyTransactionNMS = value; }
         public ITransaction ProxyTransactionDMS { get => proxyTransactionDMS; set => proxyTransactionDMS = value; }
+        public ITransactionSCADA ProxyTransactionSCADA { get => proxyTransactionSCADA; set => proxyTransactionSCADA = value; }
         public TransactionCallback CallBackTransactionNMS { get => callBackTransactionNMS; set => callBackTransactionNMS = value; }
         public TransactionCallback CallBackTransactionDMS { get => callBackTransactionDMS; set => callBackTransactionDMS = value; }
+        public TransactionCallback CallBackTransactionSCADA { get => callBackTransactionSCADA; set => callBackTransactionSCADA = value; }
 
         private SCADAClient SCADAClientInstance
         {
@@ -78,6 +82,13 @@ namespace TransactionManager
             ProxyTransactionDMS = factoryTransactionDMS.CreateChannel();
             TransactionProxys.Add(ProxyTransactionDMS);
 
+            //duplex channel for SCADA transaction
+            //CallBackTransactionSCADA = new TransactionCallback();
+            //TransactionCallbacks.Add(CallBackTransactionSCADA);
+            //DuplexChannelFactory<ITransactionSCADA> factoryTransactionSCADA = new DuplexChannelFactory<ITransactionSCADA>(CallBackTransactionSCADA,
+            //                                                new NetTcpBinding(),
+            //                                                new EndpointAddress("net.tcp://localhost:8028/DMSTransactionService"));
+            //ProxyTransactionSCADA = factoryTransactionSCADA.CreateChannel();
 
 
             // client channel for DMSDispatcherService
@@ -96,6 +107,8 @@ namespace TransactionManager
             {
                 svc.Enlist();
             }
+
+            //ProxyTransactionSCADA.Enlist();
 
             while (true)
             {
@@ -116,7 +129,7 @@ namespace TransactionManager
 		{
 			Console.WriteLine("Transaction Manager calling prepare");
 
-			proxyTransactionNMS.Prepare(delta);
+			proxyTransactionNMS.PrepareDelta(delta);
 			ScadaDelta scadaDelta = GetDeltaForSCADA(delta);
 			do
 			{
@@ -130,12 +143,9 @@ namespace TransactionManager
 			else
 			{
 
-				TransactionProxys.Where(u => !u.Equals(ProxyTransactionNMS)).ToList().ForEach(x => x.Prepare(delta));
-				//foreach (ITransaction svc in TransactionProxys.Where(u => !u.Equals(ProxyTransactionNMS)))
-				//{
-				//    Console.WriteLine("Type of proxy in prepare:" + svc.GetType().Assembly);
-				//    svc.Prepare(delta);
-				//}
+				TransactionProxys.Where(u => !u.Equals(ProxyTransactionNMS)).ToList().ForEach(x => x.PrepareDelta(delta));
+
+                //ProxyTransactionSCADA.Prepare(scadaDelta);
 
 				while (true)
 				{

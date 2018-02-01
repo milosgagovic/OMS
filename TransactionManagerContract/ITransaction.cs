@@ -15,7 +15,7 @@ namespace TransactionManagerContract
         void Enlist();
 
         [OperationContract]
-        void Prepare(Delta delta);
+        void PrepareDelta(Delta delta);
 
         [OperationContract]
         void Commit();
