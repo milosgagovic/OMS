@@ -384,6 +384,7 @@ namespace DMSService
             this.EnergyConsumersRD.Clear();
             this.NodesRD.Clear();
             this.AclineSegRD.Clear();
+            this.EnergySourcesRD.Clear();
         }
 
         #region GetRelatedMethods
