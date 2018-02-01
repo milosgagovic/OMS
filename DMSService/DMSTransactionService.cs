@@ -21,9 +21,9 @@ namespace DMSService
 		public void Commit()
         {
             Console.WriteLine("Pozvan je Commit na DMS-u");
+            DMSService.Instance.Tree = newTree;
             if (DMSService.updatesCount >= 2)
             {
-				DMSService.Instance.Tree = newTree;
 				Publisher publisher = new Publisher();
                 List<SCADAUpdateModel> update = new List<SCADAUpdateModel>();
                 Source s = (Source)DMSService.Instance.Tree.Data[DMSService.Instance.Tree.Roots[0]];
