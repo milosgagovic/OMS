@@ -22,7 +22,7 @@ namespace DMSService
         {
             Console.WriteLine("Pozvan je Commit na DMS-u");
             DMSService.Instance.Tree = newTree;
-            if (DMSService.updatesCount >= 2)
+            if (DMSService.updatesCount > 2)
             {
 				Publisher publisher = new Publisher();
                 List<SCADAUpdateModel> update = new List<SCADAUpdateModel>();
