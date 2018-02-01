@@ -1425,6 +1425,7 @@ namespace DispatcherApp.ViewModel
                     return;
                 }
 
+                int i = 0;
                 foreach (SCADAUpdateModel sum in update)
                 {
                     ElementProperties property;
@@ -1433,7 +1434,7 @@ namespace DispatcherApp.ViewModel
                     {
                         property.IsEnergized = sum.IsEnergized;
 
-                        if (property is BreakerProperties)
+                        if (property is BreakerProperties && i == 0)
                         {
                             Measurement measurement;
                             Measurements.TryGetValue(property.Measurements[0].GID, out measurement);
@@ -1445,6 +1446,7 @@ namespace DispatcherApp.ViewModel
                             }
                         }
                     }
+                    i++;
                 }
             }
         }
