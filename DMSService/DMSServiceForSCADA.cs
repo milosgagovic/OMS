@@ -54,7 +54,7 @@ namespace DMSService
 
                 sw.Marker = false;
                 sw.State = SwitchState.Open;
-                networkChange.Add(new SCADAUpdateModel(sw.ElementGID, false));
+                networkChange.Add(new SCADAUpdateModel(sw.ElementGID, false, OMSSCADACommon.States.OPENED));
                 Node n = (Node)DMSService.Instance.Tree.Data[sw.End2];
                 n.Marker = false;
                 networkChange.Add(new SCADAUpdateModel(n.ElementGID, false));
@@ -65,9 +65,8 @@ namespace DMSService
                 sw.State = SwitchState.Closed;
                 if (TraceUp((Node)DMSService.Instance.Tree.Data[sw.End1]))
                 {
-                    
+                    networkChange.Add(new SCADAUpdateModel(sw.ElementGID, true, OMSSCADACommon.States.CLOSED));
                     sw.Marker = true;
-                    networkChange.Add(new SCADAUpdateModel(sw.ElementGID, true));
                     Node n = (Node)DMSService.Instance.Tree.Data[sw.End2];
                     n.Marker = true;
                     networkChange.Add(new SCADAUpdateModel(n.ElementGID, true));
@@ -75,7 +74,7 @@ namespace DMSService
                 }
                 else
                 {
-                    return;
+                    networkChange.Add(new SCADAUpdateModel(sw.ElementGID, false, OMSSCADACommon.States.CLOSED));
                 }
             }
 

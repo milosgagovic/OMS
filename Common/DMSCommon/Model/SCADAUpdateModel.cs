@@ -58,14 +58,12 @@ namespace DMSCommon.Model
         {
             Gid = mrid;
             IsEnergized = isEnergized;
-
-            if (isEnergized)
-                State = States.CLOSED;
-            else
-            {
-                State = States.OPENED;
-            }
-            isElementAdded = false;
+        }
+        public SCADAUpdateModel(long mrid, bool isEnergized, States state)
+        {
+            Gid = mrid;
+            IsEnergized = isEnergized;
+            State = state;
         }
         public SCADAUpdateModel(long mrid, bool isEnergised, CrewResponse response)
         {
