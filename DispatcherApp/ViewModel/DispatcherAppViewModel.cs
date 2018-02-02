@@ -150,6 +150,7 @@ namespace DispatcherApp.ViewModel
             //this.MainCanvases.Clear();
             this.IncidentReports.Clear();
             this.mainCanvas.Children.Clear();
+            this.Crews.Clear();
 
             #region FakeNetwork
             //Source s1 = new Source(0, -1, "ES_2") { ElementGID = 0 };
