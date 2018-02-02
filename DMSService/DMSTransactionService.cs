@@ -16,8 +16,26 @@ namespace DMSService
     [ServiceBehavior(InstanceContextMode = InstanceContextMode.PerCall)]
     public class DMSTransactionService : ITransaction
     {
-		private static Tree<Element> newTree;
-		private static Tree<Element> oldTree;
+        private static Tree<Element> newTree;
+        private static Tree<Element> oldTree;
+        public void Commit()
+        {
+            Console.WriteLine("Pozvan je Commit na DMS-u");
+            DMSService.Instance.Tree = newTree;
+            if (DMSService.updatesCount >= 2)
+            {
+                Publisher publisher = new Publisher();
+                List<SCADAUpdateModel> update = new List<SCADAUpdateModel>();
+                Source s = (Source)DMSService.Instance.Tree.Data[DMSService.Instance.Tree.Roots[0]];
+                update.Add(new SCADAUpdateModel(true, s.ElementGID));
+
+                publisher.PublishUpdate(update);
+            }
+
+
+            ITransactionCallback callback = OperationContext.Current.GetCallbackChannel<ITransactionCallback>();
+            callback.CallbackCommit("Uspjesno je prosao commit na DMS-u");
+        }
 
         public void Enlist()
         {
@@ -45,32 +63,12 @@ namespace DMSService
                 callback.CallbackPrepare(false);
             }
         }
-
-        public void Commit()
-        {
-            Console.WriteLine("Pozvan je Commit na DMS-u");
-            if (DMSService.updatesCount >= 2)
-            {
-				DMSService.Instance.Tree = newTree;
-				Publisher publisher = new Publisher();
-                List<SCADAUpdateModel> update = new List<SCADAUpdateModel>();
-                Source s = (Source)DMSService.Instance.Tree.Data[DMSService.Instance.Tree.Roots[0]];
-                update.Add(new SCADAUpdateModel(true, s.ElementGID));
-
-                publisher.PublishUpdate(update);
-            }
-
-
-            ITransactionCallback callback = OperationContext.Current.GetCallbackChannel<ITransactionCallback>();
-            callback.CallbackCommit("Uspjesno je prosao commit na DMS-u");
-        }       
-       
         public void Rollback()
         {
             Console.WriteLine("Pozvan je RollBack na DMSu");
-			newTree = null;
-			DMSService.Instance.Tree = oldTree;
-			ITransactionCallback callback = OperationContext.Current.GetCallbackChannel<ITransactionCallback>();
+            newTree = null;
+            DMSService.Instance.Tree = oldTree;
+            ITransactionCallback callback = OperationContext.Current.GetCallbackChannel<ITransactionCallback>();
             callback.CallbackRollback("Something went wrong on DMS");
         }
     }
