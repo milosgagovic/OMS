@@ -14,7 +14,7 @@ namespace DispatcherApp.Model.Properties
         private string mRID;
         private string name;
         private bool isEnergized;
-        private bool isUnderScada;
+        private bool isUnderScada = false;
         private bool incident = false;
         private bool crewSent = false;
         private bool canCommand = false;

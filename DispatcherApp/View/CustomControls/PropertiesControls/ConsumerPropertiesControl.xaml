@@ -50,10 +50,27 @@
         </Grid>
         <Grid Grid.Row="1" Background="White">
             <Expander Header="Measurements" IsExpanded="True">
-                <StackPanel>
-                    <ItemsControl ItemsSource="{Binding }">
-                    </ItemsControl>
-                </StackPanel>
+                <Grid Margin="20, 0, 10, 0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Label Grid.Row="0">Measurement Type:
+                    </Label>
+                    <TextBlock Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding CurrentProperty.Measurements[0].State}" Background="LightGray" Margin="0, 2, 2, 2">
+                    </TextBlock>
+                    <Label Grid.Row="1">Value:
+                    </Label>
+                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding CurrentProperty.Measurements[0].Value}" Background="LightGray" Margin="0, 2, 2, 2">
+                    </TextBlock>
+                    <Label Grid.Row="1" Grid.Column="2" Content="{Binding CurrentProperty.Measurements[0].UnitSymbol}" Background="LightGray" Margin="0, 2, 2, 2">
+                    </Label>
+                </Grid>
             </Expander>
         </Grid>
     </Grid>
