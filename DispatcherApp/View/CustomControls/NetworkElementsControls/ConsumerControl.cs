@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DispatcherApp.Model.Properties;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,16 +11,24 @@ using System.Windows.Media;
 
 namespace DispatcherApp.View.CustomControls.NetworkElementsControls
 {
-    public class ConsumerControl : Button
+    public class ConsumerControl : Grid
     {
+        public Button Button { get; set; }
+        public Canvas ButtonCanvas { get; set; }
+
         public ConsumerControl(object dataContext, double buttonSize)
         {
-            this.Width = buttonSize;
-            this.Height = buttonSize;
+            this.Button = new Button();
+            this.ButtonCanvas = new Canvas();
 
             //Canvas.SetLeft(this, left);
             //Canvas.SetTop(this, top);
             //Canvas.SetZIndex(this, z);
+
+            this.ButtonCanvas.Height = buttonSize;
+            this.ButtonCanvas.Width = buttonSize;
+            this.Button.Height = buttonSize;
+            this.Button.Width = buttonSize;
 
             this.DataContext = dataContext;
             FrameworkElement frameworkElement = new FrameworkElement();
@@ -77,7 +86,44 @@ namespace DispatcherApp.View.CustomControls.NetworkElementsControls
 
             style.Triggers.Clear();
             style.Setters.Add(setter);
-            this.Style = style;
+            this.Button.Style = style;
+            this.ButtonCanvas.Children.Add(Button);
+
+            this.Children.Add(this.ButtonCanvas);
+
+            EnergyConsumerProperties consumerProperties = (EnergyConsumerProperties)dataContext;
+
+            if (consumerProperties.IsUnderScada)
+            {
+                Canvas scadaCanvas = new Canvas();
+                Border scadaBorder = new Border()
+                {
+                    Height = buttonSize / 2,
+                    Width = buttonSize / 2,
+                    Background = Brushes.DarkOrange,
+                    BorderBrush = Brushes.White,
+                    ToolTip = "Under SCADA"
+                };
+                scadaBorder.CornerRadius = new CornerRadius(scadaBorder.Height / 2);
+                scadaBorder.BorderThickness = new Thickness(scadaBorder.Height / 10);
+                Canvas.SetLeft(scadaBorder, -(scadaBorder.Width / 4));
+                Canvas.SetTop(scadaBorder, -(scadaBorder.Height / 4));
+                scadaCanvas.Children.Add(scadaBorder);
+
+                TextBlock scadaTextblock = new TextBlock()
+                {
+                    Text = "S",
+                    Foreground = Brushes.White,
+                    ToolTip = "Under SCADA",
+                    HorizontalAlignment = HorizontalAlignment.Center,
+                    VerticalAlignment = VerticalAlignment.Center,
+                    FontSize = 4 * scadaBorder.Height / 5,
+                    Margin = new Thickness(0, 0, 0, scadaBorder.Height / 6)
+                };
+                scadaBorder.Child = scadaTextblock;
+
+                this.ButtonCanvas.Children.Add(scadaCanvas);
+            }
         }
     }
 }
