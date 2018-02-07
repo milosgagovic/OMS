@@ -364,6 +364,23 @@ namespace DispatcherApp.ViewModel
                                 properties.Measurements.Add(measurement);
                             }
 
+                            properties.IsUnderScada = true;
+                            this.Measurements.Add(measurement.GID, measurement);
+                        }
+                        else if (type == DMSType.ENERGCONSUMER)
+                        {
+                            AnalogMeasurement measurement = new AnalogMeasurement();
+                            measurement.ReadFromResourceDescription(meas);
+
+                            ElementProperties properties;
+                            Properties.TryGetValue(psr, out properties);
+
+                            if (properties != null)
+                            {
+                                properties.Measurements.Add(measurement);
+                            }
+
+                            properties.IsUnderScada = true;
                             this.Measurements.Add(measurement.GID, measurement);
                         }
                     }
@@ -533,20 +550,20 @@ namespace DispatcherApp.ViewModel
 
             if (prop != null)
             {
-                ConsumerControl consumercontr = new ConsumerControl(prop, 15);
+                ConsumerControl consumercontr = new ConsumerControl(prop, 20);
 
-                Canvas.SetLeft(consumercontr, offset + /*x * */cellWidth - cellWidth / 2 - consumercontr.Width / 2);
-                Canvas.SetTop(consumercontr, y * cellHeight - consumercontr.Height - 5);
+                Canvas.SetLeft(consumercontr, offset + /*x * */cellWidth - cellWidth / 2 - 20 / 2);
+                Canvas.SetTop(consumercontr, y * cellHeight - 20 - 5);
                 Canvas.SetZIndex(consumercontr, 5);
 
-                consumercontr.Command = PropertiesCommand;
-                consumercontr.CommandParameter = prop.GID;
+                consumercontr.Button.Command = PropertiesCommand;
+                consumercontr.Button.CommandParameter = prop.GID;
                 consumercontr.ToolTip = prop.MRID;
 
                 Point point2 = new Point()
                 {
                     X = offset + /*x * */cellWidth - cellWidth / 2,
-                    Y = y * cellHeight - consumercontr.Height
+                    Y = y * cellHeight - 20
                 };
 
                 PlaceBranch(point1, point2, cellHeight, consumer, id);
@@ -564,12 +581,12 @@ namespace DispatcherApp.ViewModel
             {
                 SwitchControl switchControl = new SwitchControl(prop, 20);
 
-                Canvas.SetLeft(switchControl, point2.X - (20) / 2);
+                Canvas.SetLeft(switchControl, point2.X - (20) / 2 - 20 - 2);
                 Canvas.SetTop(switchControl, point2.Y - (cellHeight / 3) - (20) / 2);
                 Canvas.SetZIndex(switchControl, 5);
 
-                switchControl.ButtonCanvas.Command = PropertiesCommand;
-                switchControl.ButtonCanvas.CommandParameter = prop.GID;
+                switchControl.Button.Command = PropertiesCommand;
+                switchControl.Button.CommandParameter = prop.GID;
                 switchControl.ButtonCanvas.ToolTip = prop.MRID;
 
                 mainCanvas.Children.Add(switchControl);

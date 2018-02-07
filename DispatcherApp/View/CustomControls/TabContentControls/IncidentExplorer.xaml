@@ -33,19 +33,21 @@
                                     <ColumnDefinition Width="2"/>
                                     <ColumnDefinition/>
                                 </Grid.ColumnDefinitions>
-                                <ComboBox x:Name="ComboboxCrews" DisplayMemberPath="CrewName" SelectedIndex="0" SelectedItem="{Binding RelativeSource={RelativeSource Mode=Self}, Path=ItemsSource[0], Mode=OneTime}" IsEnabled="{Binding IncidentState, Converter={StaticResource IncidentStateToBool}}">
+                                <ComboBox x:Name="ComboboxCrews" DisplayMemberPath="CrewName" IsEnabled="{Binding IncidentState, Converter={StaticResource IncidentStateToBool}}">
                                     <ComboBox.ItemsSource>
                                         <MultiBinding Converter="{StaticResource CrewTypeToCrews}">
                                             <Binding Path="DataContext.Crews" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=DataGrid}"/>
                                             <Binding/>
                                         </MultiBinding>
                                     </ComboBox.ItemsSource>
+                                    <ComboBox.SelectedIndex>0
+                                    </ComboBox.SelectedIndex>
                                 </ComboBox>
                                 <Button Grid.Column="2" IsEnabled="{Binding IncidentState, Converter={StaticResource IncidentStateToBool}}" Command="{Binding DataContext.SendCrewCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type DataGrid}}}">Send Crew
                                     <Button.CommandParameter>
                                         <MultiBinding Converter="{StaticResource SendCrewParameters}">
                                             <Binding Path="Time"/>
-                                            <Binding ElementName="ComboboxCrews" Path="SelectedItem"/>
+                                            <Binding ElementName="ComboboxCrews" Path="SelectedItem" Mode="OneWay"/>
                                         </MultiBinding>
                                     </Button.CommandParameter>
                                 </Button>
