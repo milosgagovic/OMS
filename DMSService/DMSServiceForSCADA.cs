@@ -21,7 +21,26 @@ namespace DMSService
         
         public void ChangeOnSCADA(string mrID, OMSSCADACommon.States state)
         {
-			
+
+            // nisam sigurna da ce ovo raditi, buduci da se ims dize kako hoce, pa nisam mogla da testiram   
+
+            bool isImsAvailable = false;
+            while (!isImsAvailable)
+            {
+
+                try
+                {
+                    isImsAvailable = proxyToIMS.Ping();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                }
+
+                Thread.Sleep(200);
+            }
+
+
             ModelGdaDMS gda = new ModelGdaDMS();
             List<ResourceDescription> rdl = gda.GetExtentValuesExtended(ModelCode.DISCRETE);
             ResourceDescription rd = rdl.Where(r => r.GetProperty(ModelCode.IDOBJ_MRID).AsString() == mrID).FirstOrDefault();

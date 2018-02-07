@@ -9,30 +9,35 @@ using System.Threading.Tasks;
 
 namespace IncidentManagementSystem.Service
 {
-	public class IMSService : IIMSContract
-	{
-		public bool AddCrew(Crew crew)
-		{
-			using (var ctx = new IncidentContext())
-			{
-				try
-				{
-					ctx.Crews.Add(crew);
-					foreach (Crew c in ctx.Crews)
-					{
-						Console.WriteLine("Added crew: " + c.CrewName + ", crew id: " + c.Id);
-					}
-					ctx.SaveChanges();
-					return true;
-				}
-				catch (Exception e)
-				{
-					return false;
-				}
-			}
-		}
+    public class IMSService : IIMSContract
+    {
+        public bool Ping()
+        {
+            return true;
+        }
 
-		public void AddElementStateReport(ElementStateReport report)
+        public bool AddCrew(Crew crew)
+        {
+            using (var ctx = new IncidentContext())
+            {
+                try
+                {
+                    ctx.Crews.Add(crew);
+                    foreach (Crew c in ctx.Crews)
+                    {
+                        Console.WriteLine("Added crew: " + c.CrewName + ", crew id: " + c.Id);
+                    }
+                    ctx.SaveChanges();
+                    return true;
+                }
+                catch (Exception e)
+                {
+                    return false;
+                }
+            }
+        }
+
+        public void AddElementStateReport(ElementStateReport report)
         {
             using (var ctx = new IncidentContext())
             {
@@ -65,8 +70,8 @@ namespace IncidentManagementSystem.Service
         }
 
         public List<IncidentReport> GetAllReports()
-		{
-			List<IncidentReport> retVal = new List<IncidentReport>();
+        {
+            List<IncidentReport> retVal = new List<IncidentReport>();
             using (var ctx = new IncidentContext())
             {
                 foreach (IncidentReport ir in ctx.IncidentReports.Include("Crew"))
@@ -75,19 +80,19 @@ namespace IncidentManagementSystem.Service
                 }
             }
             return retVal;
-		}
+        }
 
-		public List<Crew> GetCrews()
-		{
-			List<Crew> retVal = new List<Crew>();
-			using (var ctx = new IncidentContext())
-			{
-				ctx.Crews.ToList().ForEach(u => retVal.Add(u));
-			}
-			return retVal;
-		}
+        public List<Crew> GetCrews()
+        {
+            List<Crew> retVal = new List<Crew>();
+            using (var ctx = new IncidentContext())
+            {
+                ctx.Crews.ToList().ForEach(u => retVal.Add(u));
+            }
+            return retVal;
+        }
 
-		public List<ElementStateReport> GetElementStateReportsForMrID(string mrID)
+        public List<ElementStateReport> GetElementStateReportsForMrID(string mrID)
         {
             List<ElementStateReport> retVal = new List<ElementStateReport>();
             using (var ctx = new IncidentContext())
@@ -147,35 +152,35 @@ namespace IncidentManagementSystem.Service
         }
 
         public List<IncidentReport> GetReportsForMrID(string mrID)
-		{
-			List<IncidentReport> retVal = new List<IncidentReport>();
-			using (var ctx = new IncidentContext())
-			{
-				ctx.IncidentReports.Where(u => u.MrID == mrID).ToList().ForEach(x => retVal.Add(x));
+        {
+            List<IncidentReport> retVal = new List<IncidentReport>();
+            using (var ctx = new IncidentContext())
+            {
+                ctx.IncidentReports.Where(u => u.MrID == mrID).ToList().ForEach(x => retVal.Add(x));
 
-			}
-			return retVal;
-		}
+            }
+            return retVal;
+        }
 
-		public List<IncidentReport> GetReportsForSpecificMrIDAndSpecificTimeInterval(string mrID, DateTime startTime, DateTime endTime)
-		{
-			List<IncidentReport> retVal = new List<IncidentReport>();
-			using (var ctx = new IncidentContext())
-			{
-				ctx.IncidentReports.Where(u =>u.MrID == mrID && u.Time > startTime && u.Time < endTime).ToList().ForEach(x => retVal.Add(x));
-			}
-			return retVal;
-		}
+        public List<IncidentReport> GetReportsForSpecificMrIDAndSpecificTimeInterval(string mrID, DateTime startTime, DateTime endTime)
+        {
+            List<IncidentReport> retVal = new List<IncidentReport>();
+            using (var ctx = new IncidentContext())
+            {
+                ctx.IncidentReports.Where(u => u.MrID == mrID && u.Time > startTime && u.Time < endTime).ToList().ForEach(x => retVal.Add(x));
+            }
+            return retVal;
+        }
 
-		public List<IncidentReport> GetReportsForSpecificTimeInterval(DateTime startTime, DateTime endTime)
-		{
-			List<IncidentReport> retVal = new List<IncidentReport>();
-			using (var ctx = new IncidentContext())
-			{
-				ctx.IncidentReports.Where(u => u.Time > startTime && u.Time < endTime).ToList().ForEach(x => retVal.Add(x));
-			}
-			return retVal;
-		}
+        public List<IncidentReport> GetReportsForSpecificTimeInterval(DateTime startTime, DateTime endTime)
+        {
+            List<IncidentReport> retVal = new List<IncidentReport>();
+            using (var ctx = new IncidentContext())
+            {
+                ctx.IncidentReports.Where(u => u.Time > startTime && u.Time < endTime).ToList().ForEach(x => retVal.Add(x));
+            }
+            return retVal;
+        }
 
         public void UpdateReport(IncidentReport report)
         {
@@ -186,9 +191,9 @@ namespace IncidentManagementSystem.Service
                 {
                     list.Add(ir);
                 }
-                
+
                 int i = 0;
-                for(i = 0; i < list.Count; i++)
+                for (i = 0; i < list.Count; i++)
                 {
                     if (DateTime.Compare(list[i].Time, report.Time) == 0)
                     {
