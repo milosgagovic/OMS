@@ -9,26 +9,25 @@ using System.Threading.Tasks;
 using PCCommon;
 using SCADA.RealtimeDatabase;
 using OMSSCADACommon;
-using SCADA.SecondaryDataProcessing;
 using OMSSCADACommon.Responses;
 using SCADA.ClientHandler;
 using SCADA.RealtimeDatabase.Catalogs;
 using System.Net.Sockets;
 using SCADA.ConfigurationParser;
 
-namespace SCADA.CommAcqEngine
+namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
 {
-    // Acquisition-Commandig engine
-    public class ACQEngine : ICommandReceiver
+    // Commanding-Acquisition Engine
+    public class CommAcqEngine : ICommandReceiver
     {
         private static IORequestsQueue IORequests;
-        private bool isShutdown;
+        private static bool isShutdown;
 
         private int timerMsc;
 
         private DBContext dbContext = null;
 
-        public ACQEngine()
+        public CommAcqEngine()
         {
             Console.WriteLine("AcqEngine Instancing()");
 
@@ -44,14 +43,18 @@ namespace SCADA.CommAcqEngine
         /// configuring RTUs and Process Variables
         /// </summary>
         /// <param name="configPath"></param>
-        public void Configure(string configPath)
+        public bool Configure(string configPath)
         {
-            // dodati metode za serijalizaciju baze
-            ScadaModelParser parser = new ScadaModelParser(configPath);
-            if (!parser.DoParse())
-            {
-                // error....
-            }
+            ScadaModelParser parser = new ScadaModelParser();
+            return parser.DeserializeScadaModel();
+        }
+
+        /// <summary>
+        /// Send Commands to simulator, to make its state consistent with RTDB
+        /// </summary>
+        public void InitializeSimulator()
+        {
+
         }
 
         /// <summary>
@@ -128,78 +131,10 @@ namespace SCADA.CommAcqEngine
                     else
                     {
                         // ne postoji taj rtu sa tim imenom. izbrisati te procesne varijable sa rtu-om tog imena
-                        // dodati message da je nevalidno podesavanje PV
                         Console.WriteLine("Invalid config: ProcContrName = {0} does not exists.", pv.ProcContrName);
                         continue;
                     }
-
-
-                    /*
-
-                    if (RTUs.TryGetValue(pv.ProcContrName, out rtu))
-                    {
-                        iorb.ReqAddress = (ushort)rtu.GetAcqAddress(pv);
-
-                        switch (rtu.Protocol)
-                        {
-                            case IndustryProtocols.ModbusTCP:
-
-                                ModbusHandler mdbHandler = new ModbusHandler();
-
-                                switch (pv.Type)
-                                {
-                                    case VariableTypes.DIGITAL:
-
-                                        Digital digital = (Digital)pv;
-
-                                        mdbHandler.Request = new ReadRequest()
-                                        {
-                                            FunCode = FunctionCodes.ReadDiscreteInput,
-                                            StartAddr = (ushort)rtu.GetAcqAddress(pv),
-                                            Quantity = (ushort)(Math.Floor((Math.Log(digital.ValidStates.Count, 2))))
-                                        };
-                                        mdbHandler.Header = new ModbusApplicationHeader()
-                                        {
-                                            TransactionId = 0,
-                                            Length = 5,
-                                            ProtocolId = (ushort)IndustryProtocols.ModbusTCP,
-                                            DeviceAddress = rtu.Address
-                                        };
-                                        break;
-
-                                    case VariableTypes.ANALOGIN:
-
-                                        AnalogIn analog = (AnalogIn)pv;
-                                        break;
-
-                                    case VariableTypes.COUNTER:
-
-                                        Counter counter = (Counter)pv;
-                                        break;
-                                }
-
-
-                                iorb.SendBuff = mdbHandler.PackData();
-                                //Console.WriteLine("packed data iorb.sendBuff= {0}", BitConverter.ToString(iorb.SendBuff, 0, 12));
-
-                                break;
-                        }
-
-                        iorb.SendMsgLength = iorb.SendBuff.Length;
-
-                        //Console.WriteLine("*** StartAcquisition(){0}, IORequests.Count = {1},  REQUEST for enqueue= ", processing, IORequests.IORequests.Count, BitConverter.ToString(iorb.SendBuff, 0, iorb.SendMsgLength));
-                        IORequests.EnqueueRequest(iorb);
-                        //Console.WriteLine("**** StartAcquisition(){0}, IORequests.Count = {1},  REQUEST ENQUEUED = ", processing, IORequests.IORequests.Count, BitConverter.ToString(iorb.SendBuff, 0, iorb.SendMsgLength));
-
-                    }
-                    else
-                    {   // ne postoji taj rtu sa tim imenom. izbrisati te procesne varijable sa rtu-om tog imena
-                        // dodati message da je nevalidno podesavanje PV
-                        continue;
-                    }
-
-                    */
-
+                
                     processing++;
                 }
 
@@ -209,6 +144,7 @@ namespace SCADA.CommAcqEngine
             // to do: close all communication channels
             // delete...
 
+            Console.WriteLine("StartAcq.shutdown=true");
             return;
         }
 
@@ -225,7 +161,7 @@ namespace SCADA.CommAcqEngine
 
                 if (isSuccessful)
                 {
-                    Console.WriteLine("answer");
+                    //Console.WriteLine("answer");
                     RTU rtu;
                     if ((rtu = dbContext.GetRTUByName(answer.ProcessControllerName)) != null)
                     {
@@ -255,18 +191,20 @@ namespace SCADA.CommAcqEngine
 
                                             try
                                             {
-                                                // locking?
-                                                lock (dbContext.Database.SyncObject)
-                                                {
-                                                    if (target.State != target.ValidStates[array[0]])
-                                                    {
-                                                        Console.WriteLine("CHANGE!");
-                                                        target.State = target.ValidStates[array[0]];
-                                                        DMSClient dMSClient = new DMSClient();
-                                                        dMSClient.ChangeOnSCADA(target.Name, target.State);
 
-                                                    }
+                                                if (target.State != target.ValidStates[array[0]])
+                                                {
+                                                    Console.WriteLine("CHANGE!");
+                                                    target.State = target.ValidStates[array[0]];
+                                                  
+                                                    ScadaModelParser parser = new ScadaModelParser();
+                                                    parser.SerializeScadaModel();
+
+                                                    DMSClient dMSClient = new DMSClient();
+                                                    dMSClient.ChangeOnSCADA(target.Name, target.State);
+
                                                 }
+
                                             }
                                             catch
                                             {
@@ -290,9 +228,18 @@ namespace SCADA.CommAcqEngine
             }
             // to do: close all communication channels
             // delete...
-
+            Console.WriteLine("ProcessPCAnswers.shutdown=true");
             return;
         }
+
+        // ovde uraditi pozatvarati neke kanale ako su ostali da su otvoreni i ostalo...
+        public void Stop()
+        {
+            ScadaModelParser parser = new ScadaModelParser();
+            parser.SerializeScadaModel();
+            isShutdown = true;
+        }
+
 
         #region Command Receiver methods
         public OMSSCADACommon.Responses.Response ReadAllAnalog(OMSSCADACommon.DeviceTypes type)

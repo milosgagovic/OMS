@@ -88,7 +88,7 @@ namespace DispatcherApp.ViewModel
         private IncidentExplorer incidentExplorer = new IncidentExplorer();
         private OutputControl output = new OutputControl();
         private Dictionary<long, NetworkModelControlExtended> networModelControls = new Dictionary<long, NetworkModelControlExtended>();
-        
+
         #endregion
 
         #region Commands
@@ -129,6 +129,14 @@ namespace DispatcherApp.ViewModel
 
             try
             {
+                
+                // posto se nista na transactionu ne dize dok se ne inicijalizuje mreza
+                // tj. dok ne postoji .data
+                // onda ni ovaj da ne trazi mrezu dok ne bude spremna ?
+                //while (!ProxyToTransactionManager.IsNetworkAvailable())
+                //{
+                //    Thread.Sleep(200);
+                //}
                 answerFromTransactionManager = ProxyToTransactionManager.GetNetwork();
             }
             catch (Exception e) { }
@@ -350,7 +358,7 @@ namespace DispatcherApp.ViewModel
                     {
                         long psr = meas.GetProperty(ModelCode.MEASUREMENT_PSR).AsLong();
                         DMSType type = (DMSType)ModelCodeHelper.ExtractTypeFromGlobalId(psr);
-                        
+
                         if (type == DMSType.BREAKER)
                         {
                             DigitalMeasurement measurement = new DigitalMeasurement();
@@ -400,8 +408,8 @@ namespace DispatcherApp.ViewModel
                     }
 
                     Canvas canvas = new Canvas() { Width = 400, Height = 400 };
-                    
-                    if(this.UINetworks[source.ElementGID].Count > 0)
+
+                    if (this.UINetworks[source.ElementGID].Count > 0)
                     {
                         this.mainCanvas = (Canvas)this.UINetworks[source.ElementGID][0];
                     }
@@ -1418,7 +1426,7 @@ namespace DispatcherApp.ViewModel
                         answerFromTransactionManager = ProxyToTransactionManager.GetNetwork();
                     }
                     catch (Exception e) { }
-                    
+
                     InitNetwork();
                     InitElementsAndProperties(answerFromTransactionManager);
                     DrawElementsOnGraph(answerFromTransactionManager.GraphDeep);

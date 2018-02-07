@@ -12,11 +12,14 @@ namespace TransactionManager
     {
         static void Main(string[] args)
         {
+            Console.Title = "Transaction Manager";
             TransactionManagerService tms = new TransactionManagerService();
             Console.WriteLine("Transaction Manager is started");
 
             // zbog cega se ovde instancira transaction manager, 
             // kada je vec deo transaction manager service-a??
+
+            // Ljudi nije mi jasno zasto pravimo ovde transactionManager? kad je on service?
             TransactionManager transactionManager = new TransactionManager();
             //transactionManager.Enlist();
             //transactionManager.Prepare();

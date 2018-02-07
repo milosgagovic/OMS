@@ -1,8 +1,6 @@
 ﻿using OMSSCADACommon;
 using OMSSCADACommon.Commands;
 using OMSSCADACommon.Responses;
-using SCADA.CommAcqEngine;
-using SCADA.SecondaryDataProcessing;
 using SCADAContracts;
 using System;
 using System.Collections.Generic;
@@ -24,7 +22,7 @@ namespace SCADA.ClientHandler
 
         public Response ExecuteCommand(Command command)
         {
-            command.Receiver = new ACQEngine();
+            command.Receiver = new CommunicationAndControlling.SecondaryDataProcessing.CommAcqEngine();
             return command.Execute();
         }
     }

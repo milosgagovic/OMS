@@ -16,7 +16,7 @@ namespace PubSubscribeService
 
         static void Main(string[] args)
         {
-
+            Console.Title = "Publisher-Subscribe";
             try
             {
                 HostPublishService();

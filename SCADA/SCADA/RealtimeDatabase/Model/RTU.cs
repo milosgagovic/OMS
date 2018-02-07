@@ -1,18 +1,16 @@
 ﻿using PCCommon;
-using SCADA.RealtimeDatabase.Model;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 
-namespace SCADA.RealtimeDatabase
+namespace SCADA.RealtimeDatabase.Model
 {
     public class RTU
     {
 
         private ConcurrentDictionary<ushort, string> PVsAddressAndNames = null;
         private DBContext dbContext = null;
-
 
         public IndustryProtocols Protocol { get; set; }
 
@@ -37,8 +35,8 @@ namespace SCADA.RealtimeDatabase
         public int AnaOutCount { get; set; }
         public int CounterCount { get; set; }
 
-        public int MappedDig { get; set; }
         // to do: add for analog and counter
+        public int MappedDig { get; set; }
 
         // locks that support single writers and multiple readers
         private ReaderWriterLockSlim digInLock = new ReaderWriterLockSlim();
@@ -124,18 +122,18 @@ namespace SCADA.RealtimeDatabase
         /// <param name="variable"></param>
         /// <param name="isSuccessfull"></param>
         /// <returns></returns>
-        private int MapToAcqAddress(ProcessVariable variable, out bool isSuccessfull)
+        private int MapToAcqAddress(ProcessVariable variable)
         {
-            isSuccessfull = false;
-
             int retAddr = -1;
+
             switch (variable.Type)
             {
                 case VariableTypes.DIGITAL:
 
                     Digital digital = variable as Digital;
 
-                    // ovo je prva promenljiva tipa digital, i ona pocinje na prvoj adresi tog tipa 
+
+                    // 1st variable of type Digital, starts on 1st address of DigitalInputs memory (inputs are for acquistion)
                     if (digital.RelativeAddress == 0)
                     {
                         digInLock.EnterWriteLock();
@@ -143,38 +141,53 @@ namespace SCADA.RealtimeDatabase
                         {
                             digitalInAddresses.Insert(digital.RelativeAddress, DigInStartAddr);
                         }
+                        catch (ArgumentOutOfRangeException e)
+                        {
+
+                        }
                         finally
                         {
                             digInLock.ExitWriteLock();
                         }
                     }
 
-                    // calculating address of next variable of same type. adding number of registers with start address of current variable
                     digInLock.EnterReadLock();
-                    var currentAddress = digitalInAddresses[digital.RelativeAddress];
+                    var currentAcqAddress = digitalInAddresses[digital.RelativeAddress];
                     digInLock.ExitReadLock();
 
-                    var quantity = (ushort)(Math.Floor((Math.Log(digital.ValidStates.Count, 2))));
-                    var nextAddress = currentAddress + quantity;
+                    // this is address that we need currently
+                    retAddr = currentAcqAddress;
 
-                    retAddr = currentAddress;
+                    // if we already reached the end of memory for this type of Process Variable
+                    // in this Process Controller, than we do not have to calculate nextAddress
+                    if (FreeSpaceForDigitals != false)
+                    {
+                        // calculating address of next variable of same type, 
+                        // by adding number of registers (quantity)
+                        // with starting address of current variable
+                        var quantity = (ushort)(Math.Floor((Math.Log(digital.ValidStates.Count, 2))));
+                        var nextAddress = currentAcqAddress + quantity;
 
-                    // error, out of range
-                    if (nextAddress >= DigInStartAddr + DigInCount)
-                    {
-                        FreeSpaceForDigitals = false;
-                        break;
-                    }
+                        // error, out of range. impossible to insert next variable of same type
+                        if (nextAddress >= DigInStartAddr + DigInCount)
+                        {
+                            FreeSpaceForDigitals = false;
+                            break;
+                        }
 
-                    digInLock.EnterWriteLock();
-                    try
-                    {
-                        digitalInAddresses.Insert(digital.RelativeAddress + 1, nextAddress);
-                        isSuccessfull = true;
-                    }
-                    finally
-                    {
-                        digInLock.ExitWriteLock();
+                        digInLock.EnterWriteLock();
+                        try
+                        {
+                            digitalInAddresses.Insert(digital.RelativeAddress + 1, nextAddress);
+                        }
+                        catch (ArgumentOutOfRangeException e)
+                        {
+
+                        }
+                        finally
+                        {
+                            digInLock.ExitWriteLock();
+                        }
                     }
 
                     break;
@@ -197,22 +210,27 @@ namespace SCADA.RealtimeDatabase
         /// <param name="variable"></param>
         /// <param name="isSuccessfull"></param>
         /// <returns></returns>
-        private int MapToCommandAddress(ProcessVariable variable, out bool isSuccessfull)
+        private int MapToCommandAddress(ProcessVariable variable)
         {
-            isSuccessfull = false;
             int retAddr = -1;
+
             switch (variable.Type)
             {
                 case VariableTypes.DIGITAL:
 
                     Digital digital = variable as Digital;
 
+                    // 1st variable of type Digital, starts on 1st address of DigitalOutputs memory (outputs are for commanding)
                     if (digital.RelativeAddress == 0)
                     {
                         digOutLock.EnterWriteLock();
                         try
                         {
                             digitalOutAddresses.Insert(digital.RelativeAddress, DigOutStartAddr);
+                        }
+                        catch (ArgumentOutOfRangeException e)
+                        {
+
                         }
                         finally
                         {
@@ -221,31 +239,40 @@ namespace SCADA.RealtimeDatabase
                     }
 
                     digOutLock.EnterReadLock();
-                    var currentAddress = digitalOutAddresses[digital.RelativeAddress];
+                    var currentCommAddress = digitalOutAddresses[digital.RelativeAddress];
                     digOutLock.ExitReadLock();
 
-                    var quantity = (ushort)(Math.Floor((Math.Log(digital.ValidCommands.Count, 2))));
-                    var nextAddress = currentAddress + quantity;
+                    // this is address that we need currently
+                    retAddr = currentCommAddress;
 
-                    retAddr = currentAddress;
-
-                    // error, out of range
-                    if (nextAddress >= DigOutStartAddr + DigInCount)
+                    // if we already reached the end of memory for this type of Process Variable
+                    // in this Process Controller, than we do not have to calculate nextAddress
+                    if (FreeSpaceForDigitals != false)
                     {
-                        FreeSpaceForDigitals = false;
-                        break;
-                    }
+                        var quantity = (ushort)(Math.Floor((Math.Log(digital.ValidCommands.Count, 2))));
+                        var nextAddress = currentCommAddress + quantity;
+
+                        // error, out of range. impossible to insert next variable of same type
+                        if (nextAddress >= DigOutStartAddr + DigInCount)
+                        {
+                            FreeSpaceForDigitals = false;
+                            break;
+                        }
 
 
-                    digOutLock.EnterWriteLock();
-                    try
-                    {
-                        digitalOutAddresses.Insert(digital.RelativeAddress + 1, nextAddress);
-                        isSuccessfull = true;
-                    }
-                    finally
-                    {
-                        digOutLock.ExitWriteLock();
+                        digOutLock.EnterWriteLock();
+                        try
+                        {
+                            digitalOutAddresses.Insert(digital.RelativeAddress + 1, nextAddress);
+                        }
+                        catch (ArgumentOutOfRangeException e)
+                        {
+
+                        }
+                        finally
+                        {
+                            digOutLock.ExitWriteLock();
+                        }
                     }
 
                     break;
@@ -281,7 +308,7 @@ namespace SCADA.RealtimeDatabase
         }
 
         /// <summary>
-        /// Storing variables by its address in RTU Memory.
+        /// Attempts to store variable by its address in RTU Memory.
         /// Mapping to reading/commanding address is done in this function.
         /// </summary>
         /// <param name="variable"></param>
@@ -289,28 +316,31 @@ namespace SCADA.RealtimeDatabase
         {
             bool isSuccessfull = false;
 
-            var readAddr = MapToAcqAddress(variable, out isSuccessfull);
-            if (isSuccessfull)
+            var readAddr = MapToAcqAddress(variable);
+
+            var writeAddr = MapToCommandAddress(variable);
+
+            if (PVsAddressAndNames.TryAdd((ushort)readAddr, variable.Name)
+                && PVsAddressAndNames.TryAdd((ushort)writeAddr, variable.Name))
             {
-                var writeAddr = MapToCommandAddress(variable, out isSuccessfull);
-                if (isSuccessfull)
-                {
-                    if (PVsAddressAndNames.TryAdd((ushort)readAddr, variable.Name)
-                        && PVsAddressAndNames.TryAdd((ushort)writeAddr, variable.Name))
-                    {
-
-                        isSuccessfull = true;
-                    }
-
-                }
+                isSuccessfull = true;
             }
 
             return isSuccessfull;
         }
 
-        public bool TryMap(ProcessVariable variable)
+
+        /// <summary>
+        /// Check if it is possible to map new variable, calculates RelativeAddress based
+        /// on previous mapped variables.
+        /// </summary>
+        /// <param name="variable"></param>
+        /// <param name="relativeAddress"></param>
+        /// <returns></returns>
+        public bool TryMap(ProcessVariable variable, out ushort relativeAddress)
         {
             bool retVal = false;
+            relativeAddress = ushort.MaxValue;
 
             switch (variable.Type)
             {
@@ -318,15 +348,14 @@ namespace SCADA.RealtimeDatabase
 
                     Digital digital = variable as Digital;
 
-                    // digital.RelativeAddress=
-
                     int desiredDigIn = (ushort)(Math.Floor((Math.Log(digital.ValidStates.Count, 2))));
                     int desiredDigOut = (ushort)(Math.Floor((Math.Log(digital.ValidCommands.Count, 2))));
 
                     if (digitalInAddresses.Count + desiredDigIn <= DigInCount &&
                         digitalOutAddresses.Count + desiredDigOut <= DigOutCount)
                     {
-                        digital.RelativeAddress = (ushort)MappedDig;
+                        relativeAddress = (ushort)MappedDig;
+                        //digital.RelativeAddress = (ushort)MappedDig;
                         MappedDig++;
                         retVal = true;
                     }
@@ -334,7 +363,6 @@ namespace SCADA.RealtimeDatabase
 
                     break;
             }
-
             return retVal;
         }
 

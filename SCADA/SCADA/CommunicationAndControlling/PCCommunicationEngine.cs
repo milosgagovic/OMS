@@ -8,10 +8,11 @@ using System.Threading;
 using ModbusTCPDriver;
 using PCCommon;
 using System.Net.Sockets;
+using SCADA.ConfigurationParser;
 
-namespace SCADA.CommAcqEngine
+namespace SCADA.CommunicationAndControlling
 {
-    // Logic for communication with Process Controller
+    // Logic for communication with Process Controller - ProcessControllerCommunicationEngine
     public class PCCommunicationEngine
     {
         IORequestsQueue IORequests;
@@ -42,38 +43,18 @@ namespace SCADA.CommAcqEngine
         /// </summary>
         /// <param name="configPath"></param>
         /// <returns></returns>
-        public bool Configure(string configPath)
+        public bool Configure(string basePath, string configPath)
         {
+            bool retVal = false;
+            CommunicationModelParser parser = new CommunicationModelParser(basePath);
 
-            ProcessController rtu1 = new ProcessController()
+            if (parser.DeserializeCommunicationModel())
             {
-                DeviceAddress = 1,
-                HostName = "localhost",
-                HostPort = 4021,
-                Name = "RTU-1"
-            };
+                processControllers = parser.GetProcessControllers();
+                retVal = CreateChannels();
+            }
 
-            ProcessController rtu2 = new ProcessController()
-            {
-                DeviceAddress = 2,
-                HostName = "localhost",
-                HostPort = 4022,
-                Name = "RTU-2",
-            };
-
-            ProcessController rtu3 = new ProcessController()
-            {
-                DeviceAddress = 3,
-                HostName = "localhost",
-                HostPort = 502,
-                Name = "RTU-3",
-            };
-
-            processControllers.Add(rtu1.Name, rtu1);
-            //processControllers.Add(rtu2.Name, rtu2);
-            //processControllers.Add(rtu3.Name, rtu3);
-
-            return CreateChannels();
+            return retVal;
         }
 
         /// <summary>
@@ -137,33 +118,10 @@ namespace SCADA.CommAcqEngine
 
             }
 
-            //IChannel ch;
-            //if (channels.TryGetValue(rtu.ChannelName, out ch))
-            //{
-            //   
-
-            //    TcpClient tcpClient;
-            //    if (!tcpClient.ConnectAsync(rtu.HostName, rtu.HostPort).Wait(TimeSpan.FromMilliseconds(ch.TimeOutMsc)))
-            //    {
-            //        // timed out
-            //        tcpClient.Close();
-            //        throw new ApplicationException("Failed to connect to slave device.");
-            //    }
-            //    else
-            //    {
-
-            //    }
-            //}
-            //else
-            //{
-            //    // invalid config, clean up
-            //}
-
             return retval;
         }
 
         #endregion
-
 
         /// <summary>
         /// Getting IORB requests from IORequests queue, sending it to Simulator;
@@ -171,20 +129,16 @@ namespace SCADA.CommAcqEngine
         /// </summary>
         public void ProcessRequestsFromQueue()
         {
-            int processing = 0;
-
             while (!isShutdown)
             {
 
                 bool isSuccessful;
-                //Console.WriteLine("----> ProcessRequests(){0}  IORequests.Count = {1}", processing, IORequests.IORequests.Count);
                 IORequestBlock forProcess = IORequests.DequeueRequest(out isSuccessful);
-                // Console.WriteLine("====> ProcessRequests(){0}, DequeueRequest= {1}, IORequests.Count = {2}", processing, isSuccessful, IORequests.IORequests.Count);
 
                 if (isSuccessful)
                 {
 
-                   // Console.WriteLine("** ProcessRequests(){0}, REQUEST = ", processing, BitConverter.ToString(forProcess.SendBuff, 0, forProcess.SendMsgLength));
+                    // Console.WriteLine("** ProcessRequests(){0}, REQUEST = ", processing, BitConverter.ToString(forProcess.SendBuff, 0, forProcess.SendMsgLength));
 
                     TcpClient client;
 
@@ -204,8 +158,6 @@ namespace SCADA.CommAcqEngine
                             int offset = 0;
 
                             stream.Write(forProcess.SendBuff, offset, forProcess.SendMsgLength);
-
-                            //Console.WriteLine("*** REQUEST <SEND> = ", BitConverter.ToString(forProcess.SendBuff, 0, forProcess.SendMsgLength));
 
                             // to do: processing big messages.  whole, or in parts?
                             // ...
@@ -227,7 +179,6 @@ namespace SCADA.CommAcqEngine
 
 
                             Console.WriteLine(e.Message);
-                            //throw;
 
                             // kanal sa kontrolerom je zatvoren
                             //if (client.Connected)
@@ -242,7 +193,6 @@ namespace SCADA.CommAcqEngine
                     }
                 }
 
-                processing++;
                 Thread.Sleep(millisecondsTimeout: timerMsc);
             }
 
@@ -257,5 +207,10 @@ namespace SCADA.CommAcqEngine
             TcpChannels.Clear();
         }
 
+        // dodati close kanala i ostalo...
+        public void Stop()
+        {
+            isShutdown = true;
+        }
     }
 }

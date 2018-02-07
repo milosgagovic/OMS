@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 
-namespace SCADA.CommAcqEngine
+namespace SCADA.CommunicationAndControlling
 {
     /// <summary>
     /// Used for inter-thread communication
@@ -77,7 +77,7 @@ namespace SCADA.CommAcqEngine
             IORequests.Enqueue(iorb);
         }
 
-        // procitati kako ove metode rade
+        // read more about this methods and ConcurentQueue
         public IORequestBlock DequeueRequest(out bool isSuccessful)
         {
             IORequestBlock req;
@@ -98,10 +98,5 @@ namespace SCADA.CommAcqEngine
             isSuccessful = IOAnswers.TryDequeue(out answ);
             return answ;
         }
-
-        //public bool IsIOAnswersEmpty()
-        //{
-        //    return IOAnswers.Count == 0;
-        //}
     }
 }

@@ -14,6 +14,9 @@ namespace TransactionManagerContract
    public interface IOMSClient
     {
         [OperationContract]
+        bool IsNetworkAvailable();
+
+        [OperationContract]
         bool UpdateSystem(Delta d);
 
         [OperationContract]

@@ -18,6 +18,42 @@ namespace DMSService
         private static ChannelFactory<IIMSContract> factoryToIMS = new ChannelFactory<IIMSContract>(new NetTcpBinding(), new EndpointAddress("net.tcp://localhost:6090/IncidentManagementSystemService"));
         private static IIMSContract proxyToIMS = factoryToIMS.CreateChannel();
 
+        public DMSDispatcherService()
+        {
+            Console.WriteLine("Dispatcher instantiated");
+        }
+
+        public List<Element> GetAllElements()
+        {
+            List<Element> retVal = new List<Element>();
+            try
+            {
+                foreach (Element e in DMSService.Instance.Tree.Data.Values)
+                {
+                    retVal.Add(e);
+                }
+                return retVal;
+            }
+            catch (Exception)
+            {
+
+                return new List<Element>();
+            }
+        }
+
+        public int GetNetworkDepth()
+        {
+            try
+            {
+                return DMSService.Instance.Tree.Links.Max(x => x.Value.Depth) + 1;
+
+            }
+            catch (Exception)
+            {
+                return 1;
+            }
+        }
+
         public List<ACLine> GetAllACLines()
         {
             List<ACLine> pom = new List<ACLine>();
@@ -37,7 +73,7 @@ namespace DMSService
 
                 return new List<ACLine>();
             }
-          
+
         }
 
         public List<Consumer> GetAllConsumers()
@@ -59,7 +95,7 @@ namespace DMSService
 
                 return new List<Consumer>();
             }
-          
+
         }
 
         public List<Node> GetAllNodes()
@@ -81,7 +117,7 @@ namespace DMSService
 
                 return new List<Node>();
             }
-          
+
         }
 
         public List<Source> GetAllSource()
@@ -103,7 +139,7 @@ namespace DMSService
 
                 return new List<Source>();
             }
-        
+
         }
 
         public List<Switch> GetAllSwitches()
@@ -125,20 +161,7 @@ namespace DMSService
 
                 return new List<Switch>();
             }
-          
-        }
 
-        public int GetNetworkDepth()
-        {
-            try
-            {
-                return DMSService.Instance.Tree.Links.Max(x => x.Value.Depth) + 1;
-
-            }
-            catch (Exception)
-            {
-                return 1;
-            }
         }
 
         public Source GetTreeRoot()
@@ -166,27 +189,8 @@ namespace DMSService
             catch (Exception)
             {
 
-                return new Dictionary<long, Element>();      
+                return new Dictionary<long, Element>();
             }
-        }
-
-        public List<Element> GetAllElements()
-        {
-            List<Element> retVal = new List<Element>();
-            try
-            {
-                foreach (Element e in DMSService.Instance.Tree.Data.Values)
-                {
-                    retVal.Add(e);
-                }
-                return retVal;
-            }
-            catch (Exception)
-            {
-
-                return new List<Element>();
-            }
-           
         }
 
         public void SendCrewToDms(IncidentReport report)
@@ -202,12 +206,12 @@ namespace DMSService
         {
             report.Id = proxyToIMS.GetReport(report.Time).Id;
 
-            if(report != null)
+            if (report != null)
             {
                 var rnd = new Random(DateTime.Now.Second);
                 int repairtime = rnd.Next(5, 180);
 
-                Thread.Sleep(repairtime*100);
+                Thread.Sleep(repairtime * 100);
 
                 Switch sw = null;
                 foreach (var item in DMSService.Instance.Tree.Data.Values)
@@ -235,9 +239,14 @@ namespace DMSService
 
                 Publisher publisher = new Publisher();
                 publisher.PublishIncident(report);
-                
+
                 //publisher.PublishCrew(new SCADAUpdateModel(sw.ElementGID, true));
             }
+        }
+
+        public bool IsNetworkAvailable()
+        {
+            return DMSService.isNetworkInitialized;
         }
     }
 }

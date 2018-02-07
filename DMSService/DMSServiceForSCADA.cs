@@ -18,22 +18,20 @@ namespace DMSService
     {
 		private static ChannelFactory<IIMSContract> factoryToIMS = new ChannelFactory<IIMSContract>(new NetTcpBinding(), new EndpointAddress("net.tcp://localhost:6090/IncidentManagementSystemService"));
 		private static IIMSContract proxyToIMS = factoryToIMS.CreateChannel();
-
+        
         public void ChangeOnSCADA(string mrID, OMSSCADACommon.States state)
         {
 			
             ModelGdaDMS gda = new ModelGdaDMS();
             List<ResourceDescription> rdl = gda.GetExtentValuesExtended(ModelCode.DISCRETE);
             ResourceDescription rd = rdl.Where(r => r.GetProperty(ModelCode.IDOBJ_MRID).AsString() == mrID).FirstOrDefault();
-
-            // ovde puca ako nemas .data => try catch dodati!
+           
             long res = rd.GetProperty(ModelCode.MEASUREMENT_PSR).AsLong();
             
             List<SCADAUpdateModel> networkChange = new List<SCADAUpdateModel>();
 
             Element el;
-            // error ako ne ugasis modbus simulator nakon gasenja sistema, i onda
-            // opet pokrenes sve
+            Console.WriteLine("Change on scada Instance.Tree");
             DMSService.Instance.Tree.Data.TryGetValue(res, out el);
             Switch sw = (Switch)el;
 
@@ -169,7 +167,5 @@ namespace DMSService
             return networkChange;
 
         }
-
-
     }
 }
