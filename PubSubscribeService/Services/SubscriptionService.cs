@@ -9,11 +9,8 @@ using System.Threading.Tasks;
 namespace PubSubscribeService.Services
 {
     [ServiceBehavior(InstanceContextMode = InstanceContextMode.PerCall)]
-
-
     public class SubscriptionService : ISubscription
-    {
-        
+    {       
         public void Subscribe()
         {
             IPublishing subscriber = OperationContext.Current.GetCallbackChannel<IPublishing>();

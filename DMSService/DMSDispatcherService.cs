@@ -204,6 +204,23 @@ namespace DMSService
 
         private void ProcessCrew(IncidentReport report)
         {
+            // mozda ovo ovde ni nema smisla?
+            bool isImsAvailable = false;
+            while (!isImsAvailable)
+            {
+
+                try
+                {
+                    isImsAvailable = proxyToIMS.Ping();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                }
+
+                Thread.Sleep(200);
+            }
+
             report.Id = proxyToIMS.GetReport(report.Time).Id;
 
             if (report != null)

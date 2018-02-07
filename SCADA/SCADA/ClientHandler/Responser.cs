@@ -10,6 +10,8 @@ using System.Threading.Tasks;
 
 namespace SCADA.ClientHandler
 {
+    // takodje se ne koristi?? 
+
     [CallbackBehavior(ConcurrencyMode = ConcurrencyMode.Reentrant, UseSynchronizationContext = false)]
     public class Responser : ISCADAContract_Callback
     {

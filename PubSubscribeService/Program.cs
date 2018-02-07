@@ -21,12 +21,12 @@ namespace PubSubscribeService
             {
                 HostPublishService();
                 HostSubscribeService();
-
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.ToString());
             }
+
             Console.WriteLine(" -----------------STARTED-----------------\n\n\n\n");
 
             Console.WriteLine(" Press any key to STOP services");

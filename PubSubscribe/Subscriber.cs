@@ -17,7 +17,7 @@ namespace PubSubscribe
 
     public class Subscriber : IPublishing
     {
-        ISubscription proxy = null;
+        ISubscription subscriptionProxy = null;
 
         public event PublishUpdateEvent publishUpdateEvent;
         public event PublishCrewEvent publishCrewEvent;
@@ -34,9 +34,9 @@ namespace PubSubscribe
             {  //***git
                 NetTcpBinding netTcpbinding = new NetTcpBinding();
                 EndpointAddress endpointAddress = new EndpointAddress("net.tcp://localhost:7002/Sub");
-                InstanceContext instanceContext = new InstanceContext(this);
-                DuplexChannelFactory<ISubscription> channelFactory = new DuplexChannelFactory<ISubscription>(instanceContext, netTcpbinding, endpointAddress);
-                proxy = channelFactory.CreateChannel();
+                InstanceContext callback = new InstanceContext(this);
+                DuplexChannelFactory<ISubscription> channelFactory = new DuplexChannelFactory<ISubscription>(callback, netTcpbinding, endpointAddress);
+                subscriptionProxy = channelFactory.CreateChannel();
             }
             catch (Exception e)
             {
@@ -45,13 +45,11 @@ namespace PubSubscribe
             }
         }
 
-
-
         public void Subscribe()
         {
             try
             {
-                proxy.Subscribe();
+                subscriptionProxy.Subscribe();
             }
             catch (Exception e)
             {
@@ -65,7 +63,7 @@ namespace PubSubscribe
         {
             try
             {
-                proxy.UnSubscribe();
+                subscriptionProxy.UnSubscribe();
             }
             catch (Exception e)
             {

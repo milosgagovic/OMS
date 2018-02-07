@@ -8,6 +8,10 @@ using System.Text;
 
 namespace TransactionManager
 {
+
+    // ovo se nigde ne koristi?
+
+
     [CallbackBehavior(ConcurrencyMode = ConcurrencyMode.Reentrant, UseSynchronizationContext = false)]
     public class SCADACallback : ISCADAContract_Callback
     {

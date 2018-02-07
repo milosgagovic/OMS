@@ -176,6 +176,39 @@ namespace TransactionManager
                 }
             }
         }
+        private ScadaDelta GetDeltaForSCADA(Delta d)
+        {
+            List<ResourceDescription> rescDesc = d.InsertOperations.Where(u => u.ContainsProperty(ModelCode.MEASUREMENT_DIRECTION)).ToList();
+            ScadaDelta scadaDelta = new ScadaDelta();
+
+            foreach (ResourceDescription rd in rescDesc)
+            {
+                ScadaElement element = new ScadaElement();
+                if (rd.ContainsProperty(ModelCode.MEASUREMENT_TYPE))
+                {
+                    string type = rd.GetProperty(ModelCode.MEASUREMENT_TYPE).ToString();
+                    if (type == "Analog")
+                    {
+                        element.Type = DeviceTypes.ANALOG;
+                    }
+                    else if (type == "Discrete")
+                    {
+                        element.Type = DeviceTypes.DIGITAL;
+                    }
+                }
+
+                element.ValidCommands = new List<CommandTypes>() { CommandTypes.CLOSE, CommandTypes.OPEN };
+                element.ValidStates = new List<OMSSCADACommon.States>() { OMSSCADACommon.States.CLOSED, OMSSCADACommon.States.OPENED };
+
+                if (rd.ContainsProperty(ModelCode.IDOBJ_MRID))
+                {
+                    //element.Name = rd.GetProperty(ModelCode.IDOBJ_NAME).ToString();
+                    element.Name = rd.GetProperty(ModelCode.IDOBJ_MRID).ToString();
+                }
+                scadaDelta.InsertOps.Add(element);
+            }
+            return scadaDelta;
+        }
 
         private void Commit()
         {
@@ -207,7 +240,7 @@ namespace TransactionManager
         /// <summary>
         /// Called by ModelLabs(CIMAdapter) when Static data changes
         /// </summary>
-        /// <param name="d"></param>
+        /// <param name="d">Delta</param>
         /// <returns></returns>
         public bool UpdateSystem(Delta d)
         {
@@ -248,6 +281,26 @@ namespace TransactionManager
 
             }
 
+
+            // nisam sigurna da ce ovo raditi, buduci da se ims dize kako hoce, pa nisam mogla da testiram   
+
+            bool isImsAvailable = false;
+            while (!isImsAvailable)
+            {
+
+                try
+                {
+                    isImsAvailable = proxyToIMS.Ping();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                }
+
+                Thread.Sleep(200);
+            }
+
+
             var crews = proxyToIMS.GetCrews();
             var incidentReports = proxyToIMS.GetAllReports();
 
@@ -272,41 +325,8 @@ namespace TransactionManager
             proxyToDispatcherDMS.SendCrewToDms(report);
             return;
         }
-      
-        private ScadaDelta GetDeltaForSCADA(Delta d)
-        {
-            List<ResourceDescription> rescDesc = d.InsertOperations.Where(u => u.ContainsProperty(ModelCode.MEASUREMENT_DIRECTION)).ToList();
-            ScadaDelta scadaDelta = new ScadaDelta();
-
-            foreach (ResourceDescription rd in rescDesc)
-            {
-                ScadaElement element = new ScadaElement();
-                if (rd.ContainsProperty(ModelCode.MEASUREMENT_TYPE))
-                {
-                    string type = rd.GetProperty(ModelCode.MEASUREMENT_TYPE).ToString();
-                    if (type == "Analog")
-                    {
-                        element.Type = DeviceTypes.ANALOG;
-                    }
-                    else if (type == "Discrete")
-                    {
-                        element.Type = DeviceTypes.DIGITAL;
-                    }
-                }
-
-                element.ValidCommands = new List<CommandTypes>() { CommandTypes.CLOSE, CommandTypes.OPEN };
-                element.ValidStates = new List<OMSSCADACommon.States>() { OMSSCADACommon.States.CLOSED, OMSSCADACommon.States.OPENED };
-
-                if (rd.ContainsProperty(ModelCode.IDOBJ_MRID))
-                {
-                    //element.Name = rd.GetProperty(ModelCode.IDOBJ_NAME).ToString();
-                    element.Name = rd.GetProperty(ModelCode.IDOBJ_MRID).ToString();
-                }
-                scadaDelta.InsertOps.Add(element);
-            }
-            return scadaDelta;
-        }
-
+        
+        // currently unused
         public bool IsNetworkAvailable()
         {
             bool retVal = false;

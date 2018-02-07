@@ -13,18 +13,35 @@ namespace TransactionManagerContract
     [ServiceContract]
    public interface IOMSClient
     {
-        [OperationContract]
-        bool IsNetworkAvailable();
+        /*CIMAdapter methods*/
 
+        /// <summary>
+        /// Update system Static Data. Called by ModelLabs (CIMAdapter) when Static data changes
+        /// </summary>
+        /// <param name="d">Delta</param>
+        /// <returns></returns>
         [OperationContract]
         bool UpdateSystem(Delta d);
 
-        [OperationContract]
-        void GetNetworkWithOutParam(out List<Element> DMSElements, out List<ResourceDescription> resourceDescriptions, out int GraphDeep);
-
+        /*DispatcherApp methods*/
+        
         [OperationContract]
         TMSAnswerToClient GetNetwork();
 
+        [OperationContract]
+        void SendCommandToSCADA(TypeOfSCADACommand command, string mrid, OMSSCADACommon.CommandTypes commandtype, float value);
+
+        [OperationContract]
+        void SendCrew(IncidentReport report);
+
+        [OperationContract]
+        bool IsNetworkAvailable();
+
+        /*unused methods :)*/
+
+        [OperationContract]
+        void GetNetworkWithOutParam(out List<Element> DMSElements, out List<ResourceDescription> resourceDescriptions, out int GraphDeep);
+     
 		//[OperationContract]
 		//void AddReport(string mrID, DateTime time, string state);
 
@@ -55,14 +72,8 @@ namespace TransactionManagerContract
         [OperationContract]
         List<ElementStateReport> GetElementStateReportsForSpecificMrIDAndSpecificTimeInterval(string mrID, DateTime startTime, DateTime endTime);
 
-        [OperationContract]
-        void SendCommandToSCADA(TypeOfSCADACommand command, string mrid, OMSSCADACommon.CommandTypes commandtype, float value);
-
         //[OperationContract]
         //void SendCrew(string mrid);
-
-        [OperationContract]
-        void SendCrew(IncidentReport report);
 
 		[OperationContract]
         List<Crew> GetCrews();
