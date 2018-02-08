@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 
 namespace PubSubContract
 {
-
     [ServiceContract(CallbackContract = typeof(IPublishing))]
     public interface ISubscription
     {

@@ -7,43 +7,44 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Xml;
 using System.Xml.Linq;
-using System.Xml.XPath;
+
 
 namespace SCADA.ConfigurationParser
 {
-    // to do: ili staviti concurent dictionary u bazu, ili lock pristup...
     public class ScadaModelParser
     {
-        private string configurationPath;
-        XmlDocument doc;
+        private string basePath;
 
         private DBContext dbContext = null;
 
-        public ScadaModelParser(string configPath)
+        public ScadaModelParser(string basePath = "")
         {
-            configurationPath = configPath;
-
-            doc = new XmlDocument();
+            this.basePath = basePath == "" ? Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).Parent.Parent.Parent.FullName : basePath;
             dbContext = new DBContext();
         }
 
-        // ako parsiranje padne, obavezno da ne radi dalje...
-        public bool DoParse()
+        public bool DeserializeScadaModel(string deserializationSource = "ScadaModel.xml")
         {
             string message = string.Empty;
+            string configurationName = deserializationSource;
+            string source = Path.Combine(basePath, configurationName);
 
             try
             {
-                XElement xdocument = XElement.Load(configurationPath);
+                XElement xdocument = XElement.Load(source);
 
                 // access RTUS, DIGITALS, ANALOGS, COUNTERS from ScadaModel root
                 IEnumerable<XElement> elements = xdocument.Elements();
 
                 var rtus = xdocument.Element("RTUS").Elements("RTU").ToList();
-                var digitals = xdocument.Element("Digitals").Elements("Digital").ToList();
+                //var digitals = xdocument.Element("Digitals").Elements("Digital").ToList();
+                var digitals = (from dig in xdocument.Element("Digitals").Elements("Digital")
+                                orderby (int)dig.Element("RelativeAddress")
+                                select dig).ToList();
+
+                // order will be important here too...
                 var analogs = xdocument.Element("Analogs").Elements("Analog").ToList();
                 var counters = xdocument.Element("Counters").Elements("Counter").ToList();
 
@@ -53,14 +54,14 @@ namespace SCADA.ConfigurationParser
                     foreach (var rtu in rtus)
                     {
                         RTU newRtu;
-                        string name = (string)rtu.Element("Name");
+                        string uniqueName = (string)rtu.Element("Name");
 
-                        // if does not already exist
-                        if ((newRtu = dbContext.GetRTUByName(name)) == null)
+                        // if RTU with that name does not already exist?
+                        if (!dbContext.Database.RTUs.ContainsKey(uniqueName))
                         {
-                            bool freeSpaceForDigitals = (bool)rtu.Element("FreeSpaceForDigitals");
-
                             byte address = (byte)(int)rtu.Element("Address");
+
+                            bool freeSpaceForDigitals = (bool)rtu.Element("FreeSpaceForDigitals");
 
                             string stringProtocol = (string)rtu.Element("Protocol");
                             IndustryProtocols protocol = (IndustryProtocols)Enum.Parse(typeof(IndustryProtocols), stringProtocol);
@@ -79,15 +80,14 @@ namespace SCADA.ConfigurationParser
 
                             if (digOutCount != digInCount)
                             {
-                                // error! mora biti isto...dodati to i za analogne kasnije nekad...
-                                message = string.Format("Invalid config: RTU - {0}: DigOutCount!=DigInCount", name);
+                                message = string.Format("Invalid config: RTU - {0}: Value of DigOutCount must be the same as Value of DigInCount", uniqueName);
                                 Console.WriteLine(message);
                                 return false;
                             }
 
                             newRtu = new RTU()
                             {
-                                Name = name,
+                                Name = uniqueName,
                                 Address = address,
                                 FreeSpaceForDigitals = freeSpaceForDigitals,
                                 Protocol = protocol,
@@ -107,7 +107,12 @@ namespace SCADA.ConfigurationParser
 
                             dbContext.AddRTU(newRtu);
                         }
-
+                        else
+                        {
+                            message = string.Format("Invalid config: There is multiple RTUs with Name={0}!", uniqueName);
+                            Console.WriteLine(message);
+                            return false;
+                        }
                     }
                 }
                 else
@@ -117,9 +122,7 @@ namespace SCADA.ConfigurationParser
                     return false;
                 }
 
-
-                /*
-                // parsing DIGITALS
+                //parsing DIGITALS. ORDER OF RELATIVE ADDRESSES IS IMPORTANT
                 if (digitals.Count != 0)
                 {
                     foreach (var d in digitals)
@@ -130,31 +133,27 @@ namespace SCADA.ConfigurationParser
                         RTU associatedRtu;
                         if ((associatedRtu = dbContext.GetRTUByName(procContr)) != null)
                         {
-                            // SETTING Command parameter is hard coded in constructor...
                             Digital newDigital = new Digital();
 
                             // SETTING ProcContrName
                             newDigital.ProcContrName = procContr;
 
-                            string name = (string)d.Element("Name");
+                            string uniqueName = (string)d.Element("Name");
 
-
-                            ProcessVariable pv;
                             // variable with that name does not exists in db?
-                            if (!dbContext.GetProcessVariableByName(name, out pv))
+                            if (!dbContext.Database.ProcessVariablesName.ContainsKey(uniqueName))
                             {
-
                                 // SETTING Name
-                                newDigital.Name = name;
+                                newDigital.Name = uniqueName;
 
                                 // SETTING State                             
                                 string stringCurrentState = (string)d.Element("State");
                                 States stateValue = (States)Enum.Parse(typeof(States), stringCurrentState);
                                 newDigital.State = stateValue;
 
-
-                                // Dodati za komand
-                                // simualtoru komandovati na pocetku da se proavna sve sa modelom
+                                // SETTING Command parameter - for initializing Simulator with last command
+                                string lastCommandString = (string)d.Element("Command");
+                                CommandTypes command = (CommandTypes)Enum.Parse(typeof(CommandTypes), lastCommandString);
 
                                 // SETTING Class
                                 string digDevClass = (string)d.Element("Class");
@@ -174,13 +173,13 @@ namespace SCADA.ConfigurationParser
                                     foreach (var xElementCommand in validCommands)
                                     {
                                         string stringCommand = (string)xElementCommand;
-                                        CommandTypes command = (CommandTypes)Enum.Parse(typeof(CommandTypes), stringCommand);
-                                        newDigital.ValidCommands.Add(command);
+                                        CommandTypes validCommand = (CommandTypes)Enum.Parse(typeof(CommandTypes), stringCommand);
+                                        newDigital.ValidCommands.Add(validCommand);
                                     }
                                 }
                                 else
                                 {
-                                    message = string.Format("Invalid config: Variable = {0} does not contain commands.", name);
+                                    message = string.Format("Invalid config: Variable = {0} does not contain commands.", uniqueName);
                                     Console.WriteLine(message);
                                     return false;
                                 }
@@ -200,19 +199,33 @@ namespace SCADA.ConfigurationParser
                                 }
                                 else
                                 {
-                                    message = string.Format("Invalid config: Variable = {0} does not contain commands.", name);
+                                    message = string.Format("Invalid config: Variable = {0} does not contain states.", uniqueName);
                                     Console.WriteLine(message);
                                     return false;
                                 }
 
-                                if (associatedRtu.MapProcessVariable(newDigital))
+                                ushort calculatedRelativeAddres;
+                                if (associatedRtu.TryMap(newDigital, out calculatedRelativeAddres))
                                 {
-                                    dbContext.AddProcessVariable(newDigital);
+                                    if (relativeAddress == calculatedRelativeAddres)
+                                    {
+                                        if (associatedRtu.MapProcessVariable(newDigital))
+                                        {
+                                            dbContext.AddProcessVariable(newDigital);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        message = string.Format("Invalid config: Variable = {0} RelativeAddress = {1} is not valid.", uniqueName, relativeAddress);
+                                        Console.WriteLine(message);
+                                        return false;
+                                    }
                                 }
+
                             }
                             else
                             {
-                                message = string.Format("Invalid config: Name = {0} is not unique. Variable already exists", name);
+                                message = string.Format("Invalid config: Name = {0} is not unique. Variable already exists", uniqueName);
                                 Console.WriteLine(message);
                                 return false;
                             }
@@ -220,15 +233,12 @@ namespace SCADA.ConfigurationParser
                         }
                         else
                         {
-                            message = string.Format("Invalid config: ProcContrName = {0} does not exists.", procContr);
+                            message = string.Format("Invalid config: Parsing Digitals, ProcContrName = {0} does not exists.", procContr);
                             Console.WriteLine(message);
                             return false;
                         }
                     }
                 }
-
-
-                */
 
                 // to do: 
                 if (analogs.Count != 0)
@@ -241,6 +251,14 @@ namespace SCADA.ConfigurationParser
                 {
 
                 }
+
+                Console.WriteLine("Configuration passed successfully.");
+
+            }
+            catch (FileNotFoundException e)
+            {
+                Console.WriteLine(e.Message);
+                return false;
             }
             catch (XmlException e)
             {
@@ -249,13 +267,124 @@ namespace SCADA.ConfigurationParser
             }
             catch (Exception e)
             {
-
                 Console.WriteLine(e.Message);
+                Console.WriteLine(e.StackTrace);
                 return false;
             }
 
+           // SerializeScadaModel();
             return true;
         }
 
+        public void SerializeScadaModel(string serializationTarget = "ScadaModel.xml")
+        {
+            string target = Path.Combine(basePath, serializationTarget);
+
+            XElement scadaModel = new XElement("ScadaModel");
+
+            XElement rtus = new XElement("RTUS");
+            XElement digitals = new XElement("Digitals");
+            XElement analogs = new XElement("Analogs");
+            XElement counters = new XElement("Counters");
+
+            var rtusSnapshot = dbContext.Database.RTUs.ToArray();
+            foreach (var rtu in rtusSnapshot)
+            {
+                XElement rtuEl = new XElement(
+                    "RTU",
+                    new XElement("Address", rtu.Value.Address),
+                    new XElement("Name", rtu.Value.Name),
+                    new XElement("FreeSpaceForDigitals", rtu.Value.FreeSpaceForDigitals),
+                    new XElement("Protocol", Enum.GetName(typeof(IndustryProtocols), rtu.Value.Protocol)),
+                    new XElement("DigOutStartAddr", rtu.Value.DigOutStartAddr),
+                    new XElement("DigInStartAddr", rtu.Value.DigInStartAddr),
+                    new XElement("AnaOutStartAddr", rtu.Value.AnaOutStartAddr),
+                    new XElement("AnaInStartAddr", rtu.Value.AnaInStartAddr),
+                    new XElement("CounterStartAddr", rtu.Value.CounterStartAddr),
+                    new XElement("DigOutCount", rtu.Value.DigOutCount),
+                    new XElement("DigInCount", rtu.Value.DigInCount),
+                    new XElement("AnaInCount", rtu.Value.AnaInCount),
+                    new XElement("AnaOutCount", rtu.Value.AnaOutCount),
+                    new XElement("CounterCount", rtu.Value.CounterCount)
+                    );
+
+                rtus.Add(rtuEl);
+            }
+
+            var pvsSnapshot = dbContext.Database.ProcessVariablesName.ToArray().OrderBy(pv => pv.Value.RelativeAddress);
+            foreach (var pv in pvsSnapshot)
+            {
+                switch (pv.Value.Type)
+                {
+                    case VariableTypes.DIGITAL:
+
+                        Digital dig = pv.Value as Digital;
+
+                        XElement validCommands = new XElement("ValidCommands");
+                        XElement validStates = new XElement("ValidStates");
+
+                        foreach (var state in dig.ValidStates)
+                        {
+                            validStates.Add(new XElement("State", Enum.GetName(typeof(States), state)));
+                        }
+
+                        foreach (var command in dig.ValidCommands)
+                        {
+                            validCommands.Add(new XElement("Command", Enum.GetName(typeof(CommandTypes), command)));
+                        }
+
+                        XElement digEl = new XElement(
+                            "Digital",
+                                new XElement("Name", dig.Name),
+                                new XElement("State", dig.State),
+                                new XElement("Command", dig.Command),
+                                new XElement("ProcContrName", dig.ProcContrName),
+                                new XElement("RelativeAddress", dig.RelativeAddress),
+                                new XElement("Class", Enum.GetName(typeof(DigitalDeviceClasses), dig.Class)),
+                                validCommands,
+                                validStates
+                            );
+
+                        digitals.Add(digEl);
+
+                        break;
+
+                    case VariableTypes.ANALOG:
+                        Analog analog = pv.Value as Analog;
+
+                        // to do: 
+
+                        break;
+
+                }
+            }
+
+            scadaModel.Add(rtus);
+            scadaModel.Add(digitals);
+            scadaModel.Add(analogs);
+            scadaModel.Add(counters);
+
+            var xdocument = new XDocument(scadaModel);
+            try
+            {
+                xdocument.Save(target);
+                Console.WriteLine("Serializing ScadaModel succeed.");
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }            
+        }
+
+        public void SwapConfigs(string config1, string config2)
+        {
+            string config1path = Path.Combine(Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).Parent.Parent.Parent.FullName, config1);
+            string config2path = Path.Combine(Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).Parent.Parent.Parent.FullName, config2);
+
+            File.Move(config1path, "temp.txt");
+            File.Move(config2path, config1path);
+            File.Move("temp.txt", config2path);
+        }
     }
 }

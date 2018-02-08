@@ -1,11 +1,7 @@
-﻿using SCADA.CommAcqEngine;
-using SCADAContracts;
+﻿using SCADAContracts;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.ServiceModel;
-using System.Text;
-using System.Threading.Tasks;
 using TransactionManagerContract;
 
 namespace SCADA.ClientHandler
@@ -37,7 +33,7 @@ namespace SCADA.ClientHandler
             transactionServiceHost.AddServiceEndpoint(typeof(ITransactionSCADA),
                 new NetTcpBinding(),
                 new Uri("net.tcp://localhost:8078/SCADATransactionService"));
-
+            hosts.Add(transactionServiceHost);
 
             // u nekom trenutku na debug mi je puklo, kontam da cu ovo dodati negde
             //binding.CloseTimeout = new TimeSpan(1, 0, 0, 0);
@@ -45,7 +41,7 @@ namespace SCADA.ClientHandler
             //binding.ReceiveTimeout = new TimeSpan(1, 0, 0, 0);
             //binding.SendTimeout = new TimeSpan(1, 0, 0, 0);
 
-            hosts.Add(transactionServiceHost);
+
         }
 
         public void Start()

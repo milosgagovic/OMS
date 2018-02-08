@@ -28,14 +28,11 @@ namespace PubSubscribeService
                 try
                 {
                     Subscribers.Add(subscriber);
-
                 }
                 catch (Exception e)
                 {
-
                     throw e;
                 }
-
             }
         }
 

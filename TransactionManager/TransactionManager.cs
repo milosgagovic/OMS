@@ -16,19 +16,22 @@ namespace TransactionManager
 {
     public class TransactionManager : IOMSClient
     {
+        // properties for providing communication infrastructure for 2PC protocol
         List<ITransaction> transactionProxys;
         List<TransactionCallback> transactionCallbacks;
-        ChannelFactory<IIMSContract> factoryToIMS;
-        IIMSContract proxyToIMS;
         ITransaction proxyTransactionNMS;
         ITransaction proxyTransactionDMS;
         ITransactionSCADA proxyTransactionSCADA;
-        IDMSContract proxyToDispatcherDMS;
-        ModelGDATMS gdaTMS;
-        SCADAClient scadaClient;
         TransactionCallback callBackTransactionNMS;
         TransactionCallback callBackTransactionDMS;
         TransactionCallback callBackTransactionSCADA;
+
+        //ChannelFactory<IIMSContract> factoryToIMS;
+        //IIMSContract IMSClient;
+        IDMSContract proxyToDispatcherDMS;
+
+        ModelGDATMS gdaTMS;
+        SCADAClient scadaClient;
 
         public List<ITransaction> TransactionProxys { get => transactionProxys; set => transactionProxys = value; }
         public List<TransactionCallback> TransactionCallbacks { get => transactionCallbacks; set => transactionCallbacks = value; }
@@ -38,6 +41,20 @@ namespace TransactionManager
         public TransactionCallback CallBackTransactionNMS { get => callBackTransactionNMS; set => callBackTransactionNMS = value; }
         public TransactionCallback CallBackTransactionDMS { get => callBackTransactionDMS; set => callBackTransactionDMS = value; }
         public TransactionCallback CallBackTransactionSCADA { get => callBackTransactionSCADA; set => callBackTransactionSCADA = value; }
+
+        private IMSClient imsClient;
+        private IMSClient IMSClient
+        {
+            get
+            {
+                if (imsClient == null)
+                {
+                    imsClient = new IMSClient(new EndpointAddress("net.tcp://localhost:6090/IncidentManagementSystemService"));
+                }
+                return imsClient;
+            }
+            set { imsClient = value; }
+        }
 
         private SCADAClient SCADAClientInstance
         {
@@ -51,13 +68,13 @@ namespace TransactionManager
             }
         }
 
-       
-
         public TransactionManager()
         {
             TransactionProxys = new List<ITransaction>();
             TransactionCallbacks = new List<TransactionCallback>();
+
             InitializeChanels();
+          
             gdaTMS = new ModelGDATMS();
             scadaClient = new SCADAClient();
         }
@@ -82,7 +99,7 @@ namespace TransactionManager
             ProxyTransactionDMS = factoryTransactionDMS.CreateChannel();
             TransactionProxys.Add(ProxyTransactionDMS);
 
-            //duplex channel for SCADA transaction
+            // duplex channel for SCADA transaction
             CallBackTransactionSCADA = new TransactionCallback();
             TransactionCallbacks.Add(CallBackTransactionSCADA);
             DuplexChannelFactory<ITransactionSCADA> factoryTransactionSCADA = new DuplexChannelFactory<ITransactionSCADA>(CallBackTransactionSCADA,
@@ -90,15 +107,20 @@ namespace TransactionManager
                                                             new EndpointAddress("net.tcp://localhost:8078/SCADATransactionService"));
             ProxyTransactionSCADA = factoryTransactionSCADA.CreateChannel();
 
+            // client channel for SCADA 
+
 
             // client channel for DMSDispatcherService
             ChannelFactory<IDMSContract> factoryDispatcherDMS = new ChannelFactory<IDMSContract>(new NetTcpBinding(), new EndpointAddress("net.tcp://localhost:8029/DMSDispatcherService"));
             proxyToDispatcherDMS = factoryDispatcherDMS.CreateChannel();
 
 
-            factoryToIMS = new ChannelFactory<IIMSContract>(new NetTcpBinding(), new EndpointAddress("net.tcp://localhost:6090/IncidentManagementSystemService"));
-            proxyToIMS = factoryToIMS.CreateChannel();
+            // client channel for IMS
+           // factoryToIMS = new ChannelFactory<IIMSContract>(new NetTcpBinding(), new EndpointAddress("net.tcp://localhost:6090/IncidentManagementSystemService"));
+            //IMSClient = factoryToIMS.CreateChannel();
         }
+
+        #region 2PC methods
 
         public void Enlist(Delta d)
         {
@@ -125,46 +147,83 @@ namespace TransactionManager
             }
         }
 
-		public void Prepare(Delta delta)
-		{
-			Console.WriteLine("Transaction Manager calling prepare");
+        public void Prepare(Delta delta)
+        {
+            Console.WriteLine("Transaction Manager calling prepare");
 
-			proxyTransactionNMS.Prepare(delta);
-			ScadaDelta scadaDelta = GetDeltaForSCADA(delta);
-			do
-			{
-				Thread.Sleep(50);
-			} while (CallBackTransactionNMS.AnswerForPrepare.Equals(TransactionAnswer.Unanswered));
+            proxyTransactionNMS.Prepare(delta);
+            ScadaDelta scadaDelta = GetDeltaForSCADA(delta);
+            do
+            {
+                Thread.Sleep(50);
+            } while (CallBackTransactionNMS.AnswerForPrepare.Equals(TransactionAnswer.Unanswered));
 
-			if (CallBackTransactionNMS.AnswerForPrepare.Equals(TransactionAnswer.Unprepared))
-			{
-				Rollback();
-			}
-			else
-			{
+            if (CallBackTransactionNMS.AnswerForPrepare.Equals(TransactionAnswer.Unprepared))
+            {
+                Rollback();
+            }
+            else
+            {
+                /*
+                 ako ne uspe nms, nece se ni pozvati dms
+                 */
 
-				TransactionProxys.Where(u => !u.Equals(ProxyTransactionNMS)).ToList().ForEach(x => x.Prepare(delta));
+                // ovde samo dms poziva
+                TransactionProxys.Where(u => !u.Equals(ProxyTransactionNMS)).ToList().ForEach(x => x.Prepare(delta));
 
                 ProxyTransactionSCADA.Prepare(scadaDelta);
 
-				while (true)
-				{
-					if (TransactionCallbacks.Where(k => k.AnswerForPrepare == TransactionAnswer.Unanswered).Count() > 0)
-					{
-						Thread.Sleep(1000);
-						continue;
-					}
-					else if (TransactionCallbacks.Where(u => u.AnswerForPrepare == TransactionAnswer.Unprepared).Count() > 0)
-					{
-						Rollback();
-						break;
-					}
+                while (true)
+                {
+                    if (TransactionCallbacks.Where(k => k.AnswerForPrepare == TransactionAnswer.Unanswered).Count() > 0)
+                    {
+                        Thread.Sleep(1000);
+                        continue;
+                    }
+                    else if (TransactionCallbacks.Where(u => u.AnswerForPrepare == TransactionAnswer.Unprepared).Count() > 0)
+                    {
+                        Rollback();
+                        break;
+                    }
 
-					Commit();
-					break;
-				}
-			}
-		}
+                    Commit();
+                    break;
+                }
+            }
+        }
+        private ScadaDelta GetDeltaForSCADA(Delta d)
+        {
+            List<ResourceDescription> rescDesc = d.InsertOperations.Where(u => u.ContainsProperty(ModelCode.MEASUREMENT_DIRECTION)).ToList();
+            ScadaDelta scadaDelta = new ScadaDelta();
+
+            foreach (ResourceDescription rd in rescDesc)
+            {
+                ScadaElement element = new ScadaElement();
+                if (rd.ContainsProperty(ModelCode.MEASUREMENT_TYPE))
+                {
+                    string type = rd.GetProperty(ModelCode.MEASUREMENT_TYPE).ToString();
+                    if (type == "Analog")
+                    {
+                        element.Type = DeviceTypes.ANALOG;
+                    }
+                    else if (type == "Discrete")
+                    {
+                        element.Type = DeviceTypes.DIGITAL;
+                    }
+                }
+
+                element.ValidCommands = new List<CommandTypes>() { CommandTypes.CLOSE, CommandTypes.OPEN };
+                element.ValidStates = new List<OMSSCADACommon.States>() { OMSSCADACommon.States.CLOSED, OMSSCADACommon.States.OPENED };
+
+                if (rd.ContainsProperty(ModelCode.IDOBJ_MRID))
+                {
+                    //element.Name = rd.GetProperty(ModelCode.IDOBJ_NAME).ToString();
+                    element.Name = rd.GetProperty(ModelCode.IDOBJ_MRID).ToString();
+                }
+                scadaDelta.InsertOps.Add(element);
+            }
+            return scadaDelta;
+        }
 
         private void Commit()
         {
@@ -187,15 +246,132 @@ namespace TransactionManager
             ProxyTransactionSCADA.Rollback();
         }
 
-        #region IOMSClient Methods
+        #endregion
 
+        #region IOMSClient CIMAdapter Methods
+
+        // so, in order for network to be initialized, UpdateSystem must be called first
+
+        /// <summary>
+        /// Called by ModelLabs(CIMAdapter) when Static data changes
+        /// </summary>
+        /// <param name="d">Delta</param>
+        /// <returns></returns>
         public bool UpdateSystem(Delta d)
         {
             Console.WriteLine("Update System started." + d.Id);
             Enlist(d);
-          //  Prepare(d);
+            //  Prepare(d);
             return true;
         }
+
+        #endregion
+
+        #region  IOMSClient DispatcherApp Methods
+
+        public TMSAnswerToClient GetNetwork()
+        {
+            // ako se ne podignu svi servisi na DMSu, ovde pada
+            List<Element> listOfDMSElement = proxyToDispatcherDMS.GetAllElements();
+
+            List<ResourceDescription> resourceDescriptionFromNMS = new List<ResourceDescription>();
+            List<ResourceDescription> descMeas = new List<ResourceDescription>();
+
+            gdaTMS.GetExtentValues(ModelCode.BREAKER).ForEach(u => resourceDescriptionFromNMS.Add(u));
+            gdaTMS.GetExtentValues(ModelCode.CONNECTNODE).ForEach(u => resourceDescriptionFromNMS.Add(u));
+            gdaTMS.GetExtentValues(ModelCode.ENERGCONSUMER).ForEach(u => resourceDescriptionFromNMS.Add(u));
+            gdaTMS.GetExtentValues(ModelCode.ENERGSOURCE).ForEach(u => resourceDescriptionFromNMS.Add(u));
+            gdaTMS.GetExtentValues(ModelCode.ACLINESEGMENT).ForEach(u => resourceDescriptionFromNMS.Add(u));
+            gdaTMS.GetExtentValues(ModelCode.DISCRETE).ForEach(u => resourceDescriptionFromNMS.Add(u));
+
+            int GraphDeep = proxyToDispatcherDMS.GetNetworkDepth();
+
+            try
+            {
+                Command c = MappingEngineTransactionManager.Instance.MappCommand(TypeOfSCADACommand.ReadAll, "", 0, 0);
+                Response r = SCADAClientInstance.ExecuteCommand(c);
+                descMeas = MappingEngineTransactionManager.Instance.MappResult(r);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+
+            bool isImsAvailable = false;
+            do
+            {
+                try
+                {
+                    if (IMSClient.State == CommunicationState.Created)
+                    {
+                        IMSClient.Open();                      
+                    }
+
+                    isImsAvailable = IMSClient.Ping();
+                }
+                catch (Exception e)
+                {
+                    //Console.WriteLine(e);
+                    Console.WriteLine("GetNetwork() -> IMS is not available yet.");
+                    if (IMSClient.State == CommunicationState.Faulted)
+                        IMSClient = new IMSClient(new EndpointAddress("net.tcp://localhost:6090/IncidentManagementSystemService"));
+                }
+                Thread.Sleep(2000);
+            } while (!isImsAvailable);
+
+            var crews = IMSClient.GetCrews();
+            var incidentReports = IMSClient.GetAllReports();
+
+            TMSAnswerToClient answer = new TMSAnswerToClient(resourceDescriptionFromNMS, listOfDMSElement, GraphDeep, descMeas, crews, incidentReports);
+            return answer;
+        }
+
+        public void SendCommandToSCADA(TypeOfSCADACommand command, string mrid, CommandTypes commandtype, float value)
+        {
+            try
+            {
+                Command c = MappingEngineTransactionManager.Instance.MappCommand(command, mrid, commandtype, value);
+                Response r = SCADAClientInstance.ExecuteCommand(c);
+
+            }
+            catch (Exception e)
+            { }
+        }
+
+        public void SendCrew(IncidentReport report)
+        {
+            proxyToDispatcherDMS.SendCrewToDms(report);
+            return;
+        }
+
+        // currently unused
+        public bool IsNetworkAvailable()
+        {
+            bool retVal = false;
+            try
+            {
+                retVal = proxyToDispatcherDMS.IsNetworkAvailable();
+            }
+            catch (System.ServiceModel.EndpointNotFoundException e)
+            {
+                //Console.WriteLine("DMSDispatcher is not available yet.");
+                Console.WriteLine(e.Message);
+            }
+            catch (Exception e)
+            {
+
+            }
+
+            return retVal;
+        }
+
+        #endregion
+
+        // da li se ove metode ikada pozivaju?  Onaj console1 ne koristimo?
+
+        // SVUDA PRVO PROVERITI DA LI JE IMS DOSTUPAN? 
+        // tj naprviti metodu koja to radi
+        #region Unused? check this!!!
 
         public void GetNetworkWithOutParam(out List<Element> DMSElements, out List<ResourceDescription> resourceDescriptions, out int GraphDeep)
         {
@@ -227,91 +403,24 @@ namespace TransactionManager
             // return resourceDescriptionFromNMS;
         }
 
-        public TMSAnswerToClient GetNetwork()
-        {
-            List<Element> listOfDMSElement = proxyToDispatcherDMS.GetAllElements();
-            List<ResourceDescription> resourceDescriptionFromNMS = new List<ResourceDescription>();
-            List<ResourceDescription> descMeas = new List<ResourceDescription>();
-
-            gdaTMS.GetExtentValues(ModelCode.BREAKER).ForEach(u => resourceDescriptionFromNMS.Add(u));
-            gdaTMS.GetExtentValues(ModelCode.CONNECTNODE).ForEach(u => resourceDescriptionFromNMS.Add(u));
-            gdaTMS.GetExtentValues(ModelCode.ENERGCONSUMER).ForEach(u => resourceDescriptionFromNMS.Add(u));
-            gdaTMS.GetExtentValues(ModelCode.ENERGSOURCE).ForEach(u => resourceDescriptionFromNMS.Add(u));
-            gdaTMS.GetExtentValues(ModelCode.ACLINESEGMENT).ForEach(u => resourceDescriptionFromNMS.Add(u));
-            gdaTMS.GetExtentValues(ModelCode.DISCRETE).ForEach(u => resourceDescriptionFromNMS.Add(u));
-            int GraphDeep = proxyToDispatcherDMS.GetNetworkDepth();
-
-            try
-            {
-                Command c = MappingEngineTransactionManager.Instance.MappCommand(TypeOfSCADACommand.ReadAll, "", 0, 0);
-                Response r = SCADAClientInstance.ExecuteCommand(c);
-                descMeas = MappingEngineTransactionManager.Instance.MappResult(r);
-
-            }
-            catch (Exception e)
-            {
-
-            }
-
-            var crews = proxyToIMS.GetCrews();
-            var incidentReports = proxyToIMS.GetAllReports();
-
-            TMSAnswerToClient answer = new TMSAnswerToClient(resourceDescriptionFromNMS, listOfDMSElement, GraphDeep, descMeas, crews, incidentReports);
-            return answer;
-        }
-
         //public void AddReport(string mrID, DateTime time, string state)
         //{
-        //    proxyToIMS.AddReport(mrID, time, state);
+        //    IMSClient.AddReport(mrID, time, state);
         //}
 
-        public void AddReport(IncidentReport report)
+        public List<ElementStateReport> GetElementStateReportsForMrID(string mrID)
         {
-            proxyToIMS.AddReport(report);
+            return IMSClient.GetElementStateReportsForMrID(mrID);
         }
 
-        public List<IncidentReport> GetAllReports()
+        public List<ElementStateReport> GetElementStateReportsForSpecificTimeInterval(DateTime startTime, DateTime endTime)
         {
-            return proxyToIMS.GetAllReports();
+            return IMSClient.GetElementStateReportsForSpecificTimeInterval(startTime, endTime);
         }
 
-        public List<IncidentReport> GetReportsForMrID(string mrID)
+        public List<ElementStateReport> GetElementStateReportsForSpecificMrIDAndSpecificTimeInterval(string mrID, DateTime startTime, DateTime endTime)
         {
-            return proxyToIMS.GetReportsForMrID(mrID);
-        }
-
-        public List<IncidentReport> GetReportsForSpecificTimeInterval(DateTime startTime, DateTime endTime)
-        {
-            return proxyToIMS.GetReportsForSpecificTimeInterval(startTime, endTime);
-        }
-
-        public List<IncidentReport> GetReportsForSpecificMrIDAndSpecificTimeInterval(string mrID, DateTime startTime, DateTime endTime)
-        {
-            return proxyToIMS.GetReportsForSpecificMrIDAndSpecificTimeInterval(mrID, startTime, endTime);
-        }
-
-        public void SendCommandToSCADA(TypeOfSCADACommand command, string mrid, CommandTypes commandtype, float value)
-        {
-            try
-            {
-                Command c = MappingEngineTransactionManager.Instance.MappCommand(command, mrid, commandtype, value);
-                Response r = SCADAClientInstance.ExecuteCommand(c);
-
-            }
-            catch (Exception e)
-            { }
-        }
-
-    //public void SendCrew(string mrid)
-    //{
-    //    proxyToDispatcherDMS.SendCrewToDms(mrid);
-    //    return;
-    //}
-
-    public void SendCrew(IncidentReport report)
-        {
-            proxyToDispatcherDMS.SendCrewToDms(report);
-            return;
+            return IMSClient.GetElementStateReportsForSpecificMrIDAndSpecificTimeInterval(mrID, startTime, endTime);
         }
 
         public void SendCrew(string mrid)
@@ -319,69 +428,51 @@ namespace TransactionManager
             throw new NotImplementedException();
         }
 
+        public List<Crew> GetCrews()
+        {
+            return IMSClient.GetCrews();
+        }
+
+        //public void SendCrew(string mrid)
+        //{
+        //    proxyToDispatcherDMS.SendCrewToDms(mrid);
+        //    return;
+        //}
+
+        public bool AddCrew(Crew crew)
+        {
+            return IMSClient.AddCrew(crew);
+        }
+
+        public void AddReport(IncidentReport report)
+        {
+            IMSClient.AddReport(report);
+        }
+
+        public List<IncidentReport> GetAllReports()
+        {
+            return IMSClient.GetAllReports();
+        }
+
+        public List<IncidentReport> GetReportsForMrID(string mrID)
+        {
+            return IMSClient.GetReportsForMrID(mrID);
+        }
+
+        public List<IncidentReport> GetReportsForSpecificTimeInterval(DateTime startTime, DateTime endTime)
+        {
+            return IMSClient.GetReportsForSpecificTimeInterval(startTime, endTime);
+        }
+
+        public List<IncidentReport> GetReportsForSpecificMrIDAndSpecificTimeInterval(string mrID, DateTime startTime, DateTime endTime)
+        {
+            return IMSClient.GetReportsForSpecificMrIDAndSpecificTimeInterval(mrID, startTime, endTime);
+        }
+
         public List<ElementStateReport> GetAllElementStateReports()
         {
-            return proxyToIMS.GetAllElementStateReports();
+            return IMSClient.GetAllElementStateReports();
         }
-
-        public List<ElementStateReport> GetElementStateReportsForMrID(string mrID)
-        {
-            return proxyToIMS.GetElementStateReportsForMrID(mrID);
-        }
-
-        public List<ElementStateReport> GetElementStateReportsForSpecificTimeInterval(DateTime startTime, DateTime endTime)
-        {
-            return proxyToIMS.GetElementStateReportsForSpecificTimeInterval(startTime, endTime);
-        }
-
-        public List<ElementStateReport> GetElementStateReportsForSpecificMrIDAndSpecificTimeInterval(string mrID, DateTime startTime, DateTime endTime)
-        {
-            return proxyToIMS.GetElementStateReportsForSpecificMrIDAndSpecificTimeInterval(mrID, startTime, endTime);
-        }
-
-		public List<Crew> GetCrews()
-		{
-			return proxyToIMS.GetCrews();
-		}
-
-		public bool AddCrew(Crew crew)
-		{
-			return proxyToIMS.AddCrew(crew);
-		}
-
-		private ScadaDelta GetDeltaForSCADA(Delta d)
-		{
-			List<ResourceDescription> rescDesc = d.InsertOperations.Where(u => u.ContainsProperty(ModelCode.MEASUREMENT_DIRECTION)).ToList();
-			ScadaDelta scadaDelta = new ScadaDelta();
-
-			foreach (ResourceDescription rd in rescDesc)
-			{
-				ScadaElement element = new ScadaElement();
-				if (rd.ContainsProperty(ModelCode.MEASUREMENT_TYPE))
-				{
-					string type = rd.GetProperty(ModelCode.MEASUREMENT_TYPE).ToString();
-					if (type == "Analog")
-					{
-						element.Type = DeviceTypes.ANALOG;
-					}
-					else if (type == "Discrete")
-					{
-						element.Type = DeviceTypes.DIGITAL;
-					}
-				}
-				
-				element.ValidCommands = new List<CommandTypes>() { CommandTypes.CLOSE, CommandTypes.OPEN };
-				element.ValidStates = new List<OMSSCADACommon.States>() { OMSSCADACommon.States.CLOSED, OMSSCADACommon.States.OPENED };
-				
-				if (rd.ContainsProperty(ModelCode.IDOBJ_MRID))
-				{
-					//element.Name = rd.GetProperty(ModelCode.IDOBJ_NAME).ToString();
-                    element.Name = rd.GetProperty(ModelCode.IDOBJ_MRID).ToString();
-                }
-				scadaDelta.InsertOps.Add(element);
-			}
-			return scadaDelta;
-		}
-		#endregion
-	}
+        #endregion 
+    }
 }

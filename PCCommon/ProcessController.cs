@@ -15,7 +15,7 @@ namespace PCCommon
         // unique name  
         public string Name { get; set; }
 
-        public int AcqPeriod { get; set; }
+        //public int AcqPeriod { get; set; }
 
         public string HostName { get; set; }
 

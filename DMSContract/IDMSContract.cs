@@ -12,6 +12,8 @@ namespace DMSContract
     [ServiceContract]
     public interface IDMSContract
     {
+        [OperationContract]
+        bool IsNetworkAvailable();
 
         [OperationContract]
         List<Source> GetAllSource();

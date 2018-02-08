@@ -45,9 +45,11 @@ namespace FTN.Services.NetworkModelService
             svc.AddServiceEndpoint(typeof(ITransaction),
                                     new NetTcpBinding(),
                                     new Uri("net.tcp://localhost:8018/NetworkModelTransactionService"));
-
-            hosts.Add(new ServiceHost(typeof(GenericDataAccess)));
             hosts.Add(svc);
+
+
+            // Service Parameters for GenericDataAccess are defined in App.config
+            hosts.Add(new ServiceHost(typeof(GenericDataAccess)));          
         }
 
         private void StartHosts()

@@ -10,15 +10,15 @@ namespace SCADA.RealtimeDatabase.Model
     {
         public string Name { get; set; }
 
-        // Associated ProcessController
+        /// <summary>
+        /// Associated ProcessController Name
+        /// </summary>
         public string ProcContrName { get; set; }
 
-        // Relative address in configuration file
-        // mapping to concrete address is done in RTU
+        /// <summary>
+        /// Starts from 0. It is an offset in array of Process Variables of same type in specified Process Controller
+        /// </summary>
         public ushort RelativeAddress { get; set; }
-
-        // Address in associated Process Controller memory.
-        // public ushort ProcContrAddress { get; set; }
 
         public VariableTypes Type { get; set; }
 

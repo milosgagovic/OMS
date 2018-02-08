@@ -1,5 +1,6 @@
 ﻿using SCADA.RealtimeDatabase.Model;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,10 +10,8 @@ namespace SCADA.RealtimeDatabase
 {
     public class Database
     {
-        public object SyncObject = null;
-
-        public Dictionary<string, ProcessVariable> ProcessVariablesName = null;
-        public Dictionary<string, RTU> RTUs = null;
+        public ConcurrentDictionary<string, ProcessVariable> ProcessVariablesName = null;
+        public ConcurrentDictionary<string, RTU> RTUs = null;
 
         private static Database instance;
 
@@ -20,10 +19,8 @@ namespace SCADA.RealtimeDatabase
         {
             Console.WriteLine("Instancing Database");
 
-            this.SyncObject = new object();
-
-            this.ProcessVariablesName = new Dictionary<string, ProcessVariable>();
-            this.RTUs = new Dictionary<string, RTU>();
+            this.ProcessVariablesName = new ConcurrentDictionary<string, ProcessVariable>();
+            this.RTUs = new ConcurrentDictionary<string, RTU>();
         }
 
         public static Database Instance
@@ -37,6 +34,6 @@ namespace SCADA.RealtimeDatabase
                 return instance;
             }
         }
-        
+
     }
 }

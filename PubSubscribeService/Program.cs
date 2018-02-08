@@ -16,17 +16,17 @@ namespace PubSubscribeService
 
         static void Main(string[] args)
         {
-
+            Console.Title = "Publisher-Subscribe";
             try
             {
                 HostPublishService();
                 HostSubscribeService();
-
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.ToString());
             }
+
             Console.WriteLine(" -----------------STARTED-----------------\n\n\n\n");
 
             Console.WriteLine(" Press any key to STOP services");

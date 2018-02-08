@@ -52,6 +52,7 @@
     <Compile Include="CrewType.cs" />
     <Compile Include="ElementStateReport.cs" />
     <Compile Include="IIMSContract.cs" />
+    <Compile Include="IMSClient.cs" />
     <Compile Include="IncidentReport.cs" />
     <Compile Include="IncidentState.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

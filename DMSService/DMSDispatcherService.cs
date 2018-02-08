@@ -15,8 +15,58 @@ namespace DMSService
 {
     public class DMSDispatcherService : IDMSContract
     {
-        private static ChannelFactory<IIMSContract> factoryToIMS = new ChannelFactory<IIMSContract>(new NetTcpBinding(), new EndpointAddress("net.tcp://localhost:6090/IncidentManagementSystemService"));
-        private static IIMSContract proxyToIMS = factoryToIMS.CreateChannel();
+        //private static ChannelFactory<IIMSContract> factoryToIMS = new ChannelFactory<IIMSContract>(new NetTcpBinding(), new EndpointAddress("net.tcp://localhost:6090/IncidentManagementSystemService"));
+        //private static IIMSContract IMSClient = factoryToIMS.CreateChannel();
+
+        private IMSClient imsClient;
+        private IMSClient IMSClient
+        {
+            get
+            {
+                if (imsClient == null)
+                {
+                    imsClient = new IMSClient(new EndpointAddress("net.tcp://localhost:6090/IncidentManagementSystemService"));
+                }
+                return imsClient;
+            }
+            set { imsClient = value; }
+        }
+
+        public DMSDispatcherService()
+        {
+            Console.WriteLine("Dispatcher instantiated");
+        }
+
+        public List<Element> GetAllElements()
+        {
+            List<Element> retVal = new List<Element>();
+            try
+            {
+                foreach (Element e in DMSService.Instance.Tree.Data.Values)
+                {
+                    retVal.Add(e);
+                }
+                return retVal;
+            }
+            catch (Exception)
+            {
+
+                return new List<Element>();
+            }
+        }
+
+        public int GetNetworkDepth()
+        {
+            try
+            {
+                return DMSService.Instance.Tree.Links.Max(x => x.Value.Depth) + 1;
+
+            }
+            catch (Exception)
+            {
+                return 1;
+            }
+        }
 
         public List<ACLine> GetAllACLines()
         {
@@ -37,7 +87,7 @@ namespace DMSService
 
                 return new List<ACLine>();
             }
-          
+
         }
 
         public List<Consumer> GetAllConsumers()
@@ -59,7 +109,7 @@ namespace DMSService
 
                 return new List<Consumer>();
             }
-          
+
         }
 
         public List<Node> GetAllNodes()
@@ -81,7 +131,7 @@ namespace DMSService
 
                 return new List<Node>();
             }
-          
+
         }
 
         public List<Source> GetAllSource()
@@ -103,7 +153,7 @@ namespace DMSService
 
                 return new List<Source>();
             }
-        
+
         }
 
         public List<Switch> GetAllSwitches()
@@ -125,20 +175,7 @@ namespace DMSService
 
                 return new List<Switch>();
             }
-          
-        }
 
-        public int GetNetworkDepth()
-        {
-            try
-            {
-                return DMSService.Instance.Tree.Links.Max(x => x.Value.Depth) + 1;
-
-            }
-            catch (Exception)
-            {
-                return 1;
-            }
         }
 
         public Source GetTreeRoot()
@@ -166,27 +203,8 @@ namespace DMSService
             catch (Exception)
             {
 
-                return new Dictionary<long, Element>();      
+                return new Dictionary<long, Element>();
             }
-        }
-
-        public List<Element> GetAllElements()
-        {
-            List<Element> retVal = new List<Element>();
-            try
-            {
-                foreach (Element e in DMSService.Instance.Tree.Data.Values)
-                {
-                    retVal.Add(e);
-                }
-                return retVal;
-            }
-            catch (Exception)
-            {
-
-                return new List<Element>();
-            }
-           
         }
 
         public void SendCrewToDms(IncidentReport report)
@@ -200,14 +218,36 @@ namespace DMSService
 
         private void ProcessCrew(IncidentReport report)
         {
-            report.Id = proxyToIMS.GetReport(report.Time).Id;
+            bool isImsAvailable = false;
+            do
+            {
+                try
+                {
+                    if (IMSClient.State == CommunicationState.Created)
+                    {
+                        IMSClient.Open();
+                    }
 
-            if(report != null)
+                    isImsAvailable = IMSClient.Ping();
+                }
+                catch (Exception e)
+                {
+                    //Console.WriteLine(e);
+                    Console.WriteLine("ProcessCrew() -> IMS is not available yet.");
+                    if (IMSClient.State == CommunicationState.Faulted)
+                        IMSClient = new IMSClient(new EndpointAddress("net.tcp://localhost:6090/IncidentManagementSystemService"));
+                }
+                Thread.Sleep(2000);
+            } while (!isImsAvailable);
+
+            report.Id = IMSClient.GetReport(report.Time).Id;
+
+            if (report != null)
             {
                 var rnd = new Random(DateTime.Now.Second);
                 int repairtime = rnd.Next(5, 180);
 
-                Thread.Sleep(repairtime*100);
+                Thread.Sleep(repairtime * 100);
 
                 Switch sw = null;
                 foreach (var item in DMSService.Instance.Tree.Data.Values)
@@ -231,13 +271,18 @@ namespace DMSService
                 Array values1 = Enum.GetValues(typeof(IncidentState));
                 report.IncidentState = (IncidentState)values1.GetValue(rand.Next(2, values.Length - 1));
 
-                proxyToIMS.UpdateReport(report);
+                IMSClient.UpdateReport(report);
 
                 Publisher publisher = new Publisher();
                 publisher.PublishIncident(report);
-                
+
                 //publisher.PublishCrew(new SCADAUpdateModel(sw.ElementGID, true));
             }
+        }
+
+        public bool IsNetworkAvailable()
+        {
+            return DMSService.isNetworkInitialized;
         }
     }
 }

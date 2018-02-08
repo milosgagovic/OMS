@@ -14,6 +14,8 @@ namespace IMSContract
 	{
         //[OperationContract]
         //void AddReport(string mrID, DateTime time, string state);
+        [OperationContract]
+        bool Ping(); 
 
         [OperationContract]
         void AddReport(IncidentReport report);

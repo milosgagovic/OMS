@@ -35,8 +35,7 @@ namespace FTN.Services.NetworkModelService
             }
         }
 
-		
-
+	
 		public UpdateResult ApplyUpdate(Delta delta)
         {
 			UpdateResult res  =  NewNetworkModel.ApplyDelta(delta);

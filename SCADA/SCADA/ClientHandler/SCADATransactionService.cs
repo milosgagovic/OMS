@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using OMSSCADACommon;
 using TransactionManagerContract;
 using SCADA.RealtimeDatabase;
+using SCADA.ConfigurationParser;
 
 namespace SCADA.ClientHandler
 {
@@ -14,7 +15,9 @@ namespace SCADA.ClientHandler
     //[ServiceBehavior(InstanceContextMode = InstanceContextMode.Single, ConcurrencyMode = ConcurrencyMode.Reentrant)]
     public class SCADATransactionService : ITransactionSCADA
     {
-        private static bool freeSpaceInControllers;
+        private static string modifiedConfigFile = "NewScadaModel.xml";
+        private static string currentConfigFile = "ScadaModel.xml";
+
         private DBContext dbContext = null;
 
         public SCADATransactionService()
@@ -32,25 +35,16 @@ namespace SCADA.ClientHandler
             ITransactionCallback callback = OperationContext.Current.GetCallbackChannel<ITransactionCallback>();
 
             // at this point, we will only check if there is a free space for DIGITALS
-            var rtus = dbContext.GettAllRTUs().Values;
-
+ 
             bool isSuccessfull = false;
 
-            foreach (var rtu in rtus)
-            {
-                // encountered rtu with free space
-                if (rtu.FreeSpaceForDigitals)
-                {
-                    isSuccessfull = true;
-                    break;
-                }
-            }
+            var availableRtus = dbContext.GettAllRTUs().Values.Where(r => r.FreeSpaceForDigitals == true).ToList();
+            if (availableRtus.Count != 0)
+                isSuccessfull = false;
 
             try
             {
-
                 callback.CallbackEnlist(isSuccessfull);
-
             }
             catch (Exception ex)
             {
@@ -71,6 +65,11 @@ namespace SCADA.ClientHandler
             {
                 try
                 {
+                    ScadaModelParser parser = new ScadaModelParser();
+
+                    // novu konfiguraciju cuvamo u fajlu
+                    parser.SerializeScadaModel(modifiedConfigFile);
+
                     callback.CallbackPrepare(true);
                 }
                 catch (Exception ex)
@@ -85,6 +84,10 @@ namespace SCADA.ClientHandler
         public void Commit()
         {
             ITransactionCallback callback = OperationContext.Current.GetCallbackChannel<ITransactionCallback>();
+
+            ScadaModelParser parser = new ScadaModelParser();
+            parser.SwapConfigs(currentConfigFile, modifiedConfigFile);
+
             callback.CallbackCommit("Commited on SCADA");
             Console.WriteLine("Pozvan je Commit na SCADA");
         }
@@ -94,6 +97,11 @@ namespace SCADA.ClientHandler
         public void Rollback()
         {
             ITransactionCallback callback = OperationContext.Current.GetCallbackChannel<ITransactionCallback>();
+
+            ScadaModelParser parser = new ScadaModelParser();
+            parser.SwapConfigs(modifiedConfigFile, currentConfigFile);
+            parser.DeserializeScadaModel();
+
             callback.CallbackRollback("Rollback on scada");
             Console.WriteLine("Pozvan je Rollback na SCADA");
         }

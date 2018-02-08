@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SCADA.SecondaryDataProcessing
+namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
 {
     public class CommandValidator
     {

@@ -53,7 +53,7 @@
     </Digital>
     <Digital>
       <Name>MEAS_D_2</Name>
-      <State>CLOSED</State>
+      <State>OPENED</State>
       <Command>CLOSE</Command>
       <ProcContrName>RTU-1</ProcContrName>
       <RelativeAddress>1</RelativeAddress>
@@ -73,22 +73,6 @@
       <Command>CLOSE</Command>
       <ProcContrName>RTU-1</ProcContrName>
       <RelativeAddress>2</RelativeAddress>
-      <Class>SWITCH</Class>
-      <ValidCommands>
-        <Command>CLOSE</Command>
-        <Command>OPEN</Command>
-      </ValidCommands>
-      <ValidStates>
-        <State>CLOSED</State>
-        <State>OPENED</State>
-      </ValidStates>
-    </Digital>
-    <Digital>
-      <Name>MEAS_D_4</Name>
-      <State>CLOSED</State>
-      <Command>CLOSE</Command>
-      <ProcContrName>RTU-1</ProcContrName>
-      <RelativeAddress>3</RelativeAddress>
       <Class>SWITCH</Class>
       <ValidCommands>
         <Command>CLOSE</Command>

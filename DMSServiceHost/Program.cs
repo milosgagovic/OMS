@@ -13,6 +13,8 @@ namespace DMSServiceHost
     {
         static void Main(string[] args)
         {
+            Console.Title="Distribution Management System";
+
             try
             {
                 string message = "Starting Distribution Management System Service...";
