@@ -15,24 +15,24 @@ using TransactionManagerContract;
 namespace TransactionManager
 {
     public class TransactionManager : IOMSClient
-    {   
+    {
         // properties for providing communication infrastructure for 2PC protocol
         List<ITransaction> transactionProxys;
         List<TransactionCallback> transactionCallbacks;
         ITransaction proxyTransactionNMS;
         ITransaction proxyTransactionDMS;
-        ITransactionSCADA proxyTransactionSCADA;       
+        ITransactionSCADA proxyTransactionSCADA;
         TransactionCallback callBackTransactionNMS;
         TransactionCallback callBackTransactionDMS;
         TransactionCallback callBackTransactionSCADA;
 
-        ChannelFactory<IIMSContract> factoryToIMS;
-        IIMSContract proxyToIMS;
+        //ChannelFactory<IIMSContract> factoryToIMS;
+        //IIMSContract IMSClient;
         IDMSContract proxyToDispatcherDMS;
 
         ModelGDATMS gdaTMS;
         SCADAClient scadaClient;
-           
+
         public List<ITransaction> TransactionProxys { get => transactionProxys; set => transactionProxys = value; }
         public List<TransactionCallback> TransactionCallbacks { get => transactionCallbacks; set => transactionCallbacks = value; }
         public ITransaction ProxyTransactionNMS { get => proxyTransactionNMS; set => proxyTransactionNMS = value; }
@@ -41,6 +41,20 @@ namespace TransactionManager
         public TransactionCallback CallBackTransactionNMS { get => callBackTransactionNMS; set => callBackTransactionNMS = value; }
         public TransactionCallback CallBackTransactionDMS { get => callBackTransactionDMS; set => callBackTransactionDMS = value; }
         public TransactionCallback CallBackTransactionSCADA { get => callBackTransactionSCADA; set => callBackTransactionSCADA = value; }
+
+        private IMSClient imsClient;
+        private IMSClient IMSClient
+        {
+            get
+            {
+                if (imsClient == null)
+                {
+                    imsClient = new IMSClient(new EndpointAddress("net.tcp://localhost:6090/IncidentManagementSystemService"));
+                }
+                return imsClient;
+            }
+            set { imsClient = value; }
+        }
 
         private SCADAClient SCADAClientInstance
         {
@@ -60,10 +74,8 @@ namespace TransactionManager
             TransactionCallbacks = new List<TransactionCallback>();
 
             InitializeChanels();
-
-            // gadja -> net.tcp://localhost:10000/NetworkModelService/GDA/
+          
             gdaTMS = new ModelGDATMS();
-        
             scadaClient = new SCADAClient();
         }
 
@@ -95,14 +107,17 @@ namespace TransactionManager
                                                             new EndpointAddress("net.tcp://localhost:8078/SCADATransactionService"));
             ProxyTransactionSCADA = factoryTransactionSCADA.CreateChannel();
 
+            // client channel for SCADA 
+
 
             // client channel for DMSDispatcherService
             ChannelFactory<IDMSContract> factoryDispatcherDMS = new ChannelFactory<IDMSContract>(new NetTcpBinding(), new EndpointAddress("net.tcp://localhost:8029/DMSDispatcherService"));
             proxyToDispatcherDMS = factoryDispatcherDMS.CreateChannel();
 
 
-            factoryToIMS = new ChannelFactory<IIMSContract>(new NetTcpBinding(), new EndpointAddress("net.tcp://localhost:6090/IncidentManagementSystemService"));
-            proxyToIMS = factoryToIMS.CreateChannel();
+            // client channel for IMS
+           // factoryToIMS = new ChannelFactory<IIMSContract>(new NetTcpBinding(), new EndpointAddress("net.tcp://localhost:6090/IncidentManagementSystemService"));
+            //IMSClient = factoryToIMS.CreateChannel();
         }
 
         #region 2PC methods
@@ -256,6 +271,7 @@ namespace TransactionManager
 
         public TMSAnswerToClient GetNetwork()
         {
+            // ako se ne podignu svi servisi na DMSu, ovde pada
             List<Element> listOfDMSElement = proxyToDispatcherDMS.GetAllElements();
 
             List<ResourceDescription> resourceDescriptionFromNMS = new List<ResourceDescription>();
@@ -274,35 +290,37 @@ namespace TransactionManager
             {
                 Command c = MappingEngineTransactionManager.Instance.MappCommand(TypeOfSCADACommand.ReadAll, "", 0, 0);
                 Response r = SCADAClientInstance.ExecuteCommand(c);
-                descMeas = MappingEngineTransactionManager.Instance.MappResult(r);              
+                descMeas = MappingEngineTransactionManager.Instance.MappResult(r);
             }
             catch (Exception e)
             {
-
+                Console.WriteLine(e.Message);
             }
 
-
-            // nisam sigurna da ce ovo raditi, buduci da se ims dize kako hoce, pa nisam mogla da testiram   
-
             bool isImsAvailable = false;
-            while (!isImsAvailable)
+            do
             {
-
                 try
                 {
-                    isImsAvailable = proxyToIMS.Ping();
+                    if (IMSClient.State == CommunicationState.Created)
+                    {
+                        IMSClient.Open();                      
+                    }
+
+                    isImsAvailable = IMSClient.Ping();
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e.Message);
+                    //Console.WriteLine(e);
+                    Console.WriteLine("GetNetwork() -> IMS is not available yet.");
+                    if (IMSClient.State == CommunicationState.Faulted)
+                        IMSClient = new IMSClient(new EndpointAddress("net.tcp://localhost:6090/IncidentManagementSystemService"));
                 }
+                Thread.Sleep(2000);
+            } while (!isImsAvailable);
 
-                Thread.Sleep(200);
-            }
-
-
-            var crews = proxyToIMS.GetCrews();
-            var incidentReports = proxyToIMS.GetAllReports();
+            var crews = IMSClient.GetCrews();
+            var incidentReports = IMSClient.GetAllReports();
 
             TMSAnswerToClient answer = new TMSAnswerToClient(resourceDescriptionFromNMS, listOfDMSElement, GraphDeep, descMeas, crews, incidentReports);
             return answer;
@@ -325,7 +343,7 @@ namespace TransactionManager
             proxyToDispatcherDMS.SendCrewToDms(report);
             return;
         }
-        
+
         // currently unused
         public bool IsNetworkAvailable()
         {
@@ -350,6 +368,9 @@ namespace TransactionManager
         #endregion
 
         // da li se ove metode ikada pozivaju?  Onaj console1 ne koristimo?
+
+        // SVUDA PRVO PROVERITI DA LI JE IMS DOSTUPAN? 
+        // tj naprviti metodu koja to radi
         #region Unused? check this!!!
 
         public void GetNetworkWithOutParam(out List<Element> DMSElements, out List<ResourceDescription> resourceDescriptions, out int GraphDeep)
@@ -384,22 +405,22 @@ namespace TransactionManager
 
         //public void AddReport(string mrID, DateTime time, string state)
         //{
-        //    proxyToIMS.AddReport(mrID, time, state);
+        //    IMSClient.AddReport(mrID, time, state);
         //}
 
         public List<ElementStateReport> GetElementStateReportsForMrID(string mrID)
         {
-            return proxyToIMS.GetElementStateReportsForMrID(mrID);
+            return IMSClient.GetElementStateReportsForMrID(mrID);
         }
 
         public List<ElementStateReport> GetElementStateReportsForSpecificTimeInterval(DateTime startTime, DateTime endTime)
         {
-            return proxyToIMS.GetElementStateReportsForSpecificTimeInterval(startTime, endTime);
+            return IMSClient.GetElementStateReportsForSpecificTimeInterval(startTime, endTime);
         }
 
         public List<ElementStateReport> GetElementStateReportsForSpecificMrIDAndSpecificTimeInterval(string mrID, DateTime startTime, DateTime endTime)
         {
-            return proxyToIMS.GetElementStateReportsForSpecificMrIDAndSpecificTimeInterval(mrID, startTime, endTime);
+            return IMSClient.GetElementStateReportsForSpecificMrIDAndSpecificTimeInterval(mrID, startTime, endTime);
         }
 
         public void SendCrew(string mrid)
@@ -409,7 +430,7 @@ namespace TransactionManager
 
         public List<Crew> GetCrews()
         {
-            return proxyToIMS.GetCrews();
+            return IMSClient.GetCrews();
         }
 
         //public void SendCrew(string mrid)
@@ -420,37 +441,37 @@ namespace TransactionManager
 
         public bool AddCrew(Crew crew)
         {
-            return proxyToIMS.AddCrew(crew);
+            return IMSClient.AddCrew(crew);
         }
 
         public void AddReport(IncidentReport report)
         {
-            proxyToIMS.AddReport(report);
+            IMSClient.AddReport(report);
         }
 
         public List<IncidentReport> GetAllReports()
         {
-            return proxyToIMS.GetAllReports();
+            return IMSClient.GetAllReports();
         }
 
         public List<IncidentReport> GetReportsForMrID(string mrID)
         {
-            return proxyToIMS.GetReportsForMrID(mrID);
+            return IMSClient.GetReportsForMrID(mrID);
         }
 
         public List<IncidentReport> GetReportsForSpecificTimeInterval(DateTime startTime, DateTime endTime)
         {
-            return proxyToIMS.GetReportsForSpecificTimeInterval(startTime, endTime);
+            return IMSClient.GetReportsForSpecificTimeInterval(startTime, endTime);
         }
 
         public List<IncidentReport> GetReportsForSpecificMrIDAndSpecificTimeInterval(string mrID, DateTime startTime, DateTime endTime)
         {
-            return proxyToIMS.GetReportsForSpecificMrIDAndSpecificTimeInterval(mrID, startTime, endTime);
+            return IMSClient.GetReportsForSpecificMrIDAndSpecificTimeInterval(mrID, startTime, endTime);
         }
 
         public List<ElementStateReport> GetAllElementStateReports()
         {
-            return proxyToIMS.GetAllElementStateReports();
+            return IMSClient.GetAllElementStateReports();
         }
         #endregion 
     }

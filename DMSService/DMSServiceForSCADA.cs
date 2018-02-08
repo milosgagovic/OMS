@@ -16,37 +16,51 @@ namespace DMSService
 {
     public class DMSServiceForSCADA : IDMSToSCADAContract
     {
-		private static ChannelFactory<IIMSContract> factoryToIMS = new ChannelFactory<IIMSContract>(new NetTcpBinding(), new EndpointAddress("net.tcp://localhost:6090/IncidentManagementSystemService"));
-		private static IIMSContract proxyToIMS = factoryToIMS.CreateChannel();
-        
+        private IMSClient imsClient;
+        private IMSClient IMSClient
+        {
+            get {
+                if (imsClient == null)
+                {
+                    imsClient= new IMSClient(new EndpointAddress("net.tcp://localhost:6090/IncidentManagementSystemService"));
+                }
+                return imsClient;
+            }
+            set { imsClient = value; }
+        }
+
+
         public void ChangeOnSCADA(string mrID, OMSSCADACommon.States state)
         {
-
-            // nisam sigurna da ce ovo raditi, buduci da se ims dize kako hoce, pa nisam mogla da testiram   
-
             bool isImsAvailable = false;
-            while (!isImsAvailable)
+            do
             {
-
                 try
                 {
-                    isImsAvailable = proxyToIMS.Ping();
+                    if (IMSClient.State == CommunicationState.Created)
+                    {
+                        IMSClient.Open();
+                    }
+
+                    isImsAvailable = IMSClient.Ping();
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e.Message);
+                    //Console.WriteLine(e);
+                    Console.WriteLine("ChangeOnScada() -> IMS is not available yet.");
+                    if (IMSClient.State == CommunicationState.Faulted)
+                        IMSClient = new IMSClient(new EndpointAddress("net.tcp://localhost:6090/IncidentManagementSystemService"));
                 }
-
-                Thread.Sleep(200);
-            }
+                Thread.Sleep(2000);
+            } while (!isImsAvailable);
 
 
             ModelGdaDMS gda = new ModelGdaDMS();
             List<ResourceDescription> rdl = gda.GetExtentValuesExtended(ModelCode.DISCRETE);
             ResourceDescription rd = rdl.Where(r => r.GetProperty(ModelCode.IDOBJ_MRID).AsString() == mrID).FirstOrDefault();
-           
+
             long res = rd.GetProperty(ModelCode.MEASUREMENT_PSR).AsLong();
-            
+
             List<SCADAUpdateModel> networkChange = new List<SCADAUpdateModel>();
 
             Element el;
@@ -66,7 +80,7 @@ namespace DMSService
 
             if (state == OMSSCADACommon.States.OPENED)
             {
-                proxyToIMS.AddReport(incident);
+                IMSClient.AddReport(incident);
                 isIncident = true;
 
                 sw.Marker = false;
@@ -96,7 +110,7 @@ namespace DMSService
             }
 
             //upisati promijenu stanja elementa
-            proxyToIMS.AddElementStateReport(elementStateReport);
+            IMSClient.AddElementStateReport(elementStateReport);
 
             Source s = (Source)DMSService.Instance.Tree.Data[DMSService.Instance.Tree.Roots[0]];
             networkChange.Add(new SCADAUpdateModel(s.ElementGID, true));

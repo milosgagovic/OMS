@@ -79,7 +79,6 @@
   <ItemGroup>
     <Compile Include="ClientHandler\DMSClient.cs" />
     <Compile Include="ClientHandler\Invoker.cs" />
-    <Compile Include="ClientHandler\Responser.cs" />
     <Compile Include="ClientHandler\SCADAService.cs" />
     <Compile Include="ClientHandler\SCADATransactionService.cs" />
     <Compile Include="CommunicationAndControlling\SecondaryDataProcessing\CommAcqEngine.cs" />

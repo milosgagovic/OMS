@@ -14,7 +14,7 @@ namespace ConsoleApp1
 		static void Main(string[] args)
 		{
 			//ChannelFactory<IIMSContract> factoryToIMS = new ChannelFactory<IIMSContract>(new NetTcpBinding(), new EndpointAddress("net.tcp://localhost:6090/IncidentManagementSystemService"));
-			//IIMSContract proxyToIMS = factoryToIMS.CreateChannel();
+			//IIMSContract IMSClient = factoryToIMS.CreateChannel();
 
 			ChannelFactory<IOMSClient>  factoryToTMS = new ChannelFactory<IOMSClient>(new NetTcpBinding(), new EndpointAddress("net.tcp://localhost:6080/TransactionManagerService"));
 			IOMSClient proxyToTransactionManager = factoryToTMS.CreateChannel();
@@ -34,7 +34,7 @@ namespace ConsoleApp1
 				{
 					printMeni2();
 					string odg2 = Console.ReadLine();
-					List<ElementStateReport> reports = new List<ElementStateReport>(); // = proxyToIMS.GetAllReports();
+					List<ElementStateReport> reports = new List<ElementStateReport>(); // = IMSClient.GetAllReports();
 					if (odg2 == "1")
 					{
 						reports = proxyToTransactionManager.GetAllElementStateReports();
@@ -80,7 +80,7 @@ namespace ConsoleApp1
 							Console.WriteLine("Crew: " + cr.CrewName);
 						}
 					}
-					// reports = proxyToIMS.GetAllReports();
+					// reports = IMSClient.GetAllReports();
 					foreach (ElementStateReport ir in reports)
 					{
 						Console.WriteLine("MrID: " + ir.MrID + ", State:" + ir.State + ", DateTime: " + ir.Time.ToUniversalTime());

@@ -10,29 +10,19 @@ using System.Threading.Tasks;
 
 namespace SCADAContracts
 {
-    public class SCADAProxy : DuplexChannelFactory<ISCADAContract>, ISCADAContract, IDisposable
+    public class SCADAProxy : ChannelFactory<ISCADAContract>, ISCADAContract, IDisposable
     {
         private ISCADAContract factory;
-        private ISCADAContract_Callback callback;
 
-        public SCADAProxy(NetTcpBinding binding, EndpointAddress epAddress, ISCADAContract_Callback callbackMethods) : base(callbackMethods, binding, epAddress)
+        public SCADAProxy(NetTcpBinding binding, string address) : base(binding, address)
         {
-            this.callback = callbackMethods;
             factory = this.CreateChannel();
         }
 
-        public void CheckIn()
+        public SCADAProxy(NetTcpBinding binding, EndpointAddress address) : base(binding, address)
         {
-            try
-            {
-                factory.CheckIn();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-            }
+            factory = this.CreateChannel();
         }
-
         public Response ExecuteCommand(Command command)
         {
             try

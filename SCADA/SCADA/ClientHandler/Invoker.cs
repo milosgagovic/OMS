@@ -15,11 +15,6 @@ namespace SCADA.ClientHandler
     [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single, ConcurrencyMode = ConcurrencyMode.Reentrant)]
     public class Invoker : ISCADAContract
     {
-        public void CheckIn()
-        {
-            Responser.Contexts.Add(OperationContext.Current);
-        }
-
         public Response ExecuteCommand(Command command)
         {
             command.Receiver = new CommunicationAndControlling.SecondaryDataProcessing.CommAcqEngine();

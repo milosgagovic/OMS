@@ -15,8 +15,22 @@ namespace DMSService
 {
     public class DMSDispatcherService : IDMSContract
     {
-        private static ChannelFactory<IIMSContract> factoryToIMS = new ChannelFactory<IIMSContract>(new NetTcpBinding(), new EndpointAddress("net.tcp://localhost:6090/IncidentManagementSystemService"));
-        private static IIMSContract proxyToIMS = factoryToIMS.CreateChannel();
+        //private static ChannelFactory<IIMSContract> factoryToIMS = new ChannelFactory<IIMSContract>(new NetTcpBinding(), new EndpointAddress("net.tcp://localhost:6090/IncidentManagementSystemService"));
+        //private static IIMSContract IMSClient = factoryToIMS.CreateChannel();
+
+        private IMSClient imsClient;
+        private IMSClient IMSClient
+        {
+            get
+            {
+                if (imsClient == null)
+                {
+                    imsClient = new IMSClient(new EndpointAddress("net.tcp://localhost:6090/IncidentManagementSystemService"));
+                }
+                return imsClient;
+            }
+            set { imsClient = value; }
+        }
 
         public DMSDispatcherService()
         {
@@ -204,24 +218,29 @@ namespace DMSService
 
         private void ProcessCrew(IncidentReport report)
         {
-            // mozda ovo ovde ni nema smisla?
             bool isImsAvailable = false;
-            while (!isImsAvailable)
+            do
             {
-
                 try
                 {
-                    isImsAvailable = proxyToIMS.Ping();
+                    if (IMSClient.State == CommunicationState.Created)
+                    {
+                        IMSClient.Open();
+                    }
+
+                    isImsAvailable = IMSClient.Ping();
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e.Message);
+                    //Console.WriteLine(e);
+                    Console.WriteLine("ProcessCrew() -> IMS is not available yet.");
+                    if (IMSClient.State == CommunicationState.Faulted)
+                        IMSClient = new IMSClient(new EndpointAddress("net.tcp://localhost:6090/IncidentManagementSystemService"));
                 }
+                Thread.Sleep(2000);
+            } while (!isImsAvailable);
 
-                Thread.Sleep(200);
-            }
-
-            report.Id = proxyToIMS.GetReport(report.Time).Id;
+            report.Id = IMSClient.GetReport(report.Time).Id;
 
             if (report != null)
             {
@@ -252,7 +271,7 @@ namespace DMSService
                 Array values1 = Enum.GetValues(typeof(IncidentState));
                 report.IncidentState = (IncidentState)values1.GetValue(rand.Next(2, values.Length - 1));
 
-                proxyToIMS.UpdateReport(report);
+                IMSClient.UpdateReport(report);
 
                 Publisher publisher = new Publisher();
                 publisher.PublishIncident(report);

@@ -202,7 +202,6 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
 
                                                     DMSClient dMSClient = new DMSClient();
                                                     dMSClient.ChangeOnSCADA(target.Name, target.State);
-
                                                 }
 
                                             }
