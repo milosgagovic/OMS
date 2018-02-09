@@ -13,15 +13,14 @@ namespace ModbusTCPDriver
     // izlazi -> komandovanje
     public enum FunctionCodes : byte
     {
+        // citanje nad svim registrima
         ReadCoils = 1,          // digital output
         ReadDiscreteInput,      // digital input
         ReadHoldingRegisters,   // analog output
         ReadInputRegisters,     // analog input
 
+        // pisanje samo nad izlazima
         WriteSingleCoil,        // digital output
-        WriteSingleRegister,    // analog output
-
-        // WriteMultipleRegister = 16, // add support later
-        Undefined // ? maybe
+        WriteSingleRegister    // analog output
     }
 }

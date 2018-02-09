@@ -45,7 +45,6 @@
     <Compile Include="FunctionCodes.cs" />
     <Compile Include="ModbusApplicationHeader.cs" />
     <Compile Include="ModbusHandler.cs" />
-    <Compile Include="ModbusRequestMessage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Request\ReadRequest.cs" />
     <Compile Include="Response\ReadResponse.cs" />

@@ -11,12 +11,13 @@ namespace IncidentManagementSystem
 	{
 		static void Main(string[] args)
 		{
-			IncidentManagementSystemService ims = new IncidentManagementSystemService();
-			Console.WriteLine("Incident Management System started");
-
+            Console.Title = "Incident Management System";
+            IncidentManagementSystemService ims = new IncidentManagementSystemService();
+		
 			ims.Start();
+            Console.WriteLine("Incident Management System started");
 
-			Console.ReadLine();
+            Console.ReadLine();
 
 			ims.Stop();
 		}

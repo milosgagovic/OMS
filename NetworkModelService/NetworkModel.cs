@@ -17,7 +17,7 @@ namespace FTN.Services.NetworkModelService
 	public class NetworkModel
 	{
 		/// <summary>
-		/// Dictionaru which contains all data: Key - DMSType, Value - Container
+		/// Dictionary which contains all data: Key - DMSType, Value - Container
 		/// </summary>
 		private Dictionary<DMSType, Container> networkDataModel;
 

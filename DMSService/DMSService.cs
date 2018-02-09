@@ -9,6 +9,7 @@ using System.Linq;
 using System.ServiceModel;
 using System.ServiceModel.Description;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using TransactionManagerContract;
 
@@ -17,6 +18,7 @@ namespace DMSService
     public class DMSService : IDisposable
     {
         private List<ServiceHost> hosts = null;
+
         private List<Source> _sources = new List<Source>();
         private List<Consumer> _consumers = new List<Consumer>();
         private List<ACLine> _aclines = new List<ACLine>();
@@ -31,14 +33,14 @@ namespace DMSService
 
         private ModelResourcesDesc modelResourcesDesc = new ModelResourcesDesc();
         private ModelGdaDMS gda = new ModelGdaDMS();
-        private static Tree<Element> tree;
+        private ServiceHost scadaHost;
 
-        // zasto nam je ova promenljiva potrebna? Nigde se ne koristi?
+        private static Tree<Element> tree;
         private static DMSService instance = null;
-        private DMSService()
-        {
-            InitializeHosts();
-        }
+
+        public static bool areHostsStarted = false;
+        public static bool isNetworkInitialized = false;
+
         public static DMSService Instance
         {
             get
@@ -52,6 +54,11 @@ namespace DMSService
         }
         public static int updatesCount = 0;
 
+        private DMSService()
+        {
+            InitializeHosts();
+        }
+      
         #region Properties
         public List<Source> Sources { get => _sources; set => _sources = value; }
         public List<Consumer> Consumers { get => _consumers; set => _consumers = value; }
@@ -62,6 +69,7 @@ namespace DMSService
         {
             get
             {
+                Console.WriteLine("GetNetwork getter");
                 return tree;
             }
             set
@@ -81,12 +89,31 @@ namespace DMSService
         public List<ResourceDescription> EnergySourcesRD { get => energySources; set => energySources = value; }
         #endregion
 
-
-
         public void Start()
         {
+            string message = string.Empty;
+
+            // dakle, sada se startuju DMSTransaction i DMSDispatcher
             StartHosts();
             Tree = InitializeNetwork(new Delta());
+
+            while (!isNetworkInitialized)
+            {
+                Console.WriteLine("Not Initilazied network");
+                Thread.Sleep(100);
+            }
+
+            // ne treba da se podize host za skadu, pre nego sto se pozove InitializeNetwork
+            StartScadaHost();
+
+            // svi su otvoreni
+            if (hosts.Select(h => h.State == CommunicationState.Opened).ToList().Count == hosts.Count)
+            {
+                areHostsStarted = true;
+                message = "The Distribution Management System Service is started.";
+                Console.WriteLine("\n{0}", message);
+                CommonTrace.WriteTrace(CommonTrace.TraceInfo, message);
+            }
         }
 
         /*    public Tree<Element> InitializeNetwork()
@@ -231,8 +258,16 @@ namespace DMSService
                 return retVal;
             }
             */
+            
+        /// <summary>
+        /// Getting Network Static Data from NMS. Called initialy for obtaining 
+        /// Static Data from.data if exists, and later in transaction, if .data changes
+        /// </summary>
+        /// <returns></returns>
         public Tree<Element> InitializeNetwork(Delta delta)
         {
+      
+            Console.WriteLine("InitializeNetwork Called");
             Tree<Element> retVal = new Tree<Element>();
             List<long> eSources = new List<long>();
 
@@ -308,7 +343,10 @@ namespace DMSService
 
             EnergySourcesRD.ForEach(x => eSources.Add(x.Id));
             if (eSources.Count == 0)
-                return new Tree<Element>();
+            {
+               isNetworkInitialized = true;
+               return new Tree<Element>();
+            }
 
             ClearListsForNTreeAlgorith();
             List<long> terminals = new List<long>();
@@ -319,6 +357,8 @@ namespace DMSService
 
             //Petlja za prikupljanje svih ES i njihovo povezivanje sa CN
             //Pocetak algoritma za formiranje stabla
+            // if there is no .data
+            // obtaining all ES and connecting them with CNs. there is only one ES currently
             foreach (long item in eSources)
             {
                 mrid = GetMrid(DMSType.ENERGSOURCE, item);
@@ -326,6 +366,7 @@ namespace DMSService
                 Source ESource = new Source(item, 0, mrid);
 
                 //Veza ES i CN preko terminala
+                // ES and CN linked by terminal 
                 long term = GetTerminalConnectedWithBranch(item);
                 if (term != 0)
                 {
@@ -434,7 +475,10 @@ namespace DMSService
             }
             watch.Stop();
             updatesCount += 1;
+
+            Console.WriteLine("2Terminals.count={0}", terminals.Count);
             Console.WriteLine("\nNewtork Initialization finished in {0} sec", watch.ElapsedMilliseconds / 1000);
+            isNetworkInitialized = true;
             return retVal;
         }
 
@@ -462,6 +506,7 @@ namespace DMSService
         }
 
         #region GetRelatedMethods
+
         private string GetMrid(DMSType mc, long branch)
         {
             string mrid = "";
@@ -589,6 +634,7 @@ namespace DMSService
             return terms;
 
         }
+      
         #endregion
 
         public void Dispose()
@@ -626,7 +672,8 @@ namespace DMSService
 
             hosts.Add(dispatcherHost);
 
-            ServiceHost scadaHost = new ServiceHost(typeof(DMSServiceForSCADA));
+            scadaHost = new ServiceHost(typeof(DMSServiceForSCADA));
+            //ServiceHost scadaHost = new ServiceHost(typeof(DMSServiceForSCADA));
             scadaHost.Description.Name = "DMSServiceForSCADA";
             scadaHost.AddServiceEndpoint(typeof(IDMSToSCADAContract), binding, new
             Uri("net.tcp://localhost:8039/IDMSToSCADAContract"));
@@ -637,6 +684,7 @@ namespace DMSService
             hosts.Add(scadaHost);
 
 
+            //hosts.Add(scadaHost);
         }
 
         private void StartHosts()
@@ -647,35 +695,61 @@ namespace DMSService
             }
 
             string message = string.Empty;
-            foreach (ServiceHost host in hosts)
+
+            try
             {
-                host.Open();
-
-                message = string.Format("The WCF service {0} is ready.", host.Description.Name);
-                Console.WriteLine(message);
-                CommonTrace.WriteTrace(CommonTrace.TraceInfo, message);
-
-                message = "Endpoints:";
-                Console.WriteLine(message);
-                CommonTrace.WriteTrace(CommonTrace.TraceInfo, message);
-
-                foreach (Uri uri in host.BaseAddresses)
+                foreach (ServiceHost host in hosts)
                 {
-                    Console.WriteLine(uri);
-                    CommonTrace.WriteTrace(CommonTrace.TraceInfo, uri.ToString());
+                    host.Open();
+
+                    message = string.Format("The WCF service {0} is ready.", host.Description.Name);
+                    Console.WriteLine(message);
+                    CommonTrace.WriteTrace(CommonTrace.TraceInfo, message);
+
+                    message = "Endpoints:";
+                    Console.WriteLine(message);
+                    CommonTrace.WriteTrace(CommonTrace.TraceInfo, message);
+
+                    foreach (Uri uri in host.BaseAddresses)
+                    {
+                        Console.WriteLine(uri);
+                        CommonTrace.WriteTrace(CommonTrace.TraceInfo, uri.ToString());
+                    }
+
+                    Console.WriteLine("\n");
                 }
 
-                Console.WriteLine("\n");
+                message = string.Format("Trace level: {0}", CommonTrace.TraceLevel);
+                Console.WriteLine(message);
+                CommonTrace.WriteTrace(CommonTrace.TraceInfo, message);
             }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
 
-            message = string.Format("Trace level: {0}", CommonTrace.TraceLevel);
+        private void StartScadaHost()
+        {
+            string message = string.Empty;
+
+            hosts.Add(scadaHost);
+
+            scadaHost.Open();
+
+            message = string.Format("The WCF service {0} is ready.", scadaHost.Description.Name);
             Console.WriteLine(message);
             CommonTrace.WriteTrace(CommonTrace.TraceInfo, message);
 
-
-            message = "The Distribution Management System Service is started.";
-            Console.WriteLine("\n{0}", message);
+            message = "Endpoints:";
+            Console.WriteLine(message);
             CommonTrace.WriteTrace(CommonTrace.TraceInfo, message);
+
+            foreach (Uri uri in scadaHost.BaseAddresses)
+            {
+                Console.WriteLine(uri);
+                CommonTrace.WriteTrace(CommonTrace.TraceInfo, uri.ToString());
+            }
         }
 
         public void CloseHosts()
@@ -694,6 +768,5 @@ namespace DMSService
             CommonTrace.WriteTrace(CommonTrace.TraceInfo, message);
             Console.WriteLine("\n\n{0}", message);
         }
-
     }
 }

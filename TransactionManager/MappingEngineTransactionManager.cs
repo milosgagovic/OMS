@@ -27,14 +27,18 @@ namespace TransactionManager
         }
         public List<ResourceDescription> MappResult(Response response)
         {
+
             List<ResourceDescription> retVal = new List<ResourceDescription>();
             ResourceDescription rd;
             foreach (ResponseVariable rv in response.Variables)
-            {
+            {               
                 rd = new ResourceDescription();
                 DigitalVariable dv = rv as DigitalVariable;
                 rd = new ResourceDescription();
                 rd.AddProperty(new Property(ModelCode.IDOBJ_MRID, dv.Id));
+
+                Console.WriteLine("Variable = {0}, STATE = {1}", dv.Id, dv.State);
+
                 if (dv.State.ToString() == "CLOSED")
                 {
                     rd.AddProperty(new Property(ModelCode.DISCRETE_NORMVAL, 0));

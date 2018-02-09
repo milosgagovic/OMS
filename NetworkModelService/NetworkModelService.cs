@@ -56,7 +56,12 @@ namespace FTN.Services.NetworkModelService
             svc.Description.Behaviors.Add(new ServiceDebugBehavior() { IncludeExceptionDetailInFaults = true });
 
             hosts.Add(new ServiceHost(typeof(GenericDataAccess)));
+
             hosts.Add(svc);
+
+
+            // Service Parameters for GenericDataAccess are defined in App.config
+            hosts.Add(new ServiceHost(typeof(GenericDataAccess)));          
         }
 
         private void StartHosts()
