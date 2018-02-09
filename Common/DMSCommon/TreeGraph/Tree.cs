@@ -33,10 +33,14 @@ namespace DMSCommon.TreeGraph
         public void AddChild(long? parentId, long id, T data)
         {
             if (Data.ContainsKey(id))
-                throw new ArgumentException($"id {id} already exists in tree.");
+            {
+                return;
+            }
 
             if (parentId != null && !Data.ContainsKey((long)parentId))
-                throw new ArgumentException($"parentId {parentId} not found in tree.");
+            {
+                return;
+            }
 
             var link = new NodeLink { Id = id, Parent = parentId };
             var depth = 0;

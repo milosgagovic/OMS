@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.ServiceModel;
+using System.ServiceModel.Description;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -94,8 +95,7 @@ namespace DMSService
 
             // dakle, sada se startuju DMSTransaction i DMSDispatcher
             StartHosts();
-
-            Tree = InitializeNetwork();
+            Tree = InitializeNetwork(new Delta());
 
             while (!isNetworkInitialized)
             {
@@ -109,7 +109,6 @@ namespace DMSService
             // svi su otvoreni
             if (hosts.Select(h => h.State == CommunicationState.Opened).ToList().Count == hosts.Count)
             {
-                
                 areHostsStarted = true;
                 message = "The Distribution Management System Service is started.";
                 Console.WriteLine("\n{0}", message);
@@ -259,49 +258,114 @@ namespace DMSService
                 return retVal;
             }
             */
-
+            
         /// <summary>
         /// Getting Network Static Data from NMS. Called initialy for obtaining 
         /// Static Data from.data if exists, and later in transaction, if .data changes
         /// </summary>
         /// <returns></returns>
-        public Tree<Element> InitializeNetwork()
+        public Tree<Element> InitializeNetwork(Delta delta)
         {
+      
             Console.WriteLine("InitializeNetwork Called");
-
-            ClearLists();
-            gda.GetExtentValuesExtended(ModelCode.TERMINAL).ForEach(ter => TerminalsRD.Add(ter));
-            gda.GetExtentValuesExtended(ModelCode.CONNECTNODE).ForEach(n => NodesRD.Add(n));
-            gda.GetExtentValuesExtended(ModelCode.BREAKER).ForEach(n => SwitchesRD.Add(n));
-            gda.GetExtentValuesExtended(ModelCode.ACLINESEGMENT).ForEach(n => AclineSegRD.Add(n));
-            gda.GetExtentValuesExtended(ModelCode.ENERGCONSUMER).ForEach(n => EnergyConsumersRD.Add(n));
-            gda.GetExtentValuesExtended(ModelCode.ENERGSOURCE).ForEach(n => EnergySourcesRD.Add(n));
-
             Tree<Element> retVal = new Tree<Element>();
             List<long> eSources = new List<long>();
-            EnergySourcesRD.ForEach(x => eSources.Add(x.GetProperty(ModelCode.IDOBJ_GID).PropertyValue.LongValue));
 
-            // if there is no .data
-            if (eSources.Count == 0)
+            if (delta.InsertOperations.Count == 0)
             {
-                // why not just return retVal?
-                return new Tree<Element>();
+                ClearAllLists();
+                gda.GetExtentValuesExtended(ModelCode.TERMINAL).ForEach(ter => TerminalsRD.Add(ter));
+                gda.GetExtentValuesExtended(ModelCode.CONNECTNODE).ForEach(n => NodesRD.Add(n));
+                gda.GetExtentValuesExtended(ModelCode.BREAKER).ForEach(n => SwitchesRD.Add(n));
+                gda.GetExtentValuesExtended(ModelCode.ACLINESEGMENT).ForEach(n => AclineSegRD.Add(n));
+                gda.GetExtentValuesExtended(ModelCode.ENERGCONSUMER).ForEach(n => EnergyConsumersRD.Add(n));
+                gda.GetExtentValuesExtended(ModelCode.ENERGSOURCE).ForEach(n => EnergySourcesRD.Add(n));
+            }
+            else
+            {
+                foreach (ResourceDescription resource in delta.InsertOperations)
+                {
+                    DMSType type = (DMSType)ModelCodeHelper.ExtractTypeFromGlobalId(resource.Id);
+                    if (type == DMSType.ACLINESEGMENT)
+                        AclineSegRD.Add(resource);
+                    else if (type == DMSType.CONNECTNODE)
+                        NodesRD.Add(resource);
+                    else if (type == DMSType.BREAKER)
+                        SwitchesRD.Add(resource);
+                    else if (type == DMSType.ENERGCONSUMER)
+                        EnergyConsumersRD.Add(resource);
+                    else if (type == DMSType.TERMINAL)
+                        TerminalsRD.Add(resource);
+                    else if (type == DMSType.ENERGSOURCE)
+                        EnergySourcesRD.Add(resource);
+                }
+                foreach (ResourceDescription resource in delta.UpdateOperations)
+                {
+                    DMSType type = (DMSType)ModelCodeHelper.ExtractTypeFromGlobalId(resource.Id);
+                    if (type == DMSType.ACLINESEGMENT)
+                    {
+                        var ac = AclineSegRD.FirstOrDefault(a => a.GetProperty(ModelCode.IDOBJ_MRID) == resource.GetProperty(ModelCode.IDOBJ_MRID));
+                        if (ac != null)
+                            ac.Update(resource);
+                    }
+                    else if (type == DMSType.CONNECTNODE)
+                    {
+                        var cn = NodesRD.FirstOrDefault(c => c.GetProperty(ModelCode.IDOBJ_MRID) == resource.GetProperty(ModelCode.IDOBJ_MRID));
+                        if (cn != null)
+                            cn.Update(resource);
+                    }
+                    else if (type == DMSType.BREAKER)
+                    {
+                        var sw = SwitchesRD.FirstOrDefault(c => c.GetProperty(ModelCode.IDOBJ_MRID) == resource.GetProperty(ModelCode.IDOBJ_MRID));
+                        if (sw != null)
+                            sw.Update(resource);
+                    }
+                    else if (type == DMSType.ENERGCONSUMER)
+                    {
+                        var ec = EnergyConsumersRD.FirstOrDefault(c => c.GetProperty(ModelCode.IDOBJ_MRID) == resource.GetProperty(ModelCode.IDOBJ_MRID));
+                        if (ec != null)
+                            ec.Update(resource);
+                    }
+                    else if (type == DMSType.TERMINAL)
+                    {
+                        var ter = TerminalsRD.FirstOrDefault(c => c.GetProperty(ModelCode.IDOBJ_MRID) == resource.GetProperty(ModelCode.IDOBJ_MRID));
+                        if (ter != null)
+                            ter.Update(resource);
+                    }
+                    else if (type == DMSType.ENERGSOURCE)
+                    {
+                        var es = EnergySourcesRD.FirstOrDefault(c => c.GetProperty(ModelCode.IDOBJ_MRID) == resource.GetProperty(ModelCode.IDOBJ_MRID));
+                        if (es != null)
+                            es.Update(resource);
+                    }
+                }
             }
 
+            EnergySourcesRD.ForEach(x => eSources.Add(x.Id));
+            if (eSources.Count == 0)
+            {
+               isNetworkInitialized = true;
+               return new Tree<Element>();
+            }
+
+            ClearListsForNTreeAlgorith();
             List<long> terminals = new List<long>();
-            TerminalsRD.ForEach(x => terminals.Add(x.GetProperty(ModelCode.IDOBJ_GID).PropertyValue.LongValue));
-
-            string mrid = "";
             List<NodeLink> links = new List<NodeLink>();
+            string mrid = "";
 
+            TerminalsRD.ForEach(x => terminals.Add(x.Id));
+
+            //Petlja za prikupljanje svih ES i njihovo povezivanje sa CN
+            //Pocetak algoritma za formiranje stabla
+            // if there is no .data
             // obtaining all ES and connecting them with CNs. there is only one ES currently
             foreach (long item in eSources)
             {
-                //  rd = gda.GetValues(item);
                 mrid = GetMrid(DMSType.ENERGSOURCE, item);
 
                 Source ESource = new Source(item, 0, mrid);
 
+                //Veza ES i CN preko terminala
                 // ES and CN linked by terminal 
                 long term = GetTerminalConnectedWithBranch(item);
                 if (term != 0)
@@ -324,10 +388,18 @@ namespace DMSService
             //Obrada od pocetnog CN ka svim ostalima. Iteracija po terminalima
             var watch = System.Diagnostics.Stopwatch.StartNew();
             int count = 0;
-            List<long> termp = new List<long>();
             while (terminals.Count != 0)
             {
-                Node n = ConnecNodes.ElementAt(count);
+                Node n;
+                try
+                {
+                    n = ConnecNodes.ElementAt(count);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                    return new Tree<Element>();
+                }
 
                 List<long> terms = GetTerminalsConnectedWithConnNode(n.ElementGID);
 
@@ -346,9 +418,7 @@ namespace DMSService
                         mrid = GetMrid(mc, bransch);
                     }
                     else
-                    {
                         continue;
-                    }
 
                     List<long> branchTerminals = GetTerminalsConnectedWithBranch(bransch);
                     if (branchTerminals.Contains(item))
@@ -408,11 +478,11 @@ namespace DMSService
 
             Console.WriteLine("2Terminals.count={0}", terminals.Count);
             Console.WriteLine("\nNewtork Initialization finished in {0} sec", watch.ElapsedMilliseconds / 1000);
-
             isNetworkInitialized = true;
             return retVal;
         }
-        private void ClearLists()
+
+        private void ClearAllLists()
         {
             this.Aclines.Clear();
             this.ConnecNodes.Clear();
@@ -426,6 +496,14 @@ namespace DMSService
             this.AclineSegRD.Clear();
             this.EnergySourcesRD.Clear();
         }
+        private void ClearListsForNTreeAlgorith()
+        {
+            this.Aclines.Clear();
+            this.ConnecNodes.Clear();
+            this.Consumers.Clear();
+            this.Switches.Clear();
+            this.Sources.Clear();
+        }
 
         #region GetRelatedMethods
 
@@ -436,7 +514,7 @@ namespace DMSService
             {
                 foreach (ResourceDescription resD in AclineSegRD)
                 {
-                    if (resD.GetProperty(ModelCode.IDOBJ_GID).PropertyValue.LongValue == branch)
+                    if (resD.Id == branch)
                     {
                         mrid = resD.GetProperty(ModelCode.IDOBJ_MRID).PropertyValue.StringValue;
                         return mrid;
@@ -448,7 +526,7 @@ namespace DMSService
             {
                 foreach (ResourceDescription resD in SwitchesRD)
                 {
-                    if (resD.GetProperty(ModelCode.IDOBJ_GID).PropertyValue.LongValue == branch)
+                    if (resD.Id == branch)
                     {
                         mrid = resD.GetProperty(ModelCode.IDOBJ_MRID).PropertyValue.StringValue;
                         return mrid;
@@ -459,7 +537,7 @@ namespace DMSService
             {
                 foreach (ResourceDescription resD in EnergyConsumersRD)
                 {
-                    if (resD.GetProperty(ModelCode.IDOBJ_GID).PropertyValue.LongValue == branch)
+                    if (resD.Id == branch)
                     {
                         mrid = resD.GetProperty(ModelCode.IDOBJ_MRID).PropertyValue.StringValue;
                         return mrid;
@@ -470,7 +548,7 @@ namespace DMSService
             {
                 foreach (ResourceDescription resD in NodesRD)
                 {
-                    if (resD.GetProperty(ModelCode.IDOBJ_GID).PropertyValue.LongValue == branch)
+                    if (resD.Id == branch)
                     {
                         mrid = resD.GetProperty(ModelCode.IDOBJ_MRID).PropertyValue.StringValue;
                         return mrid;
@@ -482,7 +560,7 @@ namespace DMSService
             {
                 foreach (ResourceDescription resD in EnergySourcesRD)
                 {
-                    if (resD.GetProperty(ModelCode.IDOBJ_GID).PropertyValue.LongValue == branch)
+                    if (resD.Id == branch)
                     {
                         mrid = resD.GetProperty(ModelCode.IDOBJ_MRID).PropertyValue.StringValue;
                         return mrid;
@@ -496,7 +574,7 @@ namespace DMSService
             long connNode = 0;
             foreach (ResourceDescription resD in TerminalsRD)
             {
-                if (resD.GetProperty(ModelCode.IDOBJ_GID).PropertyValue.LongValue == terminal)
+                if (resD.Id == terminal)
                 {
                     connNode = resD.GetProperty(ModelCode.TERMINAL_CONNECTNODE).PropertyValue.LongValue;
                     return connNode;
@@ -507,14 +585,16 @@ namespace DMSService
         }
         private long GetTerminalConnectedWithBranch(long branch)
         {
-            Association assoTerm = new Association()
+            long term = 0;
+            foreach (ResourceDescription resD in TerminalsRD)
             {
-                PropertyId = ModelCode.CONDUCTEQUIP_TERMINALS,
-                Type = ModelCode.TERMINAL
-            };
-            List<long> term = gda.GetRelatedValues(branch, assoTerm);
-
-            return term[0];
+                if (resD.GetProperty(ModelCode.TERMINAL_CONDEQUIP).PropertyValue.LongValue == branch)
+                {
+                    term = resD.Id;
+                    break;
+                }
+            }
+            return term;
         }
 
         private List<long> GetTerminalsConnectedWithConnNode(long connNode)
@@ -522,7 +602,7 @@ namespace DMSService
             List<long> ret = new List<long>();
             TerminalsRD.ForEach(x => x.Properties
                 .FindAll(y => y.PropertyValue.LongValue == connNode)
-                .ForEach(g => ret.Add(x.GetProperty(ModelCode.IDOBJ_GID).PropertyValue.LongValue)));
+                .ForEach(g => ret.Add(x.Id)));
 
             return ret;
         }
@@ -532,7 +612,7 @@ namespace DMSService
             long branch = 0;
             foreach (ResourceDescription resD in TerminalsRD)
             {
-                if (resD.GetProperty(ModelCode.IDOBJ_GID).PropertyValue.LongValue == terminal)
+                if (resD.Id == terminal)
                 {
                     branch = resD.GetProperty(ModelCode.TERMINAL_CONDEQUIP).PropertyValue.LongValue;
                     return branch;
@@ -548,7 +628,7 @@ namespace DMSService
             {
                 if (resD.GetProperty(ModelCode.TERMINAL_CONDEQUIP).PropertyValue.LongValue == branch)
                 {
-                    terms.Add(resD.GetProperty(ModelCode.IDOBJ_GID).PropertyValue.LongValue);
+                    terms.Add(resD.Id);
                 }
             }
             return terms;
@@ -565,24 +645,45 @@ namespace DMSService
 
         private void InitializeHosts()
         {
+            var binding = new NetTcpBinding();
+            binding.CloseTimeout = TimeSpan.FromMinutes(10);
+            binding.OpenTimeout = TimeSpan.FromMinutes(10);
+            binding.ReceiveTimeout = TimeSpan.FromMinutes(10);
+            binding.SendTimeout = TimeSpan.FromMinutes(10);
+            binding.TransactionFlow = true;
+
             hosts = new List<ServiceHost>();
             ServiceHost transactionHost = new ServiceHost(typeof(DMSTransactionService));
             transactionHost.Description.Name = "DMSTransactionService";
-            transactionHost.AddServiceEndpoint(typeof(ITransaction), new NetTcpBinding(), new
+            transactionHost.AddServiceEndpoint(typeof(ITransaction), binding, new
             Uri("net.tcp://localhost:8028/DMSTransactionService"));
+            transactionHost.Description.Behaviors.Remove(typeof(ServiceDebugBehavior));
+            transactionHost.Description.Behaviors.Add(new ServiceDebugBehavior() { IncludeExceptionDetailInFaults = true });
+
             hosts.Add(transactionHost);
 
             ServiceHost dispatcherHost = new ServiceHost(typeof(DMSDispatcherService));
             dispatcherHost.Description.Name = "DMSDispatcherService";
-            dispatcherHost.AddServiceEndpoint(typeof(IDMSContract), new NetTcpBinding(), new
+            dispatcherHost.AddServiceEndpoint(typeof(IDMSContract), binding, new
             Uri("net.tcp://localhost:8029/DMSDispatcherService"));
+
+            dispatcherHost.Description.Behaviors.Remove(typeof(ServiceDebugBehavior));
+            dispatcherHost.Description.Behaviors.Add(new ServiceDebugBehavior() { IncludeExceptionDetailInFaults = true });
+
             hosts.Add(dispatcherHost);
 
             scadaHost = new ServiceHost(typeof(DMSServiceForSCADA));
             //ServiceHost scadaHost = new ServiceHost(typeof(DMSServiceForSCADA));
             scadaHost.Description.Name = "DMSServiceForSCADA";
-            scadaHost.AddServiceEndpoint(typeof(IDMSToSCADAContract), new NetTcpBinding(), new
+            scadaHost.AddServiceEndpoint(typeof(IDMSToSCADAContract), binding, new
             Uri("net.tcp://localhost:8039/IDMSToSCADAContract"));
+
+            scadaHost.Description.Behaviors.Remove(typeof(ServiceDebugBehavior));
+            scadaHost.Description.Behaviors.Add(new ServiceDebugBehavior() { IncludeExceptionDetailInFaults = true });
+
+            hosts.Add(scadaHost);
+
+
             //hosts.Add(scadaHost);
         }
 

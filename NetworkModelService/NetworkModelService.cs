@@ -39,12 +39,24 @@ namespace FTN.Services.NetworkModelService
         private void InitializeHosts()
         {
             hosts = new List<ServiceHost>();
+            var binding = new NetTcpBinding();
+            binding.CloseTimeout = TimeSpan.FromMinutes(10);
+            binding.OpenTimeout = TimeSpan.FromMinutes(10);
+            binding.ReceiveTimeout = TimeSpan.FromMinutes(10);
+            binding.SendTimeout = TimeSpan.FromMinutes(10);
+            binding.TransactionFlow = true;
 
             ServiceHost svc = new ServiceHost(typeof(NetworkModelTransactionService));
             svc.Description.Name = "NetworkModelTransactionService";
             svc.AddServiceEndpoint(typeof(ITransaction),
-                                    new NetTcpBinding(),
+                                    binding,
                                     new Uri("net.tcp://localhost:8018/NetworkModelTransactionService"));
+
+            svc.Description.Behaviors.Remove(typeof(ServiceDebugBehavior));
+            svc.Description.Behaviors.Add(new ServiceDebugBehavior() { IncludeExceptionDetailInFaults = true });
+
+            hosts.Add(new ServiceHost(typeof(GenericDataAccess)));
+
             hosts.Add(svc);
 
 

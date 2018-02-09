@@ -136,6 +136,7 @@ namespace DMSCommon.Model
                     for (int i = 0; i < rds.Count; i++)
                     {
                         ResourceDescription rd = new ResourceDescription();
+                        rd.Id = rds[i].Id;
                         rd.Properties = rds[i].Properties;
                         resourceDescriptions.Add(rd);
                     }
