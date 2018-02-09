@@ -35,6 +35,7 @@ namespace TransactionManager
         //IIMSContract IMSClient;
         IDMSContract proxyToDispatcherDMS;
 
+
         ModelGDATMS gdaTMS;
         SCADAClient scadaClient;
 
@@ -129,8 +130,8 @@ namespace TransactionManager
 
 
 
-            factoryToIMS = new ChannelFactory<IIMSContract>(binding, new EndpointAddress("net.tcp://localhost:6090/IncidentManagementSystemService"));
-            proxyToIMS = factoryToIMS.CreateChannel();
+            //ChannelFactory<IIMSContract> factoryToIMS = new ChannelFactory<IIMSContract>(binding, new EndpointAddress("net.tcp://localhost:6090/IncidentManagementSystemService"));
+           // proxyToIMS = factoryToIMS.CreateChannel();
 
             ProxyToNMSService = new NetworkModelGDAProxy("NetworkModelGDAEndpoint");
             ProxyToNMSService.Open();
@@ -335,6 +336,40 @@ namespace TransactionManager
             }
 
             return retVal;
+        }
+
+        private ScadaDelta GetDeltaForSCADA(Delta d)
+        {
+            List<ResourceDescription> rescDesc = d.InsertOperations.Where(u => u.ContainsProperty(ModelCode.MEASUREMENT_DIRECTION)).ToList();
+            ScadaDelta scadaDelta = new ScadaDelta();
+
+            foreach (ResourceDescription rd in rescDesc)
+            {
+                ScadaElement element = new ScadaElement();
+                if (rd.ContainsProperty(ModelCode.MEASUREMENT_TYPE))
+                {
+                    string type = rd.GetProperty(ModelCode.MEASUREMENT_TYPE).ToString();
+                    if (type == "Analog")
+                    {
+                        element.Type = DeviceTypes.ANALOG;
+                    }
+                    else if (type == "Discrete")
+                    {
+                        element.Type = DeviceTypes.DIGITAL;
+                    }
+                }
+
+                element.ValidCommands = new List<CommandTypes>() { CommandTypes.CLOSE, CommandTypes.OPEN };
+                element.ValidStates = new List<OMSSCADACommon.States>() { OMSSCADACommon.States.CLOSED, OMSSCADACommon.States.OPENED };
+
+                if (rd.ContainsProperty(ModelCode.IDOBJ_MRID))
+                {
+                    //element.Name = rd.GetProperty(ModelCode.IDOBJ_NAME).ToString();
+                    element.Name = rd.GetProperty(ModelCode.IDOBJ_MRID).ToString();
+                }
+                scadaDelta.InsertOps.Add(element);
+            }
+            return scadaDelta;
         }
 
         #endregion
