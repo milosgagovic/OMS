@@ -55,7 +55,6 @@ namespace FTN.Services.NetworkModelService
             svc.Description.Behaviors.Remove(typeof(ServiceDebugBehavior));
             svc.Description.Behaviors.Add(new ServiceDebugBehavior() { IncludeExceptionDetailInFaults = true });
 
-            hosts.Add(new ServiceHost(typeof(GenericDataAccess)));
 
             hosts.Add(svc);
 

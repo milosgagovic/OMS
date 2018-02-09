@@ -58,7 +58,7 @@ namespace DMSService
         {
             InitializeHosts();
         }
-      
+
         #region Properties
         public List<Source> Sources { get => _sources; set => _sources = value; }
         public List<Consumer> Consumers { get => _consumers; set => _consumers = value; }
@@ -258,7 +258,7 @@ namespace DMSService
                 return retVal;
             }
             */
-            
+
         /// <summary>
         /// Getting Network Static Data from NMS. Called initialy for obtaining 
         /// Static Data from.data if exists, and later in transaction, if .data changes
@@ -266,7 +266,7 @@ namespace DMSService
         /// <returns></returns>
         public Tree<Element> InitializeNetwork(Delta delta)
         {
-      
+
             Console.WriteLine("InitializeNetwork Called");
             Tree<Element> retVal = new Tree<Element>();
             List<long> eSources = new List<long>();
@@ -344,8 +344,9 @@ namespace DMSService
             EnergySourcesRD.ForEach(x => eSources.Add(x.Id));
             if (eSources.Count == 0)
             {
-               isNetworkInitialized = true;
-               return new Tree<Element>();
+                Console.WriteLine("InitializeNetwork Done");
+                isNetworkInitialized = true;
+                return new Tree<Element>();
             }
 
             ClearListsForNTreeAlgorith();
@@ -634,7 +635,7 @@ namespace DMSService
             return terms;
 
         }
-      
+
         #endregion
 
         public void Dispose()
@@ -681,7 +682,7 @@ namespace DMSService
             scadaHost.Description.Behaviors.Remove(typeof(ServiceDebugBehavior));
             scadaHost.Description.Behaviors.Add(new ServiceDebugBehavior() { IncludeExceptionDetailInFaults = true });
 
-            hosts.Add(scadaHost);
+            //hosts.Add(scadaHost);
 
 
             //hosts.Add(scadaHost);
@@ -733,7 +734,7 @@ namespace DMSService
         {
             string message = string.Empty;
 
-            hosts.Add(scadaHost);
+            // hosts.Add(scadaHost);
 
             scadaHost.Open();
 
