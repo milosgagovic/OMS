@@ -49,7 +49,7 @@ namespace DMSService
         {
             Console.WriteLine("Pozvan je prepare na DMS-u");
 
-            newTree = DMSService.Instance.InitializeNetwork();
+            newTree = DMSService.Instance.InitializeNetwork(delta);
             DMSService.updatesCount += 1;
             ITransactionCallback callback = OperationContext.Current.GetCallbackChannel<ITransactionCallback>();
 

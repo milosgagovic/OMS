@@ -29,7 +29,14 @@ namespace FTN.ESI.SIMES.CIM.CIMAdapter
 			{
 				if (proxyToTransactionManager == null /*&& factoryToTMS == null*/)
 				{
-					factoryToTMS = new ChannelFactory<IOMSClient>(new NetTcpBinding(), new EndpointAddress("net.tcp://localhost:6080/TransactionManagerService"));
+                    var binding = new NetTcpBinding();
+                    binding.CloseTimeout = TimeSpan.FromMinutes(10);
+                    binding.OpenTimeout = TimeSpan.FromMinutes(10);
+                    binding.ReceiveTimeout = TimeSpan.FromMinutes(10);
+                    binding.SendTimeout = TimeSpan.FromMinutes(10);
+                    binding.TransactionFlow = true;
+
+                    factoryToTMS = new ChannelFactory<IOMSClient>(binding, new EndpointAddress("net.tcp://localhost:6080/TransactionManagerService"));
 					proxyToTransactionManager = factoryToTMS.CreateChannel();
 				}
 

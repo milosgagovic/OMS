@@ -1,6 +1,7 @@
 ﻿using DMSCommon.Model;
 using DMSContract;
 using FTN.Common;
+using FTN.ServiceContracts;
 using IMSContract;
 using OMSSCADACommon;
 using OMSSCADACommon.Commands;
@@ -29,6 +30,10 @@ namespace TransactionManager
         TransactionCallback callBackTransactionNMS;
         TransactionCallback callBackTransactionDMS;
         TransactionCallback callBackTransactionSCADA;
+        NetworkModelGDAProxy ProxyToNMSService;
+
+
+
 
         public List<ITransaction> TransactionProxys { get => transactionProxys; set => transactionProxys = value; }
         public List<TransactionCallback> TransactionCallbacks { get => transactionCallbacks; set => transactionCallbacks = value; }
@@ -51,10 +56,12 @@ namespace TransactionManager
             }
         }
 
-       
+
 
         public TransactionManager()
         {
+          
+
             TransactionProxys = new List<ITransaction>();
             TransactionCallbacks = new List<TransactionCallback>();
             InitializeChanels();
@@ -64,11 +71,17 @@ namespace TransactionManager
 
         private void InitializeChanels()
         {
+            var binding = new NetTcpBinding();
+            binding.CloseTimeout = TimeSpan.FromMinutes(10);
+            binding.OpenTimeout = TimeSpan.FromMinutes(10);
+            binding.ReceiveTimeout = TimeSpan.FromMinutes(10);
+            binding.SendTimeout = TimeSpan.FromMinutes(10);
+            binding.TransactionFlow = true;
             // duplex channel for NMS transaction
             CallBackTransactionNMS = new TransactionCallback();
             TransactionCallbacks.Add(CallBackTransactionNMS);
             DuplexChannelFactory<ITransaction> factoryTransactionNMS = new DuplexChannelFactory<ITransaction>(CallBackTransactionNMS,
-                                                         new NetTcpBinding(),
+                                                         binding,
                                                          new EndpointAddress("net.tcp://localhost:8018/NetworkModelTransactionService"));
             ProxyTransactionNMS = factoryTransactionNMS.CreateChannel();
             TransactionProxys.Add(ProxyTransactionNMS);
@@ -77,7 +90,7 @@ namespace TransactionManager
             CallBackTransactionDMS = new TransactionCallback();
             TransactionCallbacks.Add(CallBackTransactionDMS);
             DuplexChannelFactory<ITransaction> factoryTransactionDMS = new DuplexChannelFactory<ITransaction>(CallBackTransactionDMS,
-                                                            new NetTcpBinding(),
+                                                            binding,
                                                             new EndpointAddress("net.tcp://localhost:8028/DMSTransactionService"));
             ProxyTransactionDMS = factoryTransactionDMS.CreateChannel();
             TransactionProxys.Add(ProxyTransactionDMS);
@@ -86,18 +99,22 @@ namespace TransactionManager
             CallBackTransactionSCADA = new TransactionCallback();
             TransactionCallbacks.Add(CallBackTransactionSCADA);
             DuplexChannelFactory<ITransactionSCADA> factoryTransactionSCADA = new DuplexChannelFactory<ITransactionSCADA>(CallBackTransactionSCADA,
-                                                            new NetTcpBinding(),
+                                                            binding,
                                                             new EndpointAddress("net.tcp://localhost:8078/SCADATransactionService"));
             ProxyTransactionSCADA = factoryTransactionSCADA.CreateChannel();
 
 
             // client channel for DMSDispatcherService
-            ChannelFactory<IDMSContract> factoryDispatcherDMS = new ChannelFactory<IDMSContract>(new NetTcpBinding(), new EndpointAddress("net.tcp://localhost:8029/DMSDispatcherService"));
+            ChannelFactory<IDMSContract> factoryDispatcherDMS = new ChannelFactory<IDMSContract>(binding, new EndpointAddress("net.tcp://localhost:8029/DMSDispatcherService"));
             proxyToDispatcherDMS = factoryDispatcherDMS.CreateChannel();
 
 
-            factoryToIMS = new ChannelFactory<IIMSContract>(new NetTcpBinding(), new EndpointAddress("net.tcp://localhost:6090/IncidentManagementSystemService"));
+            factoryToIMS = new ChannelFactory<IIMSContract>(binding, new EndpointAddress("net.tcp://localhost:6090/IncidentManagementSystemService"));
             proxyToIMS = factoryToIMS.CreateChannel();
+
+            ProxyToNMSService = new NetworkModelGDAProxy("NetworkModelGDAEndpoint");
+            ProxyToNMSService.Open();
+
         }
 
         public void Enlist(Delta d)
@@ -125,46 +142,34 @@ namespace TransactionManager
             }
         }
 
-		public void Prepare(Delta delta)
-		{
-			Console.WriteLine("Transaction Manager calling prepare");
+        public void Prepare(Delta delta)
+        {
+            Console.WriteLine("Transaction Manager calling prepare");
 
-			proxyTransactionNMS.Prepare(delta);
-			ScadaDelta scadaDelta = GetDeltaForSCADA(delta);
-			do
-			{
-				Thread.Sleep(50);
-			} while (CallBackTransactionNMS.AnswerForPrepare.Equals(TransactionAnswer.Unanswered));
+            ScadaDelta scadaDelta = GetDeltaForSCADA(delta);
+            Delta fixedGuidDelta = ProxyToNMSService.GetFixedDelta(delta);
 
-			if (CallBackTransactionNMS.AnswerForPrepare.Equals(TransactionAnswer.Unprepared))
-			{
-				Rollback();
-			}
-			else
-			{
+            //TransactionProxys.ToList().ForEach(x => x.Prepare(delta));
+            ProxyTransactionNMS.Prepare(delta);
+            ProxyTransactionDMS.Prepare(fixedGuidDelta);
+            ProxyTransactionSCADA.Prepare(scadaDelta);
 
-				TransactionProxys.Where(u => !u.Equals(ProxyTransactionNMS)).ToList().ForEach(x => x.Prepare(delta));
-
-                ProxyTransactionSCADA.Prepare(scadaDelta);
-
-				while (true)
-				{
-					if (TransactionCallbacks.Where(k => k.AnswerForPrepare == TransactionAnswer.Unanswered).Count() > 0)
-					{
-						Thread.Sleep(1000);
-						continue;
-					}
-					else if (TransactionCallbacks.Where(u => u.AnswerForPrepare == TransactionAnswer.Unprepared).Count() > 0)
-					{
-						Rollback();
-						break;
-					}
-
-					Commit();
-					break;
-				}
-			}
-		}
+            while (true)
+            {
+                if (TransactionCallbacks.Where(k => k.AnswerForPrepare == TransactionAnswer.Unanswered).Count() > 0)
+                {
+                    Thread.Sleep(1000);
+                    continue;
+                }
+                else if (TransactionCallbacks.Where(u => u.AnswerForPrepare == TransactionAnswer.Unprepared).Count() > 0)
+                {
+                    Rollback();
+                    break;
+                }
+                Commit();
+                break;
+            }
+        }
 
         private void Commit()
         {
@@ -173,7 +178,6 @@ namespace TransactionManager
             {
                 svc.Commit();
             }
-
             ProxyTransactionSCADA.Commit();
         }
 
@@ -193,7 +197,7 @@ namespace TransactionManager
         {
             Console.WriteLine("Update System started." + d.Id);
             Enlist(d);
-          //  Prepare(d);
+            //  Prepare(d);
             return true;
         }
 
@@ -302,13 +306,13 @@ namespace TransactionManager
             { }
         }
 
-    //public void SendCrew(string mrid)
-    //{
-    //    proxyToDispatcherDMS.SendCrewToDms(mrid);
-    //    return;
-    //}
+        //public void SendCrew(string mrid)
+        //{
+        //    proxyToDispatcherDMS.SendCrewToDms(mrid);
+        //    return;
+        //}
 
-    public void SendCrew(IncidentReport report)
+        public void SendCrew(IncidentReport report)
         {
             proxyToDispatcherDMS.SendCrewToDms(report);
             return;
@@ -339,49 +343,49 @@ namespace TransactionManager
             return proxyToIMS.GetElementStateReportsForSpecificMrIDAndSpecificTimeInterval(mrID, startTime, endTime);
         }
 
-		public List<Crew> GetCrews()
-		{
-			return proxyToIMS.GetCrews();
-		}
+        public List<Crew> GetCrews()
+        {
+            return proxyToIMS.GetCrews();
+        }
 
-		public bool AddCrew(Crew crew)
-		{
-			return proxyToIMS.AddCrew(crew);
-		}
+        public bool AddCrew(Crew crew)
+        {
+            return proxyToIMS.AddCrew(crew);
+        }
 
-		private ScadaDelta GetDeltaForSCADA(Delta d)
-		{
-			List<ResourceDescription> rescDesc = d.InsertOperations.Where(u => u.ContainsProperty(ModelCode.MEASUREMENT_DIRECTION)).ToList();
-			ScadaDelta scadaDelta = new ScadaDelta();
+        private ScadaDelta GetDeltaForSCADA(Delta d)
+        {
+            List<ResourceDescription> rescDesc = d.InsertOperations.Where(u => u.ContainsProperty(ModelCode.MEASUREMENT_DIRECTION)).ToList();
+            ScadaDelta scadaDelta = new ScadaDelta();
 
-			foreach (ResourceDescription rd in rescDesc)
-			{
-				ScadaElement element = new ScadaElement();
-				if (rd.ContainsProperty(ModelCode.MEASUREMENT_TYPE))
-				{
-					string type = rd.GetProperty(ModelCode.MEASUREMENT_TYPE).ToString();
-					if (type == "Analog")
-					{
-						element.Type = DeviceTypes.ANALOG;
-					}
-					else if (type == "Discrete")
-					{
-						element.Type = DeviceTypes.DIGITAL;
-					}
-				}
-				
-				element.ValidCommands = new List<CommandTypes>() { CommandTypes.CLOSE, CommandTypes.OPEN };
-				element.ValidStates = new List<OMSSCADACommon.States>() { OMSSCADACommon.States.CLOSED, OMSSCADACommon.States.OPENED };
-				
-				if (rd.ContainsProperty(ModelCode.IDOBJ_MRID))
-				{
-					//element.Name = rd.GetProperty(ModelCode.IDOBJ_NAME).ToString();
+            foreach (ResourceDescription rd in rescDesc)
+            {
+                ScadaElement element = new ScadaElement();
+                if (rd.ContainsProperty(ModelCode.MEASUREMENT_TYPE))
+                {
+                    string type = rd.GetProperty(ModelCode.MEASUREMENT_TYPE).ToString();
+                    if (type == "Analog")
+                    {
+                        element.Type = DeviceTypes.ANALOG;
+                    }
+                    else if (type == "Discrete")
+                    {
+                        element.Type = DeviceTypes.DIGITAL;
+                    }
+                }
+
+                element.ValidCommands = new List<CommandTypes>() { CommandTypes.CLOSE, CommandTypes.OPEN };
+                element.ValidStates = new List<OMSSCADACommon.States>() { OMSSCADACommon.States.CLOSED, OMSSCADACommon.States.OPENED };
+
+                if (rd.ContainsProperty(ModelCode.IDOBJ_MRID))
+                {
+                    //element.Name = rd.GetProperty(ModelCode.IDOBJ_NAME).ToString();
                     element.Name = rd.GetProperty(ModelCode.IDOBJ_MRID).ToString();
                 }
-				scadaDelta.InsertOps.Add(element);
-			}
-			return scadaDelta;
-		}
-		#endregion
-	}
+                scadaDelta.InsertOps.Add(element);
+            }
+            return scadaDelta;
+        }
+        #endregion
+    }
 }

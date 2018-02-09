@@ -56,5 +56,10 @@ namespace FTN.ServiceContracts
 		{
 			return Channel.IteratorRewind(id);
 		}
-	}
+
+        public Delta GetFixedDelta(Delta d)
+        {
+            return Channel.GetFixedDelta(d);
+        }
+    }
 }
