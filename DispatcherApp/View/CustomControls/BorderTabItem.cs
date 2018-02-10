@@ -8,6 +8,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media;
+using System.Windows.Shapes;
 
 namespace DispatcherApp.View.CustomControls
 {
@@ -20,6 +21,7 @@ namespace DispatcherApp.View.CustomControls
         {
             //this.DataContext = new BorderTabControlsViewModel();
             this.Header = "Not Set";
+            FrameworkElement frameworkElement = new FrameworkElement();
 
             Grid mainGrid = new Grid();
             RowDefinition row1 = new RowDefinition();
@@ -59,17 +61,25 @@ namespace DispatcherApp.View.CustomControls
             closeButton.SetBinding(Button.CommandParameterProperty, new Binding() { RelativeSource = new RelativeSource(RelativeSourceMode.FindAncestor, typeof(BorderTabItem), 1), Path = new PropertyPath("Header") });
 
             ScrollViewer scroll = new ScrollViewer();
-            mainGrid.Children.Add(scroll);
-            Grid.SetRow(scroll, 1);
-            Grid.SetColumn(scroll, 0);
-            Grid.SetRowSpan(scroll, 2);
-            Grid.SetColumnSpan(scroll, 2);
-            scroll.VerticalScrollBarVisibility = ScrollBarVisibility.Visible;
-            scroll.HorizontalScrollBarVisibility = ScrollBarVisibility.Visible;
+            scroll.Style = (Style)frameworkElement.FindResource("ScrollViewerStyle");
+            //Grid.SetRow(scroll, 1);
+            //Grid.SetColumn(scroll, 0);
+            //Grid.SetRowSpan(scroll, 2);
+            //Grid.SetColumnSpan(scroll, 2);
+            //scroll.VerticalScrollBarVisibility = ScrollBarVisibility.Visible;
+            //scroll.HorizontalScrollBarVisibility = ScrollBarVisibility.Visible;
+            //scroll.Background = (Brush)frameworkElement.FindResource("DarkColor");
+            //scroll.BorderBrush = (Brush)frameworkElement.FindResource("DarkColor");
 
             this.Scroll = scroll;
-
+            mainGrid.Children.Add(this.Scroll);
             this.AddChild(mainGrid);
+
+            Rectangle corner = new Rectangle() { Width = 20, Height = 20 };
+            corner.Fill = (Brush)frameworkElement.FindResource("DarkColor");
+            Grid.SetRow(corner, 1);
+            Grid.SetColumn(corner, 1);
+            Canvas.SetZIndex(corner, 100);
 
             this.Content = mainGrid;
         }

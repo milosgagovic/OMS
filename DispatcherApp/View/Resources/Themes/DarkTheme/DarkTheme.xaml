@@ -5,6 +5,7 @@
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="ColorPalette.xaml"/>
         <ResourceDictionary Source="NetworkElements.xaml"/>
+        <ResourceDictionary Source="BasicControls.xaml"/>
     </ResourceDictionary.MergedDictionaries>
 
     <Style x:Key="BorderTabTopLineGrid">

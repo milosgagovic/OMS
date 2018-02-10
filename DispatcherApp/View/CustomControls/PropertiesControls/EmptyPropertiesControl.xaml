@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:DispatcherApp.View"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
-    <Grid Background="white">
+    <Grid Background="{StaticResource MediumColor}">
 
     </Grid>
 </UserControl>

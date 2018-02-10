@@ -37,10 +37,13 @@ namespace DMSCommon.Model
         {
             State = SwitchState.Closed;
             CanCommand = true;
-
         }
 
-
+        public Switch(long gid, string mrid, SwitchState state) : base(gid, mrid)
+        {
+            State = state;
+            CanCommand = true;
+        }
 
     }
 }

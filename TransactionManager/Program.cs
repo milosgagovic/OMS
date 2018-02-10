@@ -17,7 +17,7 @@ namespace TransactionManager
             Console.WriteLine("Transaction Manager is started");
 
             // PETKOVICU NA OVO MISLIM xD ?
-            TransactionManager transactionManager = new TransactionManager();
+            //TransactionManager transactionManager = new TransactionManager();
             //transactionManager.Enlist();
             //transactionManager.Prepare();
 

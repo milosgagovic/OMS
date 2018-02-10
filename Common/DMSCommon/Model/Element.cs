@@ -21,6 +21,10 @@ namespace DMSCommon.Model
 
         private bool _marker;
 
+        private bool _underSCADA = false;
+
+        private bool _incident;
+
         private string _mRID;
 
         [DataMember]
@@ -35,6 +39,20 @@ namespace DMSCommon.Model
         {
             get { return _marker; }
             set { _marker = value; }
+        }
+
+        [DataMember]
+        public bool UnderSCADA
+        {
+            get { return _underSCADA; }
+            set { _underSCADA = value; }
+        }
+
+        [DataMember]
+        public bool Incident
+        {
+            get { return _incident; }
+            set { _incident = value; }
         }
         [DataMember]
         public string MRID

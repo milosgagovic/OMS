@@ -6,13 +6,20 @@
              xmlns:local="clr-namespace:DispatcherApp.View"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
-    <Grid>
+    <Grid Background="{StaticResource MediumColor}">
         <Grid.RowDefinitions>
+            <RowDefinition Height="7"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <Grid Grid.Row="0" Background="White">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="7"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Grid Grid.Row="0" Grid.ColumnSpan="2" Background="{StaticResource DarkColor}"/>
+        <Grid Grid.Row="1" Grid.RowSpan="3" Background="{StaticResource DarkColor}"/>
+        <Grid Grid.Row="1" Grid.Column="1" Background="Transparent">
             <Expander Header="General" IsExpanded="True">
                 <Grid Margin="20, 0, 10, 0">
                     <Grid.ColumnDefinitions>
@@ -28,28 +35,28 @@
                     </Grid.RowDefinitions>
                     <Label>Type:
                     </Label>
-                    <TextBlock Grid.Row="0" Grid.Column="1" Text="Breaker" Background="LightGray" Margin="0, 2, 2, 2">
+                    <TextBlock Grid.Row="0" Grid.Column="1" Text="Breaker" Padding="5, 2, 0, 0" Background="#393535" Foreground="White" Margin="0, 2, 2, 2">
                     </TextBlock>
                     <Label Grid.Row="1">GID:
                     </Label>
-                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding CurrentProperty.GID}" Background="LightGray" Margin="0, 2, 2, 2">
+                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding CurrentProperty.GID}" Padding="5, 2, 0, 0" Background="#393535" Foreground="White" Margin="0, 2, 2, 2">
                     </TextBlock>
                     <Label Grid.Row="2">mRID:
                     </Label>
-                    <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding CurrentProperty.MRID}" Background="LightGray" Margin="0, 2, 2, 2">
+                    <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding CurrentProperty.MRID}" Padding="5, 2, 0, 0" Background="#393535" Foreground="White" Margin="0, 2, 2, 2">
                     </TextBlock>
                     <Label Grid.Row="3">Name:
                     </Label>
-                    <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding CurrentProperty.Name}" Background="LightGray" Margin="0, 2, 2, 2">
+                    <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding CurrentProperty.Name}" Padding="5, 2, 0, 0" Background="#393535" Foreground="White" Margin="0, 2, 2, 2">
                     </TextBlock>
                     <Label Grid.Row="4">Is Energized:
                     </Label>
-                    <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding CurrentProperty.IsEnergized}" Background="LightGray" Margin="0, 2, 2, 2">
+                    <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding CurrentProperty.IsEnergized}" Padding="5, 2, 0, 0" Background="#393535" Foreground="White" Margin="0, 2, 2, 2">
                     </TextBlock>
                 </Grid>
             </Expander>
         </Grid>
-        <Grid Grid.Row="1" Background="White">
+        <Grid Grid.Row="2" Grid.Column="1" Background="Transparent">
             <Expander Header="Measurements" IsExpanded="True">
                 <Grid Margin="20, 0, 10, 0">
                     <Grid.ColumnDefinitions>
@@ -68,15 +75,15 @@
                     </TextBlock>-->
                     <Label Grid.Row="0">State:
                     </Label>
-                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding CurrentProperty.Measurements[0].State}" Background="LightGray" Margin="0, 2, 2, 2">
+                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding CurrentProperty.Measurements[0].State}" Background="#393535" Foreground="White" Padding="5, 2, 0, 0" Margin="0, 2, 2, 2">
                     </TextBlock>
-                    <ComboBox Grid.Row="3" Margin="5, 0, 10, 0" ItemsSource="{Binding CurrentProperty.ValidCommands }" IsEnabled="{Binding CurrentProperty.CanCommand }" SelectedIndex="{Binding CommandIndex}"/>
-                    <Button Grid.Row="3" Grid.Column="1" Width="Auto" Margin="30, 0, 30, 0" IsEnabled="{Binding CurrentProperty.CanCommand }" Command="{Binding ExecuteSwitchCommand}" CommandParameter="{Binding CurrentProperty.Measurements[0].MRID}">Execute
+                    <ComboBox Style="{StaticResource VoidwalkerDarkComboBox}" Grid.Row="3" Margin="5, 5, 10, 0" ItemsSource="{Binding CurrentProperty.ValidCommands }" IsEnabled="{Binding CurrentProperty.CanCommand }" SelectedIndex="{Binding CommandIndex}"/>
+                    <Button Style="{StaticResource ButtonStyle}" Grid.Row="3" Grid.Column="1" Width="Auto" Margin="30, 5, 30, 0" IsEnabled="{Binding CurrentProperty.CanCommand }" Command="{Binding ExecuteSwitchCommand}" CommandParameter="{Binding CurrentProperty.Measurements[0].MRID}">Execute
                     </Button>
                 </Grid>
             </Expander>
         </Grid>
-        <Grid Grid.Row="2" Background="White">
+        <Grid Grid.Row="2" Background="Transparent">
             <!--<Expander Header="Commands" IsExpanded="True">
                 <Grid Margin="20, 0, 10, 0">
                     <Grid.ColumnDefinitions>

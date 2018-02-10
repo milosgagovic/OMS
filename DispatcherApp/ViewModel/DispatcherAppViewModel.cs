@@ -40,7 +40,6 @@ namespace DispatcherApp.ViewModel
 
         private FrameworkElement frameworkElement = new FrameworkElement();
 
-        private static bool isNetworkInitialized = false;
         #region Subscriber
         private Subscriber subscriber;
         #endregion
@@ -66,6 +65,7 @@ namespace DispatcherApp.ViewModel
         private ObservableCollection<UIElement> mainCanvases = new ObservableCollection<UIElement>();
         private Dictionary<long, int> networkDepth = new Dictionary<long, int>();
         private Canvas mainCanvas = new Canvas();
+        private double currentSize = 20;
 
         private ObservableCollection<BorderTabItem> leftTabControlTabs = new ObservableCollection<BorderTabItem>();
         private int leftTabControlIndex = 0;
@@ -130,14 +130,6 @@ namespace DispatcherApp.ViewModel
 
             try
             {
-
-                // posto se nista na transactionu ne dize dok se ne inicijalizuje mreza
-                // tj. dok ne postoji .data
-                // onda ni ovaj da ne trazi mrezu dok ne bude spremna ?
-                //while (!ProxyToTransactionManager.IsNetworkAvailable())
-                //{
-                //    Thread.Sleep(200);
-                //}
                 answerFromTransactionManager = ProxyToTransactionManager.GetNetwork();
             }
             catch (Exception e) { }
@@ -306,37 +298,70 @@ namespace DispatcherApp.ViewModel
                         if (element is Source)
                         {
                             this.Sources.Add(element.ElementGID);
-                            EnergySourceProperties properties = new EnergySourceProperties() { IsEnergized = element.Marker };
+                            EnergySourceProperties properties = new EnergySourceProperties() { IsEnergized = element.Marker, IsUnderScada = element.UnderSCADA };
                             properties.ReadFromResourceDescription(rd);
                             this.properties.Add(element.ElementGID, properties);
-
                         }
                         else if (element is Consumer)
                         {
-                            EnergyConsumerProperties properties = new EnergyConsumerProperties() { IsEnergized = element.Marker };
+                            EnergyConsumerProperties properties = new EnergyConsumerProperties() { IsEnergized = element.Marker, IsUnderScada = element.UnderSCADA };
                             properties.ReadFromResourceDescription(rd);
                             this.properties.Add(element.ElementGID, properties);
                         }
                         else if (element is ACLine)
                         {
-                            ACLineSegmentProperties properties = new ACLineSegmentProperties() { IsEnergized = element.Marker };
+                            ACLineSegmentProperties properties = new ACLineSegmentProperties() { IsEnergized = element.Marker, IsUnderScada = element.UnderSCADA };
                             properties.ReadFromResourceDescription(rd);
                             this.properties.Add(element.ElementGID, properties);
                         }
                         else if (element is Node)
                         {
-                            ConnectivityNodeProperties properties = new ConnectivityNodeProperties() { IsEnergized = element.Marker };
+                            ConnectivityNodeProperties properties = new ConnectivityNodeProperties() { IsEnergized = element.Marker, IsUnderScada = element.UnderSCADA };
                             properties.ReadFromResourceDescription(rd);
                             this.properties.Add(element.ElementGID, properties);
                         }
                         else if (element is Switch)
                         {
-                            BreakerProperties properties = new BreakerProperties() { IsEnergized = element.Marker };
+                            BreakerProperties properties = new BreakerProperties() { IsEnergized = element.Marker, IsUnderScada = element.UnderSCADA };
                             properties.ValidCommands.Add(CommandTypes.CLOSE);
                             this.CommandIndex = 0;
 
                             properties.ReadFromResourceDescription(rd);
                             this.properties.Add(element.ElementGID, properties);
+                        }
+                    }
+                }
+
+                foreach (ElementProperties properties in this.properties.Values)
+                {
+                    if (properties is BreakerProperties)
+                    {
+                        Element element = null;
+                        this.Network.TryGetValue(properties.GID, out element);
+
+                        if (element != null)
+                        {
+                            Element node = null;
+                            Switch breaker = (Switch)element;
+                            this.Network.TryGetValue(breaker.End1, out node);
+
+                            if (node != null)
+                            {
+                                Element branch = null;
+                                Node parent = (Node)node;
+                                this.Network.TryGetValue(parent.Parent, out branch);
+
+                                if (branch != null)
+                                {
+                                    ElementProperties parentProperties = null;
+                                    this.properties.TryGetValue(branch.ElementGID, out parentProperties);
+
+                                    if (parentProperties != null)
+                                    {
+                                        properties.Parent = parentProperties;
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -373,7 +398,7 @@ namespace DispatcherApp.ViewModel
                                 properties.Measurements.Add(measurement);
                             }
 
-                            properties.IsUnderScada = true;
+                            //properties.IsUnderScada = true;
                             this.Measurements.Add(measurement.GID, measurement);
                         }
                         else if (type == DMSType.ENERGCONSUMER)
@@ -389,7 +414,7 @@ namespace DispatcherApp.ViewModel
                                 properties.Measurements.Add(measurement);
                             }
 
-                            properties.IsUnderScada = true;
+                            //properties.IsUnderScada = true;
                             this.Measurements.Add(measurement.GID, measurement);
                         }
                     }
@@ -397,17 +422,21 @@ namespace DispatcherApp.ViewModel
                 }
             }
 
-            foreach (Crew crew in answerFromTransactionManager.Crews)
+            if (answerFromTransactionManager.Crews != null)
             {
-                this.Crews.Add(crew);
+                foreach (Crew crew in answerFromTransactionManager.Crews)
+                {
+                    this.Crews.Add(crew);
+                }
             }
 
-            foreach (IncidentReport report in answerFromTransactionManager.IncidentReports)
+            if (answerFromTransactionManager.IncidentReports != null)
             {
-                this.IncidentReports.Insert(0, report);
+                foreach (IncidentReport report in answerFromTransactionManager.IncidentReports)
+                {
+                    this.IncidentReports.Insert(0, report);
+                }
             }
-
-            isNetworkInitialized = true;
         }
 
         public void DrawElementsOnGraph(int depth)
@@ -451,7 +480,7 @@ namespace DispatcherApp.ViewModel
                         this.networModelControls.Add(source.ElementGID, nmc);
                     }
 
-                    Button but = new Button() { Content = source.MRID, Command = OpenControlCommand, CommandParameter = source.ElementGID };
+                    Button but = new Button() { Content = source.MRID, Command = OpenControlCommand, CommandParameter = source.ElementGID, Style = (Style)frameworkElement.FindResource("ButtonStyle") };
                     this.NetworkMapsBySourceButton.Add(but);
 
                     this.networkDepth.Add(source.ElementGID, depth);
@@ -470,7 +499,7 @@ namespace DispatcherApp.ViewModel
         {
             double cellHeight = mainCanvas.Height / networkDepth[source.ElementGID];
 
-            for (int i = 1; i < cellHeight; i++)
+            for (int i = 1; i < networkDepth[source.ElementGID]; i++)
             {
                 PlaceGridLines(i, cellHeight);
             }
@@ -486,7 +515,7 @@ namespace DispatcherApp.ViewModel
                 Y = cellHeight
             };
 
-            PlaceBranch(point1, point2, cellHeight, source, source.ElementGID);
+            PlaceBranch(point1, point2, cellHeight, 0, source, source.ElementGID);
 
             Element end2 = null;
 
@@ -515,7 +544,7 @@ namespace DispatcherApp.ViewModel
 
                 if (parent != null)
                 {
-                    PlaceBranch((Point)point1, (Point)point2, cellHeight, parent as Branch, parent.ElementGID);
+                    PlaceBranch((Point)point1, (Point)point2, cellHeight, cellWidth, parent as Branch, parent.ElementGID);
                 }
             }
 
@@ -561,10 +590,19 @@ namespace DispatcherApp.ViewModel
 
             if (prop != null)
             {
-                ConsumerControl consumercontr = new ConsumerControl(prop, 20);
+                if (currentSize > cellWidth * 90 / 100)
+                {
+                    currentSize = cellWidth * 90 / 100;
+                }
+                if (currentSize > cellHeight * 25 / 100)
+                {
+                    currentSize = cellWidth * 25 / 100;
+                }
 
-                Canvas.SetLeft(consumercontr, offset + /*x * */cellWidth - cellWidth / 2 - 20 / 2);
-                Canvas.SetTop(consumercontr, y * cellHeight - 20 - 5);
+                ConsumerControl consumercontr = new ConsumerControl(prop, currentSize);
+
+                Canvas.SetLeft(consumercontr, offset + /*x * */cellWidth - cellWidth / 2 - currentSize / 2);
+                Canvas.SetTop(consumercontr, y * cellHeight - currentSize - 5);
                 Canvas.SetZIndex(consumercontr, 5);
 
                 consumercontr.Button.Command = PropertiesCommand;
@@ -574,22 +612,31 @@ namespace DispatcherApp.ViewModel
                 Point point2 = new Point()
                 {
                     X = offset + /*x * */cellWidth - cellWidth / 2,
-                    Y = y * cellHeight - 20
+                    Y = y * cellHeight - currentSize
                 };
 
-                PlaceBranch(point1, point2, cellHeight, consumer, id);
+                PlaceBranch(point1, point2, cellHeight, cellWidth, consumer, id);
 
                 mainCanvas.Children.Add(consumercontr);
             }
         }
 
-        private void PlaceSwitch(double cellHeight, Point point1, Point point2, long id, bool isEnergized, string mrid)
+        private Point PlaceSwitch(double cellHeight, double cellWidth, Point point1, Point point2, long id, bool isEnergized, string mrid)
         {
             ElementProperties prop;
             properties.TryGetValue(id, out prop);
 
             if (prop != null)
             {
+                if (currentSize > cellWidth * 90 / 100)
+                {
+                    currentSize = cellWidth * 90 / 100;
+                }
+                if (currentSize > cellHeight * 25 / 100)
+                {
+                    currentSize = cellHeight * 25 / 100;
+                }
+
                 SwitchControl switchControl = new SwitchControl(prop, 20);
 
                 Canvas.SetLeft(switchControl, point2.X - (20) / 2 - 20 - 2);
@@ -602,6 +649,8 @@ namespace DispatcherApp.ViewModel
 
                 mainCanvas.Children.Add(switchControl);
             }
+
+            return new Point(point2.X, point2.Y - (cellHeight / 3));
         }
 
         private void PlaceACLine(double cellHeight, Point point1, Point point2, long id, bool isEnergized, string mrid)
@@ -625,41 +674,15 @@ namespace DispatcherApp.ViewModel
             }
         }
 
-        private void PlaceBranch(Point point1, Point point2, double cellHeight, Branch branch, long id)
+        private void PlaceBranch(Point point1, Point point2, double cellHeight, double cellWidth, Branch branch, long id)
         {
             ElementProperties prop;
             properties.TryGetValue(id, out prop);
 
+            Point point4 = new Point();
+
             if (prop != null)
             {
-                Polyline polyline = new Polyline();
-                polyline.Points.Add(point1);
-                Point point3 = new Point()
-                {
-                    X = point2.X,
-                    Y = point1.Y + (cellHeight / 3)
-                };
-
-                polyline.Points.Add(point3);
-                polyline.Points.Add(point2);
-                polyline.StrokeThickness = 1;
-                Canvas.SetZIndex(polyline, 0);
-
-                polyline.DataContext = prop;
-
-                Style style = new Style();
-                Setter setter1 = new Setter() { Property = Polyline.StrokeProperty, Value = (SolidColorBrush)frameworkElement.FindResource("SwitchColorClosed") };
-
-                DataTrigger trigger = new DataTrigger() { Binding = new Binding("IsEnergized"), Value = false };
-                Setter setter2 = new Setter() { Property = Polyline.StrokeProperty, Value = Brushes.Blue };
-
-                trigger.Setters.Add(setter2);
-
-                style.Setters.Add(setter1);
-                style.Triggers.Add(trigger);
-
-                polyline.Style = style;
-
                 if (branch != null)
                 {
                     if (branch is Source)
@@ -668,15 +691,90 @@ namespace DispatcherApp.ViewModel
                     }
                     else if (branch is Switch)
                     {
-                        PlaceSwitch(cellHeight, point1, point2, branch.ElementGID, branch.Marker, branch.MRID);
+                        point4 = PlaceSwitch(cellHeight, cellWidth, point1, point2, branch.ElementGID, branch.Marker, branch.MRID);
                     }
                     else if (branch is ACLine)
                     {
                         PlaceACLine(cellHeight, point1, point2, branch.ElementGID, branch.Marker, branch.MRID);
                     }
-                }
 
-                mainCanvas.Children.Add(polyline);
+                    Point point3 = new Point()
+                    {
+                        X = point2.X,
+                        Y = point1.Y + (cellHeight / 3)
+                    };
+
+                    if (branch is Switch)
+                    {
+                        Polyline polyline1 = new Polyline();
+                        Polyline polyline2 = new Polyline();
+                        polyline1.Points.Add(point4);
+                        polyline1.Points.Add(point2);
+
+                        polyline1.StrokeThickness = 1;
+                        Canvas.SetZIndex(polyline1, 0);
+                        polyline1.DataContext = prop;
+
+                        polyline2.Points.Add(point1);
+                        polyline2.Points.Add(point3);
+                        polyline2.Points.Add(point4);
+
+                        polyline2.StrokeThickness = 1;
+                        Canvas.SetZIndex(polyline2, 0);
+                        polyline2.DataContext = prop;
+
+                        Style style1 = new Style();
+                        Style style2 = new Style();
+                        Setter setter1 = new Setter() { Property = Polyline.StrokeProperty, Value = (SolidColorBrush)frameworkElement.FindResource("SwitchColorClosed") };
+
+                        DataTrigger trigger1 = new DataTrigger() { Binding = new Binding("IsEnergized"), Value = false };
+                        Setter setter2 = new Setter() { Property = Polyline.StrokeProperty, Value = Brushes.Blue };
+
+                        trigger1.Setters.Add(setter2);
+
+                        DataTrigger trigger2 = new DataTrigger() { Binding = new Binding("Parent.IsEnergized"), Value = false };
+
+                        trigger2.Setters.Add(setter2);
+
+                        style1.Setters.Add(setter1);
+                        style1.Triggers.Add(trigger1);
+
+                        style2.Setters.Add(setter1);
+                        style2.Triggers.Add(trigger2);
+
+                        polyline1.Style = style1;
+                        polyline2.Style = style2;
+
+                        mainCanvas.Children.Add(polyline1);
+                        mainCanvas.Children.Add(polyline2);
+                    }
+                    else
+                    {
+                        Polyline polyline1 = new Polyline();
+                        polyline1.Points.Add(point1);
+                        polyline1.Points.Add(point3);
+                        polyline1.Points.Add(point2);
+
+                        polyline1.StrokeThickness = 1;
+                        Canvas.SetZIndex(polyline1, 0);
+                        polyline1.DataContext = prop;
+
+                        Style style1 = new Style();
+                        Setter setter1 = new Setter() { Property = Polyline.StrokeProperty, Value = (SolidColorBrush)frameworkElement.FindResource("SwitchColorClosed") };
+
+                        DataTrigger trigger1 = new DataTrigger() { Binding = new Binding("IsEnergized"), Value = false };
+                        Setter setter2 = new Setter() { Property = Polyline.StrokeProperty, Value = Brushes.Blue };
+
+                        trigger1.Setters.Add(setter2);
+
+                        style1.Setters.Add(setter1);
+                        style1.Triggers.Add(trigger1);
+
+                        polyline1.Style = style1;
+
+                        mainCanvas.Children.Add(polyline1);
+                    }
+                }
             }
         }
 
@@ -813,7 +911,7 @@ namespace DispatcherApp.ViewModel
 
         private void ExecuteSwitchCommandd(object parameter)
         {
-            Measurement measurement = this.Measurements.Where(m => m.Value.MRID == parameter).FirstOrDefault().Value;
+            Measurement measurement = this.Measurements.Where(m => m.Value.MRID == (string)parameter).FirstOrDefault().Value;
             if (measurement != null)
             {
                 ElementProperties elementProperties;
@@ -879,7 +977,7 @@ namespace DispatcherApp.ViewModel
 
                 if (!exists)
                 {
-                    BorderTabItem ti = new BorderTabItem() { Header = "Properties" };
+                    BorderTabItem ti = new BorderTabItem() { Header = "Properties", Style = (Style)frameworkElement.FindResource("TabItemRightStyle") };
                     ti.Title.Text = "Properties";
                     SetTabContent(ti, element);
                     //if (!RightTabControlTabs.Contains(ti))
@@ -943,7 +1041,7 @@ namespace DispatcherApp.ViewModel
 
                 if (!exists)
                 {
-                    BorderTabItem ti = new BorderTabItem() { Header = parameter };
+                    BorderTabItem ti = new BorderTabItem() { Header = parameter, Style = (Style)frameworkElement.FindResource("TabItemLeftStyle") };
                     ti.Scroll.Content = networkExplorer;
                     ti.Title.Text = (string)parameter;
 
@@ -973,7 +1071,7 @@ namespace DispatcherApp.ViewModel
 
                 if (!exists)
                 {
-                    BorderTabItem ti = new BorderTabItem() { Header = parameter };
+                    BorderTabItem ti = new BorderTabItem() { Header = parameter, Style = (Style)frameworkElement.FindResource("TabItemRightStyle") };
                     if (!RightTabControlTabs.Contains(ti))
                     {
                         ti.Title.Text = (string)parameter;
@@ -1002,7 +1100,7 @@ namespace DispatcherApp.ViewModel
 
                 if (!exists)
                 {
-                    BorderTabItem ti = new BorderTabItem() { Header = parameter };
+                    BorderTabItem ti = new BorderTabItem() { Header = parameter, Style = (Style)frameworkElement.FindResource("TabItemBottomStyle") };
                     if (parameter as string == "Incident Explorer")
                     {
                         ti.Scroll.Content = incidentExplorer;
@@ -1047,11 +1145,14 @@ namespace DispatcherApp.ViewModel
 
                     if (!exists)
                     {
-                        TabItem ti = new TabItem()
+                        BorderTabItem ti = new BorderTabItem()
                         {
-                            Content = networModelControls[(long)parameter],
-                            Header = element.MRID
+                            Header = element.MRID,
+                            Style = (Style)frameworkElement.FindResource("TabItemCenterStyle")
                         };
+
+                        ti.Scroll.Content = networModelControls[(long)parameter];
+                        ti.Title.Text = "";
 
                         if (!CenterTabControlTabs.Contains(ti))
                         {
@@ -1426,17 +1527,6 @@ namespace DispatcherApp.ViewModel
         #region Publish methods
         private void GetUpdate(List<SCADAUpdateModel> update)
         {
-
-            // nisam testirala radi li ovo, zato sto mi se sam jednom desio slucaj 
-            //  da je u ovoj metodi puklo kada se dobila promena sa skade, a da pretodno nismo stigli da dobijemo od transactiona, dole sam oznacila gde
-            // pa kao da se poziva to samo kad se mreza bar jednom inicijalizuje podacima od transactiona
-            
-            while (!isNetworkInitialized)
-            {
-                Console.WriteLine("GetUpdate() -> Network is not initialized yet.");
-                Thread.Sleep(1000);
-            }
-
             if (update != null)
             {
                 if (update.ElementAt(0).IsElementAdded == true)
@@ -1477,8 +1567,6 @@ namespace DispatcherApp.ViewModel
                         if (property is BreakerProperties && i == 0)
                         {
                             Measurement measurement;
-
-                            // ovde je bilo puklo..measurementsi nisi inicijalizovani bili, tako nesto
                             Measurements.TryGetValue(property.Measurements[0].GID, out measurement);
                             DigitalMeasurement digitalMeasurement = (DigitalMeasurement)measurement;
 

@@ -19,6 +19,7 @@ namespace DispatcherApp.Model.Properties
         private bool crewSent = false;
         private bool canCommand = false;
         private List<Measurement> measurements;
+        private ElementProperties parent;
 
         public ElementProperties()
         {
@@ -146,6 +147,19 @@ namespace DispatcherApp.Model.Properties
             {
                 this.measurements = value;
                 RaisePropertyChanged("Measurements");
+            }
+        }
+
+        public ElementProperties Parent
+        {
+            get
+            {
+                return this.parent;
+            }
+            set
+            {
+                this.parent = value;
+                RaisePropertyChanged("Parent");
             }
         }
 
