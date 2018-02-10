@@ -92,6 +92,7 @@ namespace DMSService
         public List<ResourceDescription> AclineSegRD { get => aclineSeg; set => aclineSeg = value; }
         public List<ResourceDescription> EnergyConsumersRD { get => energyConsumers; set => energyConsumers = value; }
         public List<ResourceDescription> EnergySourcesRD { get => energySources; set => energySources = value; }
+        public ModelGdaDMS Gda { get => gda; set => gda = value; }
         #endregion
 
         public void Start()
@@ -285,13 +286,13 @@ namespace DMSService
             if (delta.InsertOperations.Count == 0)
             {
                 ClearAllLists();
-                gda.GetExtentValuesExtended(ModelCode.TERMINAL).ForEach(ter => TerminalsRD.Add(ter));
-                gda.GetExtentValuesExtended(ModelCode.CONNECTNODE).ForEach(n => NodesRD.Add(n));
-                gda.GetExtentValuesExtended(ModelCode.BREAKER).ForEach(n => SwitchesRD.Add(n));
-                gda.GetExtentValuesExtended(ModelCode.ACLINESEGMENT).ForEach(n => AclineSegRD.Add(n));
-                gda.GetExtentValuesExtended(ModelCode.ENERGCONSUMER).ForEach(n => EnergyConsumersRD.Add(n));
-                gda.GetExtentValuesExtended(ModelCode.ENERGSOURCE).ForEach(n => EnergySourcesRD.Add(n));
-                gda.GetExtentValuesExtended(ModelCode.DISCRETE).ForEach(n => DiscreteMeasurementsRD.Add(n));
+
+                Gda.GetExtentValuesExtended(ModelCode.TERMINAL).ForEach(ter => TerminalsRD.Add(ter));
+                Gda.GetExtentValuesExtended(ModelCode.CONNECTNODE).ForEach(n => NodesRD.Add(n));
+                Gda.GetExtentValuesExtended(ModelCode.BREAKER).ForEach(n => SwitchesRD.Add(n));
+                Gda.GetExtentValuesExtended(ModelCode.ACLINESEGMENT).ForEach(n => AclineSegRD.Add(n));
+                Gda.GetExtentValuesExtended(ModelCode.ENERGCONSUMER).ForEach(n => EnergyConsumersRD.Add(n));
+                Gda.GetExtentValuesExtended(ModelCode.ENERGSOURCE).ForEach(n => EnergySourcesRD.Add(n));
             }
             else
             {

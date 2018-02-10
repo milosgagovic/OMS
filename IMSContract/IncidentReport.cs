@@ -15,7 +15,7 @@ namespace IMSContract
         private int id;
         private DateTime time;
         private string mrID;
-        private int numOfConsumersNoPower;
+        private float lostPower;
         private IncidentState incidentState;
         private bool crewSent;
         private TimeSpan repairTime;
@@ -29,13 +29,14 @@ namespace IMSContract
             Time = Time.AddTicks(-(Time.Ticks % TimeSpan.TicksPerSecond));
             CrewSent = false;
             RepairTime = new TimeSpan();
+            LostPower = 0;
         }
 
         [Key]
         public int Id { get => id; set => id = value; }
         public DateTime Time { get => time; set { time = value; } }
         public string MrID { get => mrID; set => mrID = value; }
-        public int NumOfConsumersNoPower { get => numOfConsumersNoPower; set => numOfConsumersNoPower = value; }
+        public float LostPower { get => lostPower; set => lostPower = value; }
         public IncidentState IncidentState { get => incidentState; set { incidentState = value; RaisePropertyChanged("IncidentState"); } }
         public bool CrewSent { get => crewSent; set { crewSent = value; RaisePropertyChanged("CrewSent"); } }
         public TimeSpan RepairTime { get => repairTime; set { repairTime = value; RaisePropertyChanged("RepairTime"); } }
