@@ -18,7 +18,7 @@
                 <!--<DataGridTextColumn Header="ID" Binding="{Binding Id}"/>-->
                 <DataGridTextColumn Header="Time Stamp" Binding="{Binding Time}"/>
                 <DataGridTextColumn Header="Element ID" Binding="{Binding MrID}"/>
-                <DataGridTextColumn Header="Num of Consumers without Power" Binding="{Binding NumOfConsumersNoPower}"/>
+                <DataGridTextColumn Header="Lost active power (kW)" Binding="{Binding LostPower}"/>
                 <DataGridTextColumn Header="Incident State" Binding="{Binding IncidentState}"/>
                 <DataGridTextColumn Header="Repair Time" Binding="{Binding RepairTime}"/>
                 <DataGridTextColumn Header="Reason for Incident" Binding="{Binding Reason}"/>

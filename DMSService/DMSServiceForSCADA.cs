@@ -123,6 +123,15 @@ namespace DMSService
             if (isIncident)
             {
                 //Thread.Sleep(1000);
+                List<long> gids = new List<long>();
+                networkChange.ForEach(x => gids.Add(x.Gid));
+                List<long> listOfConsumersWithoutPower = gids.Where(x => (DMSType)ModelCodeHelper.ExtractTypeFromGlobalId(x) == DMSType.ENERGCONSUMER).ToList();
+                foreach (long gid in listOfConsumersWithoutPower)
+                {
+                  ResourceDescription resDes  =  DMSService.Instance.Gda.GetValues(gid);
+                  incident.LostPower += resDes.GetProperty(ModelCode.ENERGCONSUMER_PFIXED).AsFloat();
+                }
+
                 publisher.PublishIncident(incident);
             }
         }

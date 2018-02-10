@@ -273,7 +273,7 @@
 	</cim:Discrete>
 	
 	<cim:EnergyConsumer rdf:ID="EC_1">
-		<cim:EnergyConsumer.pfixed></cim:EnergyConsumer.pfixed>
+		<cim:EnergyConsumer.pfixed>22.43</cim:EnergyConsumer.pfixed>
 		<cim:EnergyConsumer.qfixed></cim:EnergyConsumer.qfixed>
 		<cim:Equipment.normallyInService>true</cim:Equipment.normallyInService>
 		<cim:IdentifiedObject.mRID>EC_1</cim:IdentifiedObject.mRID>
@@ -281,7 +281,7 @@
 	</cim:EnergyConsumer>
 	
 	<cim:EnergyConsumer rdf:ID="EC_2">
-		<cim:EnergyConsumer.pfixed></cim:EnergyConsumer.pfixed>
+		<cim:EnergyConsumer.pfixed>47.64</cim:EnergyConsumer.pfixed>
 		<cim:EnergyConsumer.qfixed></cim:EnergyConsumer.qfixed>
 		<cim:Equipment.normallyInService>true</cim:Equipment.normallyInService>
 		<cim:IdentifiedObject.mRID>EC_2</cim:IdentifiedObject.mRID>
@@ -289,7 +289,7 @@
 	</cim:EnergyConsumer>
 	
 	<cim:EnergyConsumer rdf:ID="EC_3">
-		<cim:EnergyConsumer.pfixed></cim:EnergyConsumer.pfixed>
+		<cim:EnergyConsumer.pfixed>36.42</cim:EnergyConsumer.pfixed>
 		<cim:EnergyConsumer.qfixed></cim:EnergyConsumer.qfixed>
 		<cim:Equipment.normallyInService>true</cim:Equipment.normallyInService>
 		<cim:IdentifiedObject.mRID>EC_3</cim:IdentifiedObject.mRID>
