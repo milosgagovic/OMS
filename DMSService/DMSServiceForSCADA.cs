@@ -109,7 +109,7 @@ namespace DMSService
                 }
             }
 
-            //upisati promijenu stanja elementa
+            // zasto ne upises odmah kad napravis stateReport, kad se nista ne menja?
             IMSClient.AddElementStateReport(elementStateReport);
 
             Source s = (Source)DMSService.Instance.Tree.Data[DMSService.Instance.Tree.Roots[0]];

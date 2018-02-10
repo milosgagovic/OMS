@@ -30,6 +30,8 @@ namespace SCADA.ConfigurationParser
             string message = string.Empty;
             string configurationName = deserializationSource;
             string source = Path.Combine(basePath, configurationName);
+           
+            // to do: DODATI DA SE PRVO OBRISE BAZA. neka promenljiva koja ce sluziti kao indikacija svima koji koriste pvs i rtus da stanu za taj period cleean i brisanja
 
             try
             {
@@ -272,7 +274,6 @@ namespace SCADA.ConfigurationParser
                 return false;
             }
 
-           // SerializeScadaModel();
             return true;
         }
 

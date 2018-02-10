@@ -18,6 +18,15 @@ namespace DMSService
     {
         private static Tree<Element> newTree;
         private static Tree<Element> oldTree;
+
+        public void Enlist()
+        {
+            Console.WriteLine("Pozvan je enlist na DMS-u");
+            oldTree = DMSService.Instance.Tree;
+            ITransactionCallback callback = OperationContext.Current.GetCallbackChannel<ITransactionCallback>();
+            callback.CallbackEnlist(true);
+        }
+
         public void Commit()
         {
             Console.WriteLine("Pozvan je Commit na DMS-u");
@@ -36,15 +45,7 @@ namespace DMSService
             ITransactionCallback callback = OperationContext.Current.GetCallbackChannel<ITransactionCallback>();
             callback.CallbackCommit("Uspjesno je prosao commit na DMS-u");
         }
-
-        public void Enlist()
-        {
-            Console.WriteLine("Pozvan je enlist na DMS-u");
-            oldTree = DMSService.Instance.Tree;
-            ITransactionCallback callback = OperationContext.Current.GetCallbackChannel<ITransactionCallback>();
-            callback.CallbackEnlist(true);
-        }
-
+      
         public void Prepare(Delta delta)
         {
             Console.WriteLine("Pozvan je prepare na DMS-u");

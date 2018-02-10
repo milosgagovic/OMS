@@ -43,6 +43,7 @@ namespace SCADA
             CommAcqEngine AcqEngine = new CommAcqEngine();
             if (AcqEngine.Configure(acqComConfigPath))
             {
+                AcqEngine.InitializeSimulator();
 
                 // uzimanje zahteva iz reda, i slanje zahteva MDBU-u. dobijanje MDB odgovora i stavljanje u red
                 Thread processingRequestsFromQueue = new Thread(PCCommEng.ProcessRequestsFromQueue);
