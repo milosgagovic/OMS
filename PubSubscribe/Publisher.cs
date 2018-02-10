@@ -11,6 +11,9 @@ using System.Threading.Tasks;
 
 namespace PubSubscribe
 {
+    /// <summary>
+    /// Client for Publishing service
+    /// </summary>
     public class Publisher
     {
         IPublishing proxy;
@@ -29,6 +32,7 @@ namespace PubSubscribe
             catch { }
         }
 
+        // not used
         public void PublishCrew(SCADAUpdateModel update)
         {
             try

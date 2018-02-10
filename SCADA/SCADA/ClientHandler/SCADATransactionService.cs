@@ -78,6 +78,10 @@ namespace SCADA.ClientHandler
                     callback.CallbackPrepare(false);
                 }
             }
+            else
+            {
+                callback.CallbackPrepare(false);
+            }
         }
 
         // setting configuration to new file
@@ -92,7 +96,6 @@ namespace SCADA.ClientHandler
             Console.WriteLine("Pozvan je Commit na SCADA");
         }
 
-        // ovaj rollback zapravo omogucava da se poniste neki od slucajeva iz prepare-a
         // returning to old config file, parse database again from file! 
         public void Rollback()
         {
@@ -100,9 +103,12 @@ namespace SCADA.ClientHandler
 
             ScadaModelParser parser = new ScadaModelParser();
             parser.SwapConfigs(modifiedConfigFile, currentConfigFile);
+
+            // proveriti ovo! iz kog fajla se deserijalizuje, tj. da li je swap odradio. 
+            // prthodno izbrisati bazu...
             parser.DeserializeScadaModel();
 
-            callback.CallbackRollback("Rollback on scada");
+            callback.CallbackRollback("Somethinw went wrong on SCADA");
             Console.WriteLine("Pozvan je Rollback na SCADA");
         }
     }

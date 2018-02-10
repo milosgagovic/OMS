@@ -40,6 +40,7 @@ namespace DispatcherApp.ViewModel
 
         private FrameworkElement frameworkElement = new FrameworkElement();
 
+        private static bool isNetworkInitialized = false;
         #region Subscriber
         private Subscriber subscriber;
         #endregion
@@ -129,7 +130,7 @@ namespace DispatcherApp.ViewModel
 
             try
             {
-                
+
                 // posto se nista na transactionu ne dize dok se ne inicijalizuje mreza
                 // tj. dok ne postoji .data
                 // onda ni ovaj da ne trazi mrezu dok ne bude spremna ?
@@ -405,6 +406,8 @@ namespace DispatcherApp.ViewModel
             {
                 this.IncidentReports.Insert(0, report);
             }
+
+            isNetworkInitialized = true;
         }
 
         public void DrawElementsOnGraph(int depth)
@@ -1423,6 +1426,17 @@ namespace DispatcherApp.ViewModel
         #region Publish methods
         private void GetUpdate(List<SCADAUpdateModel> update)
         {
+
+            // nisam testirala radi li ovo, zato sto mi se sam jednom desio slucaj 
+            //  da je u ovoj metodi puklo kada se dobila promena sa skade, a da pretodno nismo stigli da dobijemo od transactiona, dole sam oznacila gde
+            // pa kao da se poziva to samo kad se mreza bar jednom inicijalizuje podacima od transactiona
+            
+            while (!isNetworkInitialized)
+            {
+                Console.WriteLine("GetUpdate() -> Network is not initialized yet.");
+                Thread.Sleep(1000);
+            }
+
             if (update != null)
             {
                 if (update.ElementAt(0).IsElementAdded == true)
@@ -1463,6 +1477,8 @@ namespace DispatcherApp.ViewModel
                         if (property is BreakerProperties && i == 0)
                         {
                             Measurement measurement;
+
+                            // ovde je bilo puklo..measurementsi nisi inicijalizovani bili, tako nesto
                             Measurements.TryGetValue(property.Measurements[0].GID, out measurement);
                             DigitalMeasurement digitalMeasurement = (DigitalMeasurement)measurement;
 

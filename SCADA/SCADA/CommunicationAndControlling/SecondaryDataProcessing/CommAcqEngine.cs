@@ -54,7 +54,93 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
         /// </summary>
         public void InitializeSimulator()
         {
+            List<ProcessVariable> pvs = dbContext.GetAllProcessVariables();
+            if (pvs.Count != 0)
+            {
+                foreach (ProcessVariable pv in pvs)
+                {
+                    IORequestBlock iorb = new IORequestBlock()
+                    {
+                        RequestType = RequestType.SEND,
+                        ProcessControllerName = pv.ProcContrName
+                    };
 
+                    RTU rtu;
+                    if ((rtu = dbContext.GetRTUByName(pv.ProcContrName)) != null)
+                    {
+                        bool shouldCommand = false;
+                        switch (rtu.Protocol)
+                        {
+                            case IndustryProtocols.ModbusTCP:
+
+                                ModbusHandler mdbHandler = new ModbusHandler();
+
+
+
+                                switch (pv.Type)
+                                {
+
+                                    // initialy, on simulator all digitals are set to 0 -> closed state
+                                    case VariableTypes.DIGITAL:
+
+                                        Digital digital = (Digital)pv;
+
+                                        CommandTypes comm;
+                                        if (shouldCommand = CommandValidator.InitialCommandinfForVariable(digital, out comm))
+                                        {
+
+                                            iorb.ReqAddress = (ushort)rtu.GetCommandAddress(pv);
+
+                                            mdbHandler.Request = new WriteRequest()
+                                            {
+                                                FunCode = FunctionCodes.WriteSingleCoil,
+                                                StartAddr = (ushort)rtu.GetCommandAddress(pv),
+                                                Value = (ushort)comm
+                                            };
+                                            mdbHandler.Header = new ModbusApplicationHeader()
+                                            {
+                                                TransactionId = 0,
+                                                Length = 5,
+                                                ProtocolId = (ushort)IndustryProtocols.ModbusTCP,
+                                                DeviceAddress = rtu.Address
+                                            };
+                                        }
+                                        break;
+
+                                    case VariableTypes.ANALOGIN:
+
+                                        AnalogIn analog = (AnalogIn)pv;
+                                        break;
+
+                                    case VariableTypes.COUNTER:
+
+                                        Counter counter = (Counter)pv;
+                                        break;
+                                }
+
+                                if (shouldCommand)
+                                {
+                                    iorb.SendBuff = mdbHandler.PackData();
+                                    iorb.SendMsgLength = iorb.SendBuff.Length;
+                                }
+
+                                break;
+                        }
+
+                        if (shouldCommand)
+                        {
+                            IORequests.EnqueueRequest(iorb);
+                        }
+                    }
+                    else
+                    {
+                        // ne postoji taj rtu sa tim imenom. izbrisati te procesne varijable sa rtu-om tog imena
+                        Console.WriteLine("Invalid config: ProcContrName = {0} does not exists.", pv.ProcContrName);
+                        continue;
+                    }
+
+                }
+            }
         }
 
         /// <summary>
@@ -62,7 +148,6 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
         /// </summary>
         public void StartAcquisition()
         {
-            int processing = 0;
             List<ProcessVariable> pvs;
 
             while (!isShutdown)
@@ -134,8 +219,7 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
                         Console.WriteLine("Invalid config: ProcContrName = {0} does not exists.", pv.ProcContrName);
                         continue;
                     }
-                
-                    processing++;
+
                 }
 
                 // Thread.Sleep(millisecondsTimeout: timerMsc);
@@ -196,7 +280,7 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
                                                 {
                                                     Console.WriteLine("CHANGE!");
                                                     target.State = target.ValidStates[array[0]];
-                                                  
+
                                                     ScadaModelParser parser = new ScadaModelParser();
                                                     parser.SerializeScadaModel();
 

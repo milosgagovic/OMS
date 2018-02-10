@@ -15,9 +15,6 @@ namespace DMSService
 {
     public class DMSDispatcherService : IDMSContract
     {
-        //private static ChannelFactory<IIMSContract> factoryToIMS = new ChannelFactory<IIMSContract>(new NetTcpBinding(), new EndpointAddress("net.tcp://localhost:6090/IncidentManagementSystemService"));
-        //private static IIMSContract IMSClient = factoryToIMS.CreateChannel();
-
         private IMSClient imsClient;
         private IMSClient IMSClient
         {

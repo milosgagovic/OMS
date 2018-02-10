@@ -25,7 +25,7 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
                             retVal = false;
 
                         // command is CLOSE, last command was CLOSE, but state is OPENED (incident) -> valid
-                       
+
                         break;
 
                     case CommandTypes.OPEN:
@@ -43,6 +43,35 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
         public static bool CheckCommandExecution()
         {
             throw new NotImplementedException();
+        }
+
+        // calculating a possibly command, in dependence of variable properties
+        public static bool InitialCommandinfForVariable(Digital digital, out CommandTypes command)
+        {
+            // ovde nema neke velike logike za sada, ali je ideja da kasnije nekad bude ...prosirivo? xD
+
+            command = CommandTypes.OPEN;
+
+            // if previously states was OPENED, OPEN it again 
+            if (digital.State == States.OPENED)
+            {
+                command = CommandTypes.OPEN;
+                return true;
+            }
+
+            if (digital.State == States.CLOSED && digital.Command == CommandTypes.OPEN)
+            {
+                command = CommandTypes.OPEN;
+                return true;
+            }
+
+            /*
+            if (digital.State==States.OPENED && digital.Command == CommandTypes.CLOSE)
+            {
+                // ovde ce se u sledecem akv ciklusu promeniti stanje.
+            }*/
+
+            return false;
         }
     }
 }

@@ -15,6 +15,9 @@ namespace PubSubscribe
     public delegate void PublishCrewEvent(SCADAUpdateModel update);
     public delegate void PublishReportIncident(IncidentReport report);
 
+    /// <summary>
+    /// Client for Subscribing service
+    /// </summary>
     public class Subscriber : IPublishing
     {
         ISubscription subscriptionProxy = null;
@@ -74,9 +77,7 @@ namespace PubSubscribe
 
         public void Publish(List<SCADAUpdateModel> update)
         {
-
             publishUpdateEvent?.Invoke(update);
-
         }
 
         public void PublishCrewUpdate(SCADAUpdateModel update)

@@ -8,7 +8,6 @@ namespace OMSSCADACommon
 {
     public enum States
     {
-        // obrnula
         // ako je 0 na ulazu to je closed
         CLOSED = 0,
         OPENED,
