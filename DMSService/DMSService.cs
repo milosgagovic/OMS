@@ -3,6 +3,8 @@ using DMSCommon.TreeGraph;
 using DMSCommon.TreeGraph.Tree;
 using DMSContract;
 using FTN.Common;
+using OMSSCADACommon.Commands;
+using OMSSCADACommon.Responses;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,6 +32,7 @@ namespace DMSService
         private List<ResourceDescription> aclineSeg = new List<ResourceDescription>();
         private List<ResourceDescription> energyConsumers = new List<ResourceDescription>();
         private List<ResourceDescription> energySources = new List<ResourceDescription>();
+        private List<ResourceDescription> discreteMeasurements = new List<ResourceDescription>();
 
         private ModelResourcesDesc modelResourcesDesc = new ModelResourcesDesc();
         private ModelGdaDMS gda = new ModelGdaDMS();
@@ -65,6 +68,8 @@ namespace DMSService
         public List<ACLine> Aclines { get => _aclines; set => _aclines = value; }
         public List<Switch> Switches { get => _switches; set => _switches = value; }
         public List<Node> ConnecNodes { get => _connecnodes; set => _connecnodes = value; }
+        public List<ResourceDescription> DiscreteMeasurementsRD { get => discreteMeasurements; set => discreteMeasurements = value; }
+
         public Tree<Element> Tree
         {
             get
@@ -96,6 +101,8 @@ namespace DMSService
             // dakle, sada se startuju DMSTransaction i DMSDispatcher
             StartHosts();
             Tree = InitializeNetwork(new Delta());
+            
+            isNetworkInitialized = true;
 
             while (!isNetworkInitialized)
             {
@@ -271,6 +278,10 @@ namespace DMSService
             Tree<Element> retVal = new Tree<Element>();
             List<long> eSources = new List<long>();
 
+            SCADAClient client = new SCADAClient();
+            Response response = null;
+            response = client.ExecuteCommand(new ReadAll());
+
             if (delta.InsertOperations.Count == 0)
             {
                 ClearAllLists();
@@ -280,6 +291,7 @@ namespace DMSService
                 gda.GetExtentValuesExtended(ModelCode.ACLINESEGMENT).ForEach(n => AclineSegRD.Add(n));
                 gda.GetExtentValuesExtended(ModelCode.ENERGCONSUMER).ForEach(n => EnergyConsumersRD.Add(n));
                 gda.GetExtentValuesExtended(ModelCode.ENERGSOURCE).ForEach(n => EnergySourcesRD.Add(n));
+                gda.GetExtentValuesExtended(ModelCode.DISCRETE).ForEach(n => DiscreteMeasurementsRD.Add(n));
             }
             else
             {
@@ -298,6 +310,8 @@ namespace DMSService
                         TerminalsRD.Add(resource);
                     else if (type == DMSType.ENERGSOURCE)
                         EnergySourcesRD.Add(resource);
+                    else if (type == DMSType.DISCRETE)
+                        DiscreteMeasurementsRD.Add(resource);
                 }
                 foreach (ResourceDescription resource in delta.UpdateOperations)
                 {
@@ -446,6 +460,38 @@ namespace DMSService
                     else if (mc.Equals(DMSType.BREAKER))
                     {
                         Switch sw = new Switch(bransch, mrid);
+
+                        if (response != null)
+                        {
+                            var psr = SwitchesRD.Where(m => m.GetProperty(ModelCode.IDOBJ_MRID).AsString() == mrid).FirstOrDefault();
+                            var meas = DiscreteMeasurementsRD.Where(m => m.GetProperty(ModelCode.MEASUREMENT_PSR).AsLong() == psr.Id).FirstOrDefault();
+
+                            if (meas != null)
+                            {
+                                var res = (DigitalVariable)response.Variables.Where(v => v.Id == meas.GetProperty(ModelCode.IDOBJ_MRID).AsString()).FirstOrDefault();
+
+                                if (res != null)
+                                {
+                                    if (res.State == OMSSCADACommon.States.OPENED)
+                                    {
+                                        sw = new Switch(bransch, mrid, SwitchState.Open) { UnderSCADA = true };
+                                    }
+                                    else
+                                    {
+                                        sw = new Switch(bransch, mrid, SwitchState.Closed) { UnderSCADA = true };
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                sw.UnderSCADA = false;
+                            }
+                        }
+                        else
+                        {
+                            sw.UnderSCADA = false;
+                        }
+
                         sw.End1 = n.ElementGID;
                         n.Children.Add(sw.ElementGID);
                         long downNodegid = GetConnNodeConnectedWithTerminal(branchTerminals[0]);
@@ -476,6 +522,22 @@ namespace DMSService
             }
             watch.Stop();
             updatesCount += 1;
+            
+            if (retVal.Roots.Count > 0)
+            {
+                var gid = retVal.Roots[0];
+                Source source = (Source)retVal.Data.Where(e => e.Value.ElementGID == gid).FirstOrDefault().Value;
+
+                if (source != null)
+                {
+                    Node node = (Node)retVal.Data.Where(e => e.Value.ElementGID == source.End2).FirstOrDefault().Value;
+
+                    if (node != null)
+                    {
+                        EnergizationAlgorithm.TraceDown(node, new List<SCADAUpdateModel>(), true, true, retVal);
+                    }
+                }
+            }
 
             Console.WriteLine("2Terminals.count={0}", terminals.Count);
             Console.WriteLine("\nNewtork Initialization finished in {0} sec", watch.ElapsedMilliseconds / 1000);

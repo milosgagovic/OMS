@@ -54,6 +54,8 @@ namespace DMSCommon.Model
         [DataMember]
         public bool IsElementAdded { get => isElementAdded; set => isElementAdded = value; }
 
+        public SCADAUpdateModel() { }
+
         public SCADAUpdateModel(long mrid, bool isEnergized)
         {
             Gid = mrid;

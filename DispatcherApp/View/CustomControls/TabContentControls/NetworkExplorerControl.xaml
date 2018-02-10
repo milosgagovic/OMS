@@ -6,19 +6,20 @@
              xmlns:local="clr-namespace:DispatcherApp.View"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
-    <Grid>
+    <Grid Background="{StaticResource MediumColor}">
         <Grid.RowDefinitions>
-            <RowDefinition/>
+            <RowDefinition Height="7"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <TreeView Margin="0, 10, 0, 0" BorderThickness="0">
-            <TreeViewItem Header="Sources" IsExpanded="True" ItemsSource="{Binding NetworkMapsBySource}">
-
-            </TreeViewItem>
-        </TreeView>
-        <Grid Grid.Row="1" Background="White">
-            <Expander Header="Sources" IsExpanded="True">
-                <StackPanel>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="7"/>
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <Grid Grid.Row="0" Grid.ColumnSpan="2" Background="{StaticResource DarkColor}"/>
+        <Grid Grid.Row="1" Background="{StaticResource DarkColor}"/>
+        <Grid Grid.Row="1" Grid.Column="1" Background="Transparent">
+            <Expander Header="Sources" Foreground="Black" FontWeight="DemiBold" IsExpanded="True" Margin="15, 15, 15, 15">
+                <StackPanel Margin="25, 5, 15, 15">
                     <ItemsControl ItemsSource="{Binding NetworkMapsBySourceButton}">
                     </ItemsControl>
                 </StackPanel>

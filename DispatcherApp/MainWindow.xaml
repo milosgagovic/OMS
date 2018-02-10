@@ -9,29 +9,29 @@
         xmlns:cntrl = "clr-namespace:DispatcherApp.View.CustomControls"
         xmlns:converters="clr-namespace:DispatcherApp.View.Resources.Converters"
         mc:Ignorable="d"
-        Title="OMS Client" Icon="View/Resources/Images/sun.png"
+        Title="OMS Client" Icon="View/Resources/Images/Logo.png"
         Height="{Binding SystemParameters.PrimaryScreenHeight}" 
         Width="{Binding SystemParameters.PrimaryScreenWidth}"
         WindowState="Maximized" 
-        WindowStartupLocation="CenterScreen">
+        WindowStartupLocation="CenterScreen"
+        Background="{StaticResource DarkestColor}">
     <Window.Resources>
         <sys:Int32 x:Key="NumOfRows">6</sys:Int32>
         <sys:Int32 x:Key="NumOfColumns">3</sys:Int32>
         <converters:IncidentStateToBool x:Key="IncidentStateToBool"/>
     </Window.Resources>
-    <Grid Background="#393535">
+    <Grid Background="{StaticResource DarkestColor}">
         <Grid.RowDefinitions>
             <RowDefinition></RowDefinition>
             <RowDefinition Height="20"></RowDefinition>
         </Grid.RowDefinitions>
-        <Border BorderThickness="7, 0, 7, 7" BorderBrush="#393535">
-            <Grid ShowGridLines="False" Grid.Row="0" Background="#393535">
+        <Border BorderThickness="7, 0, 7, 7" BorderBrush="{StaticResource DarkestColor}">
+            <Grid ShowGridLines="False" Grid.Row="0" Background="{StaticResource DarkestColor}">
                 <Grid.RowDefinitions>
                     <RowDefinition Name="TopMenu" Height="Auto"></RowDefinition>
-                    <RowDefinition Name="BasicCommands" Height="Auto"></RowDefinition>
+                    <RowDefinition Name="BasicCommands" Height="15"></RowDefinition>
                     <RowDefinition Name="Border" Height="7"></RowDefinition>
                     <RowDefinition Name="MainRow"></RowDefinition>
-                    <RowDefinition Name="BottomSplitter" Height="7"></RowDefinition>
                     <RowDefinition Name="BottomCanvas" Height="Auto"></RowDefinition>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
@@ -40,15 +40,10 @@
                     <ColumnDefinition Name="RightCanvas" Width="Auto"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
                 <views:TopMenuControl Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="{StaticResource NumOfColumns}"/>
-                <Grid Grid.Row="1" Grid.ColumnSpan="{StaticResource NumOfColumns}" Background="#393535">
-                    <StackPanel Height="Auto" Width="Auto" HorizontalAlignment="Left">
-                        <Button Height="30" Background="Transparent">
-                            <Image Source="View/Resources/Images/sun.png"/>
-                        </Button>
-                    </StackPanel>
+                <Grid Grid.Row="1" Grid.ColumnSpan="{StaticResource NumOfColumns}" Background="{StaticResource DarkestColor}">
                 </Grid>
-                <Grid Grid.Row="2" Background="#393535" Grid.ColumnSpan="{StaticResource NumOfColumns}"/>
-                <Grid Grid.Row="3" Grid.Column="1" Background="Gray"/>
+                <Grid Grid.Row="2" Background="{StaticResource DarkestColor}" Grid.ColumnSpan="{StaticResource NumOfColumns}"/>
+                <!--<Grid Grid.Row="3" Grid.Column="1" Background="Gray"/>-->
                 <Grid Grid.Column="0" Grid.Row="3" Visibility="{Binding LeftTabControlVisibility}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" MinWidth="200" MaxWidth="450" >
@@ -58,34 +53,13 @@
                         <ColumnDefinition Width="*">
                         </ColumnDefinition>
                     </Grid.ColumnDefinitions>
-                    <TabControl Name="LeftTabControl" Grid.Column="0" TabStripPlacement="Left" MinWidth="0" BorderThickness="0" ItemsSource="{Binding LeftTabControlTabs}" SelectedIndex="{Binding LeftTabControlIndex}" Visibility="{Binding LeftTabControlVisibility}">
-                        <TabControl.Resources>
-                            <Style TargetType="{x:Type cntrl:BorderTabItem}">
-                                <Setter Property="HeaderTemplate">
-                                    <Setter.Value>
-                                        <DataTemplate>
-                                            <ContentPresenter Content="{TemplateBinding Content}">
-                                                <ContentPresenter.LayoutTransform>
-                                                    <RotateTransform Angle="270" />
-                                                </ContentPresenter.LayoutTransform>
-                                            </ContentPresenter>
-                                        </DataTemplate>
-                                    </Setter.Value>
-                                </Setter>
-                                <Setter Property="Padding" Value="3" />
-                            </Style>
-                        </TabControl.Resources>
+                    <TabControl Name="LeftTabControl" Grid.Column="0" Style="{StaticResource ResourceKey=TabControlLeftStyle}" MinWidth="0" BorderThickness="0" ItemsSource="{Binding LeftTabControlTabs}" SelectedIndex="{Binding LeftTabControlIndex}" Visibility="{Binding LeftTabControlVisibility}">
                     </TabControl>
-                    <GridSplitter Grid.Column="1" Width="7" VerticalAlignment="Stretch" HorizontalAlignment="Center" Background="#393535" Visibility="{Binding LeftTabControlVisibility}">
+                    <GridSplitter Grid.Column="1" Width="7" VerticalAlignment="Stretch" HorizontalAlignment="Center" Background="{StaticResource DarkestColor}" Visibility="{Binding LeftTabControlVisibility}">
                     </GridSplitter>
                 </Grid>
-                <Grid Grid.Row="3" Grid.Column="1">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="41*"/>
-                        <RowDefinition Height="28*"/>
-                        <RowDefinition Height="243*"/>
-                    </Grid.RowDefinitions>
-                    <TabControl BorderBrush="Transparent" Background="Gray" Margin="0,0,-0.2,0" Grid.RowSpan="3" ItemsSource="{Binding CenterTabControlTabs}" SelectedIndex="{Binding CenterTabControlIndex}">
+                <Grid Grid.Row="3" Grid.Column="1" Background="{StaticResource DarkestColor}" Margin="0, 1, 0, 0">
+                    <TabControl Style="{StaticResource ResourceKey=TabControlCenterStyle}" Margin="0, -3, 0, 0" Background="{StaticResource DarkColor}" Grid.RowSpan="3" ItemsSource="{Binding CenterTabControlTabs}" SelectedIndex="{Binding CenterTabControlIndex}">
                     </TabControl>
                 </Grid>
                 <Grid Grid.Column="3" Grid.Row="3" Visibility="{Binding RightTabControlVisibility}">
@@ -99,7 +73,7 @@
                         <ColumnDefinition Width="*">
                         </ColumnDefinition>
                     </Grid.ColumnDefinitions>
-                    <TabControl Name="RightTabControl" Grid.Column="2" TabStripPlacement="Right" MinWidth="0" BorderThickness="0" ItemsSource="{Binding RightTabControlTabs}" SelectedIndex="{Binding RightTabControlIndex}" Visibility="{Binding RightTabControlVisibility}">
+                    <TabControl Name="RightTabControl" Grid.Column="2" Style="{StaticResource ResourceKey=TabControlRightStyle}" TabStripPlacement="Right" MinWidth="0" BorderThickness="0" ItemsSource="{Binding RightTabControlTabs}" SelectedIndex="{Binding RightTabControlIndex}" Visibility="{Binding RightTabControlVisibility}">
                         <TabControl.Resources>
                             <Style TargetType="{x:Type cntrl:BorderTabItem}">
                                 <Setter Property="HeaderTemplate">
@@ -117,7 +91,7 @@
                             </Style>
                         </TabControl.Resources>
                     </TabControl>
-                    <GridSplitter Grid.Column="1" Width="7" VerticalAlignment="Stretch" HorizontalAlignment="Center" Background="#393535" Visibility="{Binding RightTabControlVisibility}">
+                    <GridSplitter Grid.Column="1" Width="7" VerticalAlignment="Stretch" HorizontalAlignment="Center" Background="{StaticResource DarkestColor}" Visibility="{Binding RightTabControlVisibility}">
                     </GridSplitter>
                 </Grid>
                 <Grid Grid.Row="5" Grid.ColumnSpan="{StaticResource NumOfColumns}" Visibility="{Binding BottomTabControlVisibility}">
@@ -126,13 +100,12 @@
                         </RowDefinition>
                         <RowDefinition Height="7">
                         </RowDefinition>
-                        <RowDefinition Height="Auto" MinHeight="200" MaxHeight="450" >
-                        </RowDefinition>
+                        <RowDefinition Height="18.4" MaxHeight="450" />
+                        <RowDefinition Height="181.6"/>
                     </Grid.RowDefinitions>
-                    <TabControl BorderBrush="Transparent" Grid.Row="2" TabStripPlacement="Bottom" ItemsSource="{Binding BottomTabControlTabs}" SelectedIndex="{Binding BottomTabControlIndex}" Visibility="{Binding BottomTabControlVisibility}">
+                    <TabControl BorderBrush="Transparent" Style="{StaticResource ResourceKey=TabControlBottomStyle}" Grid.Row="1" TabStripPlacement="Bottom" ItemsSource="{Binding BottomTabControlTabs}" SelectedIndex="{Binding BottomTabControlIndex}" Visibility="{Binding BottomTabControlVisibility}" Margin="0,7,0.2,0.2" Grid.RowSpan="3">
                     </TabControl>
-                    <GridSplitter Grid.Row="1" Grid.ColumnSpan="3" Height="7" VerticalAlignment="Center" HorizontalAlignment="Stretch" Background="#393535">
-                    </GridSplitter>
+                    <GridSplitter Grid.Row="1" Height="7" VerticalAlignment="Center" HorizontalAlignment="Stretch" Background="{StaticResource DarkestColor}" Margin="0,0,0.2,0.2"/>
                 </Grid>
             </Grid>
         </Border>

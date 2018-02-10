@@ -6,11 +6,18 @@
              xmlns:local="clr-namespace:DispatcherApp.View"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
-    <Grid>
+    <Grid Background="{DynamicResource MediumColor}">
         <Grid.RowDefinitions>
+            <RowDefinition Height="7"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <Grid Grid.Row="0" Background="White">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="7"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Grid Background="{StaticResource DarkColor}" Grid.ColumnSpan="2"/>
+        <Grid Background="{StaticResource DarkColor}" Grid.RowSpan="3"/>
+        <Grid Grid.Row="1" Grid.Column="1" Background="Transparent">
             <Expander Header="General" IsExpanded="True">
                 <Grid Margin="20, 0, 10, 0">
                     <Grid.ColumnDefinitions>
@@ -27,27 +34,27 @@
                     </Grid.RowDefinitions>
                     <Label>Type:
                     </Label>
-                    <TextBlock Grid.Row="0" Grid.Column="1" Text="ACLine Segment" Background="LightGray" Margin="0, 2, 2, 2">
+                    <TextBlock Grid.Row="0" Grid.Column="1" Text="ACLine Segment" Padding="5, 2, 0, 0" Background="{DynamicResource DarkColor}" Foreground="White"  Margin="0, 2, 2, 2">
                     </TextBlock>
                     <Label Grid.Row="1">GID:
                     </Label>
-                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding CurrentProperty.GID}" Background="LightGray" Margin="0, 2, 2, 2">
+                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding CurrentProperty.GID}" Padding="5, 2, 0, 0" Background="{DynamicResource DarkColor}" Foreground="White" Margin="0, 2, 2, 2">
                     </TextBlock>
                     <Label Grid.Row="2">mRID:
                     </Label>
-                    <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding CurrentProperty.MRID}" Background="LightGray" Margin="0, 2, 2, 2">
+                    <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding CurrentProperty.MRID}" Padding="5, 2, 0, 0" Background="{DynamicResource DarkColor}" Foreground="White" Margin="0, 2, 2, 2">
                     </TextBlock>
                     <Label Grid.Row="3">Name:
                     </Label>
-                    <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding CurrentProperty.Name}" Background="LightGray" Margin="0, 2, 2, 2">
+                    <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding CurrentProperty.Name}" Padding="5, 2, 0, 0" Background="{DynamicResource DarkColor}" Foreground="White" Margin="0, 2, 2, 2">
                     </TextBlock>
                     <Label Grid.Row="4">Is Energized:
                     </Label>
-                    <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding CurrentProperty.IsEnergized}" Background="LightGray" Margin="0, 2, 2, 2">
+                    <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding CurrentProperty.IsEnergized}" Padding="5, 2, 0, 0" Background="{DynamicResource DarkColor}" Foreground="White" Margin="0, 2, 2, 2">
                     </TextBlock>
                     <Label Grid.Row="5">Length:
                     </Label>
-                    <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding CurrentProperty.Length}" Background="LightGray" Margin="0, 2, 2, 2">
+                    <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding CurrentProperty.Length}" Padding="5, 2, 0, 0" Background="{DynamicResource DarkColor}" Foreground="White" Margin="0, 2, 2, 2">
                     </TextBlock>
                 </Grid>
             </Expander>

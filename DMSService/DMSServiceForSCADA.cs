@@ -89,19 +89,19 @@ namespace DMSService
                 Node n = (Node)DMSService.Instance.Tree.Data[sw.End2];
                 n.Marker = false;
                 networkChange.Add(new SCADAUpdateModel(n.ElementGID, false));
-                networkChange = GetNetworkChange(n, networkChange, false);
+                networkChange = EnergizationAlgorithm.TraceDown(n, networkChange, false, false, DMSService.Instance.Tree);
             }
             else if (state == OMSSCADACommon.States.CLOSED)
             {
                 sw.State = SwitchState.Closed;
-                if (TraceUp((Node)DMSService.Instance.Tree.Data[sw.End1]))
+                if (EnergizationAlgorithm.TraceUp((Node)DMSService.Instance.Tree.Data[sw.End1], DMSService.Instance.Tree))
                 {
                     networkChange.Add(new SCADAUpdateModel(sw.ElementGID, true, OMSSCADACommon.States.CLOSED));
                     sw.Marker = true;
                     Node n = (Node)DMSService.Instance.Tree.Data[sw.End2];
                     n.Marker = true;
                     networkChange.Add(new SCADAUpdateModel(n.ElementGID, true));
-                    networkChange = GetNetworkChange(n, networkChange, true);
+                    networkChange = EnergizationAlgorithm.TraceDown(n, networkChange, true, false, DMSService.Instance.Tree);
                 }
                 else
                 {
@@ -109,7 +109,7 @@ namespace DMSService
                 }
             }
 
-            // zasto ne upises odmah kad napravis stateReport, kad se nista ne menja?
+            //upisati promijenu stanja elementa
             IMSClient.AddElementStateReport(elementStateReport);
 
             Source s = (Source)DMSService.Instance.Tree.Data[DMSService.Instance.Tree.Roots[0]];
@@ -122,83 +122,8 @@ namespace DMSService
             }
             if (isIncident)
             {
-                //Thread.Sleep(1000);
                 publisher.PublishIncident(incident);
             }
-        }
-
-        private bool TraceUp(Node no)
-        {
-            Element el = DMSService.Instance.Tree.Data[no.Parent];
-
-            if (DMSService.Instance.Tree.Data[el.ElementGID] is Source)
-            {
-                return true;
-            }
-            else if (DMSService.Instance.Tree.Data[el.ElementGID] is Switch)
-            {
-                Switch s = (Switch)DMSService.Instance.Tree.Data[el.ElementGID];
-                if (s.Marker == true && s.State == SwitchState.Closed)
-                    return true;
-                else
-                    return false;
-            }
-            else if (DMSService.Instance.Tree.Data[el.ElementGID] is ACLine)
-            {
-                ACLine acl = (ACLine)DMSService.Instance.Tree.Data[el.ElementGID];
-                Node n = (Node)DMSService.Instance.Tree.Data[acl.End1];
-
-                if (TraceUp(n))
-                    return true;
-                else
-                    return false;
-            }
-            return false;
-        }
-
-        private List<SCADAUpdateModel> GetNetworkChange(Node n, List<SCADAUpdateModel> networkChange, bool isEnergized)
-        {
-            foreach (long item in n.Children)
-            {
-                Element e = DMSService.Instance.Tree.Data[item];
-                if (e is Consumer)
-                {
-                    e.Marker = isEnergized;
-                    networkChange.Add(new SCADAUpdateModel(e.ElementGID, isEnergized));
-                }
-                else if (e is Switch)
-                {
-                    Element switche;
-                    DMSService.Instance.Tree.Data.TryGetValue(e.ElementGID, out switche);
-                    Switch s = (Switch)switche;
-                    if (s.State == SwitchState.Open)
-                    {
-                        continue;
-                    }
-
-                    s.Marker = isEnergized;
-                    networkChange.Add(new SCADAUpdateModel(s.ElementGID, isEnergized));
-                    Node node = (Node)DMSService.Instance.Tree.Data[s.End2];
-                    node.Marker = isEnergized;
-                    networkChange.Add(new SCADAUpdateModel(node.ElementGID, isEnergized));
-                    networkChange = GetNetworkChange(node, networkChange, isEnergized);
-                }
-                else if (e is ACLine)
-                {
-                    Element acl;
-                    DMSService.Instance.Tree.Data.TryGetValue(e.ElementGID, out acl);
-                    ACLine ac = (ACLine)acl;
-                    ac.Marker = isEnergized;
-                    networkChange.Add(new SCADAUpdateModel(ac.ElementGID, isEnergized));
-                    Node node = (Node)DMSService.Instance.Tree.Data[ac.End2];
-                    node.Marker = isEnergized;
-                    networkChange.Add(new SCADAUpdateModel(node.ElementGID, isEnergized));
-                    networkChange = GetNetworkChange(node, networkChange, isEnergized);
-                }
-            }
-
-            return networkChange;
-
         }
     }
 }
