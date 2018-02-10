@@ -313,6 +313,22 @@ namespace FTN.Services.NetworkModelService
 
 			return updateResult;
 		}
+        public Delta GetFixedDelta(Delta delta)
+        {
+
+            RepackDelta(delta);
+            List<ResourceDescription> originalInsert = delta.InsertOperations;
+            List<ResourceDescription> originalUpdate = delta.UpdateOperations;
+
+            ResetReferences(delta, originalInsert, originalUpdate);
+            ResetGids(delta);
+
+            Dictionary<short, int> typesCounters = GetCounters();
+            Dictionary<long, long> globalIdPairs = new Dictionary<long, long>();
+            delta.FixNegativeToPositiveIds(ref typesCounters, ref globalIdPairs);
+
+            return delta;
+        }
 
 		/// <summary>
 		/// Inserts entity into the network model.
