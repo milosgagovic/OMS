@@ -31,9 +31,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="OpenPop, Version=2.0.5.0, Culture=neutral, PublicKeyToken=bebb5741791313cd, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>bin\Debug\OpenPop.dll</HintPath>
+    <Reference Include="OpenPop">
+      <HintPath>..\..\..\OMS\Common\OpenPop.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
