@@ -22,5 +22,8 @@ namespace PubSubContract
 
         [OperationContract(IsOneWay = true)]
         void PublishIncident(IncidentReport report);
+
+        [OperationContract(IsOneWay = true)]
+        void PublishCallIncident(SCADAUpdateModel call);
     }
 }

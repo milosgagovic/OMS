@@ -293,6 +293,7 @@ namespace DMSService
                 Gda.GetExtentValuesExtended(ModelCode.ACLINESEGMENT).ForEach(n => AclineSegRD.Add(n));
                 Gda.GetExtentValuesExtended(ModelCode.ENERGCONSUMER).ForEach(n => EnergyConsumersRD.Add(n));
                 Gda.GetExtentValuesExtended(ModelCode.ENERGSOURCE).ForEach(n => EnergySourcesRD.Add(n));
+                Gda.GetExtentValuesExtended(ModelCode.DISCRETE).ForEach(n => DiscreteMeasurementsRD.Add(n));
             }
             else
             {
@@ -745,7 +746,16 @@ namespace DMSService
             scadaHost.Description.Behaviors.Remove(typeof(ServiceDebugBehavior));
             scadaHost.Description.Behaviors.Add(new ServiceDebugBehavior() { IncludeExceptionDetailInFaults = true });
 
-            //hosts.Add(scadaHost);
+            ServiceHost callService = new ServiceHost(typeof(DMSCallService));
+            callService.Description.Name = "DMSCallService";
+            callService.AddServiceEndpoint(typeof(IDMSCallContract), binding, new
+            Uri("net.tcp://localhost:8049/DMSCallService"));
+
+            callService.Description.Behaviors.Remove(typeof(ServiceDebugBehavior));
+            callService.Description.Behaviors.Add(new ServiceDebugBehavior() { IncludeExceptionDetailInFaults = true });
+
+            hosts.Add(callService);
+
 
 
             //hosts.Add(scadaHost);
@@ -786,6 +796,7 @@ namespace DMSService
                 message = string.Format("Trace level: {0}", CommonTrace.TraceLevel);
                 Console.WriteLine(message);
                 CommonTrace.WriteTrace(CommonTrace.TraceInfo, message);
+                DMSCallService call = new DMSCallService();
             }
             catch (Exception)
             {

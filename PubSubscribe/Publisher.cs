@@ -51,6 +51,15 @@ namespace PubSubscribe
             catch { }
         }
 
+        public void PublishCallIncident(SCADAUpdateModel call)
+        {
+            try
+            {
+                proxy.PublishCallIncident(call);
+            }
+            catch { }
+        }
+
         private void CreateProxy()
         {
             string address = "";

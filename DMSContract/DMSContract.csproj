@@ -44,7 +44,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DMSCallProxy.cs" />
     <Compile Include="DMSToSCADAProxy.cs" />
+    <Compile Include="IDMSCallContract.cs" />
     <Compile Include="IDMSContract.cs" />
     <Compile Include="IDMSToSCADAContract.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

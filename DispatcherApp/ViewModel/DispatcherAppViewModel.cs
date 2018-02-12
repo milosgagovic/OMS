@@ -116,6 +116,7 @@ namespace DispatcherApp.ViewModel
             subscriber.publishUpdateEvent += GetUpdate;
             subscriber.publishCrewEvent += GetCrewUpdate;
             subscriber.publishIncident += GetIncident;
+            subscriber.publishCall += GetCallFromConsumers;
 
             NetTcpBinding binding = new NetTcpBinding();
             binding.CloseTimeout = new TimeSpan(1, 0, 0, 0);
@@ -1625,6 +1626,16 @@ namespace DispatcherApp.ViewModel
                 element.CrewSent = false;
             }
             catch { }
+        }
+
+        private void GetCallFromConsumers(SCADAUpdateModel call)
+        {
+            ElementProperties property;
+            properties.TryGetValue(call.Gid, out property);
+            if (property != null)
+            {
+                property.IsEnergized = call.IsEnergized;
+            }
         }
         #endregion
     }

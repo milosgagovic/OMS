@@ -24,7 +24,7 @@ namespace PubSubscribeService.Services
                 thread.Start();
             }
         }
-
+       
         public void PublishCrewUpdate(SCADAUpdateModel update)
         {
             foreach (IPublishing subscriber in PubSubscribeDB.Subscribers)
@@ -46,6 +46,17 @@ namespace PubSubscribeService.Services
                 thread.Start();
             }
         }
+        public void PublishCallIncident(SCADAUpdateModel call)
+        {
+            foreach (IPublishing subscriber in PubSubscribeDB.Subscribers)
+            {
+                PublishThreadData threadObj = new PublishThreadData(subscriber, call,true);
+
+                Thread thread = new Thread(threadObj.PublishCallIncidentDelta);
+                thread.Start();
+            }
+        }
+
     }
 
     internal class PublishThreadData
@@ -55,6 +66,7 @@ namespace PubSubscribeService.Services
         private List<SCADAUpdateModel> deltaUpdate;
         private SCADAUpdateModel crewUpdate;
         private IncidentReport report;
+        private SCADAUpdateModel call;
 
         public PublishThreadData(IPublishing subscriber, List<SCADAUpdateModel> deltaUpdate)
         {
@@ -70,6 +82,11 @@ namespace PubSubscribeService.Services
         {
             this.subscriber = subscriber;
             this.report = report;
+        }
+        public PublishThreadData(IPublishing subscriber, SCADAUpdateModel call,bool isCall)
+        {
+            this.subscriber = subscriber;
+            this.call = call;
         }
 
         public IPublishing Subscriber
@@ -99,6 +116,7 @@ namespace PubSubscribeService.Services
         }     
         public SCADAUpdateModel CrewUpdate { get => crewUpdate; set => crewUpdate = value; }
         public IncidentReport Report { get => report; set => report = value; }
+        public SCADAUpdateModel Call { get => call; set => call = value; }
 
         public void PublishDelta()
         {
@@ -127,6 +145,17 @@ namespace PubSubscribeService.Services
             try
             {
                 subscriber.PublishIncident(Report);
+            }
+            catch (Exception e)
+            {
+                PubSubscribeDB.RemoveSubsriber(subscriber);
+            }
+        }
+        public void PublishCallIncidentDelta()
+        {
+            try
+            {
+                subscriber.PublishCallIncident(Call);
             }
             catch (Exception e)
             {

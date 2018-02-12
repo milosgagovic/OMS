@@ -54,22 +54,25 @@ namespace DMSCommon.Model
         [DataMember]
         public bool IsElementAdded { get => isElementAdded; set => isElementAdded = value; }
 
-        public SCADAUpdateModel() { }
-
-        public SCADAUpdateModel(long mrid, bool isEnergized)
+        public SCADAUpdateModel()
         {
-            Gid = mrid;
+            gid = -1;
+        }
+
+        public SCADAUpdateModel(long gid, bool isEnergized)
+        {
+            Gid = gid;
             IsEnergized = isEnergized;
         }
-        public SCADAUpdateModel(long mrid, bool isEnergized, States state)
+        public SCADAUpdateModel(long gid, bool isEnergized, States state)
         {
-            Gid = mrid;
+            Gid = gid;
             IsEnergized = isEnergized;
             State = state;
         }
-        public SCADAUpdateModel(long mrid, bool isEnergised, CrewResponse response)
+        public SCADAUpdateModel(long gid, bool isEnergised, CrewResponse response)
         {
-            Gid = mrid;
+            Gid = gid;
             IsEnergized = isEnergised;
             Response = response;
 
@@ -82,9 +85,9 @@ namespace DMSCommon.Model
             isElementAdded = false;
         }
 
-        public SCADAUpdateModel(bool isElementAdded, long mrid)
+        public SCADAUpdateModel(bool isElementAdded, long gid)
         {
-            Gid = mrid;
+            Gid = gid;
             this.isElementAdded = isElementAdded;
         }
     }

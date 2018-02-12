@@ -14,6 +14,7 @@ namespace PubSubscribe
     public delegate void PublishUpdateEvent(List<SCADAUpdateModel> update);
     public delegate void PublishCrewEvent(SCADAUpdateModel update);
     public delegate void PublishReportIncident(IncidentReport report);
+    public delegate void PublishCallIncident(SCADAUpdateModel call);
 
     /// <summary>
     /// Client for Subscribing service
@@ -25,6 +26,7 @@ namespace PubSubscribe
         public event PublishUpdateEvent publishUpdateEvent;
         public event PublishCrewEvent publishCrewEvent;
         public event PublishReportIncident publishIncident;
+        public event PublishCallIncident publishCall;
 
         public Subscriber()
         {
@@ -88,6 +90,10 @@ namespace PubSubscribe
         public void PublishIncident(IncidentReport report)
         {
             publishIncident?.Invoke(report);
+        }
+        public void PublishCallIncident(SCADAUpdateModel call)
+        {
+            publishCall?.Invoke(call);
         }
     }
 }
