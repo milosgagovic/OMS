@@ -17,6 +17,8 @@
                               Command="{Binding OpenControlCommand}" CommandParameter="Properties"/>
                     <MenuItem Header="Incident Explorer" Foreground="Black"
                               Command="{Binding OpenControlCommand}" CommandParameter="Incident Explorer"/>
+                    <MenuItem Header="Report Explorer" Foreground="Black"
+                              Command="{Binding OpenControlCommand}" CommandParameter="Report Explorer"/>
                     <MenuItem Header="Output" Foreground="Black"
                               Command="{Binding OpenControlCommand}" CommandParameter="Output"/>
                 </MenuItem>

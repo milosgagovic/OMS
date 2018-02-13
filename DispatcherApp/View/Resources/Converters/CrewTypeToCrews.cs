@@ -15,9 +15,15 @@ namespace DispatcherApp.View.Resources.Converters
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             ObservableCollection<Crew> res = new ObservableCollection<Crew>();
+            ObservableCollection<Crew> crews = new ObservableCollection<Crew>();
+            IncidentReport report = new IncidentReport();
 
-            ObservableCollection<Crew> crews = (ObservableCollection<Crew>)values[0];
-            IncidentReport report = (IncidentReport)values[1];
+            try
+            {
+                crews = (ObservableCollection<Crew>)values[0];
+                report = (IncidentReport)values[1];
+            }
+            catch { return null; }
 
             if (report.Crew != null)
             {

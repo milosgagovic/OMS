@@ -43,7 +43,7 @@ namespace ConsoleApp1
 					{
 						Console.WriteLine("Unesite MrID:");
 						string mrid2 = Console.ReadLine();
-						reports = proxyToTransactionManager.GetElementStateReportsForMrID(mrid2);
+						//reports = proxyToTransactionManager.GetElementStateReportsForMrID(mrid2);
 					}
 					else if (odg2 == "3")
 					{

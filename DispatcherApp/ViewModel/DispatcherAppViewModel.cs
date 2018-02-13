@@ -29,6 +29,8 @@ using DispatcherApp.View.CustomControls;
 using DispatcherApp.View.CustomControls.NetworkElementsControls;
 using DispatcherApp.Model.Measurements;
 using OMSSCADACommon;
+using DispatcherApp.View.CustomControls.TabContentControls;
+using GravityAppsMandelkowMetroCharts;
 
 namespace DispatcherApp.ViewModel
 {
@@ -40,6 +42,11 @@ namespace DispatcherApp.ViewModel
 
         private FrameworkElement frameworkElement = new FrameworkElement();
 
+        private ObservableCollection<ChartSeries> chartSeries = new ObservableCollection<ChartSeries>();
+        private ObservableCollection<UIElement> chartBorderItems = new ObservableCollection<UIElement>();
+        private string chartTitle = "";
+        private string chartSubtitle = "";
+
         #region Subscriber
         private Subscriber subscriber;
         #endregion
@@ -47,6 +54,7 @@ namespace DispatcherApp.ViewModel
         #region Bindings
         private Dictionary<long, Element> Network = new Dictionary<long, Element>();
         private List<long> Sources = new List<long>();
+        private ObservableCollection<Element> breakers = new ObservableCollection<Element>();
 
         private Dictionary<long, ElementProperties> properties = new Dictionary<long, ElementProperties>();
         private Dictionary<long, ResourceDescription> resourceProperties = new Dictionary<long, ResourceDescription>();
@@ -103,6 +111,10 @@ namespace DispatcherApp.ViewModel
         private RelayCommand _sendCrewCommand;
 
         private RelayCommand _executeSwitchCommand;
+
+        private RelayCommand _generateIncidentByDateChartCommand;
+        private RelayCommand _generateIncidentByBreakerChartCommand;
+        private RelayCommand _generateStatesByBreakerChartCommand;
 
         #endregion
 
@@ -323,6 +335,7 @@ namespace DispatcherApp.ViewModel
                         }
                         else if (element is Switch)
                         {
+                            this.Breakers.Add(element);
                             BreakerProperties properties = new BreakerProperties() { IsEnergized = element.Marker, IsUnderScada = element.UnderSCADA };
                             properties.ValidCommands.Add(CommandTypes.CLOSE);
                             this.CommandIndex = 0;
@@ -433,9 +446,9 @@ namespace DispatcherApp.ViewModel
 
             if (answerFromTransactionManager.IncidentReports != null)
             {
-                foreach (IncidentReport report in answerFromTransactionManager.IncidentReports)
+                foreach (IncidentReport incident in answerFromTransactionManager.IncidentReports)
                 {
-                    this.IncidentReports.Insert(0, report);
+                    this.IncidentReports.Add(incident);
                 }
             }
         }
@@ -850,6 +863,42 @@ namespace DispatcherApp.ViewModel
         #endregion
 
         #region Command execution
+        public RelayCommand GenerateIncidentByDateChartCommand
+        {
+            get
+            {
+                return _generateIncidentByDateChartCommand ?? new RelayCommand(
+                    (parameter) =>
+                    {
+                        ExecuteGenerateIncidentByDateChartCommand(parameter);
+                    });
+            }
+        }
+
+        public RelayCommand GenerateIncidentByBreakerChartCommand
+        {
+            get
+            {
+                return _generateIncidentByBreakerChartCommand ?? new RelayCommand(
+                    (parameter) =>
+                    {
+                        ExecuteGenerateIncidentByBreakerChartCommand(parameter);
+                    });
+            }
+        }
+
+        public RelayCommand GenerateStatesByBreakerChartCommand
+        {
+            get
+            {
+                return _generateStatesByBreakerChartCommand ?? new RelayCommand(
+                    (parameter) =>
+                    {
+                        ExecuteGenerateStatesByBreakerChartCommand(parameter);
+                    });
+            }
+        }
+
         public RelayCommand OpenControlCommand
         {
             get
@@ -908,6 +957,174 @@ namespace DispatcherApp.ViewModel
                         ExecuteSwitchCommandd(parameter);
                     });
             }
+        }
+
+        private void ExecuteGenerateIncidentByDateChartCommand(object parameter)
+        {
+            try
+            {
+                DateTime date;
+                try
+                {
+                    date = (DateTime)parameter;
+                }
+                catch
+                {
+                    date = DateTime.UtcNow;
+                }
+                 
+                List<List<IncidentReport>> reportsByBreaker = new List<List<IncidentReport>>();
+                List<string> mrids = new List<string>();
+
+                foreach (Switch breaker in this.Breakers)
+                {
+                    mrids.Add(breaker.MRID);
+                }
+
+                reportsByBreaker = ProxyToTransactionManager.GetReportsForSpecificDateSortByBreaker(mrids, date);
+
+                ClusteredColumnChart chart = new ClusteredColumnChart();
+                this.ChartSeries.Clear();
+                this.ChartBorderItems.Clear();
+
+                int i = 0;
+                foreach (List<IncidentReport> reports in reportsByBreaker)
+                {
+                    if (reports.Count == 0)
+                    {
+                        reports.Add(new IncidentReport() { LostPower = 0, MrID = "a" });
+                    }
+                    else
+                    {
+                        foreach (IncidentReport report in reports)
+                        {
+                            report.LostPower = reports.Count;
+                        }
+                    }
+
+                    ChartSeries series = new ChartSeries();
+                    series.SeriesTitle = mrids[i++];
+                    series.ItemsSource = reports;
+                    series.DisplayMember = "MrID";
+                    series.ValueMember = "LostPower";
+
+                    this.ChartSeries.Add(series);
+                }
+                
+                this.ChartTitle = "Number of Incidents for Breakers";
+                this.ChartSubtitle = "Date: " + date.Day + "/" + date.Month + "/" + date.Year;
+
+                chart.Series = this.ChartSeries;
+                chart.HorizontalAlignment = HorizontalAlignment.Stretch;
+                chart.VerticalAlignment = VerticalAlignment.Stretch;
+                chart.MinHeight = 400;
+                this.ChartBorderItems.Add(chart);
+            }
+            catch { }
+        }
+
+        private void ExecuteGenerateIncidentByBreakerChartCommand(object parameter)
+        {
+            try
+            {
+                Switch breaker;
+                try
+                {
+                    breaker = (Switch)parameter;
+                }
+                catch
+                {
+                    return;
+                }
+
+                List<List<IncidentReport>> reportsByBreaker = new List<List<IncidentReport>>();
+
+                reportsByBreaker = ProxyToTransactionManager.GetReportsForMrID(breaker.MRID);
+
+                ClusteredColumnChart chart = new ClusteredColumnChart();
+                this.ChartSeries.Clear();
+                this.ChartBorderItems.Clear();
+
+                int i = 0;
+                foreach (List<IncidentReport> reports in reportsByBreaker)
+                {
+                    if (reports.Count == 0)
+                    {
+                        reports.Add(new IncidentReport() { LostPower = 0, MrID = "a" });
+                    }
+                    else
+                    {
+                        foreach (IncidentReport report in reports)
+                        {
+                            report.LostPower = reports.Count;
+                        }
+                    }
+
+                    ChartSeries series = new ChartSeries();
+                    series.SeriesTitle = reports[0].Time.Day + "/" + reports[0].Time.Month + "/" + reports[0].Time.Year;
+                    series.ItemsSource = reports;
+                    series.DisplayMember = "MrID";
+                    series.ValueMember = "LostPower";
+
+                    this.ChartSeries.Add(series);
+                }
+
+                this.ChartTitle = "Number of Incidents by Days";
+                this.ChartSubtitle = "Breaker: " + breaker.MRID;
+
+                chart.Series = this.ChartSeries;
+                chart.HorizontalAlignment = HorizontalAlignment.Stretch;
+                chart.VerticalAlignment = VerticalAlignment.Stretch;
+                chart.MinHeight = 400;
+                this.ChartBorderItems.Add(chart);
+            }
+            catch { }
+        }
+
+        private void ExecuteGenerateStatesByBreakerChartCommand(object parameter)
+        {
+            try
+            {
+                Switch breaker;
+                try
+                {
+                    breaker = (Switch)parameter;
+                }
+                catch
+                {
+                    return;
+                }
+
+                List<List<ElementStateReport>> reportsByBreaker = new List<List<ElementStateReport>>();
+
+                reportsByBreaker = ProxyToTransactionManager.GetElementStateReportsForMrID(breaker.MRID);
+
+                ClusteredColumnChart chart = new ClusteredColumnChart();
+                this.ChartSeries.Clear();
+                this.ChartBorderItems.Clear();
+
+                int i = 0;
+                foreach (List<ElementStateReport> reports in reportsByBreaker)
+                {
+                    ChartSeries series = new ChartSeries();
+                    series.SeriesTitle = string.Format("{0}/{1}/{2}\n{3}:{4}:{5}", reports[0].Time.Day, reports[0].Time.Month, reports[0].Time.Year, reports[0].Time.Hour, reports[0].Time.Minute, reports[0].Time.Second);
+                    series.ItemsSource = reports;
+                    series.DisplayMember = "MrID";
+                    series.ValueMember = "State";
+
+                    this.ChartSeries.Add(series);
+                }
+
+                this.ChartTitle = "States of a Breaker (0 - Closed, 1 - Opened)";
+                this.ChartSubtitle = "Breaker: " + breaker.MRID;
+
+                chart.Series = this.ChartSeries;
+                chart.HorizontalAlignment = HorizontalAlignment.Stretch;
+                chart.VerticalAlignment = VerticalAlignment.Stretch;
+                chart.MinHeight = 400;
+                this.ChartBorderItems.Add(chart);
+            }
+            catch { }
         }
 
         private void ExecuteSwitchCommandd(object parameter)
@@ -1121,6 +1338,39 @@ namespace DispatcherApp.ViewModel
                 }
 
                 this.BottomTabControlVisibility = Visibility.Visible;
+            }
+            else if (parameter as string == "Report Explorer")
+            {
+                bool exists = false;
+                int i = 0;
+
+                for (i = 0; i < BottomTabControlTabs.Count; i++)
+                {
+                    if (BottomTabControlTabs[i].Header == parameter)
+                    {
+                        exists = true;
+                        this.BottomTabControlIndex = i;
+                        break;
+                    }
+                }
+
+                if (!exists)
+                {
+                    BorderTabItem ti = new BorderTabItem()
+                    {
+                        Header = parameter,
+                        Style = (Style)frameworkElement.FindResource("TabItemCenterStyle")
+                    };
+
+                    ti.Scroll.Content = new ReportExplorer();
+                    ti.Title.Text = "";
+
+                    if (!CenterTabControlTabs.Contains(ti))
+                    {
+                        this.CenterTabControlTabs.Add(ti);
+                        this.CenterTabControlIndex = this.CenterTabControlTabs.Count - 1;
+                    }
+                }
             }
             else
             {
@@ -1443,6 +1693,42 @@ namespace DispatcherApp.ViewModel
             }
         }
 
+        public ObservableCollection<ChartSeries> ChartSeries
+        {
+            get
+            {
+                return chartSeries;
+            }
+            set
+            {
+                chartSeries = value;
+            }
+        }
+
+        public ObservableCollection<UIElement> ChartBorderItems
+        {
+            get
+            {
+                return chartBorderItems;
+            }
+            set
+            {
+                chartBorderItems = value;
+            }
+        }
+
+        public ObservableCollection<Element> Breakers
+        {
+            get
+            {
+                return breakers;
+            }
+            set
+            {
+                breakers = value;
+            }
+        }
+
         public Dictionary<long, ObservableCollection<UIElement>> UINetworks
         {
             get
@@ -1504,6 +1790,32 @@ namespace DispatcherApp.ViewModel
             {
                 measurements = value;
                 RaisePropertyChanged("Measurements");
+            }
+        }
+
+        public string ChartTitle
+        {
+            get
+            {
+                return chartTitle;
+            }
+            set
+            {
+                chartTitle = value;
+                RaisePropertyChanged("ChartTitle");
+            }
+        }
+
+        public string ChartSubtitle
+        {
+            get
+            {
+                return chartSubtitle;
+            }
+            set
+            {
+                chartSubtitle = value;
+                RaisePropertyChanged("ChartSubtitle");
             }
         }
 

@@ -54,7 +54,7 @@ namespace IMSContract
             return Channel.GetCrews();
         }
 
-        public List<ElementStateReport> GetElementStateReportsForMrID(string mrID)
+        public List<List<ElementStateReport>> GetElementStateReportsForMrID(string mrID)
         {
             return Channel.GetElementStateReportsForMrID(mrID);
         }
@@ -74,7 +74,7 @@ namespace IMSContract
             return Channel.GetReport(id);
         }
 
-        public List<IncidentReport> GetReportsForMrID(string mrID)
+        public List<List<IncidentReport>> GetReportsForMrID(string mrID)
         {
             return Channel.GetReportsForMrID(mrID);
         }
@@ -87,6 +87,11 @@ namespace IMSContract
         public List<IncidentReport> GetReportsForSpecificTimeInterval(DateTime startTime, DateTime endTime)
         {
             return Channel.GetReportsForSpecificTimeInterval(startTime, endTime);
+        }
+
+        public List<List<IncidentReport>> GetReportsForSpecificDateSortByBreaker(List<string> mrids, DateTime date)
+        {
+            return Channel.GetReportsForSpecificDateSortByBreaker(mrids, date);
         }
 
         public bool Ping()
