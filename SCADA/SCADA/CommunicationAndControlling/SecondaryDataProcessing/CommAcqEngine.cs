@@ -107,10 +107,6 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
                                         }
                                         break;
 
-                                    case VariableTypes.ANALOGIN:
-
-                                        AnalogIn analog = (AnalogIn)pv;
-                                        break;
 
                                     case VariableTypes.COUNTER:
 
@@ -194,10 +190,6 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
                                         };
                                         break;
 
-                                    case VariableTypes.ANALOGIN:
-
-                                        AnalogIn analog = (AnalogIn)pv;
-                                        break;
 
                                     case VariableTypes.COUNTER:
 
@@ -371,10 +363,7 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
                         Digital digital = (Digital)pv;
                         response.Variables.Add(new DigitalVariable() { Id = digital.Name, State = (OMSSCADACommon.States)digital.State });
                         break;
-                    case VariableTypes.ANALOGIN:
-                        AnalogIn analog = (AnalogIn)pv;
-                        response.Variables.Add(new AnalogVariable() { Id = analog.Name, Value = analog.Value });
-                        break;
+                    
                     case VariableTypes.COUNTER:
                         Counter counter = (Counter)pv;
                         response.Variables.Add(new CounterVariable() { Id = counter.Name, Value = counter.Value });

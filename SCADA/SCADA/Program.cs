@@ -43,6 +43,9 @@ namespace SCADA
             CommAcqEngine AcqEngine = new CommAcqEngine();
             if (AcqEngine.Configure(acqComConfigPath))
             {
+                // to do:
+                // redosled
+
                 AcqEngine.InitializeSimulator();
 
                 // uzimanje zahteva iz reda, i slanje zahteva MDBU-u. dobijanje MDB odgovora i stavljanje u red
@@ -87,11 +90,8 @@ namespace SCADA
 
             Console.ReadKey();
 
-            // dakle, promene se serijalizuju na elegantno gasenje, kad pritisnemo enter,
-            // i kad se dogodi promena
             AcqEngine.Stop();
             PCCommEng.Stop();
         }
     }
-
 }

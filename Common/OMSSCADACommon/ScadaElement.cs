@@ -14,9 +14,16 @@ namespace OMSSCADACommon
 
         private string name;
 
+        // nekad kasnije napraviti klase zasebne za discrete, analog, counter...
+        //------Propeties for DiscreteMeas
         private List<CommandTypes> validCommands = new List<CommandTypes>();
 
         private List<States> validStates = new List<States>();
+
+        //------Propertis for AnalogMeas
+        private float workPoint; // initial value for analog meas
+
+        private string unitSymbol;
 
         [DataMember]
         public DeviceTypes Type
@@ -44,6 +51,21 @@ namespace OMSSCADACommon
         {
             get { return validStates; }
             set { validStates = value; }
+        }
+
+        [DataMember]
+        public float WorkPoint
+        {
+            get { return workPoint; }
+            set { workPoint = value; }
+        }
+
+
+        [DataMember]
+        public string UnitSymbol
+        {
+            get { return unitSymbol; }
+            set { unitSymbol = value; }
         }
     }
 }
