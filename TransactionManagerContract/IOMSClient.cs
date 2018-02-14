@@ -75,10 +75,13 @@ namespace TransactionManagerContract
         [OperationContract]
         List<ElementStateReport> GetElementStateReportsForSpecificMrIDAndSpecificTimeInterval(string mrID, DateTime startTime, DateTime endTime);
 
+        [OperationContract]
+        List<List<IncidentReport>> GetAllReportsSortByBreaker(List<string> mrids);
+
         //[OperationContract]
         //void SendCrew(string mrid);
 
-		[OperationContract]
+        [OperationContract]
         List<Crew> GetCrews();
 
 		[OperationContract]

@@ -1190,7 +1190,7 @@
         </Setter>
     </Style>
 
-    <Style TargetType="ToolTip">
+    <!--<Style TargetType="ToolTip">
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ToolTip">
@@ -1210,7 +1210,7 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
-    </Style>
+    </Style>-->
     
     <!--gravity Apps charts-->
 

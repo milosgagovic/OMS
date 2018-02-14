@@ -73,7 +73,10 @@ namespace DispatcherApp.ViewModel
         private ObservableCollection<UIElement> mainCanvases = new ObservableCollection<UIElement>();
         private Dictionary<long, int> networkDepth = new Dictionary<long, int>();
         private Canvas mainCanvas = new Canvas();
-        private double currentSize = 20;
+        private double startHeight = 20;
+        private double startWidth = 3;
+        private double currentHeight = 20;
+        private double currentWidth = 3;
 
         private ObservableCollection<BorderTabItem> leftTabControlTabs = new ObservableCollection<BorderTabItem>();
         private int leftTabControlIndex = 0;
@@ -165,6 +168,7 @@ namespace DispatcherApp.ViewModel
             this.IncidentReports.Clear();
             this.mainCanvas.Children.Clear();
             this.Crews.Clear();
+            this.Breakers.Clear();
 
             #region FakeNetwork
             //Source s1 = new Source(0, -1, "ES_2") { ElementGID = 0 };
@@ -604,19 +608,23 @@ namespace DispatcherApp.ViewModel
 
             if (prop != null)
             {
-                if (currentSize > cellWidth * 90 / 100)
+                if (currentHeight >= cellWidth)
                 {
-                    currentSize = cellWidth * 90 / 100;
+                    currentHeight = cellWidth;
                 }
-                if (currentSize > cellHeight * 25 / 100)
+                else
                 {
-                    currentSize = cellWidth * 25 / 100;
+                    currentHeight = startHeight;
+                }
+                if (currentHeight >= cellHeight * 25 / 100)
+                {
+                    currentHeight = cellHeight * 25 / 100;
                 }
 
-                ConsumerControl consumercontr = new ConsumerControl(prop, currentSize);
+                ConsumerControl consumercontr = new ConsumerControl(prop, currentHeight);
 
-                Canvas.SetLeft(consumercontr, offset + /*x * */cellWidth - cellWidth / 2 - currentSize / 2);
-                Canvas.SetTop(consumercontr, y * cellHeight - currentSize - 5);
+                Canvas.SetLeft(consumercontr, offset + /*x * */cellWidth - cellWidth / 2 - currentHeight / 2);
+                Canvas.SetTop(consumercontr, y * cellHeight - currentHeight - 4);
                 Canvas.SetZIndex(consumercontr, 5);
 
                 consumercontr.Button.Command = PropertiesCommand;
@@ -626,7 +634,7 @@ namespace DispatcherApp.ViewModel
                 Point point2 = new Point()
                 {
                     X = offset + /*x * */cellWidth - cellWidth / 2,
-                    Y = y * cellHeight - currentSize
+                    Y = y * cellHeight - currentHeight - 4
                 };
 
                 PlaceBranch(point1, point2, cellHeight, cellWidth, consumer, id);
@@ -642,19 +650,23 @@ namespace DispatcherApp.ViewModel
 
             if (prop != null)
             {
-                if (currentSize > cellWidth * 90 / 100)
+                if (currentHeight >= cellWidth)
                 {
-                    currentSize = cellWidth * 90 / 100;
+                    currentHeight = cellWidth;
                 }
-                if (currentSize > cellHeight * 25 / 100)
+                else
                 {
-                    currentSize = cellHeight * 25 / 100;
+                    currentHeight = startHeight;
+                }
+                if (currentHeight >= cellHeight * 25 / 100)
+                {
+                    currentHeight = cellHeight * 25 / 100;
                 }
 
-                SwitchControl switchControl = new SwitchControl(prop, 20);
+                SwitchControl switchControl = new SwitchControl(prop, currentHeight);
 
-                Canvas.SetLeft(switchControl, point2.X - (20) / 2 - 20 - 2);
-                Canvas.SetTop(switchControl, point2.Y - (cellHeight / 3) - (20) / 2);
+                Canvas.SetLeft(switchControl, point2.X - (currentHeight) / 2 - currentHeight - 2);
+                Canvas.SetTop(switchControl, point2.Y - (cellHeight / 3) - (currentHeight) / 2);
                 Canvas.SetZIndex(switchControl, 5);
 
                 switchControl.Button.Command = PropertiesCommand;
@@ -667,14 +679,28 @@ namespace DispatcherApp.ViewModel
             return new Point(point2.X, point2.Y - (cellHeight / 3));
         }
 
-        private void PlaceACLine(double cellHeight, Point point1, Point point2, long id, bool isEnergized, string mrid)
+        private void PlaceACLine(double cellHeight, double cellWidth, Point point1, Point point2, long id, bool isEnergized, string mrid)
         {
             ElementProperties prop;
             properties.TryGetValue(id, out prop);
 
+            if (currentWidth >= cellWidth * 80 / 100)
+            {
+                currentWidth = cellWidth * 80 / 100;
+            }
+            else
+            {
+                currentWidth = startWidth;
+            }
+            currentHeight = startHeight;
+            if (currentHeight >= cellHeight * 25 / 100)
+            {
+                currentHeight = cellHeight * 25 / 100;
+            }
+
             if (prop != null)
             {
-                ACLineControl lineControl = new ACLineControl(prop, 5, cellHeight / 3);
+                ACLineControl lineControl = new ACLineControl(prop, currentWidth, currentHeight);
 
                 Canvas.SetLeft(lineControl, point2.X - lineControl.Width / 2);
                 Canvas.SetTop(lineControl, point2.Y - (cellHeight / 3) - lineControl.Height / 2);
@@ -709,7 +735,7 @@ namespace DispatcherApp.ViewModel
                     }
                     else if (branch is ACLine)
                     {
-                        PlaceACLine(cellHeight, point1, point2, branch.ElementGID, branch.Marker, branch.MRID);
+                        PlaceACLine(cellHeight, cellWidth, point1, point2, branch.ElementGID, branch.Marker, branch.MRID);
                     }
 
                     Point point3 = new Point()
@@ -725,7 +751,7 @@ namespace DispatcherApp.ViewModel
                         polyline1.Points.Add(point4);
                         polyline1.Points.Add(point2);
 
-                        polyline1.StrokeThickness = 1;
+                        polyline1.StrokeThickness = 0.5;
                         Canvas.SetZIndex(polyline1, 0);
                         polyline1.DataContext = prop;
 
@@ -733,7 +759,7 @@ namespace DispatcherApp.ViewModel
                         polyline2.Points.Add(point3);
                         polyline2.Points.Add(point4);
 
-                        polyline2.StrokeThickness = 1;
+                        polyline2.StrokeThickness = 0.5;
                         Canvas.SetZIndex(polyline2, 0);
                         polyline2.DataContext = prop;
 
@@ -769,7 +795,7 @@ namespace DispatcherApp.ViewModel
                         polyline1.Points.Add(point3);
                         polyline1.Points.Add(point2);
 
-                        polyline1.StrokeThickness = 1;
+                        polyline1.StrokeThickness = 0.5;
                         Canvas.SetZIndex(polyline1, 0);
                         polyline1.DataContext = prop;
 
@@ -799,7 +825,7 @@ namespace DispatcherApp.ViewModel
 
             if (prop != null)
             {
-                NodeControl node = new NodeControl(5, 5);
+                NodeControl node = new NodeControl(3, 3);
                 Canvas.SetLeft(node, offset + /*x * */cellWidth - cellWidth / 2 - node.Width / 2);
                 Canvas.SetTop(node, y * cellHeight - node.Height / 2);
                 Canvas.SetZIndex(node, 5);
@@ -963,6 +989,7 @@ namespace DispatcherApp.ViewModel
         {
             try
             {
+                bool allDates = false;
                 DateTime date;
                 try
                 {
@@ -970,6 +997,7 @@ namespace DispatcherApp.ViewModel
                 }
                 catch
                 {
+                    allDates = true;
                     date = DateTime.UtcNow;
                 }
                  
@@ -981,7 +1009,14 @@ namespace DispatcherApp.ViewModel
                     mrids.Add(breaker.MRID);
                 }
 
-                reportsByBreaker = ProxyToTransactionManager.GetReportsForSpecificDateSortByBreaker(mrids, date);
+                if (!allDates)
+                {
+                    reportsByBreaker = ProxyToTransactionManager.GetReportsForSpecificDateSortByBreaker(mrids, date);
+                }
+                else
+                {
+                    reportsByBreaker = ProxyToTransactionManager.GetAllReportsSortByBreaker(mrids);
+                }
 
                 ClusteredColumnChart chart = new ClusteredColumnChart();
                 this.ChartSeries.Clear();
@@ -1012,7 +1047,14 @@ namespace DispatcherApp.ViewModel
                 }
                 
                 this.ChartTitle = "Number of Incidents for Breakers";
-                this.ChartSubtitle = "Date: " + date.Day + "/" + date.Month + "/" + date.Year;
+                if (!allDates)
+                {
+                    this.ChartSubtitle = "Date: " + date.Day + "/" + date.Month + "/" + date.Year;
+                }
+                else
+                {
+                    this.ChartSubtitle = "All days";
+                }
 
                 chart.Series = this.ChartSeries;
                 chart.HorizontalAlignment = HorizontalAlignment.Stretch;
@@ -1344,12 +1386,12 @@ namespace DispatcherApp.ViewModel
                 bool exists = false;
                 int i = 0;
 
-                for (i = 0; i < BottomTabControlTabs.Count; i++)
+                for (i = 0; i < CenterTabControlTabs.Count; i++)
                 {
-                    if (BottomTabControlTabs[i].Header == parameter)
+                    if (CenterTabControlTabs[i].Header == parameter)
                     {
                         exists = true;
-                        this.BottomTabControlIndex = i;
+                        this.CenterTabControlIndex = i;
                         break;
                     }
                 }

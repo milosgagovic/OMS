@@ -12,7 +12,7 @@
         <converters:IncidentStateToBool x:Key="IncidentStateToBool"/>
         <converters:CrewTypeToCrews x:Key="CrewTypeToCrews"/>
     </UserControl.Resources>
-    <Border BorderThickness="0, 0, 0, 0" BorderBrush="DarkGray">
+    <Border BorderThickness="0, 0, 0, 0" BorderBrush="DarkGray" Background="{StaticResource DarkestColor}">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition/>

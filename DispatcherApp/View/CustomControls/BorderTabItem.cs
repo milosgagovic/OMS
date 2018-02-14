@@ -61,7 +61,7 @@ namespace DispatcherApp.View.CustomControls
             closeButton.SetBinding(Button.CommandParameterProperty, new Binding() { RelativeSource = new RelativeSource(RelativeSourceMode.FindAncestor, typeof(BorderTabItem), 1), Path = new PropertyPath("Header") });
 
             ScrollViewer scroll = new ScrollViewer();
-            scroll.Style = (Style)frameworkElement.FindResource("ScrollViewerStyle");
+            scroll.Style = (Style)frameworkElement.FindResource("FavsScrollViewer");
             //Grid.SetRow(scroll, 1);
             //Grid.SetColumn(scroll, 0);
             //Grid.SetRowSpan(scroll, 2);

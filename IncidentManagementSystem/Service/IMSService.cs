@@ -312,5 +312,36 @@ namespace IncidentManagementSystem.Service
 
             return retVal;
         }
+
+        public List<List<IncidentReport>> GetAllReportsSortByBreaker(List<string> mrids)
+        {
+            List<IncidentReport> temp = new List<IncidentReport>();
+            Dictionary<string, List<IncidentReport>> reportsByBreaker = new Dictionary<string, List<IncidentReport>>();
+            List<List<IncidentReport>> retVal = new List<List<IncidentReport>>();
+
+            foreach (string mrid in mrids)
+            {
+                reportsByBreaker.Add(mrid, new List<IncidentReport>());
+            }
+
+            using (var ctx = new IncidentContext())
+            {
+                temp = ctx.IncidentReports.ToList();
+            }
+
+            foreach (IncidentReport report in temp)
+            {
+                reportsByBreaker[report.MrID].Add(report); ;
+            }
+
+            int i = 0;
+            foreach (List<IncidentReport> reports in reportsByBreaker.Values)
+            {
+                retVal.Add(new List<IncidentReport>());
+                retVal[i++] = reports;
+            }
+
+            return retVal;
+        }
     }
 }

@@ -58,7 +58,10 @@ namespace IMSContract
         [OperationContract]
         List<ElementStateReport> GetElementStateReportsForSpecificMrIDAndSpecificTimeInterval(string mrID, DateTime startTime, DateTime endTime);
 
-		[OperationContract]
+        [OperationContract]
+        List<List<IncidentReport>> GetAllReportsSortByBreaker(List<string> mrids);
+
+        [OperationContract]
         List<Crew> GetCrews();
 
 		[OperationContract]

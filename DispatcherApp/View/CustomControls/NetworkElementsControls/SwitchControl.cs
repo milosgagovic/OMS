@@ -95,12 +95,12 @@ namespace DispatcherApp.View.CustomControls
 
             this.Canvas1.VerticalAlignment = VerticalAlignment.Center;
             this.Canvas1.HorizontalAlignment = HorizontalAlignment.Center;
-            this.Canvas1.Height = buttonSize - 5;
-            this.Canvas1.Width = buttonSize - 5;
+            this.Canvas1.Height = buttonSize;
+            this.Canvas1.Width = buttonSize;
             this.Canvas2.VerticalAlignment = VerticalAlignment.Center;
             this.Canvas2.HorizontalAlignment = HorizontalAlignment.Center;
-            this.Canvas2.Height = buttonSize - 5;
-            this.Canvas2.Width = buttonSize - 5;
+            this.Canvas2.Height = buttonSize;
+            this.Canvas2.Width = buttonSize;
 
             this.ButtonCanvas.Height = buttonSize;
             this.ButtonCanvas.Width = buttonSize;
@@ -119,7 +119,7 @@ namespace DispatcherApp.View.CustomControls
             ControlTemplate template = new ControlTemplate(typeof(Button));
             FrameworkElementFactory elemFactory = new FrameworkElementFactory(typeof(Border));
             elemFactory.Name = "Border";
-            elemFactory.SetValue(Border.CornerRadiusProperty, new CornerRadius(1));
+            elemFactory.SetValue(Border.CornerRadiusProperty, new CornerRadius(buttonSize/20));
             elemFactory.SetValue(Border.BackgroundProperty, this.ActivePalette[0]);
             template.VisualTree = elemFactory;
 

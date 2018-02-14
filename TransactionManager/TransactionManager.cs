@@ -485,6 +485,11 @@ namespace TransactionManager
         {
             return IMSClient.GetReportsForSpecificDateSortByBreaker(mrids, date);
         }
+
+        public List<List<IncidentReport>> GetAllReportsSortByBreaker(List<string> mrids)
+        {
+            return IMSClient.GetAllReportsSortByBreaker(mrids);
+        }
         #endregion
     }
 }

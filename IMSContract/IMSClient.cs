@@ -94,6 +94,11 @@ namespace IMSContract
             return Channel.GetReportsForSpecificDateSortByBreaker(mrids, date);
         }
 
+        public List<List<IncidentReport>> GetAllReportsSortByBreaker(List<string> mrids)
+        {
+            return Channel.GetAllReportsSortByBreaker(mrids);
+        }
+
         public bool Ping()
         {
             return Channel.Ping();

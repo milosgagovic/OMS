@@ -33,7 +33,7 @@ namespace DispatcherApp.View.CustomControls
             ControlTemplate template = new ControlTemplate(typeof(Button));
             FrameworkElementFactory elemFactory = new FrameworkElementFactory(typeof(Border));
             elemFactory.Name = "Border";
-            elemFactory.SetValue(Border.CornerRadiusProperty, new CornerRadius(1));
+            elemFactory.SetValue(Border.CornerRadiusProperty, new CornerRadius(width/5));
             elemFactory.SetValue(Border.BackgroundProperty, (SolidColorBrush)frameworkElement.FindResource("SwitchColorClosed"));
             template.VisualTree = elemFactory;
 
