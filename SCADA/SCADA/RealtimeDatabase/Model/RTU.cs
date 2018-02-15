@@ -89,17 +89,14 @@ namespace SCADA.RealtimeDatabase.Model
             switch (variable.Type)
             {
                 case VariableTypes.DIGITAL:
-                    //Digital digital = variable as Digital;
-
-                    digInLock.EnterReadLock();
-                    //retAddress = digitalInAddresses[digital.RelativeAddress];
+                
+                    digInLock.EnterReadLock();                
                     retAddress = digitalInAddresses[variable.RelativeAddress];
                     digInLock.ExitReadLock();
 
                     break;
 
                 case VariableTypes.ANALOG:
-                    //Analog analog = variable as Analog;
 
                     anaInLock.EnterReadLock();
                     retAddress = analogInAddresses[variable.RelativeAddress];

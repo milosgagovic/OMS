@@ -29,9 +29,7 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
                         if (digital.State == States.OPENED && digital.Command == CommandTypes.OPEN)
                             retVal = false;
 
-
                         break;
-
                 }
             }
             return retVal;

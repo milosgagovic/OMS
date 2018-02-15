@@ -27,7 +27,9 @@ namespace SCADAContracts
         {
             try
             {
-                return factory.ExecuteCommand(command);
+                var r = factory.ExecuteCommand(command);
+                return r;
+                //return factory.ExecuteCommand(command);
             }
             catch (Exception e)
             {

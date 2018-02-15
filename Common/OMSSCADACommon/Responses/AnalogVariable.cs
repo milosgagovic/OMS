@@ -8,7 +8,14 @@ namespace OMSSCADACommon.Responses
 {
     public class AnalogVariable : ResponseVariable
     {
-        // to do:
+        public AnalogVariable()
+        {
+            // moralo je ovako, da bi skada ostala nesvesna ostatka sistema
+            // msm "problem" je do modela, sto nemamo klasa iz CIMa u SKADI, pravili smo sve nezavisno...
+
+        }
         public float Value { get; set; }
+
+        public string unitSymbol { get; set; }
     }
 }

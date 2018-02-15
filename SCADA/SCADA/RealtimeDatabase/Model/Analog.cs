@@ -26,8 +26,7 @@ namespace SCADA.RealtimeDatabase.Model
         //--------- EGU properties ------------
 
         // Stanje na skadi je uvek i uvek osnovnoj jedinici i bezMultipliera! u zavisnosti od toga
-        // koji je opseg velicine i opseg odgovarajucih sirovih vrednosti -> radi linearnu konverziju! 
-        // ovo su vrednosti koje interesuju skada klijente. one se preracunavaju
+        // ovo je vrednost koja zanima skada klijenta
         public float AcqValue { get; set; }
 
         // OVO JE ONA VREDNOST KOJU MI ZELIMO DA IMAMO INCIJALNO!

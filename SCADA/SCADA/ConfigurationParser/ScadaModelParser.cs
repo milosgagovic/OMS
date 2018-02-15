@@ -1,5 +1,6 @@
 ﻿using OMSSCADACommon;
 using PCCommon;
+using SCADA.CommunicationAndControlling.SecondaryDataProcessing;
 using SCADA.RealtimeDatabase;
 using SCADA.RealtimeDatabase.Catalogs;
 using SCADA.RealtimeDatabase.Model;
@@ -16,7 +17,6 @@ namespace SCADA.ConfigurationParser
     public class ScadaModelParser
     {
         private string basePath;
-
         private DBContext dbContext = null;
 
         public ScadaModelParser(string basePath = "")
@@ -27,11 +27,19 @@ namespace SCADA.ConfigurationParser
 
         public bool DeserializeScadaModel(string deserializationSource = "ScadaModel.xml")
         {
+            // to do: ime ove promenljive imas u sveski
+            // obrnula logiku za configuration runnig, PROMENITI
+            Database.IsConfigurationRunning = false;
+
             string message = string.Empty;
             string configurationName = deserializationSource;
             string source = Path.Combine(basePath, configurationName);
-           
-            // to do: DODATI DA SE PRVO OBRISE BAZA. neka promenljiva koja ce sluziti kao indikacija svima koji koriste pvs i rtus da stanu za taj period cleean i brisanja
+
+            if (Database.Instance.RTUs.Count != 0)
+                Database.Instance.RTUs.Clear();
+
+            if (Database.Instance.ProcessVariablesName.Count != 0)
+                Database.Instance.ProcessVariablesName.Clear();
 
             try
             {
@@ -41,15 +49,21 @@ namespace SCADA.ConfigurationParser
                 IEnumerable<XElement> elements = xdocument.Elements();
 
                 var rtus = xdocument.Element("RTUS").Elements("RTU").ToList();
-                //var digitals = xdocument.Element("Digitals").Elements("Digital").ToList();
                 var digitals = (from dig in xdocument.Element("Digitals").Elements("Digital")
                                 orderby (int)dig.Element("RelativeAddress")
                                 select dig).ToList();
 
-                // order will be important here too...
-                var analogs = xdocument.Element("Analogs").Elements("Analog").ToList();
-                var counters = xdocument.Element("Counters").Elements("Counter").ToList();
 
+
+                //var analogs = xdocument.Element("Analogs").Elements("Analog").ToList();
+                var analogs = (from dig in xdocument.Element("Analogs").Elements("Analog")
+                               orderby (int)dig.Element("RelativeAddress")
+                               select dig).ToList();
+
+                //var counters = xdocument.Element("Counters").Elements("Counter").ToList();
+                var counters = (from dig in xdocument.Element("Counters").Elements("Counter")
+                                orderby (int)dig.Element("RelativeAddress")
+                                select dig).ToList();
                 // parsing RTUS
                 if (rtus.Count != 0)
                 {
@@ -64,6 +78,7 @@ namespace SCADA.ConfigurationParser
                             byte address = (byte)(int)rtu.Element("Address");
 
                             bool freeSpaceForDigitals = (bool)rtu.Element("FreeSpaceForDigitals");
+                            bool freeSpaceForAnalogs = (bool)rtu.Element("FreeSpaceForAnalogs");
 
                             string stringProtocol = (string)rtu.Element("Protocol");
                             IndustryProtocols protocol = (IndustryProtocols)Enum.Parse(typeof(IndustryProtocols), stringProtocol);
@@ -79,6 +94,11 @@ namespace SCADA.ConfigurationParser
                             int anaInCount = (int)rtu.Element("AnaInCount");
                             int anaOutCount = (int)rtu.Element("AnaOutCount");
                             int counterCount = (int)rtu.Element("CounterCount");
+
+                            ushort anaInRawMin = (ushort)(int)rtu.Element("AnaInRawMin");
+                            ushort anaInRawMax = (ushort)(int)rtu.Element("AnaInRawMax");
+                            ushort anaOutRawMin = (ushort)(int)rtu.Element("AnaOutRawMin");
+                            ushort anaOutRawMax = (ushort)(int)rtu.Element("AnaOutRawMax");
 
                             if (digOutCount != digInCount)
                             {
@@ -104,13 +124,19 @@ namespace SCADA.ConfigurationParser
                                 DigInCount = digInCount,
                                 AnaInCount = anaInCount,
                                 AnaOutCount = anaOutCount,
-                                CounterCount = counterCount
+                                CounterCount = counterCount,
+
+                                AnaInRawMin = anaInRawMin,
+                                AnaInRawMax = anaInRawMax,
+                                AnaOutRawMin = anaOutRawMin,
+                                AnaOutRawMax = anaOutRawMax
                             };
 
                             dbContext.AddRTU(newRtu);
                         }
                         else
                         {
+                            // to do: bacati exception
                             message = string.Format("Invalid config: There is multiple RTUs with Name={0}!", uniqueName);
                             Console.WriteLine(message);
                             return false;
@@ -242,10 +268,100 @@ namespace SCADA.ConfigurationParser
                     }
                 }
 
-                // to do: 
+                // parsing ANALOGS. ORDER OF RELATIVE ADDRESSES IS IMPORTANT
                 if (analogs.Count != 0)
                 {
+                    foreach (var a in analogs)
+                    {
+                        string procContr = (string)a.Element("ProcContrName");
 
+                        // does RTU exists?
+                        RTU associatedRtu;
+                        if ((associatedRtu = dbContext.GetRTUByName(procContr)) != null)
+                        {
+                            Analog newAnalog = new Analog();
+
+                            // SETTING ProcContrName
+                            newAnalog.ProcContrName = procContr;
+
+                            string uniqueName = (string)a.Element("Name");
+
+                            // variable with that name does not exists in db?
+                            if (!dbContext.Database.ProcessVariablesName.ContainsKey(uniqueName))
+                            {
+                                // SETTING Name
+                                newAnalog.Name = uniqueName;
+
+                                // SETTING NumOfRegisters
+                                ushort numOfReg = (ushort)(int)a.Element("NumOfRegisters");
+                                newAnalog.NumOfRegisters = numOfReg;
+
+                                // SETTING AcqValue
+                                ushort acqValue = (ushort)(float)a.Element("AcqValue");
+                                newAnalog.AcqValue = acqValue;
+
+                                // SETTING CommValue
+                                ushort commValue = (ushort)(float)a.Element("CommValue");
+                                newAnalog.CommValue = commValue;
+
+                                // SETTING MaxValue
+                                float maxValue = (float)a.Element("MaxValue");
+                                newAnalog.MaxValue = maxValue;
+
+                                // SETTING MinValue
+                                float minValue = (float)a.Element("MinValue");
+                                newAnalog.MinValue = minValue;
+
+                                // SETTING UnitSymbol                             
+                                string stringUnitSymbol = (string)a.Element("UnitSymbol");
+                                UnitSymbol unitSymbolValue = (UnitSymbol)Enum.Parse(typeof(UnitSymbol), stringUnitSymbol, true);
+                                newAnalog.UnitSymbol = unitSymbolValue;
+
+                                // SETTING RelativeAddress
+                                ushort relativeAddress = (ushort)(int)a.Element("RelativeAddress");
+                                newAnalog.RelativeAddress = relativeAddress;
+
+                                // svejedno je uzeli AnaInRawMin ili AnaOutRawMin -> isti su trenutni, 
+                                // sve dok imamo samo Analog.cs a ne AnaIn.cs + AnaOut.cs (dok je kao za digital)
+                                newAnalog.RawBandLow = associatedRtu.AnaInRawMin;
+                                newAnalog.RawBandHigh = associatedRtu.AnaInRawMax;
+
+                                // SETTING RawAcqValue and RawCommValue
+                                AnalogProcessor.EGUToRawValue(newAnalog);
+
+                                ushort calculatedRelativeAddres;
+                                if (associatedRtu.TryMap(newAnalog, out calculatedRelativeAddres))
+                                {
+                                    if (relativeAddress == calculatedRelativeAddres)
+                                    {
+                                        if (associatedRtu.MapProcessVariable(newAnalog))
+                                        {
+                                            dbContext.AddProcessVariable(newAnalog);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        message = string.Format("Invalid config: Analog Variable = {0} RelativeAddress = {1} is not valid.", uniqueName, relativeAddress);
+                                        Console.WriteLine(message);
+                                        return false;
+                                    }
+                                }
+
+                            }
+                            else
+                            {
+                                message = string.Format("Invalid config: Name = {0} is not unique. Analog Variable already exists", uniqueName);
+                                Console.WriteLine(message);
+                                return false;
+                            }
+                        }
+                        else
+                        {
+                            message = string.Format("Invalid config: Parsing Analogs, ProcContrName = {0} does not exists.", procContr);
+                            Console.WriteLine(message);
+                            return false;
+                        }
+                    }
                 }
 
                 // to do:
@@ -255,7 +371,6 @@ namespace SCADA.ConfigurationParser
                 }
 
                 Console.WriteLine("Configuration passed successfully.");
-
             }
             catch (FileNotFoundException e)
             {
@@ -274,6 +389,7 @@ namespace SCADA.ConfigurationParser
                 return false;
             }
 
+            Database.IsConfigurationRunning = true;
             return true;
         }
 
@@ -292,22 +408,27 @@ namespace SCADA.ConfigurationParser
             foreach (var rtu in rtusSnapshot)
             {
                 XElement rtuEl = new XElement(
-                    "RTU",
-                    new XElement("Address", rtu.Value.Address),
-                    new XElement("Name", rtu.Value.Name),
-                    new XElement("FreeSpaceForDigitals", rtu.Value.FreeSpaceForDigitals),
-                    new XElement("Protocol", Enum.GetName(typeof(IndustryProtocols), rtu.Value.Protocol)),
-                    new XElement("DigOutStartAddr", rtu.Value.DigOutStartAddr),
-                    new XElement("DigInStartAddr", rtu.Value.DigInStartAddr),
-                    new XElement("AnaOutStartAddr", rtu.Value.AnaOutStartAddr),
-                    new XElement("AnaInStartAddr", rtu.Value.AnaInStartAddr),
-                    new XElement("CounterStartAddr", rtu.Value.CounterStartAddr),
-                    new XElement("DigOutCount", rtu.Value.DigOutCount),
-                    new XElement("DigInCount", rtu.Value.DigInCount),
-                    new XElement("AnaInCount", rtu.Value.AnaInCount),
-                    new XElement("AnaOutCount", rtu.Value.AnaOutCount),
-                    new XElement("CounterCount", rtu.Value.CounterCount)
-                    );
+                     "RTU",
+                     new XElement("Address", rtu.Value.Address),
+                     new XElement("Name", rtu.Value.Name),
+                     new XElement("FreeSpaceForDigitals", rtu.Value.FreeSpaceForDigitals),
+                     new XElement("FreeSpaceForAnalogs", rtu.Value.FreeSpaceForAnalogs),
+                     new XElement("Protocol", Enum.GetName(typeof(IndustryProtocols), rtu.Value.Protocol)),
+                     new XElement("DigOutStartAddr", rtu.Value.DigOutStartAddr),
+                     new XElement("DigInStartAddr", rtu.Value.DigInStartAddr),
+                     new XElement("AnaOutStartAddr", rtu.Value.AnaOutStartAddr),
+                     new XElement("AnaInStartAddr", rtu.Value.AnaInStartAddr),
+                     new XElement("CounterStartAddr", rtu.Value.CounterStartAddr),
+                     new XElement("DigOutCount", rtu.Value.DigOutCount),
+                     new XElement("DigInCount", rtu.Value.DigInCount),
+                     new XElement("AnaInCount", rtu.Value.AnaInCount),
+                     new XElement("AnaOutCount", rtu.Value.AnaOutCount),
+                     new XElement("CounterCount", rtu.Value.CounterCount),
+                     new XElement("AnaInRawMin", rtu.Value.AnaInRawMin),
+                     new XElement("AnaInRawMax", rtu.Value.AnaInRawMax),
+                     new XElement("AnaOutRawMin", rtu.Value.AnaOutRawMin),
+                     new XElement("AnaOutRawMax", rtu.Value.AnaOutRawMax)
+                     );
 
                 rtus.Add(rtuEl);
             }
@@ -353,7 +474,20 @@ namespace SCADA.ConfigurationParser
                     case VariableTypes.ANALOG:
                         Analog analog = pv.Value as Analog;
 
-                        // to do: 
+                        XElement anEl = new XElement(
+                            "Analog",
+                                new XElement("Name", analog.Name),
+                                new XElement("NumOfRegisters", analog.NumOfRegisters),
+                                new XElement("AcqValue", analog.AcqValue),
+                                new XElement("CommValue", analog.CommValue),
+                                new XElement("MaxValue", analog.MaxValue),
+                                new XElement("MinValue", analog.MinValue),
+                                new XElement("ProcContrName", analog.ProcContrName),
+                                new XElement("RelativeAddress", analog.RelativeAddress),
+                                new XElement("UnitSymbol", Enum.GetName(typeof(UnitSymbol), analog.UnitSymbol))
+                            );
+
+                        analogs.Add(anEl);
 
                         break;
 
@@ -373,7 +507,6 @@ namespace SCADA.ConfigurationParser
             }
             catch (Exception)
             {
-
                 throw;
             }            
         }
@@ -383,9 +516,17 @@ namespace SCADA.ConfigurationParser
             string config1path = Path.Combine(Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).Parent.Parent.Parent.FullName, config1);
             string config2path = Path.Combine(Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).Parent.Parent.Parent.FullName, config2);
 
-            File.Move(config1path, "temp.txt");
-            File.Move(config2path, config1path);
-            File.Move("temp.txt", config2path);
+            try
+            {
+                File.Move(config1path, "temp.txt");
+                File.Move(config2path, config1path);
+                File.Move("temp.txt", config2path);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.StackTrace);
+                Console.WriteLine(e.Message);
+            }
         }
     }
 }

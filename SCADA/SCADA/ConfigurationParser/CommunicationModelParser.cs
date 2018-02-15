@@ -3,9 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
 
@@ -20,7 +17,6 @@ namespace SCADA.ConfigurationParser
         public CommunicationModelParser(string basePath = "")
         {
             processControllers = new Dictionary<string, ProcessController>();
-
             this.basePath = basePath == "" ? Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).Parent.Parent.Parent.FullName : basePath;
         }
 
@@ -31,11 +27,9 @@ namespace SCADA.ConfigurationParser
             try
             {
                 XElement xdocument = XElement.Load(Path.Combine(basePath, deserializationSource));
-
                 IEnumerable<XElement> elements = xdocument.Elements();
 
                 var pcs = xdocument.Elements("ProcessController").ToList();
-
 
                 if (pcs.Count != 0)
                 {
@@ -57,13 +51,11 @@ namespace SCADA.ConfigurationParser
                                 HostPort = hostPort
                             };
 
-
                             // !!! samo zato sto ne koristimo druge, a ne radi dok se ne pokrenus vi konfigurisani
                             if (newPc.Name.Equals("RTU-1"))
                             {
                                 processControllers.Add(newPc.Name, newPc);
                             }
-
                         }
                         else
                         {
@@ -79,7 +71,6 @@ namespace SCADA.ConfigurationParser
                     Console.WriteLine(message);
                     return false;
                 }
-
             }
             catch (FileNotFoundException e)
             {
@@ -93,7 +84,6 @@ namespace SCADA.ConfigurationParser
             }
             catch (Exception e)
             {
-
                 Console.WriteLine(e.Message);
                 return false;
             }

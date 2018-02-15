@@ -17,7 +17,6 @@ namespace SCADA.CommunicationAndControlling
         private Dictionary<string, ProcessController> processControllers { get; set; }
         private Dictionary<string, TcpClient> TcpChannels { get; set; }
 
-
         public PCCommunicationEngine()
         {
             IORequests = IORequestsQueue.GetQueue();
@@ -28,7 +27,6 @@ namespace SCADA.CommunicationAndControlling
             processControllers = new Dictionary<string, ProcessController>();
             TcpChannels = new Dictionary<string, TcpClient>();
         }
-
 
         #region Establishing communication 
 
@@ -141,12 +139,9 @@ namespace SCADA.CommunicationAndControlling
 
                 if (isSuccessful)
                 {
-
                     TcpClient client;
-
                     if (TcpChannels.TryGetValue(forProcess.ProcessControllerName, out client))
                     {
-
                         try
                         {
                             // to do: test this case...connection lasts forever? 
@@ -186,7 +181,6 @@ namespace SCADA.CommunicationAndControlling
                         Console.WriteLine("\nThere is no communication link with {0} rtu. Request is disposed.", forProcess.ProcessControllerName);
                     }
                 }
-
                 Thread.Sleep(millisecondsTimeout: timerMsc);
             }
         }

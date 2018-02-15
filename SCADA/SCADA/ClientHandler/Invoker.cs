@@ -17,6 +17,7 @@ namespace SCADA.ClientHandler
     {
         public Response ExecuteCommand(Command command)
         {
+            Console.WriteLine("Invoker.ExecuteCommand");
             command.Receiver = new CommunicationAndControlling.SecondaryDataProcessing.CommAcqEngine();
             return command.Execute();
         }

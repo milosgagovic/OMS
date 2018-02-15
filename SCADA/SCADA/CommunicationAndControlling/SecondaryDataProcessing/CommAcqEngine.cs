@@ -19,7 +19,6 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
     {
         private static IORequestsQueue IORequests;
         private static bool isShutdown;
-
         private int timerMsc;
 
         private DBContext dbContext = null;
@@ -150,7 +149,7 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
 
             while (!isShutdown)
             {
-                // sporno
+                // sporno to do:
                 //while (!Database.IsConfigurationRunning)
                 //    Thread.Sleep(100);
 
@@ -184,7 +183,6 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
                                 };
 
                                 mdbHandler.Request = new ReadRequest() { StartAddr = iorb.ReqAddress };
-
 
                                 switch (pv.Type)
                                 {
@@ -226,14 +224,9 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
                         Console.WriteLine("Invalid config: ProcContrName = {0} does not exists.", pv.ProcContrName);
                         continue;
                     }
-
                 }
-
                 Thread.Sleep(millisecondsTimeout: timerMsc);
-                //Thread.Sleep(millisecondsTimeout: 2000);
             }
-            // to do: close all communication channels
-            // delete...
 
             Console.WriteLine("StartAcq.shutdown=true");
             return;
@@ -271,8 +264,7 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
                                             BitReadResponse response = (BitReadResponse)mdbHandler.Response;
                                             ProcessVariable pv;
                                             Digital target = null;
-
-                                            // i ovde se zapravo cita iz baze! preko RTUa. znaci pristupamo rtuu, a moguce je da se desava rekonfiguracija.                                       
+                                       
                                             if (rtu.GetProcessVariableByAddress(answer.ReqAddress, out pv))
                                             {
                                                 target = (Digital)pv;
@@ -429,10 +421,12 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
                         response.Variables.Add(new DigitalVariable() { Id = digital.Name, State = (OMSSCADACommon.States)digital.State });
                         break;
 
-                    //case VariableTypes.ANALOG:
-                    //    Analog analog = (Analog)pv;
-                    //    response.Variables.Add(new AnalogVariable((int)analog.UnitSymbol) { Id = analog.Name, Value = analog.AcqValue });
-                    //    break;
+                    case VariableTypes.ANALOG:
+                        Analog analog = (Analog)pv;
+                        // to do: fix this
+                        response.Variables.Add(new AnalogVariable() { Id = analog.Name, Value = analog.AcqValue, unitSymbol = "w" });
+                        break;
+
 
                     case VariableTypes.COUNTER:
                         Counter counter = (Counter)pv;
@@ -455,8 +449,9 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
             Analog analog = null;
             OMSSCADACommon.Responses.Response response = new OMSSCADACommon.Responses.Response();
 
-            while (!Database.IsConfigurationRunning)
-                Thread.Sleep(100);
+            // to do:
+            //while (!Database.IsConfigurationRunning)
+            //    Thread.Sleep(100);
 
             // getting PV from db
             ProcessVariable pv;

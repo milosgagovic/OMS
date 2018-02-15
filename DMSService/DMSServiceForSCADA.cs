@@ -46,7 +46,6 @@ namespace DMSService
                 }
                 catch (Exception e)
                 {
-                    //Console.WriteLine(e);
                     Console.WriteLine("ChangeOnScada() -> IMS is not available yet.");
                     if (IMSClient.State == CommunicationState.Faulted)
                         IMSClient = new IMSClient(new EndpointAddress("net.tcp://localhost:6090/IncidentManagementSystemService"));
@@ -56,16 +55,23 @@ namespace DMSService
 
 
             ModelGdaDMS gda = new ModelGdaDMS();
-            List<ResourceDescription> rdl = gda.GetExtentValuesExtended(ModelCode.DISCRETE);
-            ResourceDescription rd = rdl.Where(r => r.GetProperty(ModelCode.IDOBJ_MRID).AsString() == mrID).FirstOrDefault();
+            List<ResourceDescription> rds = gda.GetExtentValuesExtended(ModelCode.DISCRETE);
+            ResourceDescription rdDiscreateMeas = rds.Where(r => r.GetProperty(ModelCode.IDOBJ_MRID).AsString() == mrID).FirstOrDefault();
 
-            long res = rd.GetProperty(ModelCode.MEASUREMENT_PSR).AsLong();
+            // if measurement exists only on scada, but not in .data
+            if (rdDiscreateMeas != null)
+            {
+                // to do 
+            }
+
+            // find associated element
+            long rdAssociatedPSR = rdDiscreateMeas.GetProperty(ModelCode.MEASUREMENT_PSR).AsLong();
 
             List<SCADAUpdateModel> networkChange = new List<SCADAUpdateModel>();
 
             Element el;
             Console.WriteLine("Change on scada Instance.Tree");
-            DMSService.Instance.Tree.Data.TryGetValue(res, out el);
+            DMSService.Instance.Tree.Data.TryGetValue(rdAssociatedPSR, out el);
             Switch sw = (Switch)el;
 
             bool isIncident = false;

@@ -4,8 +4,6 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SCADA.RealtimeDatabase
 {
@@ -15,7 +13,6 @@ namespace SCADA.RealtimeDatabase
 
         public DBContext()
         {
-            //Console.WriteLine("Instancing DbContext");
             Database = Database.Instance;
         }
 
@@ -75,26 +72,35 @@ namespace SCADA.RealtimeDatabase
         }
 
 
-        // there can be a scenarios:
-        // 1. there is a .data file on DMS, NMS, and there is nothing in ScadaModel.xml part for ProcessVariables (e.g. empty <digitals> tag...)
-        // 2. there is no .data file od DMS, NMS, and there IS data in ScadaModel.xml
-
-        // to do: PRBOLEM?  1. everything is ok, just apply delta again regularly...
-        // 2. -> PROBLEM: ako npr. dodamo 3 prekidaca, a sa strane skade ta tri vec postoje, to treba posmatra kao UPDATE! 
-        // znaci iako je u insert operaciji jer u ostatku sistema ne postoji, zapravo je update
+        /* possible scenarios:
+       
+         1. there is a .data file on DMS, NMS, and there is nothing in ScadaModel.xml part for ProcessVariables (e.g. empty <digitals> tag...)
+           -> everything is ok, just apply delta again regularly...
+       
+        2. there is no .data file on DMS, NMS, and there IS data in ScadaModel.xml part
+           -> PROBLEM: ako npr. dodamo 3 prekidaca, a sa strane skade ta tri vec postoje, to treba posmatrati kao UPDATE! 
+            znaci iako je u insert operaciji jer u ostatku sistema ne postoji (nema .data), 
+            zapravo je update jer na skadi postoji...    
+        */
 
         public bool ApplyDelta(ScadaDelta delta)
         {
             bool retVal = false;
+          
+            /*
+            prvo proveriti prirodu delte: 
+               da li radimo SAMO UPDATE, 
+               ili I INSERT i UPDATE, 
+               ili samo INSERT
+
+            1. ako nije <samo update> proveri da li uopste imas mesta za one koji su insert, ako nema return false (rejecting whole delta)
+            2. ako ima mesta za insert pronadji elemente koji su za update, izvadi ih u zasebnu listu i prvo njih radi, a ostatak radi insert
+           */
 
             List<ScadaElement> updateOperations = delta.UpdateOps;
-
-            // prvo proveriti prirodu delte: da li radimo SAMO UPDATE, ili I INSERT i UPDATE, ili samo INSERT
-            // 1. ako nije samo update proveri da li uopste imas mesta za one koji su insert, ako nema return false (rejecting whole delta)
-            // 2. ako ima mesta za insert pronadji elemente koji su za update, izvadi ih u zasebnu listu i prvo njih radi, a ostatak radi insert
-
+         
             // this list acutally can contains update operations also. case 2. above descripted 
-            // we have to segregate them
+            // we have to segregate treal update from insert...
             List<ScadaElement> deltaOperations = delta.InsertOps;
             List<ScadaElement> realInsertOperatins = new List<ScadaElement>();
             List<ScadaElement> realUpdateOperatins = new List<ScadaElement>();
@@ -222,9 +228,8 @@ namespace SCADA.RealtimeDatabase
                                     continue;
 
                                 ushort relativeAddress;
-                                // check if is possible mapping in this rtu
 
-                                // kljucno! da li je moguce ovaj digital namapirati u ovom rtu-u? 
+                                // kljucno! check if is possible mapping in this rtu
                                 if (availableRtu.TryMap(newDigital, out relativeAddress))
                                 {
                                     newDigital.RelativeAddress = relativeAddress;
@@ -262,7 +267,6 @@ namespace SCADA.RealtimeDatabase
 
                             Analog newAnalog = new Analog() { Name = insertEl.Name };
 
-
                             foreach (var availableRtu in availableRtus)
                             {
                                 // there is no channel with RTU-2 currently
@@ -271,9 +275,8 @@ namespace SCADA.RealtimeDatabase
                                     continue;
 
                                 ushort relativeAddress;
-                                // check if is possible mapping in this rtu
 
-                                // kljucno! da li je moguce ovaj analog namapirati u ovom rtu-u? 
+                                // kljucno! if is possible mapping in this rtu? 
                                 if (availableRtu.TryMap(newAnalog, out relativeAddress))
                                 {
                                     newAnalog.RelativeAddress = relativeAddress;
@@ -286,7 +289,7 @@ namespace SCADA.RealtimeDatabase
                                     newAnalog.AcqValue = insertEl.WorkPoint;
                                     newAnalog.CommValue = insertEl.WorkPoint;
 
-
+                                    // to do:
                                     //string stringProtocol = (string)rtu.Element("Protocol");
                                     //IndustryProtocols protocol = (IndustryProtocols)Enum.Parse(typeof(IndustryProtocols), stringProtocol);
                                     //var unitSym = insertEl.UnitSymbol;
