@@ -2,10 +2,7 @@
 using SCADA.RealtimeDatabase.Catalogs;
 using SCADA.RealtimeDatabase.Model;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
 {
@@ -45,8 +42,15 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
             throw new NotImplementedException();
         }
 
-        // calculating a possibly command, in dependence of variable properties
-        public static bool InitialCommandinfForVariable(Digital digital, out CommandTypes command)
+
+        /// <summary>
+        /// Calculates a possibly command, in dependence of digital properties,
+        /// return true if should command to Sim.
+        /// </summary>
+        /// <param name="digital"></param>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        public static bool InitialCommandingForDigital(Digital digital, out CommandTypes command)
         {
             // ovde nema neke velike logike za sada, ali je ideja da kasnije nekad bude ...prosirivo? xD
 
@@ -68,7 +72,7 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
             /*
             if (digital.State==States.OPENED && digital.Command == CommandTypes.CLOSE)
             {
-                // ovde ce se u sledecem akv ciklusu promeniti stanje.
+                // to do: ...
             }*/
 
             return false;

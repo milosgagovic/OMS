@@ -261,6 +261,7 @@ namespace TransactionManager
                 bool isScadaAvailable = false;
                 do
                 {
+                    Console.WriteLine("scada not available");
                     try
                     {
                         if (ScadaClient.State == CommunicationState.Created)

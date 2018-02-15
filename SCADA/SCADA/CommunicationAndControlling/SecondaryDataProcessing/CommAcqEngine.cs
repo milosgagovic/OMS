@@ -86,7 +86,7 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
                                         Digital digital = (Digital)pv;
 
                                         CommandTypes comm;
-                                        if (shouldCommand = CommandValidator.InitialCommandinfForVariable(digital, out comm))
+                                        if (shouldCommand = CommandValidator.InitialCommandingForDigital(digital, out comm))
                                         {
 
                                             iorb.ReqAddress = (ushort)rtu.GetCommandAddress(pv);

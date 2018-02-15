@@ -1,9 +1,7 @@
 ﻿using SCADA.RealtimeDatabase.Model;
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace SCADA.RealtimeDatabase
@@ -14,6 +12,8 @@ namespace SCADA.RealtimeDatabase
         public ConcurrentDictionary<string, RTU> RTUs = null;
 
         private static Database instance;
+        private static bool isDataReady;
+        private static ReaderWriterLockSlim locker;
 
         private Database()
         {
@@ -29,11 +29,31 @@ namespace SCADA.RealtimeDatabase
             {
                 if (instance == null)
                 {
+                    locker = new ReaderWriterLockSlim();
                     instance = new Database();
                 }
                 return instance;
             }
         }
 
+        public static bool IsConfigurationRunning
+        {
+            get
+            {
+                bool retVal = false;
+
+                locker.EnterReadLock();
+                retVal = isDataReady;
+                locker.ExitReadLock();
+
+                return retVal;
+            }
+            set
+            {
+                locker.EnterWriteLock();
+                isDataReady = value;
+                locker.ExitWriteLock();
+            }
+        }
     }
 }
