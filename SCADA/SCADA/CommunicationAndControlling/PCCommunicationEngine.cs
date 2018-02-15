@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Threading;
-using ModbusTCPDriver;
 using PCCommon;
 using System.Net.Sockets;
 using SCADA.ConfigurationParser;
@@ -131,14 +126,11 @@ namespace SCADA.CommunicationAndControlling
         {
             while (!isShutdown)
             {
-
                 bool isSuccessful;
                 IORequestBlock forProcess = IORequests.DequeueRequest(out isSuccessful);
 
                 if (isSuccessful)
                 {
-
-                    // Console.WriteLine("** ProcessRequests(){0}, REQUEST = ", processing, BitConverter.ToString(forProcess.SendBuff, 0, forProcess.SendMsgLength));
 
                     TcpClient client;
 
@@ -167,20 +159,12 @@ namespace SCADA.CommunicationAndControlling
                             var length = stream.Read(forProcess.RcvBuff, offset, client.ReceiveBufferSize);
                             forProcess.RcvMsgLength = length;
 
-                            //Console.WriteLine("*** ANSWER <READ> = ", BitConverter.ToString(forProcess.RcvBuff, 0, forProcess.RcvMsgLength));
-
                             IORequests.EnqueueAnswer(forProcess);
-                            //Console.WriteLine("**** ProcessRequests(){0}, Answer enqueued IOAnswers.Count = {1}", processing, IORequests.IOAnswers.Count);
-
                         }
                         catch (Exception e)
                         {
                             // to do: handle this...
-
-
                             Console.WriteLine(e.Message);
-
-                            // kanal sa kontrolerom je zatvoren
                             //if (client.Connected)
                             //  client.Close();
 
@@ -195,22 +179,18 @@ namespace SCADA.CommunicationAndControlling
 
                 Thread.Sleep(millisecondsTimeout: timerMsc);
             }
-
-            foreach (var channel in TcpChannels.Values)
-            {
-                // !!! change this. not valid calling all methods
-                channel.GetStream().Close();
-                channel.Close();
-                channel.Client.Disconnect(true);
-            }
-
-            TcpChannels.Clear();
         }
 
-        // dodati close kanala i ostalo...
         public void Stop()
         {
             isShutdown = true;
+
+            foreach (var channel in TcpChannels.Values)
+            {
+                channel.Close();
+            }
+
+            TcpChannels.Clear();
         }
     }
 }

@@ -82,7 +82,6 @@ namespace SCADA.CommunicationAndControlling
         {
             IORequestBlock req;
             isSuccessful = IORequests.TryDequeue(out req);
-            //IORequests.Take(1);
             return req;
         }
 

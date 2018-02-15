@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 namespace PCCommon
 {
     // Generic description of Process Controller (communication endoint)
-
     public class ProcessController
     {
         public int DeviceAddress { get; set; }
