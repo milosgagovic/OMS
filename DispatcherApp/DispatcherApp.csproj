@@ -37,6 +37,10 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="GravityAppsMandelkowMetroCharts, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\GravityAppsMandelkowMetroCharts.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
@@ -111,6 +115,9 @@
     <Compile Include="View\CustomControls\PropertiesControls\SwitchPropertiesControl.xaml.cs">
       <DependentUpon>SwitchPropertiesControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\CustomControls\TabContentControls\ReportExplorer.xaml.cs">
+      <DependentUpon>ReportExplorer.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\CustomControls\TopMenuControl.xaml.cs">
       <DependentUpon>TopMenuControl.xaml</DependentUpon>
     </Compile>
@@ -166,6 +173,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="View\CustomControls\TabContentControls\ReportExplorer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\Resources\Themes\DarkTheme\BasicControls.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -189,6 +200,10 @@
     <Page Include="View\CustomControls\TopMenuControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Resources\Themes\DarkTheme\Generic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="View\Resources\Themes\DarkTheme\NetworkElements.xaml">
       <SubType>Designer</SubType>

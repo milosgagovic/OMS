@@ -76,7 +76,7 @@ namespace DMSService
             Array values = Enum.GetValues(typeof(CrewType));
             incident.Crewtype = (CrewType)values.GetValue(rand.Next(0, values.Length));
 
-            ElementStateReport elementStateReport = new ElementStateReport() { MrID = sw.MRID, Time = DateTime.UtcNow, State = state.ToString() };
+            ElementStateReport elementStateReport = new ElementStateReport() { MrID = sw.MRID, Time = DateTime.UtcNow, State = (int)state };
 
             if (state == OMSSCADACommon.States.OPENED)
             {

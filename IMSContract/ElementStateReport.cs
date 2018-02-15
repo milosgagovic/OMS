@@ -11,7 +11,7 @@ namespace IMSContract
     {
         private string mrID;
         private DateTime time;
-        private string state;
+        private int state;
 
         public  ElementStateReport()
         {
@@ -20,6 +20,6 @@ namespace IMSContract
         public string MrID { get => mrID; set => mrID = value; }
         [Key]
         public DateTime Time { get => time; set => time = value; }
-        public string State { get => state; set => state = value; }
+        public int State { get => state; set => state = value; }
     }
 }

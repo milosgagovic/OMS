@@ -92,14 +92,44 @@ namespace IncidentManagementSystem.Service
             return retVal;
         }
 
-        public List<ElementStateReport> GetElementStateReportsForMrID(string mrID)
+        public List<List<ElementStateReport>> GetElementStateReportsForMrID(string mrID)
         {
-            List<ElementStateReport> retVal = new List<ElementStateReport>();
+            List<ElementStateReport> temp = new List<ElementStateReport>();
+            Dictionary<string, List<ElementStateReport>> reportsByBreaker = new Dictionary<string, List<ElementStateReport>>();
+            List<List<ElementStateReport>> retVal = new List<List<ElementStateReport>>();
+
             using (var ctx = new IncidentContext())
             {
-                ctx.ElementStateReports.Where(u => u.MrID == mrID).ToList().ForEach(x => retVal.Add(x));
+                ctx.IncidentReports.ToList();
 
+                foreach (ElementStateReport report in ctx.ElementStateReports.ToList())
+                {
+                    if (report.MrID == mrID)
+                    {
+                        temp.Add(report);
+                    }
+                }
             }
+
+            foreach (ElementStateReport report in temp)
+            {
+                string key = report.Time.ToString();
+
+                if (!reportsByBreaker.ContainsKey(key))
+                {
+                    reportsByBreaker.Add(key, new List<ElementStateReport>());
+                }
+
+                reportsByBreaker[key].Add(report);
+            }
+
+            int i = 0;
+            foreach (List<ElementStateReport> reports in reportsByBreaker.Values)
+            {
+                retVal.Add(new List<ElementStateReport>());
+                retVal[i++] = reports;
+            }
+
             return retVal;
         }
 
@@ -151,14 +181,44 @@ namespace IncidentManagementSystem.Service
             return res;
         }
 
-        public List<IncidentReport> GetReportsForMrID(string mrID)
+        public List<List<IncidentReport>> GetReportsForMrID(string mrID)
         {
-            List<IncidentReport> retVal = new List<IncidentReport>();
+            List<IncidentReport> temp = new List<IncidentReport>();
+            Dictionary<string, List<IncidentReport>> reportsByBreaker = new Dictionary<string, List<IncidentReport>>();
+            List<List<IncidentReport>> retVal = new List<List<IncidentReport>>();
+
             using (var ctx = new IncidentContext())
             {
-                ctx.IncidentReports.Where(u => u.MrID == mrID).ToList().ForEach(x => retVal.Add(x));
+                ctx.IncidentReports.ToList();
 
+                foreach (IncidentReport report in ctx.IncidentReports.ToList())
+                {
+                    if (report.MrID == mrID)
+                    {
+                        temp.Add(report);
+                    }
+                }
             }
+
+            foreach (IncidentReport report in temp)
+            {
+                string key = report.Time.Day + "/" + report.Time.Month + "/" + report.Time.Year;
+
+                if (!reportsByBreaker.ContainsKey(key))
+                {
+                    reportsByBreaker.Add(key, new List<IncidentReport>());
+                }
+
+                reportsByBreaker[key].Add(report);
+            }
+
+            int i = 0;
+            foreach (List<IncidentReport> reports in reportsByBreaker.Values)
+            {
+                retVal.Add(new List<IncidentReport>());
+                retVal[i++] = reports;
+            }
+
             return retVal;
         }
 
@@ -207,10 +267,81 @@ namespace IncidentManagementSystem.Service
                 res.RepairTime = report.RepairTime;
                 res.CrewSent = report.CrewSent;
                 res.IncidentState = report.IncidentState;
+                res.LostPower = report.LostPower;
                 res.Crew = ctx.Crews.Where(c => c.Id == report.Crew.Id).FirstOrDefault();
 
                 ctx.SaveChanges();
             }
+        }
+
+        public List<List<IncidentReport>> GetReportsForSpecificDateSortByBreaker(List<string> mrids, DateTime date)
+        {
+            List<IncidentReport> temp = new List<IncidentReport>();
+            Dictionary<string, List<IncidentReport>> reportsByBreaker = new Dictionary<string, List<IncidentReport>>();
+            List<List<IncidentReport>> retVal = new List<List<IncidentReport>>();
+
+            foreach (string mrid in mrids)
+            {
+                reportsByBreaker.Add(mrid, new List<IncidentReport>());
+            }
+
+            using (var ctx = new IncidentContext())
+            {
+                ctx.IncidentReports.ToList();
+
+                foreach (IncidentReport report in ctx.IncidentReports.ToList())
+                {
+                    if (report.Time.Date == date)
+                    {
+                        temp.Add(report);
+                    }
+                }
+            }
+
+            foreach (IncidentReport report in temp)
+            {
+                reportsByBreaker[report.MrID].Add(report); ;
+            }
+
+            int i = 0;
+            foreach (List<IncidentReport> reports in reportsByBreaker.Values)
+            {
+                retVal.Add(new List<IncidentReport>());
+                retVal[i++] = reports;
+            }
+
+            return retVal;
+        }
+
+        public List<List<IncidentReport>> GetAllReportsSortByBreaker(List<string> mrids)
+        {
+            List<IncidentReport> temp = new List<IncidentReport>();
+            Dictionary<string, List<IncidentReport>> reportsByBreaker = new Dictionary<string, List<IncidentReport>>();
+            List<List<IncidentReport>> retVal = new List<List<IncidentReport>>();
+
+            foreach (string mrid in mrids)
+            {
+                reportsByBreaker.Add(mrid, new List<IncidentReport>());
+            }
+
+            using (var ctx = new IncidentContext())
+            {
+                temp = ctx.IncidentReports.ToList();
+            }
+
+            foreach (IncidentReport report in temp)
+            {
+                reportsByBreaker[report.MrID].Add(report); ;
+            }
+
+            int i = 0;
+            foreach (List<IncidentReport> reports in reportsByBreaker.Values)
+            {
+                retVal.Add(new List<IncidentReport>());
+                retVal[i++] = reports;
+            }
+
+            return retVal;
         }
     }
 }

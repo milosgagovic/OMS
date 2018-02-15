@@ -30,12 +30,15 @@ namespace IMSContract
         void UpdateReport(IncidentReport report);
 
         [OperationContract]
-		List<IncidentReport> GetReportsForMrID(string mrID);
+		List<List<IncidentReport>> GetReportsForMrID(string mrID);
 
 		[OperationContract]
 		List<IncidentReport> GetReportsForSpecificTimeInterval(DateTime startTime, DateTime endTime);
 
-		[OperationContract]
+        [OperationContract]
+        List<List<IncidentReport>> GetReportsForSpecificDateSortByBreaker(List<string> mrids, DateTime date);
+
+        [OperationContract]
 		List<IncidentReport> GetReportsForSpecificMrIDAndSpecificTimeInterval(string mrID, DateTime startTime, DateTime endTime);
 
 
@@ -47,7 +50,7 @@ namespace IMSContract
 
 
         [OperationContract]
-        List<ElementStateReport> GetElementStateReportsForMrID(string mrID);
+        List<List<ElementStateReport>> GetElementStateReportsForMrID(string mrID);
 
         [OperationContract]
         List<ElementStateReport> GetElementStateReportsForSpecificTimeInterval(DateTime startTime, DateTime endTime);
@@ -55,7 +58,10 @@ namespace IMSContract
         [OperationContract]
         List<ElementStateReport> GetElementStateReportsForSpecificMrIDAndSpecificTimeInterval(string mrID, DateTime startTime, DateTime endTime);
 
-		[OperationContract]
+        [OperationContract]
+        List<List<IncidentReport>> GetAllReportsSortByBreaker(List<string> mrids);
+
+        [OperationContract]
         List<Crew> GetCrews();
 
 		[OperationContract]

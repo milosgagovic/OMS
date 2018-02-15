@@ -240,7 +240,7 @@ namespace TransactionManager
 
         #endregion
 
-     #region  IOMSClient DispatcherApp Methods
+        #region  IOMSClient DispatcherApp Methods
 
         public TMSAnswerToClient GetNetwork()
         {
@@ -415,7 +415,7 @@ namespace TransactionManager
         //    IMSClient.AddReport(mrID, time, state);
         //}
 
-        public List<ElementStateReport> GetElementStateReportsForMrID(string mrID)
+        public List<List<ElementStateReport>> GetElementStateReportsForMrID(string mrID)
         {
             return IMSClient.GetElementStateReportsForMrID(mrID);
         }
@@ -461,7 +461,7 @@ namespace TransactionManager
             return IMSClient.GetAllReports();
         }
 
-        public List<IncidentReport> GetReportsForMrID(string mrID)
+        public List<List<IncidentReport>> GetReportsForMrID(string mrID)
         {
             return IMSClient.GetReportsForMrID(mrID);
         }
@@ -480,6 +480,16 @@ namespace TransactionManager
         {
             return IMSClient.GetAllElementStateReports();
         }
-        #endregion 
+
+        public List<List<IncidentReport>> GetReportsForSpecificDateSortByBreaker(List<string> mrids, DateTime date)
+        {
+            return IMSClient.GetReportsForSpecificDateSortByBreaker(mrids, date);
+        }
+
+        public List<List<IncidentReport>> GetAllReportsSortByBreaker(List<string> mrids)
+        {
+            return IMSClient.GetAllReportsSortByBreaker(mrids);
+        }
+        #endregion
     }
 }
