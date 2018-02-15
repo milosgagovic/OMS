@@ -35,5 +35,10 @@ namespace SCADAContracts
                 return new Response();
             }
         }
+
+        public bool Ping()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

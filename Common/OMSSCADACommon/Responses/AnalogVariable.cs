@@ -8,6 +8,7 @@ namespace OMSSCADACommon.Responses
 {
     public class AnalogVariable : ResponseVariable
     {
+        // to do:
         public float Value { get; set; }
     }
 }

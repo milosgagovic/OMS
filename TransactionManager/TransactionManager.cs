@@ -29,15 +29,25 @@ namespace TransactionManager
         NetworkModelGDAProxy ProxyToNMSService;
 
 
-
-
         //ChannelFactory<IIMSContract> factoryToIMS;
         //IIMSContract IMSClient;
         IDMSContract proxyToDispatcherDMS;
 
-
         ModelGDATMS gdaTMS;
-        SCADAClient scadaClient;
+        //SCADAClient scadaClient;
+        private SCADAClient scadaClient;
+        private SCADAClient ScadaClient
+        {
+            get
+            {
+                if (scadaClient == null)
+                {
+                    scadaClient = new SCADAClient(new EndpointAddress("net.tcp://localhost:4000/SCADAService"));
+                }
+                return scadaClient;
+            }
+            set { scadaClient = value; }
+        }
 
         public List<ITransaction> TransactionProxys { get => transactionProxys; set => transactionProxys = value; }
         public List<TransactionCallback> TransactionCallbacks { get => transactionCallbacks; set => transactionCallbacks = value; }
@@ -62,29 +72,14 @@ namespace TransactionManager
             set { imsClient = value; }
         }
 
-        private SCADAClient SCADAClientInstance
-        {
-            get
-            {
-                if (scadaClient == null)
-                {
-                    scadaClient = new SCADAClient();
-                }
-                return scadaClient;
-            }
-        }
-
         public TransactionManager()
         {
-          
-
             TransactionProxys = new List<ITransaction>();
             TransactionCallbacks = new List<TransactionCallback>();
 
             InitializeChanels();
-          
+
             gdaTMS = new ModelGDATMS();
-            scadaClient = new SCADAClient();
         }
 
         private void InitializeChanels()
@@ -131,14 +126,14 @@ namespace TransactionManager
 
 
             //ChannelFactory<IIMSContract> factoryToIMS = new ChannelFactory<IIMSContract>(binding, new EndpointAddress("net.tcp://localhost:6090/IncidentManagementSystemService"));
-           // proxyToIMS = factoryToIMS.CreateChannel();
+            // proxyToIMS = factoryToIMS.CreateChannel();
 
             ProxyToNMSService = new NetworkModelGDAProxy("NetworkModelGDAEndpoint");
             ProxyToNMSService.Open();
 
 
             // client channel for IMS
-           // factoryToIMS = new ChannelFactory<IIMSContract>(new NetTcpBinding(), new EndpointAddress("net.tcp://localhost:6090/IncidentManagementSystemService"));
+            // factoryToIMS = new ChannelFactory<IIMSContract>(new NetTcpBinding(), new EndpointAddress("net.tcp://localhost:6090/IncidentManagementSystemService"));
             //IMSClient = factoryToIMS.CreateChannel();
 
         }
@@ -198,7 +193,7 @@ namespace TransactionManager
                 Commit();
                 break;
             }
-         }
+        }
         private void Commit()
         {
             Console.WriteLine("Transaction Manager calling commit");
@@ -262,7 +257,30 @@ namespace TransactionManager
             try
             {
                 Command c = MappingEngineTransactionManager.Instance.MappCommand(TypeOfSCADACommand.ReadAll, "", 0, 0);
-                Response r = SCADAClientInstance.ExecuteCommand(c);
+
+                bool isScadaAvailable = false;
+                do
+                {
+                    try
+                    {
+                        if (ScadaClient.State == CommunicationState.Created)
+                        {
+                            ScadaClient.Open();
+                        }
+
+                        isScadaAvailable = ScadaClient.Ping();
+                    }
+                    catch (Exception e)
+                    {
+                        //Console.WriteLine(e);
+                        Console.WriteLine("InitializeNetwork() -> SCADA is not available yet.");
+                        if (ScadaClient.State == CommunicationState.Faulted)
+                            ScadaClient = new SCADAClient(new EndpointAddress("net.tcp://localhost:4000/SCADAService"));
+                    }
+                    Thread.Sleep(500);
+                } while (!isScadaAvailable);
+
+                Response r = ScadaClient.ExecuteCommand(c);
                 descMeas = MappingEngineTransactionManager.Instance.MappResult(r);
             }
             catch (Exception e)
@@ -277,7 +295,7 @@ namespace TransactionManager
                 {
                     if (IMSClient.State == CommunicationState.Created)
                     {
-                        IMSClient.Open();                      
+                        IMSClient.Open();
                     }
 
                     isImsAvailable = IMSClient.Ping();
@@ -304,7 +322,10 @@ namespace TransactionManager
             try
             {
                 Command c = MappingEngineTransactionManager.Instance.MappCommand(command, mrid, commandtype, value);
-                Response r = SCADAClientInstance.ExecuteCommand(c);
+
+                // to do: ping
+                Response r = scadaClient.ExecuteCommand(c);
+                //Response r = SCADAClientInstance.ExecuteCommand(c);
 
             }
             catch (Exception e)

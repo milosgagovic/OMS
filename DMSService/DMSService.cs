@@ -36,6 +36,20 @@ namespace DMSService
 
         private ModelResourcesDesc modelResourcesDesc = new ModelResourcesDesc();
         private ModelGdaDMS gda = new ModelGdaDMS();
+        private SCADAClient scadaClient;
+        private SCADAClient ScadaClient
+        {
+            get
+            {
+                if (scadaClient == null)
+                {
+                    scadaClient = new SCADAClient(new EndpointAddress("net.tcp://localhost:4000/SCADAService"));
+                }
+                return scadaClient;
+            }
+            set { scadaClient = value; }
+        }
+
         private ServiceHost scadaHost;
 
         private static Tree<Element> tree;
@@ -102,7 +116,7 @@ namespace DMSService
             // dakle, sada se startuju DMSTransaction i DMSDispatcher
             StartHosts();
             Tree = InitializeNetwork(new Delta());
-            
+
             isNetworkInitialized = true;
 
             while (!isNetworkInitialized)
@@ -279,9 +293,37 @@ namespace DMSService
             Tree<Element> retVal = new Tree<Element>();
             List<long> eSources = new List<long>();
 
-            SCADAClient client = new SCADAClient();
+           
+            bool isScadaAvailable = false;
+            do
+            {
+                try
+                {
+                    if (ScadaClient.State == CommunicationState.Created)
+                    {
+                        ScadaClient.Open();
+                    }
+
+                    isScadaAvailable = ScadaClient.Ping();
+                }
+                catch (Exception e)
+                {
+                    //Console.WriteLine(e);
+                    Console.WriteLine("InitializeNetwork() -> SCADA is not available yet.");
+                    if (ScadaClient.State == CommunicationState.Faulted)
+                        ScadaClient = new SCADAClient(new EndpointAddress("net.tcp://localhost:4000/SCADAService"));
+                }
+                Thread.Sleep(500);
+            } while (!isScadaAvailable);
+
+
+            //SCADAClient client = new SCADAClient();
+            //Response response = null;
+            //response = client.ExecuteCommand(new ReadAll());
+
+
             Response response = null;
-            response = client.ExecuteCommand(new ReadAll());
+            response = ScadaClient.ExecuteCommand(new ReadAll());
 
             if (delta.InsertOperations.Count == 0)
             {
@@ -463,6 +505,7 @@ namespace DMSService
                     {
                         Switch sw = new Switch(bransch, mrid);
 
+                        // u kom slucaju je response NULL? NE SME DA BUDE. skada mora bar dostupna da bude
                         if (response != null)
                         {
                             var psr = SwitchesRD.Where(m => m.GetProperty(ModelCode.IDOBJ_MRID).AsString() == mrid).FirstOrDefault();
@@ -524,7 +567,7 @@ namespace DMSService
             }
             watch.Stop();
             updatesCount += 1;
-            
+
             if (retVal.Roots.Count > 0)
             {
                 var gid = retVal.Roots[0];

@@ -1,5 +1,4 @@
 ﻿using DMSCommon.Model;
-using FTN.Common;
 using IMSContract;
 using System;
 using System.Collections.Generic;
@@ -13,7 +12,6 @@ namespace PubSubContract
     [ServiceContract]
     public interface IPublishing
     {
-
         [OperationContract(IsOneWay = true)]
         void Publish(List<SCADAUpdateModel> update);
 

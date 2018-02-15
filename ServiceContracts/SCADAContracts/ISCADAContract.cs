@@ -11,6 +11,9 @@ namespace SCADAContracts
     public interface ISCADAContract
     {
         [OperationContract]
+        bool Ping();
+
+        [OperationContract]
         Response ExecuteCommand(Command command);
     }
 }

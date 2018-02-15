@@ -20,5 +20,10 @@ namespace SCADA.ClientHandler
             command.Receiver = new CommunicationAndControlling.SecondaryDataProcessing.CommAcqEngine();
             return command.Execute();
         }
+
+        public bool Ping()
+        {
+            return true;
+        }
     }
 }

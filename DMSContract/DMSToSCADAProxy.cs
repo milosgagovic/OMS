@@ -28,7 +28,9 @@ namespace DMSContract
             }
             catch (Exception e)
             {
-
+                Console.WriteLine("DMSServiceForScada not available yet.");
+                //Console.WriteLine(e.StackTrace);
+                //Console.WriteLine(e.Message);
             }
         }
     }
