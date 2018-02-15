@@ -169,7 +169,7 @@ namespace DMSService
                         Array values = Enum.GetValues(typeof(CrewType));
                         incident.Crewtype = (CrewType)values.GetValue(rand.Next(0, values.Length));
 
-                        ElementStateReport elementStateReport = new ElementStateReport() { MrID = mrid, Time = DateTime.UtcNow, State = "OPENED" };
+                        ElementStateReport elementStateReport = new ElementStateReport() { MrID = mrid, Time = DateTime.UtcNow, State = 1 };
                         IMSClient.AddReport(incident);
                         IMSClient.AddElementStateReport(elementStateReport);
 
