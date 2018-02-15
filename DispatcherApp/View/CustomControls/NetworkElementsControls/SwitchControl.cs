@@ -159,6 +159,18 @@ namespace DispatcherApp.View.CustomControls
 
             template.Triggers.Add(dataTrigger1);
 
+            DataTrigger dataTriggerNoScada = new DataTrigger();
+            dataTriggerNoScada.Binding = new Binding("IsCandidate");
+            dataTriggerNoScada.Value = true;
+
+            Setter dataSetterNoScada = new Setter();
+            dataSetterNoScada.Property = Border.BackgroundProperty;
+            dataSetterNoScada.Value = Brushes.Blue;
+            dataSetterNoScada.TargetName = "Border";
+            dataTriggerNoScada.Setters.Add(dataSetterNoScada);
+
+            template.Triggers.Add(dataTriggerNoScada);
+
             setter.Value = template;
 
             style.Triggers.Clear();

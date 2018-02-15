@@ -74,7 +74,7 @@ namespace DMSCommon.Model
 
             try
             {
-                int numberOfResources = 2;
+                int numberOfResources = 50;
                 int resourcesLeft = 0;
 
                 List<ModelCode> properties = modelResourcesDesc.GetAllPropertyIds(modelCode);
@@ -121,7 +121,7 @@ namespace DMSCommon.Model
 
             try
             {
-                int numberOfResources = 2;
+                int numberOfResources = 50;
                 int resourcesLeft = 0;
 
                 List<ModelCode> properties = modelResourcesDesc.GetAllPropertyIds(modelCode);
@@ -168,7 +168,7 @@ namespace DMSCommon.Model
             CommonTrace.WriteTrace(CommonTrace.TraceError, message);
 
             List<long> resultIds = new List<long>();
-            int numberOfResources = 2;
+            int numberOfResources = 50;
 
             try
             {
