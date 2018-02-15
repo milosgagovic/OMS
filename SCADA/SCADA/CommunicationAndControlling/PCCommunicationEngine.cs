@@ -98,10 +98,20 @@ namespace SCADA.CommunicationAndControlling
 
                 retval = true;
             }
+            catch (ArgumentNullException e)
+            {
+
+                Console.WriteLine("ArgumentNullException - HRESULT = {0}", e.HResult);
+                Console.WriteLine(e.Message);
+            }
+            catch (ArgumentOutOfRangeException e)
+            {
+                Console.WriteLine("ArgumentOutOfRangeException - paramName = {0}", e.ParamName);
+                Console.WriteLine(e.Message);
+            }
             catch (SocketException e)
             {
-                // ako MdbSim nije podignut to dobijes -no connection can  be made because target machine activelly refused it
-                Console.WriteLine("ErrorCode = {0}", e.ErrorCode);
+                Console.WriteLine("SocketExeption - ErrorCode = {0}", e.ErrorCode);
                 Console.WriteLine(e.Message);
             }
             catch (Exception e)

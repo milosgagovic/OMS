@@ -15,12 +15,10 @@ namespace SCADA.RealtimeDatabase
 
         public DBContext()
         {
-            Console.WriteLine("Instancing DbContext");
+            //Console.WriteLine("Instancing DbContext");
             Database = Database.Instance;
         }
 
-        // iako jedino scada model parser dodaje, imamo citanje i pisanje sa vise strana, mora se sititi
-        // to je to do...
         /// <summary>
         /// Attempts to add the specified key and value. Return true if success, 
         /// false if the key already exists.
@@ -56,7 +54,7 @@ namespace SCADA.RealtimeDatabase
         /// <param name="pv"></param>
         public void AddProcessVariable(ProcessVariable pv)
         {
-            Console.WriteLine("Adding process variable Name= {0}",pv.Name);
+            Console.WriteLine("Adding process variable Name= {0}", pv.Name);
             Database.Instance.ProcessVariablesName.TryAdd(pv.Name, pv);
         }
 
@@ -76,150 +74,282 @@ namespace SCADA.RealtimeDatabase
             return Database.ProcessVariablesName.Values.ToList();
         }
 
-        // ovu metodu srediti
+
+        // there can be a scenarios:
+        // 1. there is a .data file on DMS, NMS, and there is nothing in ScadaModel.xml part for ProcessVariables (e.g. empty <digitals> tag...)
+        // 2. there is no .data file od DMS, NMS, and there IS data in ScadaModel.xml
+
+        // to do: PRBOLEM?  1. everything is ok, just apply delta again regularly...
+        // 2. -> PROBLEM: ako npr. dodamo 3 prekidaca, a sa strane skade ta tri vec postoje, to treba posmatra kao UPDATE! 
+        // znaci iako je u insert operaciji jer u ostatku sistema ne postoji, zapravo je update
+
         public bool ApplyDelta(ScadaDelta delta)
         {
             bool retVal = false;
 
             List<ScadaElement> updateOperations = delta.UpdateOps;
 
-            List<ScadaElement> insertOperations = delta.InsertOps;
+            // prvo proveriti prirodu delte: da li radimo SAMO UPDATE, ili I INSERT i UPDATE, ili samo INSERT
+            // 1. ako nije samo update proveri da li uopste imas mesta za one koji su insert, ako nema return false (rejecting whole delta)
+            // 2. ako ima mesta za insert pronadji elemente koji su za update, izvadi ih u zasebnu listu i prvo njih radi, a ostatak radi insert
 
-            // not supported yet
+            // this list acutally can contains update operations also. case 2. above descripted 
+            // we have to segregate them
+            List<ScadaElement> deltaOperations = delta.InsertOps;
+            List<ScadaElement> realInsertOperatins = new List<ScadaElement>();
+            List<ScadaElement> realUpdateOperatins = new List<ScadaElement>();
+
             if (updateOperations.Count != 0)
             {
-                return false;
+                realUpdateOperatins = updateOperations;
             }
 
-            // temporary storage for elements for add. key is RTU name, value is PVs
-            Dictionary<string, List<ProcessVariable>> rtuElementsMap = new Dictionary<string, List<ProcessVariable>>();
+            bool isOnlyUpdate = true;
 
-            List<RTU> availableRtus = new List<RTU>();
-            availableRtus = GettAllRTUs().Values.Where(r => r.FreeSpaceForDigitals == true).ToList();
-            if (availableRtus.Count == 0)
+            foreach (var el in deltaOperations)
             {
-                Console.WriteLine("There is no available RTU");
+                // if only one element from scadaDelta DOES NOT already exist in db, it means it is for inserting
+                var pvs = Database.ProcessVariablesName;
+                if (!pvs.ContainsKey(el.Name))
+                {
+                    // we have some elements for insert
+                    isOnlyUpdate = false;
+                    break;
+                }
+            }
+
+            List<RTU> availableRtus = null;
+
+            // temporary storage for elements for adding. key is RTU name, value is PVs mapped to that RTU
+            Dictionary<string, List<ProcessVariable>> rtuElementsMap = null;
+
+            // we have some elements in deltaOperatins for insert  
+            if (!isOnlyUpdate)
+            {
+                availableRtus = new List<RTU>();
+
+                availableRtus = GettAllRTUs().Values.Where(r => r.FreeSpaceForDigitals == true ||
+                                                            r.FreeSpaceForAnalogs == true).ToList();
+
+                // there is no space for inserting in any RTU, rejecting whole delta
+                if (availableRtus.Count == 0)
+                {
+                    Console.WriteLine("There is no available RTUs for inserting.");
+                    return false;
+                }
+                else
+                {
+                    // init
+                    rtuElementsMap = new Dictionary<string, List<ProcessVariable>>();
+                    foreach (var ar in availableRtus)
+                    {
+                        rtuElementsMap.Add(ar.Name, new List<ProcessVariable>());
+                    }
+
+                    // separating elements for update from elements for insert
+                    var pvs = Database.ProcessVariablesName;
+
+                    foreach (var el in deltaOperations)
+                    {
+                        if (!pvs.ContainsKey(el.Name))
+                        {
+                            realInsertOperatins.Add(el);
+                        }
+                        else
+                        {
+                            realUpdateOperatins.Add(el);
+                        }
+                    }
+                    // this list is not necessary anymore
+                    deltaOperations.Clear();
+                }
             }
             else
             {
+                // whole list deltaOperations is actually for update
+                realUpdateOperatins = deltaOperations;
+            }
 
-                foreach (var ar in availableRtus)
+            // to do: 
+            // processing real updates - ZA SADA SAMO TRUE VRACA!!! i odmah breakuje
+            foreach (var updateEl in realUpdateOperatins)
+            {
+                // TO DO: nekad u buducnosti....
+                // napraviti  metodu. da proverava da li su objekti isti? (novi i ovaj koji se dodaje) i koji propertiji nisu...ako 
+                //  u sustini treba porediti samo stanja, komande, i trenutno stanje komandu; a za analog novu comm value sa trenutnom u deviceu
+                // i onda se proveri ako postoji na kom je rtu-u i update-uje se. 
+                //https://stackoverflow.com/questions/2901289/updating-fields-of-values-in-a-concurrentdictionary
+                //https://stackoverflow.com/questions/41592129/updating-list-in-concurrentdictionary
+
+                Console.WriteLine("Variable Name = {0} is successfully updated.", updateEl.Name);
+                retVal = true;
+                break;
+            }
+
+            // processing real insertions
+            int possibleInsertionsCount = 0;
+            foreach (var insertEl in realInsertOperatins)
+            {
+                bool isInsertingPossible = false;
+                ProcessVariable pv;
+
+                if (!GetProcessVariableByName(insertEl.Name, out pv))
                 {
-                    rtuElementsMap.Add(ar.Name, new List<ProcessVariable>());
-                }
-
-
-                int insertedCount = 0;
-                foreach (var insertEl in insertOperations)
-                {
-                    ProcessVariable pv;
-                    // variable with that name does not exists in db?
-
-                    // napraviti deep copy ako budes menjala transakciju? ili ostaviti ovako...
-
-                    if (!GetProcessVariableByName(insertEl.Name, out pv))
+                    switch (insertEl.Type)
                     {
-                        bool isInsertionPossible = false;
-                        switch (insertEl.Type)
-                        {
-                            case DeviceTypes.DIGITAL:
+                        case DeviceTypes.DIGITAL:
 
-                                if (insertEl.ValidCommands.Count != insertEl.ValidStates.Count)
-                                {
-                                    Console.WriteLine("Element Name = {0} -> ValidCommands.Count!=ValidStates.Count", insertEl.Name);
-                                    break;
-                                }
-
-                                Digital newDigital = new Digital()
-                                {
-                                    Name = insertEl.Name,
-                                    ValidCommands = insertEl.ValidCommands,
-                                    ValidStates = insertEl.ValidStates
-                                };
-
-
-                                foreach (var availableRtu in availableRtus)
-                                {
-                                    // there is no channel with RTU-2 currently
-                                    // test this case sometime in the future xD
-                                    if (availableRtu.Name == "RTU-2")
-                                        continue;
-
-                                    ushort relativeAddress;
-                                    // possible mapping in this rtu
-
-                                    //potrebno je odmah proveriti da li je ova relativna adresa sledeca u sekvenci mogucih za taj tip!
-                                    if (availableRtu.TryMap(newDigital, out relativeAddress))
-                                    {
-                                        newDigital.RelativeAddress = relativeAddress;
-
-                                        // map it and add it to db
-                                        newDigital.ProcContrName = availableRtu.Name;
-
-                                        // podrazumevamo da insertujemo prekidac u dozvoljenom - zeljenom stanju
-                                        newDigital.State = States.CLOSED;
-                                        newDigital.Command = CommandTypes.CLOSE;
-
-                                        var elements = rtuElementsMap[availableRtu.Name];
-                                        elements.Add(newDigital);
-
-                                        insertedCount++;
-                                        isInsertionPossible = true;
-                                        break;
-                                    }
-                                }
-
-                                break;
-
-                            default:
-                                // all other - not supported yet, will return false
-                                break;
-
-                        }
-
-                        if (!isInsertionPossible)
-                            break; // nece se dodati nista! prepare nije moguc
-                    }
-                    else
-                    {
-                        Console.WriteLine("Invalid config: Name = {0} is not unique. Variable already exists", insertEl.Name);
-                        break;
-                    }
-                }
-
-                // ovo je kritican deo, jer se ipak promeni stanje :S 
-                // srediti za sledeci sprint
-                // only if it is possible to insert all, otherwise nothing 
-                if (insertedCount == insertOperations.Count)
-                {
-                    int addedCount = 0;
-
-
-                    foreach (var rtuElements in rtuElementsMap)
-                    {
-
-                        var availableRtu = GetRTUByName(rtuElements.Key);
-                        var elements = rtuElementsMap[rtuElements.Key];
-
-                        foreach (var elForAdd in elements)
-                        {
-                            if (availableRtu.MapProcessVariable(elForAdd))
+                            if (insertEl.ValidCommands.Count != insertEl.ValidStates.Count)
                             {
-                                AddProcessVariable(elForAdd);
-                                addedCount++;
+                                Console.WriteLine("Element Name = {0} -> ValidCommands.Count!=ValidStates.Count", insertEl.Name);
+                                break;
                             }
-                        }
 
+                            Digital newDigital = new Digital()
+                            {
+                                Name = insertEl.Name,
+                                ValidCommands = insertEl.ValidCommands,
+                                ValidStates = insertEl.ValidStates
+                            };
+
+                            // pokusaj da nadjes mesta za tu varijablu u bilo kom RTUu
+                            // nekad u buducnosti tu se moze neki lep algoritam narpaviti, optimizovati :)
+                            foreach (var availableRtu in availableRtus)
+                            {
+                                // there is no channel with RTU-2 currently
+                                // test this case sometime in the future xD
+                                if (availableRtu.Name == "RTU-2")
+                                    continue;
+
+                                ushort relativeAddress;
+                                // check if is possible mapping in this rtu
+
+                                // kljucno! da li je moguce ovaj digital namapirati u ovom rtu-u? 
+                                if (availableRtu.TryMap(newDigital, out relativeAddress))
+                                {
+                                    newDigital.RelativeAddress = relativeAddress;
+                                    // mapiranje se vrsi u metodi addProcessVariable kasnije,
+                                    // preko relativne adrese upravo dodeljene
+
+                                    // Od ovog trenutka se podrazumeva da ce dodavanje uspeti! 
+                                    // brojac mapiranih adresa u RTUu je nepovratno promenjen... 
+                                    // ako nesto crkne posle, u rollbacku vracamo na staru konfiguraciju citanjem iz fajla
+                                    // mozda nije bas najveselije resenje za sada xD
+
+                                    newDigital.ProcContrName = availableRtu.Name;
+
+                                    // podrazumevamo da insertujemo prekidac u dozvoljenom - zeljenom stanju
+                                    newDigital.State = States.CLOSED;
+                                    newDigital.Command = CommandTypes.CLOSE;
+
+                                    var elements = rtuElementsMap[availableRtu.Name];
+                                    elements.Add(newDigital);
+
+                                    possibleInsertionsCount++;
+
+                                    isInsertingPossible = true;
+                                    break; // it is possible to insert element
+                                }
+                            }
+
+                            break;
+
+                        case DeviceTypes.ANALOG:
+
+                            // to do:
+                            // provera da li je nova vrednost u dozvoljenom rangeu
+
+
+                            Analog newAnalog = new Analog() { Name = insertEl.Name };
+
+
+                            foreach (var availableRtu in availableRtus)
+                            {
+                                // there is no channel with RTU-2 currently
+                                // test this case sometime in the future xD
+                                if (availableRtu.Name == "RTU-2")
+                                    continue;
+
+                                ushort relativeAddress;
+                                // check if is possible mapping in this rtu
+
+                                // kljucno! da li je moguce ovaj analog namapirati u ovom rtu-u? 
+                                if (availableRtu.TryMap(newAnalog, out relativeAddress))
+                                {
+                                    newAnalog.RelativeAddress = relativeAddress;
+
+                                    // Od ovog trenutka se podrazumeva da ce dodavanje uspeti! 
+
+                                    newAnalog.ProcContrName = availableRtu.Name;
+
+                                    // podrazumevamo da insertujemo prekidac u dozvoljenom - zeljenom stanju
+                                    newAnalog.AcqValue = insertEl.WorkPoint;
+                                    newAnalog.CommValue = insertEl.WorkPoint;
+
+
+                                    //string stringProtocol = (string)rtu.Element("Protocol");
+                                    //IndustryProtocols protocol = (IndustryProtocols)Enum.Parse(typeof(IndustryProtocols), stringProtocol);
+                                    //var unitSym = insertEl.UnitSymbol;
+                                    //newAnalog.UnitSymbol = (UnitSymbol)insertEl.UnitSymbol;
+
+                                    var elements = rtuElementsMap[availableRtu.Name];
+                                    elements.Add(newAnalog);
+
+                                    possibleInsertionsCount++;
+
+                                    isInsertingPossible = true;
+                                    break; // it is possible to insert element
+                                }
+                            }
+
+                            break;
+
+                        default:
+
+                            // all other - not supported yet, will return false
+                            break;
                     }
-
-                    // SERIJALIZACIJU BAZE, TJ UPIS U FAJL OVDE RADITI
-                    if (addedCount == insertOperations.Count)
-                    {
-                        retVal = true;
-                    }
-
+                }
+                else
+                {
+                    Console.WriteLine("ozbiljan error, variabla ne postoji! nije smelo false da se desi :D");
                 }
 
+                // if we encounter ProcessVarible that can not be inserted, dont process the rest -> reject whole delta
+                if (!isInsertingPossible)
+                    break;
+            }
+
+            // if we have insertions, and only if it is possible to insert all, otherwise nothing 
+            if (realInsertOperatins.Count != 0 && possibleInsertionsCount == realInsertOperatins.Count)
+            {
+                int addedCount = 0;
+
+                foreach (var rtuElements in rtuElementsMap)
+                {
+                    var availableRtu = GetRTUByName(rtuElements.Key);
+                    var elements = rtuElementsMap[rtuElements.Key];
+
+                    foreach (var elForAdd in elements)
+                    {
+                        if (availableRtu.MapProcessVariable(elForAdd))
+                        {
+                            AddProcessVariable(elForAdd);
+                            addedCount++;
+                        }
+                    }
+                }
+
+                if (addedCount == realInsertOperatins.Count)
+                {
+                    retVal = true;
+                }
+
+            }
+            else
+            {
+                // problem -> mappingDig je promenjen nepovratno u tryMap, i Bog zna u kojim sve RTUovima. znaci radi se opet 
+                // deserijalizacija ako je false ovde. ovde se radi deserijalizacija iz onog konfig fajla osnovnog
             }
 
             return retVal;

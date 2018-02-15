@@ -15,8 +15,6 @@ namespace SCADA
         {
             Console.Title = "SCADA";
 
-            DBContext dbContext = new DBContext();
-
             string acqComConfigPath = Path.Combine(Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).Parent.Parent.Parent.FullName, "ScadaModel.xml");
             string pcConfig = "RtuConfiguration.xml";
             string fullPcConfig = Path.Combine(Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).Parent.Parent.Parent.FullName, "RtuConfiguration.xml");
@@ -43,9 +41,7 @@ namespace SCADA
             CommAcqEngine AcqEngine = new CommAcqEngine();
             if (AcqEngine.Configure(acqComConfigPath))
             {
-                // to do:
-                // redosled
-
+                // stavlja zahteve za komandovanje u red u red
                 AcqEngine.InitializeSimulator();
 
                 // uzimanje zahteva iz reda, i slanje zahteva MDBU-u. dobijanje MDB odgovora i stavljanje u red
@@ -54,17 +50,16 @@ namespace SCADA
                 // uzimanje odgovora iz reda
                 Thread processingAnswersFromQueue = new Thread(AcqEngine.ProcessPCAnwers);
 
-
-                //zatim pokreni metodu na acq engineu koja ce inicijalizovati MdbSIm, to ne mora biti nit...
-
                 // stavljanje zahteva za akviziju u red
                 Thread producingAcquisitonRequests = new Thread(AcqEngine.StartAcquisition);
 
-
                 processingRequestsFromQueue.Start();
-                producingAcquisitonRequests.Start();
                 processingAnswersFromQueue.Start();
 
+                // dati simulatoru maloo vremena pre nego sto se pokrene akvizicija
+                Thread.Sleep(1000);
+
+                producingAcquisitonRequests.Start();
 
                 try
                 {
