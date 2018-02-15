@@ -23,6 +23,9 @@
     <SolidColorBrush x:Key="SwitchColorPressedClosedDeenergized" Color="DarkBlue">
     </SolidColorBrush>
 
+    <SolidColorBrush x:Key="SwitchColorSearching" Color="#FFFF00">
+    </SolidColorBrush>
+
     <Style x:Key="Switch">
         <Setter Property="Button.Height" Value="15"/>
         <Setter Property="Button.Width" Value="15"/>

@@ -18,6 +18,7 @@ namespace DispatcherApp.Model.Properties
         private bool incident = false;
         private bool crewSent = false;
         private bool canCommand = false;
+        private bool isCandidate = false;
         private List<Measurement> measurements;
         private ElementProperties parent;
 
@@ -160,6 +161,20 @@ namespace DispatcherApp.Model.Properties
             {
                 this.parent = value;
                 RaisePropertyChanged("Parent");
+            }
+        }
+
+        public bool IsCandidate
+
+        {
+            get
+            {
+                return this.isCandidate;
+            }
+            set
+            {
+                this.isCandidate = value;
+                RaisePropertyChanged("IsCandidate");
             }
         }
 
