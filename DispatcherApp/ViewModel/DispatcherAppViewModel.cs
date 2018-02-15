@@ -29,6 +29,7 @@ using DispatcherApp.View.CustomControls;
 using DispatcherApp.View.CustomControls.NetworkElementsControls;
 using DispatcherApp.Model.Measurements;
 using OMSSCADACommon;
+using System.Threading.Tasks;
 using DispatcherApp.View.CustomControls.TabContentControls;
 using GravityAppsMandelkowMetroCharts;
 
@@ -37,6 +38,10 @@ namespace DispatcherApp.ViewModel
     public class DispatcherAppViewModel : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
+
+        public Task blinkTask;
+
+        public CancellationTokenSource tokenSource = new CancellationTokenSource();
 
         private IOMSClient proxyToTransactionManager;
 
@@ -132,6 +137,7 @@ namespace DispatcherApp.ViewModel
             subscriber.publishCrewEvent += GetCrewUpdate;
             subscriber.publishIncident += GetIncident;
             subscriber.publishCall += GetCallFromConsumers;
+            subscriber.publiesBreakers += SearchForIncident;
 
             NetTcpBinding binding = new NetTcpBinding();
             binding.CloseTimeout = new TimeSpan(1, 0, 0, 0);
@@ -1989,6 +1995,47 @@ namespace DispatcherApp.ViewModel
             if (property != null)
             {
                 property.IsEnergized = call.IsEnergized;
+            }
+        }
+        private void SearchForIncident(bool isIncident, long incidentBreaker)
+        {
+
+            ElementProperties propBr;
+            properties.TryGetValue(incidentBreaker, out propBr);
+            if (propBr != null)
+            {
+                try
+                {
+                    if (isIncident == false)
+                    {
+                        tokenSource = new CancellationTokenSource();
+                        CancellationToken token = tokenSource.Token;
+
+                        blinkTask = Task.Factory.StartNew(() => Blink(propBr, token), token);
+                    }
+                    else if (isIncident)
+                    {
+                        tokenSource.Cancel();
+                        propBr.IsCandidate = true;
+                    }
+                }
+                catch (Exception)
+                {
+                    return;
+                }
+            }
+        }
+        private async Task Blink(ElementProperties sw,CancellationToken ct)
+        {
+            while (true)
+            {
+                await Task.Delay(800);
+                sw.IsCandidate = sw.IsCandidate == true ? false : true;
+
+                if (ct.IsCancellationRequested)
+                {
+                    ct.ThrowIfCancellationRequested();
+                }
             }
         }
         #endregion

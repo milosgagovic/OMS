@@ -99,7 +99,7 @@ namespace TelventDMS.Services.NetworkModelService.TestClient.Tests
 
 			try
 			{				
-				int numberOfResources = 2;
+				int numberOfResources = 50;
 				int resourcesLeft = 0;
 
                 List<ModelCode> properties = modelResourcesDesc.GetAllPropertyIds(modelCode);
@@ -159,7 +159,7 @@ namespace TelventDMS.Services.NetworkModelService.TestClient.Tests
 
 			
 			XmlTextWriter xmlWriter = null;
-			int numberOfResources = 2;
+			int numberOfResources = 50;
 
 			try
 			{						

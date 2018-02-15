@@ -60,6 +60,15 @@ namespace PubSubscribe
             catch { }
         }
 
+        public void PublishUIBreaker(bool isIncident,long incidentBreaker)
+        {
+            try
+            {
+                proxy.PublishUIBreakers(isIncident, incidentBreaker);
+            }
+            catch { }
+        }
+
         private void CreateProxy()
         {
             string address = "";

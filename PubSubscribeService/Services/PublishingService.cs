@@ -57,6 +57,16 @@ namespace PubSubscribeService.Services
             }
         }
 
+        public void PublishUIBreakers(bool IsIncident, long incidentBreaker)
+        {
+            foreach (IPublishing subscriber in PubSubscribeDB.Subscribers)
+            {
+                PublishThreadData threadObj = new PublishThreadData(subscriber, IsIncident, incidentBreaker);
+
+                Thread thread = new Thread(threadObj.PublishUIBreakersDelta);
+                thread.Start();
+            }
+        }
     }
 
     internal class PublishThreadData
@@ -67,6 +77,8 @@ namespace PubSubscribeService.Services
         private SCADAUpdateModel crewUpdate;
         private IncidentReport report;
         private SCADAUpdateModel call;
+        private bool Isincident;
+        private long incidentBreaker;
 
         public PublishThreadData(IPublishing subscriber, List<SCADAUpdateModel> deltaUpdate)
         {
@@ -87,6 +99,12 @@ namespace PubSubscribeService.Services
         {
             this.subscriber = subscriber;
             this.call = call;
+        }
+        public PublishThreadData(IPublishing subscriber, bool IsIncident, long incidentBreaker)
+        {
+            this.subscriber = subscriber;
+            this.Isincident = IsIncident;
+            this.incidentBreaker = incidentBreaker;
         }
 
         public IPublishing Subscriber
@@ -117,6 +135,8 @@ namespace PubSubscribeService.Services
         public SCADAUpdateModel CrewUpdate { get => crewUpdate; set => crewUpdate = value; }
         public IncidentReport Report { get => report; set => report = value; }
         public SCADAUpdateModel Call { get => call; set => call = value; }
+        public bool IsIncident { get => Isincident; set => Isincident = value; }
+        public long IncidentBreaker { get => incidentBreaker; set => incidentBreaker = value; }
 
         public void PublishDelta()
         {
@@ -156,6 +176,18 @@ namespace PubSubscribeService.Services
             try
             {
                 subscriber.PublishCallIncident(Call);
+            }
+            catch (Exception e)
+            {
+                PubSubscribeDB.RemoveSubsriber(subscriber);
+            }
+        }
+
+        public void PublishUIBreakersDelta()
+        {
+            try
+            {
+                subscriber.PublishUIBreakers(IsIncident,IncidentBreaker);
             }
             catch (Exception e)
             {
