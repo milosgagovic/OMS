@@ -334,13 +334,15 @@ namespace DMSService
                                 {
                                     if (res.State == OMSSCADACommon.States.OPENED)
                                     {
-                                        sw = new Switch(bransch, mrid, SwitchState.Open) { UnderSCADA = true };
+                                        sw = new Switch(bransch, mrid, SwitchState.Open);
                                     }
                                     else
                                     {
-                                        sw = new Switch(bransch, mrid, SwitchState.Closed) { UnderSCADA = true };
+                                        sw = new Switch(bransch, mrid, SwitchState.Closed);
                                     }
                                 }
+
+                                sw.UnderSCADA = true;
                             }
                             else
                             {
