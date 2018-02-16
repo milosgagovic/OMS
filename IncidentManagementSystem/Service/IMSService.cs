@@ -331,7 +331,10 @@ namespace IncidentManagementSystem.Service
 
             foreach (IncidentReport report in temp)
             {
-                reportsByBreaker[report.MrID].Add(report); ;
+                if (reportsByBreaker.ContainsKey(report.MrID))
+                {
+                    reportsByBreaker[report.MrID].Add(report);
+                }
             }
 
             int i = 0;
