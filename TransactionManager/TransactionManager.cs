@@ -398,12 +398,10 @@ namespace TransactionManager
                 ScadaElement element = new ScadaElement();
                 if (rd.ContainsProperty(ModelCode.MEASUREMENT_TYPE))
                 {
-                    // to do: NIGDE SE NE SETUJE??
                     string type = rd.GetProperty(ModelCode.MEASUREMENT_TYPE).ToString();
                     if (type == "Analog")
                     {
-                        element.Type = DeviceTypes.ANALOG;
-                        // to do -> ovo ne radi za unit
+                        element.Type = DeviceTypes.ANALOG;                       
                         element.UnitSymbol = ((UnitSymbol)rd.GetProperty(ModelCode.MEASUREMENT_UNITSYMB).AsEnum()).ToString();
                         element.WorkPoint = rd.GetProperty(ModelCode.ANALOG_NORMVAL).AsFloat();
                     }

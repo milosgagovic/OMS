@@ -10,12 +10,13 @@ namespace OMSSCADACommon.Responses
     {
         public AnalogVariable()
         {
-            // moralo je ovako, da bi skada ostala nesvesna ostatka sistema
-            // msm "problem" je do modela, sto nemamo klasa iz CIMa u SKADI, pravili smo sve nezavisno...
 
         }
         public float Value { get; set; }
 
-        public string unitSymbol { get; set; }
+        // moralo je ovako, da bi skada ostala nesvesna ostatka sistema
+        // msm "problem" je do modela, sto nemamo klasa iz CIMa u SKADI, pravili smo sve nezavisno...
+
+        public string UnitSymbol { get; set; }
     }
 }

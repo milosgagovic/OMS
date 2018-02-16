@@ -483,19 +483,19 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
                 {
                     case VariableTypes.DIGITAL:
                         Digital digital = (Digital)pv;
-                        response.Variables.Add(new DigitalVariable() { Id = digital.Name, State = (OMSSCADACommon.States)digital.State });
+                        response.Variables.Add(new DigitalVariable() { VariableType=ResponseType.Digital, Id = digital.Name, State = (OMSSCADACommon.States)digital.State });
                         break;
 
                     case VariableTypes.ANALOG:
                         Analog analog = (Analog)pv;
                         // to do: fix this
-                        response.Variables.Add(new AnalogVariable() { Id = analog.Name, Value = analog.AcqValue, unitSymbol = "w" });
+                        response.Variables.Add(new AnalogVariable() { VariableType = ResponseType.Analog, Id = analog.Name, Value = analog.AcqValue, UnitSymbol = "w" });
                         break;
 
 
                     case VariableTypes.COUNTER:
                         Counter counter = (Counter)pv;
-                        response.Variables.Add(new CounterVariable() { Id = counter.Name, Value = counter.Value });
+                        response.Variables.Add(new CounterVariable() { VariableType = ResponseType.Counter, Id = counter.Name, Value = counter.Value });
                         break;
                 }
             }
