@@ -3,6 +3,7 @@ using DMSCommon.TreeGraph;
 using DMSCommon.TreeGraph.Tree;
 using DMSContract;
 using FTN.Common;
+using IMSContract;
 using OMSSCADACommon.Commands;
 using OMSSCADACommon.Responses;
 using System;
@@ -58,6 +59,20 @@ namespace DMSService
         public static bool areHostsStarted = false;
         public static bool isNetworkInitialized = false;
 
+        private IMSClient imsClient;
+        private IMSClient IMSClient
+        {
+            get
+            {
+                if (imsClient == null)
+                {
+                    imsClient = new IMSClient(new EndpointAddress("net.tcp://localhost:6090/IncidentManagementSystemService"));
+                }
+                return imsClient;
+            }
+            set { imsClient = value; }
+        }
+
         public static DMSService Instance
         {
             get
@@ -112,7 +127,6 @@ namespace DMSService
         public void Start()
         {
             string message = string.Empty;
-
             // u StartHosts() ce se startovati DMSTransaction i DMSDispatcher. 
             StartHosts();
             Tree = InitializeNetwork(new Delta());
@@ -202,8 +216,32 @@ namespace DMSService
             // get dynamic data
             response = ScadaClient.ExecuteCommand(new ReadAll());
 
+            bool isImsAvailable = false;
+            do
+            {
+                try
+                {
+                    if (IMSClient.State == CommunicationState.Created)
+                    {
+                        IMSClient.Open();
+                    }
+
+                    isImsAvailable = IMSClient.Ping();
+                }
+                catch (Exception e)
+                {
+                    //Console.WriteLine(e);
+                    Console.WriteLine("InitializeNetwork() -> IMS is not available yet.");
+                    if (IMSClient.State == CommunicationState.Faulted)
+                        IMSClient = new IMSClient(new EndpointAddress("net.tcp://localhost:6090/IncidentManagementSystemService"));
+                }
+                Thread.Sleep(100);
+            } while (!isImsAvailable);
+
+            List<IncidentReport> reports = imsClient.GetAllReports();
+
             // if there is no insert operations it means it is system initialization,
-            // and DMS should obtain the static data from NMS
+            // and DMS should obtain the static data from NMS           
             if (delta.InsertOperations.Count == 0)
             {
                 ClearAllLists();
@@ -404,6 +442,8 @@ namespace DMSService
                                         sw = new Switch(branch, mrid, SwitchState.Closed) { UnderSCADA = true };
                                     }
                                 }
+
+                                sw.UnderSCADA = true;
                             }
                             else
                             {
@@ -414,6 +454,23 @@ namespace DMSService
                         {
                             // to do: fix this, repsonse will not be null
                             sw.UnderSCADA = false;
+                        }
+
+                        foreach (IncidentReport report in reports)
+                        {
+                            if (report.MrID == sw.MRID && report.IncidentState != IncidentState.REPAIRED)
+                            {
+                                sw.Incident = true;
+                                sw.CanCommand = false;
+                                break;
+                            }
+                            else if (report.MrID == sw.MRID && report.IncidentState == IncidentState.REPAIRED)
+                            {
+                                if (sw.State == SwitchState.Open)
+                                {
+                                    sw.CanCommand = true;
+                                }
+                            }
                         }
 
                         sw.End1 = n.ElementGID;
