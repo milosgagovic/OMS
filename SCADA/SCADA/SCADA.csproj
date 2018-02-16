@@ -81,9 +81,11 @@
     <Compile Include="ClientHandler\Invoker.cs" />
     <Compile Include="ClientHandler\SCADAService.cs" />
     <Compile Include="ClientHandler\SCADATransactionService.cs" />
+    <Compile Include="CommunicationAndControlling\SecondaryDataProcessing\AnalogProcessor.cs" />
     <Compile Include="CommunicationAndControlling\SecondaryDataProcessing\CommAcqEngine.cs" />
     <Compile Include="CommunicationAndControlling\IORequestsQueue.cs" />
     <Compile Include="CommunicationAndControlling\PCCommunicationEngine.cs" />
+    <Compile Include="RealtimeDatabase\Catalogs\Unit.cs" />
     <Compile Include="RealtimeDatabase\Model\Analog.cs" />
     <Compile Include="RealtimeDatabase\Model\RTU.cs" />
     <Compile Include="ConfigurationParser\CommunicationModelParser.cs" />
@@ -93,8 +95,6 @@
     <Compile Include="RealtimeDatabase\Catalogs\DigitalDeviceClasses.cs" />
     <Compile Include="RealtimeDatabase\Database.cs" />
     <Compile Include="RealtimeDatabase\DBContext.cs" />
-    <Compile Include="RealtimeDatabase\Model\AnalogIn.cs" />
-    <Compile Include="RealtimeDatabase\Model\AnalogOut.cs" />
     <Compile Include="RealtimeDatabase\Model\Counter.cs" />
     <Compile Include="RealtimeDatabase\Model\Digital.cs" />
     <Compile Include="RealtimeDatabase\Model\Object.cs" />

@@ -15,15 +15,39 @@ namespace SCADA
         {
             Console.Title = "SCADA";
 
-            DBContext dbContext = new DBContext();
+            // ako je druga platforma npr. x86 nije dobra putanja!
 
             string acqComConfigPath = Path.Combine(Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).Parent.Parent.Parent.FullName, "ScadaModel.xml");
             string pcConfig = "RtuConfiguration.xml";
             string fullPcConfig = Path.Combine(Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).Parent.Parent.Parent.FullName, "RtuConfiguration.xml");
             string basePath = Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).Parent.Parent.Parent.FullName;
 
-            // ovde neku shutdown promenljivu dodati...
-            // verovatno ces morati sa cancellation token
+            // ovo dole ipak ne funkcionise ako stavis x64 ...videti sta sa ovom konfiguracijom
+
+            //if (IntPtr.Size == 8)
+            //{
+            //    Console.WriteLine("size==8");
+            //    // 64 bit machine
+            //    acqComConfigPath = Path.Combine(Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).Parent.Parent.Parent.FullName, "ScadaModel.xml");
+            //    pcConfig = "RtuConfiguration.xml";
+            //    fullPcConfig = Path.Combine(Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).Parent.Parent.Parent.FullName, "RtuConfiguration.xml");
+            //    basePath = Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).Parent.Parent.Parent.FullName;
+            //}
+            //else if (IntPtr.Size == 4)
+            //{
+            //    Console.WriteLine("size==4");
+            //    // 32 bit machine
+            //    acqComConfigPath = Path.Combine(Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).Parent.Parent.Parent.Parent.FullName, "ScadaModel.xml");
+            //    pcConfig = "RtuConfiguration.xml";
+            //    fullPcConfig = Path.Combine(Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).Parent.Parent.Parent.Parent.FullName, "RtuConfiguration.xml");
+            //    basePath = Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).Parent.Parent.Parent.Parent.FullName;
+            //}
+            //else
+            //{
+            //    Console.WriteLine("aaaa");
+            //}
+
+            // to do: use cancellation tokens and TPL
 
             PCCommunicationEngine PCCommEng;
             while (true)
@@ -43,6 +67,7 @@ namespace SCADA
             CommAcqEngine AcqEngine = new CommAcqEngine();
             if (AcqEngine.Configure(acqComConfigPath))
             {
+                // stavlja zahteve za icijalno komandovanje u red 
                 AcqEngine.InitializeSimulator();
 
                 // uzimanje zahteva iz reda, i slanje zahteva MDBU-u. dobijanje MDB odgovora i stavljanje u red
@@ -51,17 +76,15 @@ namespace SCADA
                 // uzimanje odgovora iz reda
                 Thread processingAnswersFromQueue = new Thread(AcqEngine.ProcessPCAnwers);
 
-
-                //zatim pokreni metodu na acq engineu koja ce inicijalizovati MdbSIm, to ne mora biti nit...
-
                 // stavljanje zahteva za akviziju u red
                 Thread producingAcquisitonRequests = new Thread(AcqEngine.StartAcquisition);
 
-
                 processingRequestsFromQueue.Start();
-                producingAcquisitonRequests.Start();
                 processingAnswersFromQueue.Start();
 
+                // give simulator some time, and when everything is ready start acquisition
+                Thread.Sleep(1000);
+                producingAcquisitonRequests.Start();
 
                 try
                 {
@@ -87,11 +110,8 @@ namespace SCADA
 
             Console.ReadKey();
 
-            // dakle, promene se serijalizuju na elegantno gasenje, kad pritisnemo enter,
-            // i kad se dogodi promena
             AcqEngine.Stop();
             PCCommEng.Stop();
         }
     }
-
 }

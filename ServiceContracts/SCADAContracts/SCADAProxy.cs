@@ -27,13 +27,20 @@ namespace SCADAContracts
         {
             try
             {
-                return factory.ExecuteCommand(command);
+                var r = factory.ExecuteCommand(command);
+                return r;
+                //return factory.ExecuteCommand(command);
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
                 return new Response();
             }
+        }
+
+        public bool Ping()
+        {
+            throw new NotImplementedException();
         }
     }
 }

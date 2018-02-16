@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Threading;
-using ModbusTCPDriver;
 using PCCommon;
 using System.Net.Sockets;
 using SCADA.ConfigurationParser;
@@ -22,7 +17,6 @@ namespace SCADA.CommunicationAndControlling
         private Dictionary<string, ProcessController> processControllers { get; set; }
         private Dictionary<string, TcpClient> TcpChannels { get; set; }
 
-
         public PCCommunicationEngine()
         {
             IORequests = IORequestsQueue.GetQueue();
@@ -33,7 +27,6 @@ namespace SCADA.CommunicationAndControlling
             processControllers = new Dictionary<string, ProcessController>();
             TcpChannels = new Dictionary<string, TcpClient>();
         }
-
 
         #region Establishing communication 
 
@@ -103,10 +96,20 @@ namespace SCADA.CommunicationAndControlling
 
                 retval = true;
             }
+            catch (ArgumentNullException e)
+            {
+
+                Console.WriteLine("ArgumentNullException - HRESULT = {0}", e.HResult);
+                Console.WriteLine(e.Message);
+            }
+            catch (ArgumentOutOfRangeException e)
+            {
+                Console.WriteLine("ArgumentOutOfRangeException - paramName = {0}", e.ParamName);
+                Console.WriteLine(e.Message);
+            }
             catch (SocketException e)
             {
-                // ako MdbSim nije podignut to dobijes -no connection can  be made because target machine activelly refused it
-                Console.WriteLine("ErrorCode = {0}", e.ErrorCode);
+                Console.WriteLine("SocketExeption - ErrorCode = {0}", e.ErrorCode);
                 Console.WriteLine(e.Message);
             }
             catch (Exception e)
@@ -131,20 +134,14 @@ namespace SCADA.CommunicationAndControlling
         {
             while (!isShutdown)
             {
-
                 bool isSuccessful;
                 IORequestBlock forProcess = IORequests.DequeueRequest(out isSuccessful);
 
                 if (isSuccessful)
                 {
-
-                    // Console.WriteLine("** ProcessRequests(){0}, REQUEST = ", processing, BitConverter.ToString(forProcess.SendBuff, 0, forProcess.SendMsgLength));
-
                     TcpClient client;
-
                     if (TcpChannels.TryGetValue(forProcess.ProcessControllerName, out client))
                     {
-
                         try
                         {
                             // to do: test this case...connection lasts forever? 
@@ -167,20 +164,12 @@ namespace SCADA.CommunicationAndControlling
                             var length = stream.Read(forProcess.RcvBuff, offset, client.ReceiveBufferSize);
                             forProcess.RcvMsgLength = length;
 
-                            //Console.WriteLine("*** ANSWER <READ> = ", BitConverter.ToString(forProcess.RcvBuff, 0, forProcess.RcvMsgLength));
-
                             IORequests.EnqueueAnswer(forProcess);
-                            //Console.WriteLine("**** ProcessRequests(){0}, Answer enqueued IOAnswers.Count = {1}", processing, IORequests.IOAnswers.Count);
-
                         }
                         catch (Exception e)
                         {
                             // to do: handle this...
-
-
                             Console.WriteLine(e.Message);
-
-                            // kanal sa kontrolerom je zatvoren
                             //if (client.Connected)
                             //  client.Close();
 
@@ -192,25 +181,20 @@ namespace SCADA.CommunicationAndControlling
                         Console.WriteLine("\nThere is no communication link with {0} rtu. Request is disposed.", forProcess.ProcessControllerName);
                     }
                 }
-
                 Thread.Sleep(millisecondsTimeout: timerMsc);
             }
-
-            foreach (var channel in TcpChannels.Values)
-            {
-                // !!! change this. not valid calling all methods
-                channel.GetStream().Close();
-                channel.Close();
-                channel.Client.Disconnect(true);
-            }
-
-            TcpChannels.Clear();
         }
 
-        // dodati close kanala i ostalo...
         public void Stop()
         {
             isShutdown = true;
+
+            foreach (var channel in TcpChannels.Values)
+            {
+                channel.Close();
+            }
+
+            TcpChannels.Clear();
         }
     }
 }

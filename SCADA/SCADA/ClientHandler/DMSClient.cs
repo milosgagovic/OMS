@@ -1,14 +1,10 @@
 ﻿using DMSContract;
 using OMSSCADACommon;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.ServiceModel;
-using System.Text;
 
 namespace SCADA.ClientHandler
 {
-    // proveriti na neki interval da lli je kanal pukao, ako jeste onda serijalizuj
     public class DMSClient : ChannelFactory<IDMSToSCADAContract>, IDMSToSCADAContract, IDisposable
     {
         DMSToSCADAProxy proxy;

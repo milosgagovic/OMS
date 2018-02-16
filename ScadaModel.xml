@@ -5,6 +5,7 @@
       <Address>1</Address>
       <Name>RTU-2</Name>
       <FreeSpaceForDigitals>true</FreeSpaceForDigitals>
+      <FreeSpaceForAnalogs>true</FreeSpaceForAnalogs>
       <Protocol>ModbusTCP</Protocol>
       <DigOutStartAddr>0</DigOutStartAddr>
       <DigInStartAddr>1000</DigInStartAddr>
@@ -13,14 +14,19 @@
       <CounterStartAddr>3500</CounterStartAddr>
       <DigOutCount>8</DigOutCount>
       <DigInCount>8</DigInCount>
-      <AnaInCount>4</AnaInCount>
-      <AnaOutCount>2</AnaOutCount>
+      <AnaInCount>8</AnaInCount>
+      <AnaOutCount>8</AnaOutCount>
       <CounterCount>2</CounterCount>
+      <AnaInRawMin>50</AnaInRawMin>
+      <AnaInRawMax>16000</AnaInRawMax>
+      <AnaOutRawMin>50</AnaOutRawMin>
+      <AnaOutRawMax>16000</AnaOutRawMax>
     </RTU>
     <RTU>
       <Address>1</Address>
       <Name>RTU-1</Name>
       <FreeSpaceForDigitals>true</FreeSpaceForDigitals>
+      <FreeSpaceForAnalogs>true</FreeSpaceForAnalogs>
       <Protocol>ModbusTCP</Protocol>
       <DigOutStartAddr>0</DigOutStartAddr>
       <DigInStartAddr>1000</DigInStartAddr>
@@ -29,13 +35,77 @@
       <CounterStartAddr>3500</CounterStartAddr>
       <DigOutCount>20</DigOutCount>
       <DigInCount>20</DigInCount>
-      <AnaInCount>4</AnaInCount>
-      <AnaOutCount>2</AnaOutCount>
+      <AnaInCount>8</AnaInCount>
+      <AnaOutCount>8</AnaOutCount>
       <CounterCount>2</CounterCount>
+      <AnaInRawMin>150</AnaInRawMin>
+      <AnaInRawMax>16000</AnaInRawMax>
+      <AnaOutRawMin>150</AnaOutRawMin>
+      <AnaOutRawMax>16000</AnaOutRawMax>
     </RTU>
   </RTUS>
   <Digitals>
+    <Digital>
+      <Name>MEAS_D_1</Name>
+      <State>CLOSED</State>
+      <Command>CLOSE</Command>
+      <ProcContrName>RTU-1</ProcContrName>
+      <RelativeAddress>0</RelativeAddress>
+      <Class>SWITCH</Class>
+      <ValidCommands>
+        <Command>CLOSE</Command>
+        <Command>OPEN</Command>
+      </ValidCommands>
+      <ValidStates>
+        <State>CLOSED</State>
+        <State>OPENED</State>
+      </ValidStates>
+    </Digital>
+    <Digital>
+      <Name>MEAS_D_2</Name>
+      <State>CLOSED</State>
+      <Command>CLOSE</Command>
+      <ProcContrName>RTU-1</ProcContrName>
+      <RelativeAddress>1</RelativeAddress>
+      <Class>SWITCH</Class>
+      <ValidCommands>
+        <Command>CLOSE</Command>
+        <Command>OPEN</Command>
+      </ValidCommands>
+      <ValidStates>
+        <State>CLOSED</State>
+        <State>OPENED</State>
+      </ValidStates>
+    </Digital>
+    <Digital>
+      <Name>MEAS_D_3</Name>
+      <State>CLOSED</State>
+      <Command>CLOSE</Command>
+      <ProcContrName>RTU-1</ProcContrName>
+      <RelativeAddress>2</RelativeAddress>
+      <Class>SWITCH</Class>
+      <ValidCommands>
+        <Command>CLOSE</Command>
+        <Command>OPEN</Command>
+      </ValidCommands>
+      <ValidStates>
+        <State>CLOSED</State>
+        <State>OPENED</State>
+      </ValidStates>
+    </Digital>
   </Digitals>
-  <Analogs />
+  <Analogs>
+    <Analog>
+      <Name>MEAS_A_1</Name>
+      <NumOfRegisters>1</NumOfRegisters>
+      <AcqValue>250</AcqValue>
+      <CommValue>250</CommValue>
+      <MaxValue>500</MaxValue>
+      <MinValue>50</MinValue>
+      <ProcContrName>RTU-1</ProcContrName>
+      <RelativeAddress>0</RelativeAddress>
+      <UnitSymbol>VA</UnitSymbol>
+    </Analog>
+  </Analogs>
   <Counters />
 </ScadaModel>

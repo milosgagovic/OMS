@@ -1,11 +1,5 @@
 ﻿using PCCommon;
-using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 
 namespace SCADA.CommunicationAndControlling
 {
@@ -82,7 +76,6 @@ namespace SCADA.CommunicationAndControlling
         {
             IORequestBlock req;
             isSuccessful = IORequests.TryDequeue(out req);
-            //IORequests.Take(1);
             return req;
         }
 

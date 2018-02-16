@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PCCommon
 {
@@ -33,7 +29,6 @@ namespace PCCommon
         // target slave device Id - RTU address
         public string ProcessControllerName { get; set; }
 
-
         /* request parameters*/
 
         // public int MaxRepeat { get; set; }
@@ -44,13 +39,11 @@ namespace PCCommon
         public Byte[] SendBuff { get; set; }
 
 
-
         /* reply parameters*/
 
         public int RcvMsgLength { get; set; }
 
         // receiver buffer 
         public Byte[] RcvBuff { get; set; }
-
     }
 }

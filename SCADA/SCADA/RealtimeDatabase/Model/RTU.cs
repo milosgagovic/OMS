@@ -8,7 +8,6 @@ namespace SCADA.RealtimeDatabase.Model
 {
     public class RTU
     {
-
         private ConcurrentDictionary<ushort, string> PVsAddressAndNames = null;
         private DBContext dbContext = null;
 
@@ -20,6 +19,7 @@ namespace SCADA.RealtimeDatabase.Model
         public string Name { get; set; }
 
         public bool FreeSpaceForDigitals { get; set; }
+        public bool FreeSpaceForAnalogs { get; set; }
 
         // controller pI/O starting Addresses
         public int DigOutStartAddr { get; set; }
@@ -35,14 +35,27 @@ namespace SCADA.RealtimeDatabase.Model
         public int AnaOutCount { get; set; }
         public int CounterCount { get; set; }
 
-        // to do: add for analog and counter
+        // dovoljno nam je samo jedno za sada, posto analog posmatramo da ima isti broj ulaza i izlaza, ali da kasnije nekad moze da se prosiri...
+        // raw band limits
+        public ushort AnaInRawMin { get; set; }
+        public ushort AnaInRawMax { get; set; }
+        public ushort AnaOutRawMin { get; set; }
+        public ushort AnaOutRawMax { get; set; }
+
+        // to do: add "band" for counter...
+
         public int MappedDig { get; set; }
+        public int MappedAnalog { get; set; }
+        public int MappedCounter { get; set; }
 
         // locks that support single writers and multiple readers
         private ReaderWriterLockSlim digInLock = new ReaderWriterLockSlim();
         private ReaderWriterLockSlim digOutLock = new ReaderWriterLockSlim();
 
-        // to do: add locks for analogs and counter 
+        private ReaderWriterLockSlim anaInLock = new ReaderWriterLockSlim();
+        private ReaderWriterLockSlim anaOutLock = new ReaderWriterLockSlim();
+
+        private ReaderWriterLockSlim counterLock = new ReaderWriterLockSlim();
 
         // List of mapperd reading Addresses
         private List<int> digitalInAddresses;
@@ -59,8 +72,9 @@ namespace SCADA.RealtimeDatabase.Model
             this.PVsAddressAndNames = new ConcurrentDictionary<ushort, string>();
             dbContext = new DBContext();
 
-
             MappedDig = 0;
+            MappedAnalog = 0;
+            MappedCounter = 0;
 
             digitalInAddresses = new List<int>(DigInCount);
             analogInAddresses = new List<int>(AnaInCount);
@@ -69,22 +83,27 @@ namespace SCADA.RealtimeDatabase.Model
             counterAddresses = new List<int>(CounterCount);
         }
 
-
         public int GetAcqAddress(ProcessVariable variable)
         {
             int retAddress = -1;
             switch (variable.Type)
             {
                 case VariableTypes.DIGITAL:
-                    Digital digital = variable as Digital;
 
                     digInLock.EnterReadLock();
-                    retAddress = digitalInAddresses[digital.RelativeAddress];
+                    retAddress = digitalInAddresses[variable.RelativeAddress];
                     digInLock.ExitReadLock();
 
                     break;
-                case VariableTypes.ANALOGIN:
+
+                case VariableTypes.ANALOG:
+
+                    anaInLock.EnterReadLock();
+                    retAddress = analogInAddresses[variable.RelativeAddress];
+                    anaInLock.ExitReadLock();
+
                     break;
+
                 default:
                     break;
             }
@@ -98,18 +117,22 @@ namespace SCADA.RealtimeDatabase.Model
             switch (variable.Type)
             {
                 case VariableTypes.DIGITAL:
-                    Digital digital = variable as Digital;
 
                     digOutLock.EnterReadLock();
-                    retAddress = digitalOutAddresses[digital.RelativeAddress];
+                    retAddress = digitalOutAddresses[variable.RelativeAddress];
                     digOutLock.ExitReadLock();
                     break;
-                case VariableTypes.ANALOGIN:
+
+                case VariableTypes.ANALOG:
+
+                    anaOutLock.EnterReadLock();
+                    retAddress = analogOutAddresses[variable.RelativeAddress];
+                    anaOutLock.ExitReadLock();
                     break;
+
                 default:
                     break;
             }
-
             return retAddress;
         }
 
@@ -129,9 +152,7 @@ namespace SCADA.RealtimeDatabase.Model
             switch (variable.Type)
             {
                 case VariableTypes.DIGITAL:
-
                     Digital digital = variable as Digital;
-
 
                     // 1st variable of type Digital, starts on 1st address of DigitalInputs memory (inputs are for acquistion)
                     if (digital.RelativeAddress == 0)
@@ -143,7 +164,8 @@ namespace SCADA.RealtimeDatabase.Model
                         }
                         catch (ArgumentOutOfRangeException e)
                         {
-
+                            Console.WriteLine(e.StackTrace);
+                            Console.WriteLine(e.Message);
                         }
                         finally
                         {
@@ -163,8 +185,7 @@ namespace SCADA.RealtimeDatabase.Model
                     if (FreeSpaceForDigitals != false)
                     {
                         // calculating address of next variable of same type, 
-                        // by adding number of registers (quantity)
-                        // with starting address of current variable
+                        // by adding number of registers (quantity) with starting address of current variable
                         var quantity = (ushort)(Math.Floor((Math.Log(digital.ValidStates.Count, 2))));
                         var nextAddress = currentAcqAddress + quantity;
 
@@ -182,7 +203,8 @@ namespace SCADA.RealtimeDatabase.Model
                         }
                         catch (ArgumentOutOfRangeException e)
                         {
-
+                            Console.WriteLine(e.StackTrace);
+                            Console.WriteLine(e.Message);
                         }
                         finally
                         {
@@ -192,7 +214,66 @@ namespace SCADA.RealtimeDatabase.Model
 
                     break;
 
-                case VariableTypes.ANALOGIN:
+                case VariableTypes.ANALOG:
+                    Analog analog = variable as Analog;
+
+                    // 1st variable of type Analog, starts on 1st address of AnalogInputs memory (inputs are for acquistion)
+                    if (analog.RelativeAddress == 0)
+                    {
+                        anaInLock.EnterWriteLock();
+                        try
+                        {
+                            analogInAddresses.Insert(analog.RelativeAddress, AnaInStartAddr);
+                        }
+                        catch (ArgumentOutOfRangeException e)
+                        {
+                            Console.WriteLine(e.StackTrace);
+                            Console.WriteLine(e.Message);
+                        }
+                        finally
+                        {
+                            anaInLock.ExitWriteLock();
+                        }
+                    }
+
+                    anaInLock.EnterReadLock();
+                    // CURRENT ADDRESS ALREADY DEFINED IN THIS SCOPE? O.o
+                    currentAcqAddress = analogInAddresses[analog.RelativeAddress];
+                    anaInLock.ExitReadLock();
+
+                    // this is address that we need currently
+                    retAddr = currentAcqAddress;
+
+                    // if we already reached the end of memory for this type of Process Variable
+                    // in this Process Controller, than we do not have to calculate nextAddress
+                    if (FreeSpaceForAnalogs != false)
+                    {
+                        // calculating address of next variable of same type, by adding length of variable
+                        // length - num of registers (2,3,4..)
+                        var nextAddress = currentAcqAddress + analog.NumOfRegisters;
+
+                        // error, out of range. impossible to insert next variable of same type
+                        if (nextAddress >= AnaInStartAddr + AnaInCount)
+                        {
+                            FreeSpaceForAnalogs = false;
+                            break;
+                        }
+
+                        anaInLock.EnterWriteLock();
+                        try
+                        {
+                            analogInAddresses.Insert(analog.RelativeAddress + 1, nextAddress);
+                        }
+                        catch (ArgumentOutOfRangeException e)
+                        {
+                            Console.WriteLine(e.StackTrace);
+                            Console.WriteLine(e.Message);
+                        }
+                        finally
+                        {
+                            anaInLock.ExitWriteLock();
+                        }
+                    }
                     break;
 
                 default:
@@ -217,7 +298,6 @@ namespace SCADA.RealtimeDatabase.Model
             switch (variable.Type)
             {
                 case VariableTypes.DIGITAL:
-
                     Digital digital = variable as Digital;
 
                     // 1st variable of type Digital, starts on 1st address of DigitalOutputs memory (outputs are for commanding)
@@ -230,7 +310,8 @@ namespace SCADA.RealtimeDatabase.Model
                         }
                         catch (ArgumentOutOfRangeException e)
                         {
-
+                            Console.WriteLine(e.StackTrace);
+                            Console.WriteLine(e.Message);
                         }
                         finally
                         {
@@ -259,7 +340,6 @@ namespace SCADA.RealtimeDatabase.Model
                             break;
                         }
 
-
                         digOutLock.EnterWriteLock();
                         try
                         {
@@ -267,7 +347,8 @@ namespace SCADA.RealtimeDatabase.Model
                         }
                         catch (ArgumentOutOfRangeException e)
                         {
-
+                            Console.WriteLine(e.StackTrace);
+                            Console.WriteLine(e.Message);
                         }
                         finally
                         {
@@ -277,12 +358,70 @@ namespace SCADA.RealtimeDatabase.Model
 
                     break;
 
-                case VariableTypes.ANALOGIN:
+
+                case VariableTypes.ANALOG:
+                    Analog analog = variable as Analog;
+
+                    // 1st variable of type Analog, starts on 1st address of AnalogOutputs memory (outputs are for commanding)
+                    if (analog.RelativeAddress == 0)
+                    {
+                        anaOutLock.EnterWriteLock();
+                        try
+                        {
+                            analogOutAddresses.Insert(analog.RelativeAddress, AnaOutStartAddr);
+                        }
+                        catch (ArgumentOutOfRangeException e)
+                        {
+                            Console.WriteLine(e.StackTrace);
+                            Console.WriteLine(e.Message);
+                        }
+                        finally
+                        {
+                            anaOutLock.ExitWriteLock();
+                        }
+                    }
+
+                    anaOutLock.EnterReadLock();
+                    currentCommAddress = analogOutAddresses[analog.RelativeAddress];
+                    anaOutLock.ExitReadLock();
+
+                    // this is address that we need currently
+                    retAddr = currentCommAddress;
+
+                    // if we already reached the end of memory for this type of Process Variable
+                    // in this Process Controller, than we do not have to calculate nextAddress
+                    if (FreeSpaceForAnalogs != false)
+                    {
+                        var nextAddress = currentCommAddress + analog.NumOfRegisters;
+
+                        // error, out of range. impossible to insert next variable of same type
+                        if (nextAddress >= AnaOutStartAddr + AnaInCount)
+                        {
+                            FreeSpaceForAnalogs = false;
+                            break;
+                        }
+
+                        anaOutLock.EnterWriteLock();
+                        try
+                        {
+                            analogOutAddresses.Insert(analog.RelativeAddress + 1, nextAddress);
+                        }
+                        catch (ArgumentOutOfRangeException e)
+                        {
+                            Console.WriteLine(e.StackTrace);
+                            Console.WriteLine(e.Message);
+                        }
+                        finally
+                        {
+                            anaOutLock.ExitWriteLock();
+                        }
+                    }
+
                     break;
+
                 default:
                     break;
             }
-
             return retAddr;
         }
 
@@ -298,6 +437,8 @@ namespace SCADA.RealtimeDatabase.Model
 
             if (PVsAddressAndNames.TryGetValue(address, out pvName))
             {
+                //while (!Database.IsConfigurationRunning)
+                //    Thread.Sleep(100);
                 return (dbContext.GetProcessVariableByName(pvName, out pv));
             }
             else
@@ -316,8 +457,8 @@ namespace SCADA.RealtimeDatabase.Model
         {
             bool isSuccessfull = false;
 
+            // mapira trenutno insertovanje, i ukoliko je neuspeh za sledece insertovanje, setuje se free space to false
             var readAddr = MapToAcqAddress(variable);
-
             var writeAddr = MapToCommandAddress(variable);
 
             if (PVsAddressAndNames.TryAdd((ushort)readAddr, variable.Name)
@@ -325,14 +466,20 @@ namespace SCADA.RealtimeDatabase.Model
             {
                 isSuccessfull = true;
             }
+            else
+            {
+                Console.WriteLine("JAO xD");
+                // ovo ne bi trebalo da se desi xD
+            }
 
             return isSuccessfull;
         }
 
 
+        // ova funkcija nepovratno menja vrednost mappedDig, mappedAn...
         /// <summary>
-        /// Check if it is possible to map new variable, calculates RelativeAddress based
-        /// on previous mapped variables.
+        /// Check if it is possible to map new variable, calculates RelativeAddress for 
+        /// new variable, based on previously mapped variables.
         /// </summary>
         /// <param name="variable"></param>
         /// <param name="relativeAddress"></param>
@@ -351,15 +498,33 @@ namespace SCADA.RealtimeDatabase.Model
                     int desiredDigIn = (ushort)(Math.Floor((Math.Log(digital.ValidStates.Count, 2))));
                     int desiredDigOut = (ushort)(Math.Floor((Math.Log(digital.ValidCommands.Count, 2))));
 
-                    if (digitalInAddresses.Count + desiredDigIn <= DigInCount &&
-                        digitalOutAddresses.Count + desiredDigOut <= DigOutCount)
+                    // mozda ovde treba < a ne <=
+                    if (MappedDig + desiredDigIn <= DigInCount &&
+                        MappedDig + desiredDigOut <= DigOutCount)
+                    //if (digitalInAddresses.Count + desiredDigIn <= DigInCount &&
+                    //digitalOutAddresses.Count + desiredDigOut <= DigOutCount)
                     {
                         relativeAddress = (ushort)MappedDig;
-                        //digital.RelativeAddress = (ushort)MappedDig;
                         MappedDig++;
                         retVal = true;
                     }
+                    break;
+                case VariableTypes.ANALOG:
+                    Analog analog = variable as Analog;
 
+                    int desiredAnIn = analog.NumOfRegisters;
+                    int desiredAnOut = analog.NumOfRegisters;
+
+                    // mozda ovde treba < a ne <=
+                    if (MappedAnalog + desiredAnIn <= AnaInCount &&
+                        MappedAnalog + desiredAnOut <= AnaOutCount)
+                    //if (analogInAddresses.Count + desiredAnIn <= AnaInCount &&
+                    //analogOutAddresses.Count + desiredAnOut <= AnaOutCount)
+                    {
+                        relativeAddress = (ushort)MappedAnalog;
+                        MappedAnalog++;
+                        retVal = true;
+                    }
 
                     break;
             }

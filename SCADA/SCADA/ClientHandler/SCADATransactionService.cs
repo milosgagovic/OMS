@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.ServiceModel;
 using System.Text;
@@ -25,20 +24,21 @@ namespace SCADA.ClientHandler
             dbContext = new DBContext();
         }
 
-        // check if there is ANY free space in controller
-        // at this point we do not know if delta will contain 1 or 10 measurements
-        // so we only check if is it possible to add minimal memory occupying element
+        /// <summary>
+        /// Check if there is ANY free space in controller; at this point we do not know if delta will contain 1 or 10 measurements
+        /// so we only check if is it possible to add minimal memory occupying element
+        /// </summary>
         public void Enlist()
         {
-            Console.WriteLine("Pozvan je Enlist na SCADA");
+            Console.WriteLine("\nTransaction started -> \nPozvan je Enlist na SCADA");
 
             ITransactionCallback callback = OperationContext.Current.GetCallbackChannel<ITransactionCallback>();
-
-            // at this point, we will only check if there is a free space for DIGITALS
- 
+        
             bool isSuccessfull = false;
 
-            var availableRtus = dbContext.GettAllRTUs().Values.Where(r => r.FreeSpaceForDigitals == true).ToList();
+            // at this point, we will only check if there is a free space for any DIGITALS or any ANALOGS
+            var availableRtus = dbContext.GettAllRTUs().Values.Where(r => r.FreeSpaceForDigitals == true ||
+                                                                    r.FreeSpaceForAnalogs == true).ToList();
             if (availableRtus.Count != 0)
                 isSuccessfull = false;
 
@@ -51,10 +51,12 @@ namespace SCADA.ClientHandler
                 Console.WriteLine(ex.Message);
                 callback.CallbackEnlist(false);
             }
-
         }
 
-        // trying to apply, apply if is possible, and write configuration to new file
+        /// <summary>
+        /// Trying to apply, APPLYING if it is possible, and write new configuration to new file
+        /// </summary>
+        /// <param name="delta"></param>
         public void Prepare(ScadaDelta delta)
         {
             Console.WriteLine("Pozvan je Prepare na SCADA");
@@ -70,46 +72,55 @@ namespace SCADA.ClientHandler
                     // novu konfiguraciju cuvamo u fajlu
                     parser.SerializeScadaModel(modifiedConfigFile);
 
+                    Console.WriteLine("Prepare true");
                     callback.CallbackPrepare(true);
                 }
                 catch (Exception ex)
                 {
+                    ScadaModelParser parser = new ScadaModelParser();
+                    parser.DeserializeScadaModel(); // returning to old state (state was previosuly changed in apply delta)
+
                     Console.WriteLine(ex.Message);
+                    Console.WriteLine("1Prepare false");
                     callback.CallbackPrepare(false);
                 }
             }
             else
             {
+                ScadaModelParser parser = new ScadaModelParser();
+                parser.DeserializeScadaModel(); // returning to old state (state was previosuly changed in apply delta)
+                Console.WriteLine("2Prepare false");
                 callback.CallbackPrepare(false);
             }
         }
 
-        // setting configuration to new file
+        /// <summary>
+        /// Setting Configuration to new file.
+        /// </summary>
         public void Commit()
         {
+            Console.WriteLine("Pozvan je Commit na SCADA");
             ITransactionCallback callback = OperationContext.Current.GetCallbackChannel<ITransactionCallback>();
 
             ScadaModelParser parser = new ScadaModelParser();
             parser.SwapConfigs(currentConfigFile, modifiedConfigFile);
 
-            callback.CallbackCommit("Commited on SCADA");
-            Console.WriteLine("Pozvan je Commit na SCADA");
+            callback.CallbackCommit("Commited on SCADA");          
         }
 
-        // returning to old config file, parse database again from file! 
+        /// <summary>
+        /// Returning to old config file, initialize database again (deserializng from file)
+        /// </summary>
         public void Rollback()
         {
+            Console.WriteLine("Pozvan je Rollback na SCADA");
             ITransactionCallback callback = OperationContext.Current.GetCallbackChannel<ITransactionCallback>();
 
             ScadaModelParser parser = new ScadaModelParser();
-            parser.SwapConfigs(modifiedConfigFile, currentConfigFile);
+            //parser.SwapConfigs(newConfigFile, currentConfigFile);
+            parser.DeserializeScadaModel(); // returning to old state (changed in apply delta)
 
-            // proveriti ovo! iz kog fajla se deserijalizuje, tj. da li je swap odradio. 
-            // prthodno izbrisati bazu...
-            parser.DeserializeScadaModel();
-
-            callback.CallbackRollback("Somethinw went wrong on SCADA");
-            Console.WriteLine("Pozvan je Rollback na SCADA");
+            callback.CallbackRollback("Something went wrong on SCADA");
         }
     }
 }

@@ -231,7 +231,11 @@
                 }
                 if (cimMeasurment.UnitSymbolHasValue)
                 {
-                    rd.AddProperty(new Property(ModelCode.MEASUREMENT_UNITSYMB, (short)cimMeasurment.UnitSymbol));
+                    var unitSym = GetDMSUnitSymbol(cimMeasurment.UnitSymbol);
+                    rd.AddProperty(new Property(ModelCode.MEASUREMENT_UNITSYMB, (short)unitSym));
+                    //rd.AddProperty(new Property(ModelCode.MEASUREMENT_UNITSYMB, (long)cimMeasurment.UnitSymbol));
+                    //rd.AddProperty(new Property(ModelCode.MEASUREMENT_UNITSYMB, (short)cimMeasurment.UnitSymbol));
+                    //rd.AddProperty(new Property(ModelCode.MEASUREMENT_UNITSYMB, cimMeasurment.UnitSymbol.ToString()));
                 }
                 if (cimMeasurment.PowerSystemResourceHasValue)
                 {
@@ -377,7 +381,6 @@
                     return DirectionType.ReadWrite;
             }
         }
-
         public static List<short> GetDMSCommand(List<FTN.Commands> commands)
         {
             List<short> pom = new List<short>();
@@ -397,7 +400,6 @@
             }
             return pom;
         }
-
         public static List<short> GetDMSStates (List<FTN.States> state)
         {
             List<short> pom = new List<short>();
@@ -417,7 +419,6 @@
             }
             return pom;
         }
-
         #endregion Enums convert
     }
 }

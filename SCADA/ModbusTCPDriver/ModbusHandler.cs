@@ -18,7 +18,6 @@ namespace ModbusTCPDriver
         public Request Request { get; set; }
         public Response Response { get; set; }
 
-
         public byte[] PackData()
         {
             // message must be in big endian format
@@ -33,7 +32,6 @@ namespace ModbusTCPDriver
             return packedData;
         }
 
-        // data.Length=65536
         public void UnpackData(byte[] data, int length)
         {
             Header = new ModbusApplicationHeader();
@@ -42,6 +40,8 @@ namespace ModbusTCPDriver
             byte[] responseData = new byte[length - 7];
             Buffer.BlockCopy(data, 7, responseData, 0, length - 7);
 
+            // mislim da write metode ni ne dopbijaju response
+            // to do: proveriti to
             switch ((FunctionCodes)responseData[0])
             {
                 case FunctionCodes.WriteSingleCoil:
@@ -49,9 +49,6 @@ namespace ModbusTCPDriver
 
                     Response = new WriteResponse();
                     Response.GetObjectResponse(responseData);
-
-                    //Console.WriteLine("WriteSingleCoil Response");
-                    //Console.WriteLine(BitConverter.ToString(data, 0, length));
                     break;
 
                 case FunctionCodes.ReadCoils:
@@ -75,9 +72,9 @@ namespace ModbusTCPDriver
                     break;
 
                 default:
+                    Console.WriteLine("Error!!!!!");
                     break;
             }
-
         }
     }
 }
