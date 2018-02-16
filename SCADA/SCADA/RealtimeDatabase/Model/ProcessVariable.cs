@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SCADA.RealtimeDatabase.Model
 {
-    public abstract class ProcessVariable
+    public abstract class ProcessVariable : EventArgs
     {
         public string Name { get; set; }
 

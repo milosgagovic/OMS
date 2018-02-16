@@ -108,6 +108,7 @@ namespace SCADA.ConfigurationParser
                                 Name = uniqueName,
                                 Address = address,
                                 FreeSpaceForDigitals = freeSpaceForDigitals,
+                                FreeSpaceForAnalogs = freeSpaceForAnalogs,
                                 Protocol = protocol,
 
                                 DigOutStartAddr = digOutStartAddr,

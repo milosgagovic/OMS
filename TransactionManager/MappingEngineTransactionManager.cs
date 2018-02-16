@@ -25,6 +25,8 @@ namespace TransactionManager
         public MappingEngineTransactionManager()
         {
         }
+
+        // to do: add for analog!
         public List<ResourceDescription> MappResult(Response response)
         {
 

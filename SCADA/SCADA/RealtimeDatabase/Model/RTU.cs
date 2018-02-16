@@ -89,8 +89,8 @@ namespace SCADA.RealtimeDatabase.Model
             switch (variable.Type)
             {
                 case VariableTypes.DIGITAL:
-                
-                    digInLock.EnterReadLock();                
+
+                    digInLock.EnterReadLock();
                     retAddress = digitalInAddresses[variable.RelativeAddress];
                     digInLock.ExitReadLock();
 
@@ -498,11 +498,13 @@ namespace SCADA.RealtimeDatabase.Model
                     int desiredDigIn = (ushort)(Math.Floor((Math.Log(digital.ValidStates.Count, 2))));
                     int desiredDigOut = (ushort)(Math.Floor((Math.Log(digital.ValidCommands.Count, 2))));
 
-                    if (digitalInAddresses.Count + desiredDigIn <= DigInCount &&
-                        digitalOutAddresses.Count + desiredDigOut <= DigOutCount)
+                    // mozda ovde treba < a ne <=
+                    if (MappedDig + desiredDigIn <= DigInCount &&
+                        MappedDig + desiredDigOut <= DigOutCount)
+                    //if (digitalInAddresses.Count + desiredDigIn <= DigInCount &&
+                    //digitalOutAddresses.Count + desiredDigOut <= DigOutCount)
                     {
                         relativeAddress = (ushort)MappedDig;
-                        //digital.RelativeAddress = (ushort)MappedDig;
                         MappedDig++;
                         retVal = true;
                     }
@@ -513,8 +515,11 @@ namespace SCADA.RealtimeDatabase.Model
                     int desiredAnIn = analog.NumOfRegisters;
                     int desiredAnOut = analog.NumOfRegisters;
 
-                    if (analogInAddresses.Count + desiredAnIn <= AnaInCount &&
-                        analogOutAddresses.Count + desiredAnOut <= AnaOutCount)
+                    // mozda ovde treba < a ne <=
+                    if (MappedAnalog + desiredAnIn <= AnaInCount &&
+                        MappedAnalog + desiredAnOut <= AnaOutCount)
+                    //if (analogInAddresses.Count + desiredAnIn <= AnaInCount &&
+                    //analogOutAddresses.Count + desiredAnOut <= AnaOutCount)
                     {
                         relativeAddress = (ushort)MappedAnalog;
                         MappedAnalog++;

@@ -149,7 +149,31 @@ namespace DMSService
             Tree<Element> retVal = new Tree<Element>();
             List<long> eSources = new List<long>();
 
-            bool isScadaAvailable = false;
+            //bool isScadaAvailable = false;
+            //do
+            //{
+            //    Console.WriteLine("scada not available");
+            //    try
+            //    {
+            //        if (ScadaClient.State == CommunicationState.Created)
+            //        {
+            //            ScadaClient.Open();
+            //        }
+
+            //        isScadaAvailable = ScadaClient.Ping();
+            //    }
+            //    catch (Exception e)
+            //    {
+            //        //Console.WriteLine(e);
+            //        Console.WriteLine("InitializeNetwork() -> SCADA is not available yet.");
+            //        if (ScadaClient.State == CommunicationState.Faulted)
+            //            ScadaClient = new SCADAClient(new EndpointAddress("net.tcp://localhost:4000/SCADAService"));
+            //    }
+            //    Thread.Sleep(500);
+            //} while (!isScadaAvailable);
+
+
+
             do
             {
                 try
@@ -159,7 +183,8 @@ namespace DMSService
                         ScadaClient.Open();
                     }
 
-                    isScadaAvailable = ScadaClient.Ping();
+                    if (ScadaClient.Ping())
+                        break;
                 }
                 catch (Exception e)
                 {
@@ -169,7 +194,9 @@ namespace DMSService
                         ScadaClient = new SCADAClient(new EndpointAddress("net.tcp://localhost:4000/SCADAService"));
                 }
                 Thread.Sleep(500);
-            } while (!isScadaAvailable);
+            } while (true);
+            Console.WriteLine("InitializeNetwork() -> SCADA is available.");
+
 
             Response response = null;
             // get dynamic data
@@ -191,7 +218,7 @@ namespace DMSService
             }
             // it means this is an update from TransactionManager
             else
-            {            
+            {
                 foreach (ResourceDescription resource in delta.InsertOperations)
                 {
                     DMSType type = (DMSType)ModelCodeHelper.ExtractTypeFromGlobalId(resource.Id);

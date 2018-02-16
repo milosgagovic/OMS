@@ -44,9 +44,6 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
             var temp = ((inputValue - rawMin) * (EGUMax - EGUMin));
             var temp1 = (double)(temp / (rawMax - rawMin));
             result = (float)(Math.Ceiling(temp1) + EGUMin);
-
-            //analog.AcqValue = (((rawCurrentAcq - rawMin) * (EGUMax - EGUMin)) / (rawMax - rawMin)) + EGUMin;
-            //analog.CommValue = (((rawCurrentComm - rawMin) * (EGUMax - EGUMin)) / (rawMax - rawMin)) + EGUMin;
         }
 
         //  linear conversion

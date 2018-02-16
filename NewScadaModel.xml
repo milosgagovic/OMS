@@ -5,7 +5,7 @@
       <Address>1</Address>
       <Name>RTU-2</Name>
       <FreeSpaceForDigitals>true</FreeSpaceForDigitals>
-      <FreeSpaceForAnalogs>false</FreeSpaceForAnalogs>
+      <FreeSpaceForAnalogs>true</FreeSpaceForAnalogs>
       <Protocol>ModbusTCP</Protocol>
       <DigOutStartAddr>0</DigOutStartAddr>
       <DigInStartAddr>1000</DigInStartAddr>
@@ -26,7 +26,7 @@
       <Address>1</Address>
       <Name>RTU-1</Name>
       <FreeSpaceForDigitals>true</FreeSpaceForDigitals>
-      <FreeSpaceForAnalogs>false</FreeSpaceForAnalogs>
+      <FreeSpaceForAnalogs>true</FreeSpaceForAnalogs>
       <Protocol>ModbusTCP</Protocol>
       <DigOutStartAddr>0</DigOutStartAddr>
       <DigInStartAddr>1000</DigInStartAddr>
@@ -35,8 +35,8 @@
       <CounterStartAddr>3500</CounterStartAddr>
       <DigOutCount>20</DigOutCount>
       <DigInCount>20</DigInCount>
-      <AnaInCount>4</AnaInCount>
-      <AnaOutCount>2</AnaOutCount>
+      <AnaInCount>8</AnaInCount>
+      <AnaOutCount>8</AnaOutCount>
       <CounterCount>2</CounterCount>
       <AnaInRawMin>150</AnaInRawMin>
       <AnaInRawMax>16000</AnaInRawMax>
@@ -93,23 +93,9 @@
         <State>OPENED</State>
       </ValidStates>
     </Digital>
-    <Digital>
-      <Name>MEAS_A_1</Name>
-      <State>CLOSED</State>
-      <Command>CLOSE</Command>
-      <ProcContrName>RTU-1</ProcContrName>
-      <RelativeAddress>3</RelativeAddress>
-      <Class>SWITCH</Class>
-      <ValidCommands>
-        <Command>CLOSE</Command>
-        <Command>OPEN</Command>
-      </ValidCommands>
-      <ValidStates>
-        <State>CLOSED</State>
-        <State>OPENED</State>
-      </ValidStates>
-    </Digital>
   </Digitals>
-  <Analogs />
+  <Analogs>
+
+  </Analogs>
   <Counters />
 </ScadaModel>

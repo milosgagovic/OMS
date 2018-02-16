@@ -16,6 +16,8 @@ namespace SCADA.RealtimeDatabase
         {
             Database = Database.Instance;
         }
+      
+        public static event EventHandler OnAnalogAdded;
 
         /// <summary>
         /// Attempts to add the specified key and value. Return true if success, 
@@ -54,6 +56,10 @@ namespace SCADA.RealtimeDatabase
         {
             Console.WriteLine("Adding process variable Name= {0}", pv.Name);
             Database.Instance.ProcessVariablesName.TryAdd(pv.Name, pv);
+            if (pv.Type == VariableTypes.ANALOG)
+            {
+                OnAnalogAdded?.Invoke(this, (Analog)pv);
+            }
         }
 
         /// <summary>
@@ -289,13 +295,16 @@ namespace SCADA.RealtimeDatabase
                                     newAnalog.AcqValue = insertEl.WorkPoint;
                                     newAnalog.CommValue = insertEl.WorkPoint;
 
+                                    newAnalog.RawBandLow = availableRtu.AnaInRawMin;
+                                    newAnalog.RawBandHigh = availableRtu.AnaInRawMax;
+
                                     string unitSimString = insertEl.UnitSymbol;
-                                    //UnitSymbol unitSym = (UnitSymbol)Enum.Parse(typeof(UnitSymbol), unitSimString, true);
-                                    // to do: ERROR tu, videti sta ces sa enumeracijom...hm, kad se napravi nova analog, treba napraviti komandu za pisanje!?
+                                    UnitSymbol unitSym = (UnitSymbol)Enum.Parse(typeof(UnitSymbol), unitSimString, true);
 
                                     var elements = rtuElementsMap[availableRtu.Name];
-                                    elements.Add(newAnalog);
 
+                                    elements.Add(newAnalog);
+                                                                   
                                     possibleInsertionsCount++;
 
                                     isInsertingPossible = true;
@@ -337,6 +346,8 @@ namespace SCADA.RealtimeDatabase
                         {
                             AddProcessVariable(elForAdd);
                             addedCount++;
+                            // if is an analog, SEND COMMAND to init sim
+
                         }
                     }
                 }
@@ -355,5 +366,7 @@ namespace SCADA.RealtimeDatabase
 
             return retVal;
         }
+
+
     }
 }

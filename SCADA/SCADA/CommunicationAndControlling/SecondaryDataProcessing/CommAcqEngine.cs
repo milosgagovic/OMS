@@ -21,6 +21,7 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
         private static bool isShutdown;
         private int timerMsc;
 
+
         private DBContext dbContext = null;
 
         public CommAcqEngine()
@@ -29,10 +30,19 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
 
             IORequests = IORequestsQueue.GetQueue();
             dbContext = new DBContext();
-
+            //DBContext.OnAnalogAdded += OnAnalogAddedEvent;
+            //dbContext.analo
             isShutdown = false;
             timerMsc = 1000;
         }
+
+        //public static CommAcqEngine Instance
+        //{
+        //    get
+        //    {
+        //        if(instance==null)
+        //    }
+        //}
 
         /// <summary>
         /// Reading database data from configPath,
@@ -104,7 +114,7 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
                                             mdbHandler.Request.FunCode = FunctionCodes.WriteSingleRegister;
                                             ((WriteRequest)mdbHandler.Request).Value = (ushort)analog.RawCommValue;
                                         }
-
+                                        analog.IsInit = true;
                                         break;
 
                                     case VariableTypes.COUNTER:
@@ -145,6 +155,8 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
         /// </summary>
         public void StartAcquisition()
         {
+            DBContext.OnAnalogAdded += OnAnalogAddedEvent;
+
             List<ProcessVariable> pvs;
 
             while (!isShutdown)
@@ -197,6 +209,8 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
 
                                     case VariableTypes.ANALOG:
                                         Analog analog = (Analog)pv;
+                                        if (!analog.IsInit)
+                                            continue; // dok se ne setuje inicijalna vrednost
 
                                         mdbHandler.Request.FunCode = FunctionCodes.ReadInputRegisters;
                                         ((ReadRequest)mdbHandler.Request).Quantity = analog.NumOfRegisters;
@@ -264,7 +278,7 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
                                             BitReadResponse response = (BitReadResponse)mdbHandler.Response;
                                             ProcessVariable pv;
                                             Digital target = null;
-                                       
+
                                             if (rtu.GetProcessVariableByAddress(answer.ReqAddress, out pv))
                                             {
                                                 target = (Digital)pv;
@@ -369,6 +383,57 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
             parser.SerializeScadaModel();
         }
 
+       // private static void OnAnalogAddedEvent(object sender, EventArgs e)
+        private void OnAnalogAddedEvent(object sender, EventArgs e)
+        {
+            Console.WriteLine("OnAnalogEventAdded started");
+            Analog analog = (Analog)e;
+            IORequestBlock iorb = new IORequestBlock()
+            {
+                RequestType = RequestType.SEND,
+                ProcessControllerName = analog.ProcContrName
+            };
+
+            DBContext dbContext = new DBContext();
+            RTU rtu;
+            if ((rtu = dbContext.GetRTUByName(analog.ProcContrName)) != null)
+            {
+                iorb.ReqAddress = (ushort)rtu.GetCommandAddress(analog);
+                bool shouldCommand = false;
+
+                switch (rtu.Protocol)
+                {
+                    case IndustryProtocols.ModbusTCP:
+
+                        ModbusHandler mdbHandler = new ModbusHandler();
+                        mdbHandler.Header = new ModbusApplicationHeader()
+                        {
+                            TransactionId = 0,
+                            Length = 5,
+                            ProtocolId = (ushort)IndustryProtocols.ModbusTCP,
+                            DeviceAddress = rtu.Address
+                        };
+
+                        mdbHandler.Request = new WriteRequest() { StartAddr = (ushort)rtu.GetCommandAddress(analog) };
+
+                        if (shouldCommand = AnalogProcessor.InitialWorkPointAnalog(analog))
+                        {
+                            mdbHandler.Request.FunCode = FunctionCodes.WriteSingleRegister;
+                            AnalogProcessor.EGUToRawValue(analog);
+                            ((WriteRequest)mdbHandler.Request).Value = analog.RawCommValue;
+                            iorb.SendBuff = mdbHandler.PackData();
+                            iorb.SendMsgLength = iorb.SendBuff.Length;
+                            Console.WriteLine(BitConverter.ToString(iorb.SendBuff, 0, 12));
+                            IORequests.EnqueueRequest(iorb);
+
+                            analog.IsInit = true;
+                        }
+
+                        break;
+                }
+            }
+            Console.WriteLine("OnAnalogEventAdded finished");
+        }
 
         #region Command Receiver methods
         public OMSSCADACommon.Responses.Response ReadAllAnalog(OMSSCADACommon.DeviceTypes type)

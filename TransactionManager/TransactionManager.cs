@@ -88,7 +88,7 @@ namespace TransactionManager
             binding.ReceiveTimeout = TimeSpan.FromMinutes(10);
             binding.SendTimeout = TimeSpan.FromMinutes(10);
             binding.TransactionFlow = true;
-           
+
             // duplex channel for NMS transaction
             CallBackTransactionNMS = new TransactionCallback();
             TransactionCallbacks.Add(CallBackTransactionNMS);
@@ -193,6 +193,7 @@ namespace TransactionManager
                 break;
             }
         }
+
         private void Commit()
         {
             Console.WriteLine("Transaction Manager calling commit");
@@ -257,10 +258,33 @@ namespace TransactionManager
             {
                 Command c = MappingEngineTransactionManager.Instance.MappCommand(TypeOfSCADACommand.ReadAll, "", 0, 0);
 
-                bool isScadaAvailable = false;
+                //bool isScadaAvailable = false;
+                //do
+                //{
+                //    Console.WriteLine("scada not available");
+                //    try
+                //    {
+                //        if (ScadaClient.State == CommunicationState.Created)
+                //        {
+                //            ScadaClient.Open();
+                //        }
+
+                //        isScadaAvailable = ScadaClient.Ping();
+                //    }
+                //    catch (Exception e)
+                //    {
+                //        //Console.WriteLine(e);
+                //        Console.WriteLine("InitializeNetwork() -> SCADA is not available yet.");
+                //        if (ScadaClient.State == CommunicationState.Faulted)
+                //            ScadaClient = new SCADAClient(new EndpointAddress("net.tcp://localhost:4000/SCADAService"));
+                //    }
+                //    Thread.Sleep(500);
+                //} while (!isScadaAvailable);
+
+
+
                 do
                 {
-                    Console.WriteLine("scada not available");
                     try
                     {
                         if (ScadaClient.State == CommunicationState.Created)
@@ -268,17 +292,20 @@ namespace TransactionManager
                             ScadaClient.Open();
                         }
 
-                        isScadaAvailable = ScadaClient.Ping();
+                        if (ScadaClient.Ping())
+                            break;
                     }
                     catch (Exception e)
                     {
                         //Console.WriteLine(e);
-                        Console.WriteLine("InitializeNetwork() -> SCADA is not available yet.");
+                        Console.WriteLine("GetNetwork() -> SCADA is not available yet.");
                         if (ScadaClient.State == CommunicationState.Faulted)
                             ScadaClient = new SCADAClient(new EndpointAddress("net.tcp://localhost:4000/SCADAService"));
                     }
                     Thread.Sleep(500);
-                } while (!isScadaAvailable);
+                } while (true);
+                Console.WriteLine("GetNetwork() -> SCADA is available.");
+
 
                 Response r = ScadaClient.ExecuteCommand(c);
                 descMeas = MappingEngineTransactionManager.Instance.MappResult(r);

@@ -10,7 +10,14 @@ namespace SCADA.RealtimeDatabase.Model
 
             // at least one, it will be alway 1 in current implementation
             this.NumOfRegisters = 1;
+
+            IsInit = false;
+            // zakucala 
+            MinValue = 50;
+            MaxValue = 500;
         }
+
+        public bool IsInit { get; set; }
 
         // total number of registers requested (register length = 2 bytes)
         public ushort NumOfRegisters { get; set; }
