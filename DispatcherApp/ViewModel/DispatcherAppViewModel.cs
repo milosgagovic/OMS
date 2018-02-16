@@ -458,7 +458,7 @@ namespace DispatcherApp.ViewModel
             {
                 foreach (IncidentReport incident in answerFromTransactionManager.IncidentReports)
                 {
-                    this.IncidentReports.Add(incident);
+                    this.IncidentReports.Insert(0, incident);
                 }
             }
         }
