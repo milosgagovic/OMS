@@ -345,8 +345,9 @@ namespace DispatcherApp.ViewModel
                         }
                         else if (element is Switch)
                         {
+                            Switch breaker = element as Switch;
                             this.Breakers.Add(element);
-                            BreakerProperties properties = new BreakerProperties() { IsEnergized = element.Marker, IsUnderScada = element.UnderSCADA };
+                            BreakerProperties properties = new BreakerProperties() { IsEnergized = element.Marker, IsUnderScada = element.UnderSCADA, Incident = element.Incident, CanCommand = breaker.CanCommand };
                             properties.ValidCommands.Add(CommandTypes.CLOSE);
                             this.CommandIndex = 0;
 
