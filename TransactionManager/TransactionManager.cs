@@ -28,13 +28,9 @@ namespace TransactionManager
         TransactionCallback callBackTransactionSCADA;
         NetworkModelGDAProxy ProxyToNMSService;
 
-
-        //ChannelFactory<IIMSContract> factoryToIMS;
-        //IIMSContract IMSClient;
         IDMSContract proxyToDispatcherDMS;
 
         ModelGDATMS gdaTMS;
-        //SCADAClient scadaClient;
         private SCADAClient scadaClient;
         private SCADAClient ScadaClient
         {
@@ -84,12 +80,15 @@ namespace TransactionManager
 
         private void InitializeChanels()
         {
+            Console.WriteLine("InitializeChannels()");
+
             var binding = new NetTcpBinding();
             binding.CloseTimeout = TimeSpan.FromMinutes(10);
             binding.OpenTimeout = TimeSpan.FromMinutes(10);
             binding.ReceiveTimeout = TimeSpan.FromMinutes(10);
             binding.SendTimeout = TimeSpan.FromMinutes(10);
             binding.TransactionFlow = true;
+           
             // duplex channel for NMS transaction
             CallBackTransactionNMS = new TransactionCallback();
             TransactionCallbacks.Add(CallBackTransactionNMS);
@@ -362,6 +361,8 @@ namespace TransactionManager
 
         private ScadaDelta GetDeltaForSCADA(Delta d)
         {
+            // zasto je ovo bitno, da ima measurement direction?? 
+            // po tome odvajas measuremente od ostatka?
             List<ResourceDescription> rescDesc = d.InsertOperations.Where(u => u.ContainsProperty(ModelCode.MEASUREMENT_DIRECTION)).ToList();
             ScadaDelta scadaDelta = new ScadaDelta();
 
@@ -370,10 +371,14 @@ namespace TransactionManager
                 ScadaElement element = new ScadaElement();
                 if (rd.ContainsProperty(ModelCode.MEASUREMENT_TYPE))
                 {
+                    // to do: NIGDE SE NE SETUJE??
                     string type = rd.GetProperty(ModelCode.MEASUREMENT_TYPE).ToString();
                     if (type == "Analog")
                     {
                         element.Type = DeviceTypes.ANALOG;
+                        // to do -> ovo ne radi za unit
+                        element.UnitSymbol = ((UnitSymbol)rd.GetProperty(ModelCode.MEASUREMENT_UNITSYMB).AsEnum()).ToString();
+                        element.WorkPoint = rd.GetProperty(ModelCode.ANALOG_NORMVAL).AsFloat();
                     }
                     else if (type == "Discrete")
                     {

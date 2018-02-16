@@ -29,7 +29,7 @@ namespace SCADA.ConfigurationParser
         {
             // to do: ime ove promenljive imas u sveski
             // obrnula logiku za configuration runnig, PROMENITI
-            Database.IsConfigurationRunning = false;
+            Database.IsConfigurationRunning = false; // OVO JE BILO SPORNO KASNIJE?
 
             string message = string.Empty;
             string configurationName = deserializationSource;
@@ -53,14 +53,10 @@ namespace SCADA.ConfigurationParser
                                 orderby (int)dig.Element("RelativeAddress")
                                 select dig).ToList();
 
-
-
-                //var analogs = xdocument.Element("Analogs").Elements("Analog").ToList();
                 var analogs = (from dig in xdocument.Element("Analogs").Elements("Analog")
                                orderby (int)dig.Element("RelativeAddress")
                                select dig).ToList();
 
-                //var counters = xdocument.Element("Counters").Elements("Counter").ToList();
                 var counters = (from dig in xdocument.Element("Counters").Elements("Counter")
                                 orderby (int)dig.Element("RelativeAddress")
                                 select dig).ToList();

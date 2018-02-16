@@ -113,7 +113,7 @@ namespace DMSCommon.Model
 
         public List<ResourceDescription> GetExtentValuesExtended(ModelCode modelCode)
         {
-            string message = "Getting extent values method started.";
+            string message = "Getting extent values extended method started.";
             //Console.WriteLine(message);
             CommonTrace.WriteTrace(CommonTrace.TraceError, message);
             int iteratorId = 0;

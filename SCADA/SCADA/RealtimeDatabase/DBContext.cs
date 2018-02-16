@@ -1,4 +1,5 @@
 ﻿using OMSSCADACommon;
+using SCADA.RealtimeDatabase.Catalogs;
 using SCADA.RealtimeDatabase.Model;
 using System;
 using System.Collections.Concurrent;
@@ -86,7 +87,7 @@ namespace SCADA.RealtimeDatabase
         public bool ApplyDelta(ScadaDelta delta)
         {
             bool retVal = false;
-          
+
             /*
             prvo proveriti prirodu delte: 
                da li radimo SAMO UPDATE, 
@@ -98,7 +99,7 @@ namespace SCADA.RealtimeDatabase
            */
 
             List<ScadaElement> updateOperations = delta.UpdateOps;
-         
+
             // this list acutally can contains update operations also. case 2. above descripted 
             // we have to segregate treal update from insert...
             List<ScadaElement> deltaOperations = delta.InsertOps;
@@ -285,15 +286,12 @@ namespace SCADA.RealtimeDatabase
 
                                     newAnalog.ProcContrName = availableRtu.Name;
 
-                                    // podrazumevamo da insertujemo prekidac u dozvoljenom - zeljenom stanju
                                     newAnalog.AcqValue = insertEl.WorkPoint;
                                     newAnalog.CommValue = insertEl.WorkPoint;
 
-                                    // to do:
-                                    //string stringProtocol = (string)rtu.Element("Protocol");
-                                    //IndustryProtocols protocol = (IndustryProtocols)Enum.Parse(typeof(IndustryProtocols), stringProtocol);
-                                    //var unitSym = insertEl.UnitSymbol;
-                                    //newAnalog.UnitSymbol = (UnitSymbol)insertEl.UnitSymbol;
+                                    string unitSimString = insertEl.UnitSymbol;
+                                    //UnitSymbol unitSym = (UnitSymbol)Enum.Parse(typeof(UnitSymbol), unitSimString, true);
+                                    // to do: ERROR tu, videti sta ces sa enumeracijom...hm, kad se napravi nova analog, treba napraviti komandu za pisanje!?
 
                                     var elements = rtuElementsMap[availableRtu.Name];
                                     elements.Add(newAnalog);

@@ -169,10 +169,9 @@ namespace DMSService
                         Array values = Enum.GetValues(typeof(CrewType));
                         incident.Crewtype = (CrewType)values.GetValue(rand.Next(0, values.Length));
 
-                        // to do: ovo state opened srediti
+                        // to do: BUG -> ovo state opened srediti
                         ElementStateReport elementStateReport = new ElementStateReport() { MrID = mrid, Time = DateTime.UtcNow, State = 0 };
-                        //ElementStateReport elementStateReport = new ElementStateReport() { MrID = mrid, Time = DateTime.UtcNow, State = "OPENED" };
-                        IMSClient.AddReport(incident);
+                        //ElementStateReport elementStateReport = new ElementStateReport() { MrID = mrid, Time = DateTime.UtcNow, State = "OPENED" };                        IMSClient.AddReport(incident);
                         IMSClient.AddElementStateReport(elementStateReport);
 
                         pub.PublishUIBreaker(true,(long)incidentBreaker);

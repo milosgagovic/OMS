@@ -113,15 +113,15 @@ namespace DMSService
         {
             string message = string.Empty;
 
-            // dakle, sada se startuju DMSTransaction i DMSDispatcher
+            // u StartHosts() ce se startovati DMSTransaction i DMSDispatcher. 
             StartHosts();
             Tree = InitializeNetwork(new Delta());
 
-            isNetworkInitialized = true;
+            //isNetworkInitialized = true;
 
             while (!isNetworkInitialized)
             {
-                Console.WriteLine("Not Initilazied network");
+                Console.WriteLine("Not Initialized network");
                 Thread.Sleep(100);
             }
 
@@ -138,20 +138,17 @@ namespace DMSService
             }
         }
 
-
         /// <summary>
-        /// Getting Network Static Data from NMS. Called initialy for obtaining 
-        /// Static Data from.data if exists, and later in transaction, if .data changes
+        /// Getting Network Static Data from NMS (.data), and Dynamic data from Scada, in order to create Network DMS Tree.
+        /// Called initialy on system Init, and later in transaction, if .data changes
         /// </summary>
         /// <returns></returns>
         public Tree<Element> InitializeNetwork(Delta delta)
         {
-
-            Console.WriteLine("InitializeNetwork Called");
+            Console.WriteLine("DMSService()-> InitializeNetwork Called");
             Tree<Element> retVal = new Tree<Element>();
             List<long> eSources = new List<long>();
 
-           
             bool isScadaAvailable = false;
             do
             {
@@ -174,15 +171,12 @@ namespace DMSService
                 Thread.Sleep(500);
             } while (!isScadaAvailable);
 
-
-            //SCADAClient client = new SCADAClient();
-            //Response response = null;
-            //response = client.ExecuteCommand(new ReadAll());
-
-
             Response response = null;
+            // get dynamic data
             response = ScadaClient.ExecuteCommand(new ReadAll());
 
+            // if there is no insert operations it means it is system initialization,
+            // and DMS should obtain the static data from NMS
             if (delta.InsertOperations.Count == 0)
             {
                 ClearAllLists();
@@ -195,8 +189,9 @@ namespace DMSService
                 Gda.GetExtentValuesExtended(ModelCode.ENERGSOURCE).ForEach(n => EnergySourcesRD.Add(n));
                 Gda.GetExtentValuesExtended(ModelCode.DISCRETE).ForEach(n => DiscreteMeasurementsRD.Add(n));
             }
+            // it means this is an update from TransactionManager
             else
-            {
+            {            
                 foreach (ResourceDescription resource in delta.InsertOperations)
                 {
                     DMSType type = (DMSType)ModelCodeHelper.ExtractTypeFromGlobalId(resource.Id);
@@ -272,9 +267,7 @@ namespace DMSService
 
             TerminalsRD.ForEach(x => terminals.Add(x.Id));
 
-            //Petlja za prikupljanje svih ES i njihovo povezivanje sa CN
-            //Pocetak algoritma za formiranje stabla
-            // if there is no .data
+            // Pocetak algoritma za formiranje stabla
             // obtaining all ES and connecting them with CNs. there is only one ES currently
             foreach (long item in eSources)
             {
@@ -302,7 +295,8 @@ namespace DMSService
                 }
                 terminals.Remove(term);
             }
-            //Obrada od pocetnog CN ka svim ostalima. Iteracija po terminalima
+
+            // Obrada od pocetnog CN ka svim ostalima. Iteracija po terminalima
             var watch = System.Diagnostics.Stopwatch.StartNew();
             int count = 0;
             while (terminals.Count != 0)
@@ -326,18 +320,18 @@ namespace DMSService
                 }
                 foreach (long item in terms)
                 {
-                    long bransch = GetBranchConnectedWithTerminal(item);
+                    long branch = GetBranchConnectedWithTerminal(item);
 
                     DMSType mc;
-                    if (bransch != 0)
+                    if (branch != 0)
                     {
-                        mc = (DMSType)ModelCodeHelper.ExtractTypeFromGlobalId(bransch);
-                        mrid = GetMrid(mc, bransch);
+                        mc = (DMSType)ModelCodeHelper.ExtractTypeFromGlobalId(branch);
+                        mrid = GetMrid(mc, branch);
                     }
                     else
                         continue;
 
-                    List<long> branchTerminals = GetTerminalsConnectedWithBranch(bransch);
+                    List<long> branchTerminals = GetTerminalsConnectedWithBranch(branch);
                     if (branchTerminals.Contains(item))
                     {
                         branchTerminals.Remove(item);
@@ -345,7 +339,7 @@ namespace DMSService
 
                     if (mc.Equals(DMSType.ACLINESEGMENT))
                     {
-                        ACLine acline = new ACLine(bransch, mrid);
+                        ACLine acline = new ACLine(branch, mrid);
                         acline.End1 = n.ElementGID;
                         n.Children.Add(acline.ElementGID);
                         long downNodegid = GetConnNodeConnectedWithTerminal(branchTerminals[0]);
@@ -361,9 +355,8 @@ namespace DMSService
                     }
                     else if (mc.Equals(DMSType.BREAKER))
                     {
-                        Switch sw = new Switch(bransch, mrid);
+                        Switch sw = new Switch(branch, mrid);
 
-                        // u kom slucaju je response NULL? NE SME DA BUDE. skada mora bar dostupna da bude
                         if (response != null)
                         {
                             var psr = SwitchesRD.Where(m => m.GetProperty(ModelCode.IDOBJ_MRID).AsString() == mrid).FirstOrDefault();
@@ -377,11 +370,11 @@ namespace DMSService
                                 {
                                     if (res.State == OMSSCADACommon.States.OPENED)
                                     {
-                                        sw = new Switch(bransch, mrid, SwitchState.Open) { UnderSCADA = true };
+                                        sw = new Switch(branch, mrid, SwitchState.Open) { UnderSCADA = true };
                                     }
                                     else
                                     {
-                                        sw = new Switch(bransch, mrid, SwitchState.Closed) { UnderSCADA = true };
+                                        sw = new Switch(branch, mrid, SwitchState.Closed) { UnderSCADA = true };
                                     }
                                 }
                             }
@@ -392,6 +385,7 @@ namespace DMSService
                         }
                         else
                         {
+                            // to do: fix this, repsonse will not be null
                             sw.UnderSCADA = false;
                         }
 
@@ -410,7 +404,7 @@ namespace DMSService
                     }
                     else if (mc.Equals(DMSType.ENERGCONSUMER))
                     {
-                        Consumer consumer = new Consumer(bransch, mrid);
+                        Consumer consumer = new Consumer(branch, mrid);
                         consumer.End1 = n.ElementGID;
                         n.Children.Add(consumer.ElementGID);
                         Consumers.Add(consumer);
@@ -442,7 +436,6 @@ namespace DMSService
                 }
             }
 
-            Console.WriteLine("2Terminals.count={0}", terminals.Count);
             Console.WriteLine("\nNewtork Initialization finished in {0} sec", watch.ElapsedMilliseconds / 1000);
             isNetworkInitialized = true;
             return retVal;

@@ -2,13 +2,11 @@
 using DMSContract;
 using FTN.Common;
 using IMSContract;
-using OMSSCADACommon;
 using PubSubscribe;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.ServiceModel;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -19,10 +17,11 @@ namespace DMSService
         private IMSClient imsClient;
         private IMSClient IMSClient
         {
-            get {
+            get
+            {
                 if (imsClient == null)
                 {
-                    imsClient= new IMSClient(new EndpointAddress("net.tcp://localhost:6090/IncidentManagementSystemService"));
+                    imsClient = new IMSClient(new EndpointAddress("net.tcp://localhost:6090/IncidentManagementSystemService"));
                 }
                 return imsClient;
             }
@@ -32,112 +31,114 @@ namespace DMSService
 
         public void ChangeOnSCADA(string mrID, OMSSCADACommon.States state)
         {
-            bool isImsAvailable = false;
-            do
-            {
-                try
-                {
-                    if (IMSClient.State == CommunicationState.Created)
-                    {
-                        IMSClient.Open();
-                    }
-
-                    isImsAvailable = IMSClient.Ping();
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine("ChangeOnScada() -> IMS is not available yet.");
-                    if (IMSClient.State == CommunicationState.Faulted)
-                        IMSClient = new IMSClient(new EndpointAddress("net.tcp://localhost:6090/IncidentManagementSystemService"));
-                }
-                Thread.Sleep(2000);
-            } while (!isImsAvailable);
-
-
             ModelGdaDMS gda = new ModelGdaDMS();
-            List<ResourceDescription> rds = gda.GetExtentValuesExtended(ModelCode.DISCRETE);
-            ResourceDescription rdDiscreateMeas = rds.Where(r => r.GetProperty(ModelCode.IDOBJ_MRID).AsString() == mrID).FirstOrDefault();
 
-            // if measurement exists only on scada, but not in .data
-            if (rdDiscreateMeas != null)
+            List<ResourceDescription> discreteMeasurements = gda.GetExtentValuesExtended(ModelCode.DISCRETE);
+            ResourceDescription rdDMeasurement = discreteMeasurements.Where(r => r.GetProperty(ModelCode.IDOBJ_MRID).AsString() == mrID).FirstOrDefault();
+
+            // if measurement exists here! if result is null it exists only on scada, but not in .data
+            if (rdDMeasurement != null)
             {
-                // to do 
-            }
+                // find PSR element associated with measurement
+                long rdAssociatedPSR = rdDMeasurement.GetProperty(ModelCode.MEASUREMENT_PSR).AsLong();
 
-            // find associated element
-            long rdAssociatedPSR = rdDiscreateMeas.GetProperty(ModelCode.MEASUREMENT_PSR).AsLong();
+                List<SCADAUpdateModel> networkChange = new List<SCADAUpdateModel>();
 
-            List<SCADAUpdateModel> networkChange = new List<SCADAUpdateModel>();
+                Element DMSElementWithMeas;
+                Console.WriteLine("Change on scada Instance.Tree");
+                DMSService.Instance.Tree.Data.TryGetValue(rdAssociatedPSR, out DMSElementWithMeas);
+                Switch sw = (Switch)DMSElementWithMeas;
 
-            Element el;
-            Console.WriteLine("Change on scada Instance.Tree");
-            DMSService.Instance.Tree.Data.TryGetValue(rdAssociatedPSR, out el);
-            Switch sw = (Switch)el;
+                bool isIncident = false;
+                IncidentReport incident = new IncidentReport() { MrID = sw.MRID };
+               
+                Random rand = new Random();
+                Array crews = Enum.GetValues(typeof(CrewType));
+                incident.Crewtype = (CrewType)crews.GetValue(rand.Next(0, crews.Length));
 
-            bool isIncident = false;
-            IncidentReport incident = new IncidentReport() { MrID = sw.MRID };
+                ElementStateReport elementStateReport = new ElementStateReport() { MrID = sw.MRID, Time = DateTime.UtcNow, State = (int)state };
 
-            // ***************************************OVDE DODATI LOGIKU ZA BIRANJE TIPA TIMA************************************************************
-            Random rand = new Random();
-            Array values = Enum.GetValues(typeof(CrewType));
-            incident.Crewtype = (CrewType)values.GetValue(rand.Next(0, values.Length));
-
-            ElementStateReport elementStateReport = new ElementStateReport() { MrID = sw.MRID, Time = DateTime.UtcNow, State = (int)state };
-
-            if (state == OMSSCADACommon.States.OPENED)
-            {
-                IMSClient.AddReport(incident);
-                isIncident = true;
-
-                sw.Marker = false;
-                sw.State = SwitchState.Open;
-                networkChange.Add(new SCADAUpdateModel(sw.ElementGID, false, OMSSCADACommon.States.OPENED));
-                Node n = (Node)DMSService.Instance.Tree.Data[sw.End2];
-                n.Marker = false;
-                networkChange.Add(new SCADAUpdateModel(n.ElementGID, false));
-                networkChange = EnergizationAlgorithm.TraceDown(n, networkChange, false, false, DMSService.Instance.Tree);
-            }
-            else if (state == OMSSCADACommon.States.CLOSED)
-            {
-                sw.State = SwitchState.Closed;
-                if (EnergizationAlgorithm.TraceUp((Node)DMSService.Instance.Tree.Data[sw.End1], DMSService.Instance.Tree))
+                bool isImsAvailable = false;
+                do
                 {
-                    networkChange.Add(new SCADAUpdateModel(sw.ElementGID, true, OMSSCADACommon.States.CLOSED));
-                    sw.Marker = true;
+                    try
+                    {
+                        if (IMSClient.State == CommunicationState.Created)
+                        {
+                            IMSClient.Open();
+                        }
+
+                        isImsAvailable = IMSClient.Ping();
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("ChangeOnScada() -> IMS is not available yet.");
+                        if (IMSClient.State == CommunicationState.Faulted)
+                            IMSClient = new IMSClient(new EndpointAddress("net.tcp://localhost:6090/IncidentManagementSystemService"));
+                    }
+                    Thread.Sleep(1000);
+                } while (!isImsAvailable);
+
+
+                if (state == OMSSCADACommon.States.OPENED)
+                {
+                    IMSClient.AddReport(incident);
+                    isIncident = true;
+
+                    sw.Marker = false;
+                    sw.State = SwitchState.Open;
+                    networkChange.Add(new SCADAUpdateModel(sw.ElementGID, false, OMSSCADACommon.States.OPENED));
                     Node n = (Node)DMSService.Instance.Tree.Data[sw.End2];
-                    n.Marker = true;
-                    networkChange.Add(new SCADAUpdateModel(n.ElementGID, true));
-                    networkChange = EnergizationAlgorithm.TraceDown(n, networkChange, true, false, DMSService.Instance.Tree);
+                    n.Marker = false;
+                    networkChange.Add(new SCADAUpdateModel(n.ElementGID, false));
+                    networkChange = EnergizationAlgorithm.TraceDown(n, networkChange, false, false, DMSService.Instance.Tree);
                 }
-                else
+                else if (state == OMSSCADACommon.States.CLOSED)
                 {
-                    networkChange.Add(new SCADAUpdateModel(sw.ElementGID, false, OMSSCADACommon.States.CLOSED));
+                    sw.State = SwitchState.Closed;
+                    if (EnergizationAlgorithm.TraceUp((Node)DMSService.Instance.Tree.Data[sw.End1], DMSService.Instance.Tree))
+                    {
+                        networkChange.Add(new SCADAUpdateModel(sw.ElementGID, true, OMSSCADACommon.States.CLOSED));
+                        sw.Marker = true;
+                        Node n = (Node)DMSService.Instance.Tree.Data[sw.End2];
+                        n.Marker = true;
+                        networkChange.Add(new SCADAUpdateModel(n.ElementGID, true));
+                        networkChange = EnergizationAlgorithm.TraceDown(n, networkChange, true, false, DMSService.Instance.Tree);
+                    }
+                    else
+                    {
+                        networkChange.Add(new SCADAUpdateModel(sw.ElementGID, false, OMSSCADACommon.States.CLOSED));
+                    }
+                }
+
+                // report changed state of the element
+                IMSClient.AddElementStateReport(elementStateReport);
+
+                Source s = (Source)DMSService.Instance.Tree.Data[DMSService.Instance.Tree.Roots[0]];
+                networkChange.Add(new SCADAUpdateModel(s.ElementGID, true));
+
+                Publisher publisher = new Publisher();
+                if (networkChange.Count > 0)
+                {
+                    publisher.PublishUpdate(networkChange);
+                }
+                if (isIncident)
+                {
+                    //Thread.Sleep(1000);
+                    List<long> gids = new List<long>();
+                    networkChange.ForEach(x => gids.Add(x.Gid));
+                    List<long> listOfConsumersWithoutPower = gids.Where(x => (DMSType)ModelCodeHelper.ExtractTypeFromGlobalId(x) == DMSType.ENERGCONSUMER).ToList();
+                    foreach (long gid in listOfConsumersWithoutPower)
+                    {
+                        ResourceDescription resDes = DMSService.Instance.Gda.GetValues(gid);
+                        incident.LostPower += resDes.GetProperty(ModelCode.ENERGCONSUMER_PFIXED).AsFloat();
+                    }
+                    publisher.PublishIncident(incident);
                 }
             }
-
-            //upisati promijenu stanja elementa
-            IMSClient.AddElementStateReport(elementStateReport);
-
-            Source s = (Source)DMSService.Instance.Tree.Data[DMSService.Instance.Tree.Roots[0]];
-            networkChange.Add(new SCADAUpdateModel(s.ElementGID, true));
-
-            Publisher publisher = new Publisher();
-            if (networkChange.Count > 0)
+            else
             {
-                publisher.PublishUpdate(networkChange);
-            }
-            if (isIncident)
-            {
-                //Thread.Sleep(1000);
-                List<long> gids = new List<long>();
-                networkChange.ForEach(x => gids.Add(x.Gid));
-                List<long> listOfConsumersWithoutPower = gids.Where(x => (DMSType)ModelCodeHelper.ExtractTypeFromGlobalId(x) == DMSType.ENERGCONSUMER).ToList();
-                foreach (long gid in listOfConsumersWithoutPower)
-                {
-                  ResourceDescription resDes  =  DMSService.Instance.Gda.GetValues(gid);
-                  incident.LostPower += resDes.GetProperty(ModelCode.ENERGCONSUMER_PFIXED).AsFloat();
-                }
-                publisher.PublishIncident(incident);
+                Console.WriteLine("ChangeOnScada()-> element with mrid={0} do not exist in OMS.", mrID);
             }
         }
     }
