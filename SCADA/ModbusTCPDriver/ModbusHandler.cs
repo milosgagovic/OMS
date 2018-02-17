@@ -40,8 +40,7 @@ namespace ModbusTCPDriver
             byte[] responseData = new byte[length - 7];
             Buffer.BlockCopy(data, 7, responseData, 0, length - 7);
 
-            // mislim da write metode ni ne dopbijaju response
-            // to do: proveriti to
+            // OBRATITI PAZNJU NA KONFIGURACIONE FAJLOVE SIMULATORA AKO OVDE PUKNE! 
             switch ((FunctionCodes)responseData[0])
             {
                 case FunctionCodes.WriteSingleCoil:
@@ -72,6 +71,7 @@ namespace ModbusTCPDriver
                     break;
 
                 default:
+                    // obrati paznju na konfig fajlove ako ovvde pukne
                     Console.WriteLine("Error!!!!!");
                     break;
             }

@@ -292,7 +292,7 @@
 		<cim:Measurement.measurementType>Analog</cim:Measurement.measurementType>
 		<cim:Measurement.PowerSystemResource rdf:resource="#EC_2"/>
 		<cim:Measurement.unitSymbol>W</cim:Measurement.unitSymbol>
-		<cim:IdentifiedObject.mRID>MEAS_A_1</cim:IdentifiedObject.mRID>
+		<cim:IdentifiedObject.mRID>MEAS_A_2</cim:IdentifiedObject.mRID>
 		<cim:IdentifiedObject.name>AnalogMeasurement_1</cim:IdentifiedObject.name>
 	</cim:Analog>
 	

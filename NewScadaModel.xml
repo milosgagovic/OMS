@@ -45,10 +45,8 @@
     </RTU>
   </RTUS>
   <Digitals>
-
   </Digitals>
   <Analogs>
-
   </Analogs>
   <Counters />
 </ScadaModel>
