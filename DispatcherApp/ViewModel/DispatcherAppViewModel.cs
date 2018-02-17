@@ -144,6 +144,7 @@ namespace DispatcherApp.ViewModel
             binding.OpenTimeout = new TimeSpan(1, 0, 0, 0);
             binding.ReceiveTimeout = new TimeSpan(1, 0, 0, 0);
             binding.SendTimeout = new TimeSpan(1, 0, 0, 0);
+            binding.MaxReceivedMessageSize = Int32.MaxValue;
 
             ChannelFactory<IOMSClient> factoryToTMS = new ChannelFactory<IOMSClient>(binding,
                 new EndpointAddress("net.tcp://localhost:6080/TransactionManagerService"));
@@ -403,8 +404,6 @@ namespace DispatcherApp.ViewModel
 
                 if (meas != null)
                 {
-                    meas.UpdateProperty(rd.GetProperty(ModelCode.DISCRETE_NORMVAL));
-
                     try
                     {
                         long psr = meas.GetProperty(ModelCode.MEASUREMENT_PSR).AsLong();
@@ -412,6 +411,7 @@ namespace DispatcherApp.ViewModel
 
                         if (type == DMSType.BREAKER)
                         {
+                            meas.UpdateProperty(rd.GetProperty(ModelCode.DISCRETE_NORMVAL));
                             DigitalMeasurement measurement = new DigitalMeasurement();
                             measurement.ReadFromResourceDescription(meas);
 
@@ -422,12 +422,12 @@ namespace DispatcherApp.ViewModel
                             {
                                 properties.Measurements.Add(measurement);
                             }
-
-                            //properties.IsUnderScada = true;
+                            
                             this.Measurements.Add(measurement.GID, measurement);
                         }
                         else if (type == DMSType.ENERGCONSUMER)
                         {
+                            meas.UpdateProperty(rd.GetProperty(ModelCode.ANALOG_NORMVAL));
                             AnalogMeasurement measurement = new AnalogMeasurement();
                             measurement.ReadFromResourceDescription(meas);
 
@@ -439,7 +439,7 @@ namespace DispatcherApp.ViewModel
                                 properties.Measurements.Add(measurement);
                             }
 
-                            //properties.IsUnderScada = true;
+                            properties.IsUnderScada = true;
                             this.Measurements.Add(measurement.GID, measurement);
                         }
                     }
@@ -1898,6 +1898,7 @@ namespace DispatcherApp.ViewModel
                     binding.OpenTimeout = new TimeSpan(1, 0, 0, 0);
                     binding.ReceiveTimeout = new TimeSpan(1, 0, 0, 0);
                     binding.SendTimeout = new TimeSpan(1, 0, 0, 0);
+                    binding.MaxReceivedMessageSize = Int32.MaxValue;
 
                     ChannelFactory<IOMSClient> factoryToTMS = new ChannelFactory<IOMSClient>(binding,
                         new EndpointAddress("net.tcp://localhost:6080/TransactionManagerService"));

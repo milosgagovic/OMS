@@ -88,6 +88,7 @@ namespace TransactionManager
             binding.ReceiveTimeout = TimeSpan.FromMinutes(10);
             binding.SendTimeout = TimeSpan.FromMinutes(10);
             binding.TransactionFlow = true;
+            binding.MaxReceivedMessageSize = Int32.MaxValue;
 
             // duplex channel for NMS transaction
             CallBackTransactionNMS = new TransactionCallback();
@@ -251,6 +252,7 @@ namespace TransactionManager
             gdaTMS.GetExtentValues(ModelCode.ENERGSOURCE).ForEach(u => resourceDescriptionFromNMS.Add(u));
             gdaTMS.GetExtentValues(ModelCode.ACLINESEGMENT).ForEach(u => resourceDescriptionFromNMS.Add(u));
             gdaTMS.GetExtentValues(ModelCode.DISCRETE).ForEach(u => resourceDescriptionFromNMS.Add(u));
+            gdaTMS.GetExtentValues(ModelCode.ANALOG).ForEach(u => resourceDescriptionFromNMS.Add(u));
 
             int GraphDeep = proxyToDispatcherDMS.GetNetworkDepth();
 

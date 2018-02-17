@@ -73,6 +73,18 @@
 		<cim:IdentifiedObject.name>Terminal_64</cim:IdentifiedObject.name>
 	</cim:Terminal>
 	
+	<cim:Analog rdf:ID="MEAS_A_30">
+		<cim:Analog.maxValue>500</cim:Analog.maxValue>
+		<cim:Analog.minValue>50</cim:Analog.minValue>
+		<cim:Analog.normalValue>250</cim:Analog.normalValue>
+		<cim:Measurement.direction>ReadWrite</cim:Measurement.direction>
+		<cim:Measurement.measurementType>Analog</cim:Measurement.measurementType>
+		<cim:Measurement.PowerSystemResource rdf:resource="#EC_30"/>
+		<cim:Measurement.unitSymbol>W</cim:Measurement.unitSymbol>
+		<cim:IdentifiedObject.mRID>MEAS_A_30</cim:IdentifiedObject.mRID>
+		<cim:IdentifiedObject.name>AnalogMeasurement_30</cim:IdentifiedObject.name>
+	</cim:Analog>
+	
 	<!-- <cim:Discrete rdf:ID="MEAS_D_11"> -->
 		<!-- <cim:Discrete.maxValue>1</cim:Discrete.maxValue> -->
 		<!-- <cim:Discrete.minValue>0</cim:Discrete.minValue> -->

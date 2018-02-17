@@ -296,7 +296,6 @@
 		<cim:IdentifiedObject.name>AnalogMeasurement_1</cim:IdentifiedObject.name>
 	</cim:Analog>
 	
-	
 	<cim:EnergyConsumer rdf:ID="EC_1">
 		<cim:EnergyConsumer.pfixed>22.43</cim:EnergyConsumer.pfixed>
 		<cim:EnergyConsumer.qfixed></cim:EnergyConsumer.qfixed>
