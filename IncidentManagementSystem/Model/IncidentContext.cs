@@ -8,14 +8,26 @@ using System.Threading.Tasks;
 
 namespace IncidentManagementSystem.Model
 {
-   public class IncidentContext :DbContext
+    public class IncidentContext : DbContext
     {
         public IncidentContext()
         {
 
         }
+
         public DbSet<IncidentReport> IncidentReports { get; set; }
         public DbSet<ElementStateReport> ElementStateReports { get; set; }
-		public DbSet<Crew> Crews { get; set; }
-	}
+        public DbSet<Crew> Crews { get; set; }
+    }
+    public class IncidentCloudContext : DbContext
+    {
+        public IncidentCloudContext() : base("OMS")
+        {
+
+        }
+
+        public DbSet<IncidentReport> IncidentReports { get; set; }
+        public DbSet<ElementStateReport> ElementStateReports { get; set; }
+        public DbSet<Crew> Crews { get; set; }
+    }
 }

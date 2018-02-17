@@ -63,6 +63,21 @@ namespace IncidentManagementSystem.Service
                     catch (Exception e) { }
                 }
             }
+            using (var ctxCloud = new IncidentCloudContext())
+            {
+                foreach (Crew c in crews)
+                {
+                    try
+                    {
+                        if (!ctxCloud.Crews.Any(e => e.Id == c.Id))
+                        {
+                            ctxCloud.Crews.Add(c);
+                            ctxCloud.SaveChanges();
+                        }
+                    }
+                    catch (Exception e) { }
+                }
+            }
         }
     }
 }
