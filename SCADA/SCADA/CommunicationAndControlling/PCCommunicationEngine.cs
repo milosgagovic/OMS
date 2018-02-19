@@ -134,6 +134,7 @@ namespace SCADA.CommunicationAndControlling
         {
             while (!isShutdown)
             {
+                //int i = 0,j=0;
                 bool isSuccessful;
                 IORequestBlock forProcess = IORequests.DequeueRequest(out isSuccessful);
 
@@ -144,6 +145,9 @@ namespace SCADA.CommunicationAndControlling
                     {
                         try
                         {
+                           // i++;
+                           // Console.WriteLine("deuqueued {0} request", i);
+
                             // to do: test this case...connection lasts forever? 
                             if (!client.Connected)
                             {
@@ -158,6 +162,7 @@ namespace SCADA.CommunicationAndControlling
 
                             // to do: processing big messages.  whole, or in parts?
                             // ...
+                            // ovde dodati taski koji receieve radi
 
                             forProcess.RcvBuff = new byte[client.ReceiveBufferSize];
 
@@ -165,6 +170,9 @@ namespace SCADA.CommunicationAndControlling
                             forProcess.RcvMsgLength = length;
 
                             IORequests.EnqueueAnswer(forProcess);
+                            //j++;
+                            //Console.WriteLine("enqueued {0} answer", j); 
+
                         }
                         catch (Exception e)
                         {

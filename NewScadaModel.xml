@@ -35,8 +35,8 @@
       <CounterStartAddr>3500</CounterStartAddr>
       <DigOutCount>20</DigOutCount>
       <DigInCount>20</DigInCount>
-      <AnaInCount>8</AnaInCount>
-      <AnaOutCount>8</AnaOutCount>
+      <AnaInCount>40</AnaInCount>
+      <AnaOutCount>40</AnaOutCount>
       <CounterCount>2</CounterCount>
       <AnaInRawMin>150</AnaInRawMin>
       <AnaInRawMax>16000</AnaInRawMax>
@@ -45,8 +45,10 @@
     </RTU>
   </RTUS>
   <Digitals>
+   
   </Digitals>
   <Analogs>
+   
   </Analogs>
   <Counters />
 </ScadaModel>

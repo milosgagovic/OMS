@@ -163,31 +163,6 @@ namespace DMSService
             Tree<Element> retVal = new Tree<Element>();
             List<long> eSources = new List<long>();
 
-            //bool isScadaAvailable = false;
-            //do
-            //{
-            //    Console.WriteLine("scada not available");
-            //    try
-            //    {
-            //        if (ScadaClient.State == CommunicationState.Created)
-            //        {
-            //            ScadaClient.Open();
-            //        }
-
-            //        isScadaAvailable = ScadaClient.Ping();
-            //    }
-            //    catch (Exception e)
-            //    {
-            //        //Console.WriteLine(e);
-            //        Console.WriteLine("InitializeNetwork() -> SCADA is not available yet.");
-            //        if (ScadaClient.State == CommunicationState.Faulted)
-            //            ScadaClient = new SCADAClient(new EndpointAddress("net.tcp://localhost:4000/SCADAService"));
-            //    }
-            //    Thread.Sleep(500);
-            //} while (!isScadaAvailable);
-
-
-
             do
             {
                 try
@@ -331,23 +306,23 @@ namespace DMSService
             string mrid = "";
 
             TerminalsRD.ForEach(x => terminals.Add(x.Id));
+            Console.WriteLine("terminalsRD.Count= {0}, terminals.count={1}", TerminalsRD.Count, terminals.Count);
 
             // Pocetak algoritma za formiranje stabla
             // obtaining all ES and connecting them with CNs. there is only one ES currently
-            foreach (long item in eSources)
+            foreach (long source in eSources)
             {
-                mrid = GetMrid(DMSType.ENERGSOURCE, item);
+                mrid = GetMrid(DMSType.ENERGSOURCE, source);
+                Source ESource = new Source(source, 0, mrid);
 
-                Source ESource = new Source(item, 0, mrid);
-
-                //Veza ES i CN preko terminala
                 // ES and CN linked by terminal 
-                long term = GetTerminalConnectedWithBranch(item);
+                long term = GetTerminalConnectedWithBranch(source);
                 if (term != 0)
                 {
                     long connNode = GetConnNodeConnectedWithTerminal(term);
                     if (connNode != 0)
                     {
+                        Console.WriteLine("connNode!=0");
                         mrid = GetMrid(DMSType.CONNECTNODE, connNode);
                         Node n = new Node(connNode, mrid, ESource, term);
                         ESource.End2 = n.ElementGID;
@@ -364,8 +339,10 @@ namespace DMSService
             // Obrada od pocetnog CN ka svim ostalima. Iteracija po terminalima
             var watch = System.Diagnostics.Stopwatch.StartNew();
             int count = 0;
+
             while (terminals.Count != 0)
             {
+                Console.WriteLine("terminals.Count!=0");
                 Node n;
                 try
                 {
@@ -373,6 +350,7 @@ namespace DMSService
                 }
                 catch (Exception e)
                 {
+                    Console.WriteLine("problem1");
                     Console.WriteLine(e.Message);
                     return new Tree<Element>();
                 }
@@ -381,6 +359,7 @@ namespace DMSService
 
                 if (terms.Contains(n.UpTerminal))
                 {
+                    Console.WriteLine("contains");
                     terms.Remove(n.UpTerminal);
                 }
                 foreach (long item in terms)
@@ -390,6 +369,7 @@ namespace DMSService
                     DMSType mc;
                     if (branch != 0)
                     {
+                        Console.WriteLine("branch!=0");
                         mc = (DMSType)ModelCodeHelper.ExtractTypeFromGlobalId(branch);
                         mrid = GetMrid(mc, branch);
                     }
@@ -399,11 +379,13 @@ namespace DMSService
                     List<long> branchTerminals = GetTerminalsConnectedWithBranch(branch);
                     if (branchTerminals.Contains(item))
                     {
+                        Console.WriteLine("branchTerminals.Contains");
                         branchTerminals.Remove(item);
                     }
 
                     if (mc.Equals(DMSType.ACLINESEGMENT))
                     {
+                        Console.WriteLine("mc equas acline");
                         ACLine acline = new ACLine(branch, mrid);
                         acline.End1 = n.ElementGID;
                         n.Children.Add(acline.ElementGID);
@@ -420,19 +402,23 @@ namespace DMSService
                     }
                     else if (mc.Equals(DMSType.BREAKER))
                     {
+                        Console.WriteLine("mc equas breaker");
                         Switch sw = new Switch(branch, mrid);
 
                         if (response != null)
                         {
+                            Console.WriteLine("response != null");
                             var psr = SwitchesRD.Where(m => m.GetProperty(ModelCode.IDOBJ_MRID).AsString() == mrid).FirstOrDefault();
                             var meas = DiscreteMeasurementsRD.Where(m => m.GetProperty(ModelCode.MEASUREMENT_PSR).AsLong() == psr.Id).FirstOrDefault();
 
                             if (meas != null)
                             {
+                                Console.WriteLine("meas != null");
                                 var res = (DigitalVariable)response.Variables.Where(v => v.Id == meas.GetProperty(ModelCode.IDOBJ_MRID).AsString()).FirstOrDefault();
 
                                 if (res != null)
                                 {
+                                    Console.WriteLine("res != null");
                                     if (res.State == OMSSCADACommon.States.OPENED)
                                     {
                                         sw = new Switch(branch, mrid, SwitchState.Open) { UnderSCADA = true };
@@ -453,8 +439,11 @@ namespace DMSService
                         else
                         {
                             // to do: fix this, repsonse will not be null
+                            Console.WriteLine("response == null");
                             sw.UnderSCADA = false;
                         }
+
+                        Console.WriteLine("Doslo dovde");
 
                         foreach (IncidentReport report in reports)
                         {
@@ -473,6 +462,8 @@ namespace DMSService
                             }
                         }
 
+                        Console.WriteLine("Doslo dovde1");
+
                         sw.End1 = n.ElementGID;
                         n.Children.Add(sw.ElementGID);
                         long downNodegid = GetConnNodeConnectedWithTerminal(branchTerminals[0]);
@@ -488,6 +479,7 @@ namespace DMSService
                     }
                     else if (mc.Equals(DMSType.ENERGCONSUMER))
                     {
+                        Console.WriteLine("equals energyconsumer");
                         Consumer consumer = new Consumer(branch, mrid);
                         consumer.End1 = n.ElementGID;
                         n.Children.Add(consumer.ElementGID);
@@ -501,8 +493,11 @@ namespace DMSService
                 }
                 count++;
             }
+
             watch.Stop();
             updatesCount += 1;
+
+            Console.WriteLine("Doslo dovde3");
 
             if (retVal.Roots.Count > 0)
             {
@@ -626,6 +621,7 @@ namespace DMSService
             return 0;
 
         }
+
         private long GetTerminalConnectedWithBranch(long branch)
         {
             long term = 0;

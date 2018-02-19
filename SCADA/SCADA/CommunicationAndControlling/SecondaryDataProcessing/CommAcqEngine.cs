@@ -33,17 +33,8 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
             //DBContext.OnAnalogAdded += OnAnalogAddedEvent;
             //dbContext.analo
             isShutdown = false;
-            timerMsc = 1000;
+            timerMsc = 10000;
         }
-
-        //public static CommAcqEngine Instance
-        //{
-        //    get
-        //    {
-        //        if(instance==null)
-        //    }
-        //}
-
         /// <summary>
         /// Reading database data from configPath,
         /// configuring RTUs and Process Variables

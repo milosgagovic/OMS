@@ -271,19 +271,17 @@ namespace SCADA.RealtimeDatabase
                             // to do:
                             // provera da li je nova vrednost u dozvoljenom rangeu
 
-
                             Analog newAnalog = new Analog() { Name = insertEl.Name };
 
                             foreach (var availableRtu in availableRtus)
                             {
                                 // there is no channel with RTU-2 currently
-                                // test this case sometime in the future xD
                                 if (availableRtu.Name == "RTU-2")
                                     continue;
 
                                 ushort relativeAddress;
 
-                                // kljucno! if is possible mapping in this rtu? 
+                                // if is possible mapping in this rtu? 
                                 if (availableRtu.TryMap(newAnalog, out relativeAddress))
                                 {
                                     newAnalog.RelativeAddress = relativeAddress;
