@@ -28,7 +28,7 @@ namespace SCADA.RealtimeDatabase.Model
         public int AnaOutStartAddr { get; set; }
         public int CounterStartAddr { get; set; }
 
-        // number of pI/O
+        // number of pI/O (max number of process variables of certain type)
         public int DigOutCount { get; set; }
         public int DigInCount { get; set; }
         public int AnaInCount { get; set; }

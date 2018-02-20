@@ -68,7 +68,7 @@ namespace SCADA
             if (AcqEngine.Configure(acqComConfigPath))
             {
                 // stavlja zahteve za icijalno komandovanje u red 
-                AcqEngine.InitializeSimulator();
+                //AcqEngine.InitializeSimulator();
 
                 // uzimanje zahteva iz reda, i slanje zahteva MDBU-u. dobijanje MDB odgovora i stavljanje u red
                 Thread processingRequestsFromQueue = new Thread(PCCommEng.ProcessRequestsFromQueue);
@@ -77,14 +77,15 @@ namespace SCADA
                 Thread processingAnswersFromQueue = new Thread(AcqEngine.ProcessPCAnwers);
 
                 // stavljanje zahteva za akviziju u red
-                Thread producingAcquisitonRequests = new Thread(AcqEngine.StartAcquisition);
+                //Thread producingAcquisitonRequests = new Thread(AcqEngine.StartAcquisition);
 
                 processingRequestsFromQueue.Start();
                 processingAnswersFromQueue.Start();
 
                 // give simulator some time, and when everything is ready start acquisition
                 Thread.Sleep(1000);
-                producingAcquisitonRequests.Start();
+                // producingAcquisitonRequests.Start();
+                AcqEngine.StartAcquisition();
 
                 try
                 {

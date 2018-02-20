@@ -10,8 +10,8 @@ using SCADA.ConfigurationParser;
 
 namespace SCADA.ClientHandler
 {
-    //[ServiceBehavior(InstanceContextMode = InstanceContextMode.PerCall)]
     //[ServiceBehavior(InstanceContextMode = InstanceContextMode.Single, ConcurrencyMode = ConcurrencyMode.Reentrant)]
+    [ServiceBehavior(ConcurrencyMode = ConcurrencyMode.Reentrant)]
     public class SCADATransactionService : ITransactionSCADA
     {
         private static string modifiedConfigFile = "NewScadaModel.xml";

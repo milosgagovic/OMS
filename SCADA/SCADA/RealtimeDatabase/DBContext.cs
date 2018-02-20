@@ -69,15 +69,21 @@ namespace SCADA.RealtimeDatabase
         /// <param name="name"></param>
         /// <returns></returns>
         public bool GetProcessVariableByName(string name, out ProcessVariable pv)
-        {
+        {        
             return (Database.Instance.ProcessVariablesName.TryGetValue(name, out pv));
         }
 
-        public List<ProcessVariable> GetAllProcessVariables()
+        /// <summary>
+        /// Returns a snapshot of process variables values.
+        /// </summary>
+        /// <returns></returns>
+        public ICollection<ProcessVariable> GetProcessVariable()
+        //public List<ProcessVariable> GetProcessVariable()
         {
-            return Database.ProcessVariablesName.Values.ToList();
-        }
 
+            return Database.ProcessVariablesName.Values;
+            //return Database.ProcessVariablesName.Values.ToList();
+        }
 
         /* possible scenarios:
        
@@ -364,7 +370,5 @@ namespace SCADA.RealtimeDatabase
 
             return retVal;
         }
-
-
     }
 }

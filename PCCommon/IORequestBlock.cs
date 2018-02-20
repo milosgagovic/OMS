@@ -45,5 +45,10 @@ namespace PCCommon
 
         // receiver buffer 
         public Byte[] RcvBuff { get; set; }
+
+        // razlicite uloge moze imati
+        // to do:
+        // setovati ga kod init sim na 0 ili -1
+        public int flags { get; set; }
     }
 }

@@ -8,6 +8,8 @@ namespace SCADA.RealtimeDatabase.Model
 {
     public abstract class ProcessVariable : EventArgs
     {
+        public bool IsInit { get; set; }
+
         public string Name { get; set; }
 
         /// <summary>
