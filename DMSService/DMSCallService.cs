@@ -172,10 +172,33 @@ namespace DMSService
                         // to do: BUG -> ovo state opened srediti
                         ElementStateReport elementStateReport = new ElementStateReport() { MrID = mrid, Time = DateTime.UtcNow, State = 0 };
                         //ElementStateReport elementStateReport = new ElementStateReport() { MrID = mrid, Time = DateTime.UtcNow, State = "OPENED" };                        IMSClient.AddReport(incident);
-                        IMSClient.AddElementStateReport(elementStateReport);
+                        //IMSClient.AddElementStateReport(elementStateReport);
 
-                        pub.PublishUIBreaker(true,(long)incidentBreaker);
+                        pub.PublishUIBreaker(true, (long)incidentBreaker);
                         pub.PublishIncident(incident);
+
+                        List<SCADAUpdateModel> networkChange = new List<SCADAUpdateModel>();
+                        Switch sw;
+                        try
+                        {
+                             sw = (Switch)DMSService.Instance.Tree.Data[(long)incidentBreaker];
+                        }
+                        catch (Exception)
+                        {
+                            return;
+                        }
+                        sw.Marker = false;
+                        sw.State = SwitchState.Open;
+                        networkChange.Add(new SCADAUpdateModel(sw.ElementGID, false, OMSSCADACommon.States.OPENED));
+                        Node n = (Node)DMSService.Instance.Tree.Data[sw.End2];
+                        n.Marker = false;
+                        networkChange.Add(new SCADAUpdateModel(n.ElementGID, false));
+                        networkChange = EnergizationAlgorithm.TraceDown(n, networkChange, false, false, DMSService.Instance.Tree);
+
+                        Source s = (Source)DMSService.Instance.Tree.Data[DMSService.Instance.Tree.Roots[0]];
+                        networkChange.Add(new SCADAUpdateModel(s.ElementGID, true));
+                        Thread.Sleep(3000);
+                        pub.PublishUpdate(networkChange);
 
                         clientsCall.Clear();
                         return;
