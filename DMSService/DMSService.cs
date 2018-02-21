@@ -42,9 +42,14 @@ namespace DMSService
         {
             get
             {
+                NetTcpBinding binding = new NetTcpBinding();
+                binding.CloseTimeout = TimeSpan.FromMinutes(10);
+                binding.OpenTimeout = TimeSpan.FromMinutes(10);
+                binding.ReceiveTimeout = TimeSpan.FromMinutes(10);
+                binding.SendTimeout = TimeSpan.FromMinutes(10);
                 if (scadaClient == null)
                 {
-                    scadaClient = new SCADAClient(new EndpointAddress("net.tcp://localhost:4000/SCADAService"));
+                    scadaClient = new SCADAClient(new EndpointAddress("net.tcp://localhost:4000/SCADAService"), binding);
                 }
                 return scadaClient;
             }
@@ -204,8 +209,13 @@ namespace DMSService
                 {
                     //Console.WriteLine(e);
                     Console.WriteLine("InitializeNetwork() -> SCADA is not available yet.");
+                    NetTcpBinding binding = new NetTcpBinding();
+                    binding.CloseTimeout = TimeSpan.FromMinutes(10);
+                    binding.OpenTimeout = TimeSpan.FromMinutes(10);
+                    binding.ReceiveTimeout = TimeSpan.FromMinutes(10);
+                    binding.SendTimeout = TimeSpan.FromMinutes(10);
                     if (ScadaClient.State == CommunicationState.Faulted)
-                        ScadaClient = new SCADAClient(new EndpointAddress("net.tcp://localhost:4000/SCADAService"));
+                        ScadaClient = new SCADAClient(new EndpointAddress("net.tcp://localhost:4000/SCADAService"), binding);
                 }
                 Thread.Sleep(500);
             } while (true);

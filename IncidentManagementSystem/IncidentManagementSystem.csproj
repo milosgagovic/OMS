@@ -54,6 +54,10 @@
     <Compile Include="Migrations\201802172003488_initMig.Designer.cs">
       <DependentUpon>201802172003488_initMig.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201802211926116_ModelChange.cs" />
+    <Compile Include="Migrations\201802211926116_ModelChange.Designer.cs">
+      <DependentUpon>201802211926116_ModelChange.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Model\IncidentContext.cs" />
     <Compile Include="Program.cs" />
@@ -74,6 +78,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201802172003488_initMig.resx">
       <DependentUpon>201802172003488_initMig.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201802211926116_ModelChange.resx">
+      <DependentUpon>201802211926116_ModelChange.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -1,4 +1,5 @@
-﻿using DMSCommon.Model;
+﻿
+using DMSCommon.Model;
 using DMSContract;
 using FTN.Common;
 using FTN.ServiceContracts;
@@ -36,9 +37,14 @@ namespace TransactionManager
         {
             get
             {
+                NetTcpBinding binding = new NetTcpBinding();
+                binding.CloseTimeout = TimeSpan.FromMinutes(10);
+                binding.OpenTimeout = TimeSpan.FromMinutes(10);
+                binding.ReceiveTimeout = TimeSpan.FromMinutes(10);
+                binding.SendTimeout = TimeSpan.FromMinutes(10);
                 if (scadaClient == null)
                 {
-                    scadaClient = new SCADAClient(new EndpointAddress("net.tcp://localhost:4000/SCADAService"));
+                    scadaClient = new SCADAClient(new EndpointAddress("net.tcp://localhost:4000/SCADAService"), binding);
                 }
                 return scadaClient;
             }
@@ -315,8 +321,13 @@ namespace TransactionManager
                     {
                         //Console.WriteLine(e);
                         Console.WriteLine("GetNetwork() -> SCADA is not available yet.");
+                        NetTcpBinding binding = new NetTcpBinding();
+                        binding.CloseTimeout = TimeSpan.FromMinutes(10);
+                        binding.OpenTimeout = TimeSpan.FromMinutes(10);
+                        binding.ReceiveTimeout = TimeSpan.FromMinutes(10);
+                        binding.SendTimeout = TimeSpan.FromMinutes(10);
                         if (ScadaClient.State == CommunicationState.Faulted)
-                            ScadaClient = new SCADAClient(new EndpointAddress("net.tcp://localhost:4000/SCADAService"));
+                            ScadaClient = new SCADAClient(new EndpointAddress("net.tcp://localhost:4000/SCADAService"), binding);
                     }
                     Thread.Sleep(500);
                 } while (true);
@@ -417,7 +428,7 @@ namespace TransactionManager
                     string type = rd.GetProperty(ModelCode.MEASUREMENT_TYPE).ToString();
                     if (type == "Analog")
                     {
-                        element.Type = DeviceTypes.ANALOG;                       
+                        element.Type = DeviceTypes.ANALOG;
                         element.UnitSymbol = ((UnitSymbol)rd.GetProperty(ModelCode.MEASUREMENT_UNITSYMB).AsEnum()).ToString();
                         element.WorkPoint = rd.GetProperty(ModelCode.ANALOG_NORMVAL).AsFloat();
                     }
@@ -558,8 +569,6 @@ namespace TransactionManager
         {
             return IMSClient.GetAllReportsSortByBreaker(mrids);
         }
-
-       
         #endregion
     }
 }

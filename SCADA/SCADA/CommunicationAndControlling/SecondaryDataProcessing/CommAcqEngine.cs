@@ -293,7 +293,7 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
                                                 {
                                                     if (target.State != target.ValidStates[array[0]])
                                                     {
-                                                        Console.WriteLine("CHANGE!");
+                                                        Console.WriteLine("CHANGE! {0}, {1}, {2}", target.RelativeAddress, target.Name, target.State);
                                                         target.State = target.ValidStates[array[0]];
 
                                                         ScadaModelParser parser = new ScadaModelParser();

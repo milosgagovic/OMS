@@ -241,39 +241,46 @@ namespace DMSService
 
             if (report != null)
             {
-                var rnd = new Random(DateTime.Now.Second);
-                int repairtime = rnd.Next(5, 180);
-
-                Thread.Sleep(repairtime * 100);
-
-                Switch sw = null;
-                foreach (var item in DMSService.Instance.Tree.Data.Values)
+                if (report.Crewtype == CrewType.Investigation)
                 {
-                    if (item.MRID == report.MrID)
+                    Thread.Sleep(TimeSpan.FromSeconds(4));
+
+                    var rnd = new Random(DateTime.Now.Second);
+                    int repairtime = rnd.Next(30, 180);
+
+                    Array values = Enum.GetValues(typeof(ReasonForIncident));
+                    Random rand = new Random();
+                    ReasonForIncident res = (ReasonForIncident)values.GetValue(rand.Next(1, values.Length));
+
+                    report.Reason = res;
+                    report.RepairTime = TimeSpan.FromMinutes(repairtime);
+                    report.CrewSent = true;
+
+                    report.IncidentState = IncidentState.READY_FOR_REPAIR;
+                    report.Crewtype = CrewType.Repair;
+                }
+                else if(report.Crewtype == CrewType.Repair)
+                {
+                    Thread.Sleep(TimeSpan.FromSeconds(report.RepairTime.TotalMinutes / 10));
+
+                    report.IncidentState = IncidentState.REPAIRED;
+
+                    Switch sw = null;
+                    foreach (var item in DMSService.Instance.Tree.Data.Values)
                     {
-                        sw = (Switch)item;
-                        sw.CanCommand = true;
-                        break;
+                        if (item.MRID == report.MrID)
+                        {
+                            sw = (Switch)item;
+                            sw.CanCommand = true;
+                            break;
+                        }
                     }
                 }
-
-                Array values = Enum.GetValues(typeof(CrewResponse));
-                Random rand = new Random();
-                ReasonForIncident res = (ReasonForIncident)values.GetValue(rand.Next(1, values.Length));
-
-                report.Reason = res;
-                report.RepairTime = TimeSpan.FromMinutes(repairtime);
-                report.CrewSent = true;
-
-                Array values1 = Enum.GetValues(typeof(IncidentState));
-                report.IncidentState = (IncidentState)values1.GetValue(rand.Next(2, values.Length - 1));
 
                 IMSClient.UpdateReport(report);
 
                 Publisher publisher = new Publisher();
                 publisher.PublishIncident(report);
-
-                //publisher.PublishCrew(new SCADAUpdateModel(sw.ElementGID, true));
             }
         }
 

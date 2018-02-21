@@ -111,7 +111,7 @@ namespace IncidentManagementSystem.Service
             List<IncidentReport> retVal = new List<IncidentReport>();
             using (var ctx = new IncidentContext())
             {
-                foreach (IncidentReport ir in ctx.IncidentReports.Include("Crew"))
+                foreach (IncidentReport ir in ctx.IncidentReports.Include("InvestigationCrew").Include("RepairCrew"))
                 {
                     retVal.Add(ir);
                 }
@@ -259,7 +259,7 @@ namespace IncidentManagementSystem.Service
 
             using (var ctx = new IncidentContext())
             {
-                res = ctx.IncidentReports.Where(ir => ir.Id == res.Id).Include("Crew").FirstOrDefault();
+                res = ctx.IncidentReports.Where(ir => ir.Id == res.Id).Include("InvestigationCrew").Include("RepairCrew").FirstOrDefault();
             }
             //using (var ctxCloud = new IncidentCloudContext())
             //{
@@ -377,9 +377,11 @@ namespace IncidentManagementSystem.Service
                 res.Reason = report.Reason;
                 res.RepairTime = report.RepairTime;
                 res.CrewSent = report.CrewSent;
+                res.Crewtype = report.Crewtype;
                 res.IncidentState = report.IncidentState;
                 res.LostPower = report.LostPower;
-                res.Crew = ctx.Crews.Where(c => c.Id == report.Crew.Id).FirstOrDefault();
+                try { res.InvestigationCrew = ctx.Crews.Where(c => c.Id == report.InvestigationCrew.Id).FirstOrDefault(); } catch { }
+                try { res.RepairCrew = ctx.Crews.Where(c => c.Id == report.RepairCrew.Id).FirstOrDefault(); } catch { }
 
                 ctx.SaveChanges();
             }
