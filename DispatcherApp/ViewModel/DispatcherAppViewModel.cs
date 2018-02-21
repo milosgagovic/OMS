@@ -2019,8 +2019,16 @@ namespace DispatcherApp.ViewModel
                         if (property is BreakerProperties && i == 0)
                         {
                             Measurement measurement;
-                            Measurements.TryGetValue(property.Measurements[0].GID, out measurement);
-                            DigitalMeasurement digitalMeasurement = (DigitalMeasurement)measurement;
+                            DigitalMeasurement digitalMeasurement;
+                            try
+                            {
+                                Measurements.TryGetValue(property.Measurements[0].GID, out measurement);
+                                digitalMeasurement = (DigitalMeasurement)measurement;
+                            }
+                            catch (Exception)
+                            {
+                                continue;
+                            }
 
                             if (digitalMeasurement != null)
                             {
@@ -2125,6 +2133,12 @@ namespace DispatcherApp.ViewModel
                     else if (isIncident)
                     {
                         tokenSource.Cancel();
+                        Thread.Sleep(50);
+
+                        tokenSource = new CancellationTokenSource();
+                        CancellationToken token = tokenSource.Token;
+
+                        blinkTask = Task.Factory.StartNew(() => FinalCandidate(propBr, token), token);
                         propBr.IsCandidate = true;
                     }
                 }
@@ -2168,6 +2182,25 @@ namespace DispatcherApp.ViewModel
                 {
                     ct.ThrowIfCancellationRequested();
                 }
+            }
+        }
+        private async Task FinalCandidate(ElementProperties sw, CancellationToken ct)
+        {
+            int i = 0;
+            while (true)
+            {
+                if (i == 20)
+                {
+                    tokenSource.Cancel();
+                }
+                await Task.Delay(300);
+                sw.IsCandidate = sw.IsCandidate == true ? false : true;
+
+                if (ct.IsCancellationRequested)
+                {
+                    ct.ThrowIfCancellationRequested();
+                }
+                i++;
             }
         }
         #endregion
