@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -18,7 +19,11 @@ namespace FTN.Common
 		private long id;
 		private List<Property> properties = new List<Property>();
 
-		public ResourceDescription()
+        [Key]
+        public int IdDb { get; set; }
+
+
+        public ResourceDescription()
 		{
 		}
 

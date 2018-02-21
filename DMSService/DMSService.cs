@@ -225,7 +225,6 @@ namespace DMSService
                     {
                         IMSClient.Open();
                     }
-
                     isImsAvailable = IMSClient.Ping();
                 }
                 catch (Exception e)
@@ -237,7 +236,6 @@ namespace DMSService
                 }
                 Thread.Sleep(100);
             } while (!isImsAvailable);
-
             List<IncidentReport> reports = imsClient.GetAllReports();
 
             // if there is no insert operations it means it is system initialization,
@@ -245,7 +243,7 @@ namespace DMSService
             if (delta.InsertOperations.Count == 0)
             {
                 ClearAllLists();
-
+                //Ovo je kod koji je komunikacija DMS-a sa NMS-om   
                 Gda.GetExtentValuesExtended(ModelCode.TERMINAL).ForEach(ter => TerminalsRD.Add(ter));
                 Gda.GetExtentValuesExtended(ModelCode.CONNECTNODE).ForEach(n => NodesRD.Add(n));
                 Gda.GetExtentValuesExtended(ModelCode.BREAKER).ForEach(n => SwitchesRD.Add(n));
@@ -253,6 +251,51 @@ namespace DMSService
                 Gda.GetExtentValuesExtended(ModelCode.ENERGCONSUMER).ForEach(n => EnergyConsumersRD.Add(n));
                 Gda.GetExtentValuesExtended(ModelCode.ENERGSOURCE).ForEach(n => EnergySourcesRD.Add(n));
                 Gda.GetExtentValuesExtended(ModelCode.DISCRETE).ForEach(n => DiscreteMeasurementsRD.Add(n));
+
+                //Posto smo uveli bazu RD-na napunicemo liste na DMS-u iz cloud baze
+                //using (NMSAdoNet ctx = new NMSAdoNet())
+                //{
+                //    List<PropertyValue> propValues = (List<PropertyValue>)ctx.PropertyValue.ToList();
+                //    List<Property> properties = ctx.Property.ToList();
+                //    properties.ForEach(x => x.PropertyValue = ctx.PropertyValue.Where(y => y.Id == x.IdDB).FirstOrDefault());
+                //    if (properties.Count > 0)
+                //    {
+                //        foreach (ResourceDescription rd in ctx.ResourceDescription)
+                //        {
+                //            List<Property> rdProp = (List<Property>)properties.Where(x => x.ResourceDescription_Id == rd.IdDb).ToList();
+                //            ResourceDescription res = new ResourceDescription(rd.Id, rdProp);
+                //            DMSType type = (DMSType)ModelCodeHelper.ExtractTypeFromGlobalId(res.Id);
+                //            switch (type)
+                //            {
+                //                case DMSType.CONNECTNODE:
+                //                    NodesRD.Add(res);
+                //                    break;
+                //                case DMSType.ENERGSOURCE:
+                //                    EnergySourcesRD.Add(res);
+                //                    break;
+                //                case DMSType.ACLINESEGMENT:
+                //                    AclineSegRD.Add(res);
+                //                    break;
+                //                case DMSType.BREAKER:
+                //                    SwitchesRD.Add(res);
+                //                    break;
+                //                case DMSType.ENERGCONSUMER:
+                //                    EnergyConsumersRD.Add(res);
+                //                    break;
+                //                case DMSType.TERMINAL:
+                //                    TerminalsRD.Add(res);
+                //                    break;
+                //                case DMSType.DISCRETE:
+                //                    DiscreteMeasurementsRD.Add(res);
+                //                    break;
+                //                case DMSType.ANALOG:
+                //                    break;
+                //                default:
+                //                    break;
+                //            }
+                //        }
+                //    }
+                //}
             }
             // it means this is an update from TransactionManager
             else

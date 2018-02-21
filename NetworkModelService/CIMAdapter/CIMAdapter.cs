@@ -185,6 +185,13 @@ namespace FTN.ESI.SIMES.CIM.CIMAdapter
 				return false;
 			}
 		}
+        public void ClearDataBaseOnNMS()
+        {
+            NetTcpBinding binding = new NetTcpBinding();
+            ChannelFactory<IOMSClient>  factoryToTMS = new ChannelFactory<IOMSClient>(binding, new EndpointAddress("net.tcp://localhost:6080/TransactionManagerService"));
+            proxyToTransactionManager = factoryToTMS.CreateChannel();
+            proxyToTransactionManager.ClearNMSDB();
+        }
 
 	}
 }

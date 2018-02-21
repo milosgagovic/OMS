@@ -86,5 +86,8 @@ namespace TransactionManagerContract
 
 		[OperationContract]
 		bool AddCrew(Crew crew);
-	}
+
+        [OperationContract]
+        void ClearNMSDB();
+    }
 }

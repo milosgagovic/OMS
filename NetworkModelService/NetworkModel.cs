@@ -27,7 +27,7 @@ namespace FTN.Services.NetworkModelService
 		private ModelResourcesDesc resourcesDescs;
 
 		public Dictionary<DMSType, Container> NetworkDataModel { get => networkDataModel; set => networkDataModel = value; }
-
+        public static bool IsDBInit = false;
 		/// <summary>
 		/// Initializes a new instance of the Model class.
 		/// </summary>
@@ -272,22 +272,48 @@ namespace FTN.Services.NetworkModelService
 				delta.SortOperations();
                 applyingStarted = true;
 
-				foreach (ResourceDescription rd in delta.InsertOperations)
-				{
-					InsertEntity(rd);
-				}
+                foreach (ResourceDescription rd in delta.InsertOperations)
+                {
+                    InsertEntity(rd);
+                }
 
-				foreach (ResourceDescription rd in delta.UpdateOperations)
-				{
-					UpdateEntity(rd);
-				}
+                foreach (ResourceDescription rd in delta.UpdateOperations)
+                {
+                    UpdateEntity(rd);
+                }
 
-				foreach (ResourceDescription rd in delta.DeleteOperations)
-				{
-					DeleteEntity(rd);
-				}
+                foreach (ResourceDescription rd in delta.DeleteOperations)
+                {
+                    DeleteEntity(rd);
+                }
+                //using (NMSAdoNet ctx = new NMSAdoNet())
+                //{
+                //    foreach (ResourceDescription rd in delta.InsertOperations)
+                //    {
+                //        ctx.ResourceDescription.Add(rd);
+                //        foreach (Property item in rd.Properties)
+                //        {
+                //            ctx.PropertyValue.Add(item.PropertyValue);
+                //            ctx.Property.Add(item);
+                //        }
+                //        ctx.SaveChanges();
+                //        InsertEntity(rd);
+                //    }
+                //    foreach (ResourceDescription rd in delta.UpdateOperations)
+                //    {
+                //        List<Property> propForRD = ctx.Property.Where(x => x.ResourceDescription_Id == rd.IdDb).ToList();
+                //        propForRD.ForEach(x => x.PropertyValue = ctx.PropertyValue.Where(y => y.Id == x.IdDB).FirstOrDefault());
+                //        ctx.SaveChanges();
 
-			}
+                //        UpdateEntity(rd);
+                //    }
+
+                //    foreach (ResourceDescription rd in delta.DeleteOperations)
+                //    {
+                //    }
+                //}
+
+            }
 			catch (Exception ex)
 			{
 				string message = string.Format("Applying delta to network model failed. {0}.", ex.Message);
@@ -301,7 +327,8 @@ namespace FTN.Services.NetworkModelService
 				if (applyingStarted)
 				{
 					SaveDelta(delta);
-				}
+                   
+                }
 
 				if (updateResult.Result == ResultType.Succeeded)
 				{
@@ -343,6 +370,7 @@ namespace FTN.Services.NetworkModelService
 			}
 
 			long globalId = rd.Id;
+           
 
 			CommonTrace.WriteTrace(CommonTrace.TraceInfo, "Inserting entity with GID ({0:x16}).", globalId);
 
@@ -375,8 +403,10 @@ namespace FTN.Services.NetworkModelService
 				// create entity and add it to container
 				IdentifiedObject io = container.CreateEntity(globalId);
 
-				// apply properties on created entity
-				if (rd.Properties != null)
+             
+
+                // apply properties on created entity
+                if (rd.Properties != null)
 				{
 					foreach (Property property in rd.Properties)
 					{
@@ -411,10 +441,11 @@ namespace FTN.Services.NetworkModelService
 						{
 							io.SetProperty(property);
 						}
-					}
+                      
+                    }
 				}
-
-				CommonTrace.WriteTrace(CommonTrace.TraceVerbose, "Inserting entity with GID ({0:x16}) successfully finished.", globalId);
+                
+                CommonTrace.WriteTrace(CommonTrace.TraceVerbose, "Inserting entity with GID ({0:x16}) successfully finished.", globalId);
 			}
 			catch (Exception ex)
 			{
@@ -679,35 +710,60 @@ namespace FTN.Services.NetworkModelService
 
 		private void Initialize()
 		{
-			List<Delta> result = ReadAllDeltas();
+            List<Delta> result = ReadAllDeltas();
 
-			foreach (Delta delta in result)
-			{
-				try
-				{
-					foreach (ResourceDescription rd in delta.InsertOperations)
-					{
-						InsertEntity(rd);
-					}
+            foreach (Delta delta in result)
+            {
+                try
+                {
+                    foreach (ResourceDescription rd in delta.InsertOperations)
+                    {
+                        InsertEntity(rd);
+                    }
 
-					foreach (ResourceDescription rd in delta.UpdateOperations)
-					{
-						UpdateEntity(rd);
-					}
+                    foreach (ResourceDescription rd in delta.UpdateOperations)
+                    {
+                        UpdateEntity(rd);
+                    }
 
-					foreach (ResourceDescription rd in delta.DeleteOperations)
-					{
-						DeleteEntity(rd);
-					}
-				}
-				catch (Exception ex)
-				{
-					CommonTrace.WriteTrace(CommonTrace.TraceError, "Error while applying delta (id = {0}) during service initialization. {1}", delta.Id, ex.Message);
-				}
-			}
-		}
+                    foreach (ResourceDescription rd in delta.DeleteOperations)
+                    {
+                        DeleteEntity(rd);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    CommonTrace.WriteTrace(CommonTrace.TraceError, "Error while applying delta (id = {0}) during service initialization. {1}", delta.Id, ex.Message);
+                }
+            }
+            //using (NMSAdoNet ctx = new NMSAdoNet())
+            //{
+            //    List <PropertyValue> propValues  = (List<PropertyValue>)ctx.PropertyValue.ToList();
+            //    List<Property> properties = ctx.Property.ToList();
+            //    properties.ForEach(x => x.PropertyValue = ctx.PropertyValue.Where(y => y.Id == x.IdDB).FirstOrDefault());
+            //    if (properties.Count > 0)
+            //    {
+            //        foreach (ResourceDescription rd in ctx.ResourceDescription)
+            //        {
+            //            try
+            //            {
+            //                List<Property> rdProp = (List<Property>)properties.Where(x => x.ResourceDescription_Id == rd.IdDb).ToList();
+            //                ResourceDescription res = new ResourceDescription(rd.Id, rdProp);
+            //                InsertEntity(rd);
+            //                ;
+            //            }
+            //            catch (Exception e)
+            //            {
+            //                Console.WriteLine(e.Message);
+            //                continue;
+            //            }
+            //        }
+            //    }
+            //}
+            //IsDBInit = true;
+        }
 
-		private void SaveDelta(Delta delta)
+        private void SaveDelta(Delta delta)
 		{
 			bool fileExisted = false;
 

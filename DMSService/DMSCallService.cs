@@ -154,7 +154,7 @@ namespace DMSService
                 {
                     pub.PublishUIBreaker(false, (long)incidentBreaker);
 
-                    Thread.Sleep(19000);
+                    Thread.Sleep(27000);
                 }
 
                 lock (sync)
