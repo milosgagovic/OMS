@@ -245,11 +245,11 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
         {
             DBContext.OnAnalogAdded += OnAnalogAddedEvent;
 
-            // List<ProcessVariable> pvs;
-
-            // toArray -> snapshot. ni ne mora to, mozda je pametnije bez toga, kopiranje kosta.
+            // toArray -> snapshot. ne mora to ovde, mozda je pametnije bez toga, kopiranje kosta.
             // ovde  nije skupo jer nema puno rtuova
-            var rtusSnapshot = dbContext.GettAllRTUs().ToArray();
+            var rtusSnapshot = dbContext.GettAllRTUs();
+
+            // prebaciti na taskove
             List<Thread> acqThreads = new List<Thread>();
             foreach (var rtu in rtusSnapshot)
             {
@@ -264,11 +264,190 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
 
             // sporno to do:
             //    //while (!Database.IsConfigurationRunning)
-            //    //    Thread.Sleep(100);
+
 
             Console.WriteLine("StartAcq.shutdown=true");
             return;
         }
+
+        public async Task RunAcq(Action<string> action, TimeSpan period, string rtuName, CancellationToken cancellationToken)
+        {
+            while (!cancellationToken.IsCancellationRequested)
+            {
+                Console.WriteLine("before task.delay");
+                await Task.Delay(period, cancellationToken);
+
+                if (!cancellationToken.IsCancellationRequested)
+                    action(rtuName);
+            }
+        }
+
+        public async Task AsyncRtuAcq(Action<string> action, TimeSpan period, string rtuName, CancellationToken token = default(CancellationToken))
+        {
+            while (!token.IsCancellationRequested)
+            {
+                //this.DoMyMethod();
+                action(rtuName);
+                try
+                {
+                    await Task.Delay(period, token);
+                }
+                catch (TaskCanceledException)
+                {
+                    break;
+                }
+            }
+        }
+
+        public Task Acquisition()
+        {
+            Console.WriteLine("Task Aqcquistion");
+            DBContext.OnAnalogAdded += OnAnalogAddedEvent;
+
+            var rtus = dbContext.GettAllRTUs();
+            CancellationToken token = new CancellationToken();
+
+            List<Task> acqTasks = new List<Task>();
+            foreach (var rtu in rtus)
+            {
+                //acqTasks.Add(RunAcq(rtuAcquisitonAction, TimeSpan.FromMilliseconds(5000), rtu.Key, token));
+                acqTasks.Add(AsyncRtuAcq(rtuAcquisitonAction, TimeSpan.FromMilliseconds(5000), rtu.Key, token));
+                Console.WriteLine("task added");
+            }
+            Console.WriteLine("Task acquistion before return");
+            return Task.WhenAll(acqTasks);
+        }
+
+        public Action<string> rtuAcquisitonAction = rtuName =>
+        {
+            IIndustryProtocolHandler IProtHandler = null;
+            Console.WriteLine("\nRtuAcqAction started Rtu={2}  Task id = {0} , time={1}", Task.CurrentId, DateTime.Now.ToLongTimeString(), rtuName);
+
+            DBContext dbContext = new DBContext();
+            RTU rtu = dbContext.GetRTUByName(rtuName);
+            if (rtu != null)
+            {
+                switch (rtu.Protocol)
+                {
+                    case IndustryProtocols.ModbusTCP:
+                        IProtHandler = new ModbusHandler()
+                        {
+                            Header = new ModbusApplicationHeader
+                            {
+                                TransactionId = 0,
+                                ProtocolId = (ushort)IndustryProtocols.ModbusTCP,
+                                DeviceAddress = rtu.Address,
+                                Length = 5
+                            },
+                            Request = new ReadRequest()
+                        };
+                        break;
+                }
+
+                //-------------analogs---------------
+
+                IORequestBlock iorbAnalogs = new IORequestBlock()
+                {
+                    RequestType = RequestType.SEND_RECV,
+                    ProcessControllerName = rtuName
+                };
+                var analogs = dbContext.GetProcessVariable().Where(pv => pv.Type == VariableTypes.ANALOG && pv.IsInit == true &&
+                                                                    pv.ProcContrName.Equals(rtuName)).OrderBy(pv => pv.RelativeAddress);
+                int requestCount = analogs.ToList().Count();
+                if (requestCount != 0)
+                {
+                    ProcessVariable firstPV = analogs.FirstOrDefault();
+                    iorbAnalogs.ReqAddress = (ushort)rtu.GetAcqAddress(firstPV);
+
+
+                    if (IProtHandler != null)
+                    {
+                        switch (rtu.Protocol)
+                        {
+                            case IndustryProtocols.ModbusTCP:
+
+                                ((ReadRequest)((ModbusHandler)IProtHandler).Request).FunCode = FunctionCodes.ReadInputRegisters;
+                                ((ReadRequest)((ModbusHandler)IProtHandler).Request).Quantity = (ushort)requestCount;
+                                ((ReadRequest)((ModbusHandler)IProtHandler).Request).StartAddr = iorbAnalogs.ReqAddress;
+                                break;
+                        }
+
+                        iorbAnalogs.Flags = requestCount;
+                        iorbAnalogs.SendBuff = IProtHandler.PackData();
+                        iorbAnalogs.SendMsgLength = iorbAnalogs.SendBuff.Length;
+                        IORequests.EnqueueRequest(iorbAnalogs);
+                    }
+                }
+
+                //-------------digitals---------------(to do: add init flag...)
+                IORequestBlock iorbDigitals = new IORequestBlock()
+                {
+                    RequestType = RequestType.SEND_RECV,
+                    ProcessControllerName = rtuName
+                };
+                var digitals = dbContext.GetProcessVariable().Where(pv => pv.Type == VariableTypes.DIGITAL &&
+                                                                    pv.ProcContrName.Equals(rtuName)).OrderBy(pv => pv.RelativeAddress);
+                requestCount = digitals.ToList().Count();
+                if (requestCount != 0)
+                {
+                    ProcessVariable firstPV = digitals.FirstOrDefault();
+                    iorbDigitals.ReqAddress = (ushort)rtu.GetAcqAddress(firstPV);
+
+                    if (IProtHandler != null)
+                    {
+                        switch (rtu.Protocol)
+                        {
+                            case IndustryProtocols.ModbusTCP:
+
+                                ((ReadRequest)((ModbusHandler)IProtHandler).Request).FunCode = FunctionCodes.ReadDiscreteInput;
+                                ((ReadRequest)((ModbusHandler)IProtHandler).Request).Quantity = (ushort)requestCount;
+                                ((ReadRequest)((ModbusHandler)IProtHandler).Request).StartAddr = iorbDigitals.ReqAddress;
+                                break;
+                        }
+
+                        iorbDigitals.Flags = requestCount;
+                        iorbDigitals.SendBuff = IProtHandler.PackData();
+                        iorbDigitals.SendMsgLength = iorbDigitals.SendBuff.Length;
+                        IORequests.EnqueueRequest(iorbDigitals);
+                    }
+                }
+
+                // not implemented yet
+                //-------------counters---------------(to do: add init flag...)
+                IORequestBlock iorbCounters = new IORequestBlock()
+                {
+                    RequestType = RequestType.SEND_RECV,
+                    ProcessControllerName = rtuName
+                };
+                var counters = dbContext.GetProcessVariable().Where(pv => pv.Type == VariableTypes.COUNTER &&
+                                                                    pv.ProcContrName.Equals(rtuName)).OrderBy(pv => pv.RelativeAddress);
+                requestCount = counters.ToList().Count();
+                if (requestCount != 0)
+                {
+                    ProcessVariable firstPV = counters.FirstOrDefault();
+                    iorbCounters.ReqAddress = (ushort)rtu.GetAcqAddress(firstPV);
+
+                    if (IProtHandler != null)
+                    {
+                        switch (rtu.Protocol)
+                        {
+                            case IndustryProtocols.ModbusTCP:
+
+                                ((ReadRequest)((ModbusHandler)IProtHandler).Request).FunCode = FunctionCodes.ReadInputRegisters;
+                                ((ReadRequest)((ModbusHandler)IProtHandler).Request).Quantity = (ushort)requestCount;
+                                ((ReadRequest)((ModbusHandler)IProtHandler).Request).StartAddr = iorbCounters.ReqAddress;
+                                break;
+                        }
+                        iorbCounters.Flags = requestCount;
+                        iorbCounters.SendBuff = IProtHandler.PackData();
+                        iorbCounters.SendMsgLength = iorbCounters.SendBuff.Length;
+                        IORequests.EnqueueRequest(iorbCounters);
+                    }
+                }
+            }
+            Console.WriteLine("RtuAcquistion Action Finished Thread id = {0} ", Thread.CurrentThread.ManagedThreadId);
+        };
+
 
         // zaseban thread da bi mogla da kasnije imas acq period na nivou rtu-a, i da ti lakse bude kad budes prebacivala na TPL
         // mozda da ne radis sa pair, nego samo string i onda iz baze uzimas taj rtu...
