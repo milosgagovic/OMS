@@ -172,7 +172,7 @@ namespace DMSService
                         // to do: BUG -> ovo state opened srediti
                         ElementStateReport elementStateReport = new ElementStateReport() { MrID = mrid, Time = DateTime.UtcNow, State = 0 };
                         //ElementStateReport elementStateReport = new ElementStateReport() { MrID = mrid, Time = DateTime.UtcNow, State = "OPENED" };                        IMSClient.AddReport(incident);
-                        //IMSClient.AddElementStateReport(elementStateReport);
+                        IMSClient.AddElementStateReport(elementStateReport);
 
                         pub.PublishUIBreaker(true, (long)incidentBreaker);
                         pub.PublishIncident(incident);
