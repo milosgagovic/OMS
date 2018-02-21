@@ -65,7 +65,8 @@ namespace SCADA.CommunicationAndControlling
                     Console.WriteLine("\nEstablishing communication with RTU - {0} failed.", rtu.Value.Name);
                     failedProcessControllers.Add(rtu.Value);
                 }
-                Console.WriteLine("\nSuccessfully established communication with RTU - {0}.", rtu.Value.Name);
+                else
+                    Console.WriteLine("\nSuccessfully established communication with RTU - {0}.", rtu.Value.Name);
             }
 
             foreach (var failedProcessController in failedProcessControllers)
@@ -132,9 +133,9 @@ namespace SCADA.CommunicationAndControlling
         /// </summary>
         public void ProcessRequestsFromQueue()
         {
+            Console.WriteLine("Process Request form queue thread id={0}", Thread.CurrentThread.ManagedThreadId);
             while (!isShutdown)
             {
-                //int i = 0,j=0;
                 bool isSuccessful;
                 IORequestBlock forProcess = IORequests.DequeueRequest(out isSuccessful);
 
@@ -145,9 +146,6 @@ namespace SCADA.CommunicationAndControlling
                     {
                         try
                         {
-                           // i++;
-                           // Console.WriteLine("deuqueued {0} request", i);
-
                             // to do: test this case...connection lasts forever? 
                             if (!client.Connected)
                             {

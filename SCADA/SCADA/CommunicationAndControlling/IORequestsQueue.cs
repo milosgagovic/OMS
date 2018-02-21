@@ -70,11 +70,11 @@ namespace SCADA.CommunicationAndControlling
         {
             IORequests.Enqueue(iorb);
         }
-
-        // read more about this methods and ConcurentQueue
+       
         public IORequestBlock DequeueRequest(out bool isSuccessful)
         {
             IORequestBlock req;
+            // try dequeue is not blocking
             isSuccessful = IORequests.TryDequeue(out req);
             return req;
         }

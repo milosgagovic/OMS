@@ -49,6 +49,7 @@ namespace PCCommon
         // razlicite uloge moze imati
         // to do:
         // setovati ga kod init sim na 0 ili -1
-        public int flags { get; set; }
+        // trenutno govori za koliko variajbli je bio request
+        public int Flags { get; set; }
     }
 }
