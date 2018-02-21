@@ -234,6 +234,20 @@ namespace TransactionManager
             return true;
         }
 
+        public void ClearNMSDB()
+        {
+            using (NMSAdoNet ctx = new NMSAdoNet())
+            {
+                var tableNames = ctx.Database.SqlQuery<string>("SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME NOT LIKE '%Migration%'").ToList();
+                foreach (var tableName in tableNames)
+                {
+                    ctx.Database.ExecuteSqlCommand(string.Format("DELETE FROM {0}", tableName));
+                }
+
+                ctx.SaveChanges();
+            }
+        }
+
         #endregion
 
         #region  IOMSClient DispatcherApp Methods
@@ -544,6 +558,8 @@ namespace TransactionManager
         {
             return IMSClient.GetAllReportsSortByBreaker(mrids);
         }
+
+       
         #endregion
     }
 }

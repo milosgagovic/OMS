@@ -61,6 +61,16 @@ namespace FTN.ServiceContracts
         {
             return Channel.IteratorRewind(id);
         }
-        #endregion   
+
+        public bool Ping()
+        {
+            return Channel.Ping();
+        }
+
+        public void ClearDataBaseOnNMS()
+        {
+            Channel.ClearDataBaseOnNMS();
+        }
+        #endregion
     }
 }
