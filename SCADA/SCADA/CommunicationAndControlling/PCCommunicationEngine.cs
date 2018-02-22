@@ -65,7 +65,8 @@ namespace SCADA.CommunicationAndControlling
                     Console.WriteLine("\nEstablishing communication with RTU - {0} failed.", rtu.Value.Name);
                     failedProcessControllers.Add(rtu.Value);
                 }
-                Console.WriteLine("\nSuccessfully established communication with RTU - {0}.", rtu.Value.Name);
+                else
+                    Console.WriteLine("\nSuccessfully established communication with RTU - {0}.", rtu.Value.Name);
             }
 
             foreach (var failedProcessController in failedProcessControllers)
@@ -132,6 +133,7 @@ namespace SCADA.CommunicationAndControlling
         /// </summary>
         public void ProcessRequestsFromQueue()
         {
+            Console.WriteLine("Process Request form queue thread id={0}", Thread.CurrentThread.ManagedThreadId);
             while (!isShutdown)
             {
                 bool isSuccessful;
@@ -158,6 +160,7 @@ namespace SCADA.CommunicationAndControlling
 
                             // to do: processing big messages.  whole, or in parts?
                             // ...
+                            // ovde dodati taski koji receieve radi
 
                             forProcess.RcvBuff = new byte[client.ReceiveBufferSize];
 
@@ -165,6 +168,9 @@ namespace SCADA.CommunicationAndControlling
                             forProcess.RcvMsgLength = length;
 
                             IORequests.EnqueueAnswer(forProcess);
+                            //j++;
+                            //Console.WriteLine("enqueued {0} answer", j); 
+
                         }
                         catch (Exception e)
                         {

@@ -54,7 +54,6 @@ namespace DMSService
             DMSService.updatesCount += 1;
             ITransactionCallback callback = OperationContext.Current.GetCallbackChannel<ITransactionCallback>();
 
-            // i ovde puca nekad
             if (newTree.Data.Values.Count != 0)
             {
                 callback.CallbackPrepare(true);

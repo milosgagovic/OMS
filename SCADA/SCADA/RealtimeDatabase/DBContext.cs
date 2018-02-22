@@ -69,15 +69,21 @@ namespace SCADA.RealtimeDatabase
         /// <param name="name"></param>
         /// <returns></returns>
         public bool GetProcessVariableByName(string name, out ProcessVariable pv)
-        {
+        {        
             return (Database.Instance.ProcessVariablesName.TryGetValue(name, out pv));
         }
 
-        public List<ProcessVariable> GetAllProcessVariables()
+        /// <summary>
+        /// Returns a snapshot of process variables values.
+        /// </summary>
+        /// <returns></returns>
+        public ICollection<ProcessVariable> GetProcessVariable()
+        //public List<ProcessVariable> GetProcessVariable()
         {
-            return Database.ProcessVariablesName.Values.ToList();
-        }
 
+            return Database.ProcessVariablesName.Values;
+            //return Database.ProcessVariablesName.Values.ToList();
+        }
 
         /* possible scenarios:
        
@@ -271,19 +277,17 @@ namespace SCADA.RealtimeDatabase
                             // to do:
                             // provera da li je nova vrednost u dozvoljenom rangeu
 
-
                             Analog newAnalog = new Analog() { Name = insertEl.Name };
 
                             foreach (var availableRtu in availableRtus)
                             {
                                 // there is no channel with RTU-2 currently
-                                // test this case sometime in the future xD
                                 if (availableRtu.Name == "RTU-2")
                                     continue;
 
                                 ushort relativeAddress;
 
-                                // kljucno! if is possible mapping in this rtu? 
+                                // if is possible mapping in this rtu? 
                                 if (availableRtu.TryMap(newAnalog, out relativeAddress))
                                 {
                                     newAnalog.RelativeAddress = relativeAddress;
@@ -366,7 +370,5 @@ namespace SCADA.RealtimeDatabase
 
             return retVal;
         }
-
-
     }
 }

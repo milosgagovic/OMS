@@ -11,6 +11,7 @@ using OMSSCADACommon.Responses;
 using SCADA.ClientHandler;
 using SCADA.RealtimeDatabase.Catalogs;
 using SCADA.ConfigurationParser;
+using System.Linq;
 
 namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
 {
@@ -30,20 +31,9 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
 
             IORequests = IORequestsQueue.GetQueue();
             dbContext = new DBContext();
-            //DBContext.OnAnalogAdded += OnAnalogAddedEvent;
-            //dbContext.analo
             isShutdown = false;
-            timerMsc = 1000;
+            timerMsc = 5000;
         }
-
-        //public static CommAcqEngine Instance
-        //{
-        //    get
-        //    {
-        //        if(instance==null)
-        //    }
-        //}
-
         /// <summary>
         /// Reading database data from configPath,
         /// configuring RTUs and Process Variables
@@ -60,7 +50,105 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
         /// </summary>
         public void InitializeSimulator()
         {
-            List<ProcessVariable> pvs = dbContext.GetAllProcessVariables();
+            // ovo probati sa taskovima, za svaki od rtu-ova. ipak ne, jer nekim promenljivim komandujes, nekim ne
+            // var rtus = dbContext.GettAllRTUs();
+
+            //Parallel.ForEach(rtus, (currentRtu, state) =>
+            //{
+            //    Console.WriteLine("InitSim Parallel.foreach RTU name = {0}, Therad id = {1} started", currentRtu.Key, Thread.CurrentThread.ManagedThreadId);
+            //    IIndustryProtocolHandler IProtHandler = null;
+            //    RTU rtu = dbContext.GetRTUByName(currentRtu.Key);
+            //    if (currentRtu.Value != null)
+            //    {
+            //        IORequestBlock iorb = new IORequestBlock()
+            //        {
+            //            RequestType = RequestType.SEND,
+            //            ProcessControllerName = currentRtu.Key
+            //        };
+
+            //        switch (rtu.Protocol)
+            //        {
+            //            case IndustryProtocols.ModbusTCP:
+            //                IProtHandler = new ModbusHandler()
+            //                {
+            //                    Header = new ModbusApplicationHeader
+            //                    {
+            //                        TransactionId = 0,
+            //                        ProtocolId = (ushort)IndustryProtocols.ModbusTCP,
+            //                        DeviceAddress = rtu.Address,
+            //                        Length = 5
+            //                    },
+            //                    Request = new WriteRequest()
+            //                };
+            //                break;
+            //        }
+
+            //        //to do. praviti nove iorbove
+            //        // za svaku varijablu trebas imati should command ili ne i u zavisnosti od toga puniti data, racunati length  zahtvea i ostalo
+            //        //-------------analogs---------------
+            //        var analogs = dbContext.GetProcessVariable().Where(pv => pv.Type == VariableTypes.ANALOG && pv.IsInit == false &&
+            //                                                            pv.ProcContrName.Equals(currentRtu.Key)).OrderBy(pv => pv.RelativeAddress);
+            //        int requestCount = analogs.ToList().Count();
+            //        if (requestCount != 0)
+            //        {
+            //            ProcessVariable firstPV = analogs.FirstOrDefault();
+            //            iorb.ReqAddress = (ushort)rtu.GetAcqAddress(firstPV);
+
+            //            if (IProtHandler != null)
+            //            {
+            //                switch (rtu.Protocol)
+            //                {
+            //                    case IndustryProtocols.ModbusTCP:
+
+
+            //                        for(int i = 0; i < requestCount; i++)
+            //                        {
+
+            //                        }
+            //                        ((ReadRequest)((ModbusHandler)IProtHandler).Request).FunCode = FunctionCodes.ReadInputRegisters;
+            //                        ((ReadRequest)((ModbusHandler)IProtHandler).Request).Quantity = (ushort)requestCount;
+            //                        ((ReadRequest)((ModbusHandler)IProtHandler).Request).StartAddr = iorb.ReqAddress;
+            //                        break;
+            //                }
+
+            //                iorb.Flags = requestCount;
+            //                iorb.SendBuff = IProtHandler.PackData();
+            //                iorb.SendMsgLength = iorb.SendBuff.Length;
+            //                IORequests.EnqueueRequest(iorb);
+            //            }
+            //        }
+
+            //        //-------------digitals---------------(to do: add init flag...)
+            //        var digitals = dbContext.GetProcessVariable().Where(pv => pv.Type == VariableTypes.DIGITAL &&
+            //                                                            pv.ProcContrName.Equals(currentRtu.Key)).OrderBy(pv => pv.RelativeAddress);
+            //        requestCount = digitals.ToList().Count();
+            //        if (requestCount != 0)
+            //        {
+            //            ProcessVariable firstPV = digitals.FirstOrDefault();
+            //            iorb.ReqAddress = (ushort)rtu.GetAcqAddress(firstPV);
+
+            //            if (IProtHandler != null)
+            //            {
+            //                switch (rtu.Protocol)
+            //                {
+            //                    case IndustryProtocols.ModbusTCP:
+
+            //                        ((ReadRequest)((ModbusHandler)IProtHandler).Request).FunCode = FunctionCodes.ReadDiscreteInput;
+            //                        ((ReadRequest)((ModbusHandler)IProtHandler).Request).Quantity = (ushort)requestCount;
+            //                        ((ReadRequest)((ModbusHandler)IProtHandler).Request).StartAddr = iorb.ReqAddress;
+            //                        break;
+            //                }
+
+            //                iorb.Flags = requestCount;
+            //                iorb.SendBuff = IProtHandler.PackData();
+            //                iorb.SendMsgLength = iorb.SendBuff.Length;
+            //                IORequests.EnqueueRequest(iorb);
+            //            }
+            //        }        
+            //    }
+            //});
+
+            List<ProcessVariable> pvs = dbContext.GetProcessVariable().ToList();
             if (pvs.Count != 0)
             {
                 foreach (ProcessVariable pv in pvs)
@@ -127,8 +215,8 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
                                 {
                                     iorb.SendBuff = mdbHandler.PackData();
                                     iorb.SendMsgLength = iorb.SendBuff.Length;
-                                    if (pv.Name == "MEAS_AN_1")
-                                        Console.WriteLine(BitConverter.ToString(iorb.SendBuff, 0, 12));
+                                    //if (pv.Name == "MEAS_AN_1")
+                                    //    Console.WriteLine(BitConverter.ToString(iorb.SendBuff, 0, 12));
                                 }
 
                                 break;
@@ -157,93 +245,372 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
         {
             DBContext.OnAnalogAdded += OnAnalogAddedEvent;
 
-            List<ProcessVariable> pvs;
+            // toArray -> snapshot. ne mora to ovde, mozda je pametnije bez toga, kopiranje kosta.
+            // ovde  nije skupo jer nema puno rtuova
+            var rtusSnapshot = dbContext.GettAllRTUs();
 
-            while (!isShutdown)
+            // prebaciti na taskove
+            List<Thread> acqThreads = new List<Thread>();
+            foreach (var rtu in rtusSnapshot)
             {
-                // sporno to do:
-                //while (!Database.IsConfigurationRunning)
-                //    Thread.Sleep(100);
+                Thread t = new Thread(() => RtuAcquisition(rtu));
+                acqThreads.Add(t);
+            }
+            foreach (var t in acqThreads)
+                t.Start();
 
-                pvs = dbContext.GetAllProcessVariables();
-                foreach (ProcessVariable pv in pvs)
+            foreach (var t in acqThreads)
+                t.Join();
+
+            // sporno to do:
+            //    //while (!Database.IsConfigurationRunning)
+
+
+            Console.WriteLine("StartAcq.shutdown=true");
+            return;
+        }
+
+        public async Task RunAcq(Action<string> action, TimeSpan period, string rtuName, CancellationToken cancellationToken)
+        {
+            while (!cancellationToken.IsCancellationRequested)
+            {
+                Console.WriteLine("before task.delay");
+                await Task.Delay(period, cancellationToken);
+
+                if (!cancellationToken.IsCancellationRequested)
+                    action(rtuName);
+            }
+        }
+
+        public async Task AsyncRtuAcquisition(Action<string> action, TimeSpan period, string rtuName, CancellationToken token = default(CancellationToken))
+        {
+            while (!token.IsCancellationRequested)
+            {
+                action(rtuName);
+                try
                 {
-                    IORequestBlock iorb = new IORequestBlock()
-                    {
-                        RequestType = RequestType.SEND_RECV,
-                        ProcessControllerName = pv.ProcContrName
-                    };
+                    // await suspends calling method of await (AsyncRtuAcquisition in our case), and yields control back to 
+                    // the caller (Acquisition in out case) of the methof that performed await, until the awaitable task is complete
+                    await Task.Delay(period, token);
+                }
+                catch (TaskCanceledException)
+                {
+                    break;
+                }
+            }
+        }
 
-                    RTU rtu;
-                    if ((rtu = dbContext.GetRTUByName(pv.ProcContrName)) != null)
-                    {
-                        iorb.ReqAddress = (ushort)rtu.GetAcqAddress(pv);
+        public Task Acquisition()
+        {
+            Task retVal;
+            Console.WriteLine("Task Aqcquistion");
+            DBContext.OnAnalogAdded += OnAnalogAddedEvent;
 
+            var rtus = dbContext.GettAllRTUs();
+            CancellationToken token = new CancellationToken();
+
+            List<Task> acqTasks = new List<Task>();
+            foreach (var rtu in rtus)
+            {
+                //acqTasks.Add(RunAcq(rtuAcquisitonAction, TimeSpan.FromMilliseconds(5000), rtu.Key, token));
+                acqTasks.Add(AsyncRtuAcquisition(rtuAcquisitonAction, TimeSpan.FromMilliseconds(3000), rtu.Key, token));
+                Console.WriteLine("task added");
+
+                // do i need to call task.Start()?
+            }
+            Console.WriteLine("Task acquistion before return");
+            foreach (Task t in acqTasks)
+                Console.WriteLine("Task {0} Status: {1}", t.Id, t.Status);
+
+            try
+            {
+                retVal = Task.WhenAll(acqTasks);
+            }
+            catch (AggregateException e)
+            {
+                //retVal = default(Task);
+                retVal = Task.FromResult(false);
+
+                Console.WriteLine("\nThe following exceptions have been thrown by WaitAll(): (THIS WAS EXPECTED)");
+                for (int j = 0; j < e.InnerExceptions.Count; j++)
+                {
+                    Console.WriteLine("\n-------------------------------------------------\n{0}", e.InnerExceptions[j].ToString());
+                }
+            }
+            return retVal;
+        }
+
+        public Action<string> rtuAcquisitonAction = rtuName =>
+        {
+            IIndustryProtocolHandler IProtHandler = null;
+            Console.WriteLine("\nRtuAcqAction started Rtu={2}  Task id = {0} , time={1}", Task.CurrentId, DateTime.Now.ToLongTimeString(), rtuName);
+
+            DBContext dbContext = new DBContext();
+            RTU rtu = dbContext.GetRTUByName(rtuName);
+            if (rtu != null)
+            {
+                switch (rtu.Protocol)
+                {
+                    case IndustryProtocols.ModbusTCP:
+                        IProtHandler = new ModbusHandler()
+                        {
+                            Header = new ModbusApplicationHeader
+                            {
+                                TransactionId = 0,
+                                ProtocolId = (ushort)IndustryProtocols.ModbusTCP,
+                                DeviceAddress = rtu.Address,
+                                Length = 5
+                            },
+                            Request = new ReadRequest()
+                        };
+                        break;
+                }
+
+                //-------------analogs---------------
+
+                IORequestBlock iorbAnalogs = new IORequestBlock()
+                {
+                    RequestType = RequestType.SEND_RECV,
+                    ProcessControllerName = rtuName
+                };
+                var analogs = dbContext.GetProcessVariable().Where(pv => pv.Type == VariableTypes.ANALOG && pv.IsInit == true &&
+                                                                    pv.ProcContrName.Equals(rtuName)).OrderBy(pv => pv.RelativeAddress);
+                int requestCount = analogs.ToList().Count();
+                if (requestCount != 0)
+                {
+                    Console.WriteLine("acq analogs");
+                    ProcessVariable firstPV = analogs.FirstOrDefault();
+                    iorbAnalogs.ReqAddress = (ushort)rtu.GetAcqAddress(firstPV);
+
+
+                    if (IProtHandler != null)
+                    {
                         switch (rtu.Protocol)
                         {
                             case IndustryProtocols.ModbusTCP:
 
-                                ModbusHandler mdbHandler = new ModbusHandler();
-
-                                // header is same for all read - acquistion requests
-                                mdbHandler.Header = new ModbusApplicationHeader()
-                                {
-                                    TransactionId = 0,
-                                    Length = 5,
-                                    ProtocolId = (ushort)IndustryProtocols.ModbusTCP,
-                                    DeviceAddress = rtu.Address
-                                };
-
-                                mdbHandler.Request = new ReadRequest() { StartAddr = iorb.ReqAddress };
-
-                                switch (pv.Type)
-                                {
-                                    case VariableTypes.DIGITAL:
-
-                                        Digital digital = (Digital)pv;
-
-                                        mdbHandler.Request.FunCode = FunctionCodes.ReadDiscreteInput;
-                                        ((ReadRequest)mdbHandler.Request).Quantity = (ushort)(Math.Floor((Math.Log(digital.ValidStates.Count, 2))));
-
-                                        break;
-
-                                    case VariableTypes.ANALOG:
-                                        Analog analog = (Analog)pv;
-                                        if (!analog.IsInit)
-                                            continue; // dok se ne setuje inicijalna vrednost
-
-                                        mdbHandler.Request.FunCode = FunctionCodes.ReadInputRegisters;
-                                        ((ReadRequest)mdbHandler.Request).Quantity = analog.NumOfRegisters;
-
-                                        break;
-
-                                    case VariableTypes.COUNTER:
-                                        Counter counter = (Counter)pv;
-
-                                        break;
-                                }
-
-                                iorb.SendBuff = mdbHandler.PackData();
+                                ((ReadRequest)((ModbusHandler)IProtHandler).Request).FunCode = FunctionCodes.ReadInputRegisters;
+                                ((ReadRequest)((ModbusHandler)IProtHandler).Request).Quantity = (ushort)requestCount;
+                                ((ReadRequest)((ModbusHandler)IProtHandler).Request).StartAddr = iorbAnalogs.ReqAddress;
                                 break;
                         }
 
-                        iorb.SendMsgLength = iorb.SendBuff.Length;
-                        //if (pv.Name == "MEAS_AN_1")
-                        //  Console.WriteLine(BitConverter.ToString(iorb.SendBuff, 0, 12));
-                        IORequests.EnqueueRequest(iorb);
-                    }
-                    else
-                    {
-                        // ne postoji taj rtu sa tim imenom. izbrisati te procesne varijable sa rtu-om tog imena
-                        Console.WriteLine("Invalid config: ProcContrName = {0} does not exists.", pv.ProcContrName);
-                        continue;
+                        iorbAnalogs.Flags = requestCount;
+                        iorbAnalogs.SendBuff = IProtHandler.PackData();
+                        iorbAnalogs.SendMsgLength = iorbAnalogs.SendBuff.Length;
+                        IORequests.EnqueueRequest(iorbAnalogs);
                     }
                 }
-                Thread.Sleep(millisecondsTimeout: timerMsc);
-            }
 
-            Console.WriteLine("StartAcq.shutdown=true");
-            return;
+                //-------------digitals---------------(to do: add init flag...)
+                IORequestBlock iorbDigitals = new IORequestBlock()
+                {
+                    RequestType = RequestType.SEND_RECV,
+                    ProcessControllerName = rtuName
+                };
+                var digitals = dbContext.GetProcessVariable().Where(pv => pv.Type == VariableTypes.DIGITAL &&
+                                                                    pv.ProcContrName.Equals(rtuName)).OrderBy(pv => pv.RelativeAddress);
+                requestCount = digitals.ToList().Count();
+                if (requestCount != 0)
+                {
+                    Console.WriteLine("acq digitals");
+                    ProcessVariable firstPV = digitals.FirstOrDefault();
+                    iorbDigitals.ReqAddress = (ushort)rtu.GetAcqAddress(firstPV);
+
+                    if (IProtHandler != null)
+                    {
+                        switch (rtu.Protocol)
+                        {
+                            case IndustryProtocols.ModbusTCP:
+
+                                ((ReadRequest)((ModbusHandler)IProtHandler).Request).FunCode = FunctionCodes.ReadDiscreteInput;
+                                ((ReadRequest)((ModbusHandler)IProtHandler).Request).Quantity = (ushort)requestCount;
+                                ((ReadRequest)((ModbusHandler)IProtHandler).Request).StartAddr = iorbDigitals.ReqAddress;
+                                break;
+                        }
+
+                        iorbDigitals.Flags = requestCount;
+                        iorbDigitals.SendBuff = IProtHandler.PackData();
+                        iorbDigitals.SendMsgLength = iorbDigitals.SendBuff.Length;
+                        IORequests.EnqueueRequest(iorbDigitals);
+                    }
+                }
+
+                // not implemented yet
+                //-------------counters---------------(to do: add init flag...)
+                IORequestBlock iorbCounters = new IORequestBlock()
+                {
+                    RequestType = RequestType.SEND_RECV,
+                    ProcessControllerName = rtuName
+                };
+                var counters = dbContext.GetProcessVariable().Where(pv => pv.Type == VariableTypes.COUNTER &&
+                                                                    pv.ProcContrName.Equals(rtuName)).OrderBy(pv => pv.RelativeAddress);
+                requestCount = counters.ToList().Count();
+                if (requestCount != 0)
+                {
+                    Console.WriteLine("acq coutners");
+                    ProcessVariable firstPV = counters.FirstOrDefault();
+                    iorbCounters.ReqAddress = (ushort)rtu.GetAcqAddress(firstPV);
+
+                    if (IProtHandler != null)
+                    {
+                        switch (rtu.Protocol)
+                        {
+                            case IndustryProtocols.ModbusTCP:
+
+                                ((ReadRequest)((ModbusHandler)IProtHandler).Request).FunCode = FunctionCodes.ReadInputRegisters;
+                                ((ReadRequest)((ModbusHandler)IProtHandler).Request).Quantity = (ushort)requestCount;
+                                ((ReadRequest)((ModbusHandler)IProtHandler).Request).StartAddr = iorbCounters.ReqAddress;
+                                break;
+                        }
+                        iorbCounters.Flags = requestCount;
+                        iorbCounters.SendBuff = IProtHandler.PackData();
+                        iorbCounters.SendMsgLength = iorbCounters.SendBuff.Length;
+                        IORequests.EnqueueRequest(iorbCounters);
+                    }
+                }
+            }
+            Console.WriteLine("RtuAcquistion Action Finished Thread id = {0} ", Thread.CurrentThread.ManagedThreadId);
+        };
+
+        public void RtuAcquisition(KeyValuePair<string, RTU> rtuPair)
+        {
+            IIndustryProtocolHandler IProtHandler = null;
+            Console.WriteLine("RtuAcquistion Thread id = {0} started", Thread.CurrentThread.ManagedThreadId);
+
+            while (!isShutdown)
+            {
+                RTU rtu = dbContext.GetRTUByName(rtuPair.Key);
+                if (rtu != null)
+                {
+                    switch (rtu.Protocol)
+                    {
+                        case IndustryProtocols.ModbusTCP:
+                            IProtHandler = new ModbusHandler()
+                            {
+                                Header = new ModbusApplicationHeader
+                                {
+                                    TransactionId = 0,
+                                    ProtocolId = (ushort)IndustryProtocols.ModbusTCP,
+                                    DeviceAddress = rtu.Address,
+                                    Length = 5
+                                },
+                                Request = new ReadRequest()
+                            };
+                            break;
+                    }
+
+                    //-------------analogs---------------
+
+                    IORequestBlock iorbAnalogs = new IORequestBlock()
+                    {
+                        RequestType = RequestType.SEND_RECV,
+                        ProcessControllerName = rtuPair.Key
+                    };
+                    var analogs = dbContext.GetProcessVariable().Where(pv => pv.Type == VariableTypes.ANALOG && pv.IsInit == true &&
+                                                                        pv.ProcContrName.Equals(rtuPair.Key)).OrderBy(pv => pv.RelativeAddress);
+                    int requestCount = analogs.ToList().Count();
+                    if (requestCount != 0)
+                    {
+                        ProcessVariable firstPV = analogs.FirstOrDefault();
+                        iorbAnalogs.ReqAddress = (ushort)rtu.GetAcqAddress(firstPV);
+
+
+                        if (IProtHandler != null)
+                        {
+                            switch (rtu.Protocol)
+                            {
+                                case IndustryProtocols.ModbusTCP:
+
+                                    ((ReadRequest)((ModbusHandler)IProtHandler).Request).FunCode = FunctionCodes.ReadInputRegisters;
+                                    ((ReadRequest)((ModbusHandler)IProtHandler).Request).Quantity = (ushort)requestCount;
+                                    ((ReadRequest)((ModbusHandler)IProtHandler).Request).StartAddr = iorbAnalogs.ReqAddress;
+                                    break;
+                            }
+
+                            iorbAnalogs.Flags = requestCount;
+                            iorbAnalogs.SendBuff = IProtHandler.PackData();
+                            iorbAnalogs.SendMsgLength = iorbAnalogs.SendBuff.Length;
+                            IORequests.EnqueueRequest(iorbAnalogs);
+                        }
+                    }
+
+                    //-------------digitals---------------(to do: add init flag...)
+                    IORequestBlock iorbDigitals = new IORequestBlock()
+                    {
+                        RequestType = RequestType.SEND_RECV,
+                        ProcessControllerName = rtuPair.Key
+                    };
+                    var digitals = dbContext.GetProcessVariable().Where(pv => pv.Type == VariableTypes.DIGITAL &&
+                                                                        pv.ProcContrName.Equals(rtuPair.Key)).OrderBy(pv => pv.RelativeAddress);
+                    requestCount = digitals.ToList().Count();
+                    if (requestCount != 0)
+                    {
+                        ProcessVariable firstPV = digitals.FirstOrDefault();
+                        iorbDigitals.ReqAddress = (ushort)rtu.GetAcqAddress(firstPV);
+
+                        if (IProtHandler != null)
+                        {
+                            switch (rtu.Protocol)
+                            {
+                                case IndustryProtocols.ModbusTCP:
+
+                                    ((ReadRequest)((ModbusHandler)IProtHandler).Request).FunCode = FunctionCodes.ReadDiscreteInput;
+                                    ((ReadRequest)((ModbusHandler)IProtHandler).Request).Quantity = (ushort)requestCount;
+                                    ((ReadRequest)((ModbusHandler)IProtHandler).Request).StartAddr = iorbDigitals.ReqAddress;
+                                    break;
+                            }
+
+                            iorbDigitals.Flags = requestCount;
+                            iorbDigitals.SendBuff = IProtHandler.PackData();
+                            iorbDigitals.SendMsgLength = iorbDigitals.SendBuff.Length;
+                            IORequests.EnqueueRequest(iorbDigitals);
+                        }
+                    }
+
+                    // not implemented yet
+                    //-------------counters---------------(to do: add init flag...)
+                    IORequestBlock iorbCounters = new IORequestBlock()
+                    {
+                        RequestType = RequestType.SEND_RECV,
+                        ProcessControllerName = rtuPair.Key
+                    };
+                    var counters = dbContext.GetProcessVariable().Where(pv => pv.Type == VariableTypes.COUNTER &&
+                                                                        pv.ProcContrName.Equals(rtuPair.Key)).OrderBy(pv => pv.RelativeAddress);
+                    requestCount = counters.ToList().Count();
+                    if (requestCount != 0)
+                    {
+                        ProcessVariable firstPV = counters.FirstOrDefault();
+                        iorbCounters.ReqAddress = (ushort)rtu.GetAcqAddress(firstPV);
+
+                        if (IProtHandler != null)
+                        {
+                            switch (rtu.Protocol)
+                            {
+                                case IndustryProtocols.ModbusTCP:
+
+                                    ((ReadRequest)((ModbusHandler)IProtHandler).Request).FunCode = FunctionCodes.ReadInputRegisters;
+                                    ((ReadRequest)((ModbusHandler)IProtHandler).Request).Quantity = (ushort)requestCount;
+                                    ((ReadRequest)((ModbusHandler)IProtHandler).Request).StartAddr = iorbCounters.ReqAddress;
+                                    break;
+                            }
+                            iorbCounters.Flags = requestCount;
+                            iorbCounters.SendBuff = IProtHandler.PackData();
+                            iorbCounters.SendMsgLength = iorbCounters.SendBuff.Length;
+                            IORequests.EnqueueRequest(iorbCounters);
+                        }
+                    }
+                }
+
+                else
+                {
+                    Console.WriteLine("Returning thread id = {0}", Thread.CurrentThread.ManagedThreadId);
+                    return;
+                }
+
+                // ovde staviti da spava acqPeriod za taj odredjeni rtu
+                Thread.Sleep(timerMsc);
+            }
         }
 
         /// <summary>
@@ -258,6 +625,7 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
 
                 if (isSuccessful)
                 {
+                    bool isChange = false;
                     RTU rtu;
                     // sporno
                     //while (!Database.IsConfigurationRunning)
@@ -276,38 +644,46 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
                                     case FunctionCodes.ReadDiscreteInput:
                                         {
                                             BitReadResponse response = (BitReadResponse)mdbHandler.Response;
-                                            ProcessVariable pv;
-                                            Digital target = null;
+                                            var responsePVCount = answer.Flags;
+                                            // bool[] boolArrayResponse = new bool[response.BitValues.Count];
+                                            // response.BitValues.CopyTo(boolArrayResponse, 0);
 
-                                            if (rtu.GetProcessVariableByAddress(answer.ReqAddress, out pv))
+                                            ushort varAddr = answer.ReqAddress;
+                                            for (int i = 0; i < responsePVCount; i++, varAddr++)
                                             {
-                                                target = (Digital)pv;
-                                            }
+                                                ProcessVariable pv;
+                                                //ushort varAddr = answer.ReqAddress++;
 
-                                            if (target != null)
-                                            {
-                                                int[] array = new int[1];
-                                                response.BitValues.CopyTo(array, 0);
-
-                                                try
+                                                if (rtu.GetProcessVariableByAddress(varAddr, out pv))
                                                 {
-                                                    if (target.State != target.ValidStates[array[0]])
+                                                    Digital target = (Digital)pv;
+
+                                                    try
                                                     {
-                                                        Console.WriteLine("CHANGE! {0}, {1}, {2}", target.RelativeAddress, target.Name, target.State);
-                                                        target.State = target.ValidStates[array[0]];
+ //bool isOpened = boolArrayResponse[i];
+                                                        bool isOpened = response.BitValues[i];
+                                                        if (target.State != target.ValidStates[isOpened ? 1 : 0])
+                                                        {
+                                                            isChange = true;
+                                                            target.State = target.ValidStates[isOpened ? 1 : 0];
+                                                            Console.WriteLine(" CHANGE! Digital variable {0}, state: {1}", target.Name, target.State);
 
-                                                        ScadaModelParser parser = new ScadaModelParser();
-                                                        parser.SerializeScadaModel();
-
-                                                        DMSClient dMSClient = new DMSClient();
-                                                        dMSClient.ChangeOnSCADA(target.Name, target.State);
+                                                            DMSClient dMSClient = new DMSClient();
+                                                            dMSClient.ChangeOnSCADA(target.Name, target.State);
+                                                        }
+                                                    }
+                                                    catch
+                                                    {
+                                                        Console.WriteLine("Digital variable {0}, state: INVALID", target.Name);
                                                     }
                                                 }
-                                                catch
-                                                {
-                                                    // Console.WriteLine("Digital variable {0}, state: INVALID", target.Name);
-                                                }
                                             }
+                                            if (isChange)
+                                            {
+                                                ScadaModelParser parser = new ScadaModelParser();
+                                                parser.SerializeScadaModel();
+                                            }
+
                                         }
 
                                         break;
@@ -315,44 +691,46 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
                                     case FunctionCodes.ReadInputRegisters:
                                         {
                                             RegisterReadResponse response = (RegisterReadResponse)mdbHandler.Response;
-                                            ProcessVariable pv;
+                                            var responsePVCount = answer.Flags;
 
-                                            Analog target = null;
-
-                                            // i ovde se zapravo cita iz baze! preko RTUa. znaci pristupamo rtuu, a moguce je da se desava rekonfiguracija.                                       
-                                            if (rtu.GetProcessVariableByAddress(answer.ReqAddress, out pv))
+                                            ushort varAddr = answer.ReqAddress;
+                                            for (int i = 0; i < responsePVCount; i++, varAddr++)
                                             {
-                                                target = (Analog)pv;
-                                            }
+                                                ProcessVariable pv;
 
-                                            if (target != null)
-                                            {
-                                                ushort newRawAcqValue = response.RegValues[0];
-
-                                                try
+                                                if (rtu.GetProcessVariableByAddress(varAddr, out pv))
                                                 {
-                                                    float newAcqValue;
-                                                    AnalogProcessor.RawValueToEGU(target, newRawAcqValue, out newAcqValue);
+                                                    Analog target = (Analog)pv;
 
-                                                    // videti kad menjas kommande
-                                                    if (target.AcqValue != newAcqValue)
+                                                    try
                                                     {
-                                                        Console.WriteLine("CHANGE analog!");
-                                                        target.RawAcqValue = newRawAcqValue;
-                                                        target.AcqValue = newAcqValue;
+                                                        ushort newRawAcqValue = response.RegValues[target.RelativeAddress];
+                                                        float newAcqValue;
+                                                        AnalogProcessor.RawValueToEGU(target, newRawAcqValue, out newAcqValue);
 
-                                                        ScadaModelParser parser = new ScadaModelParser();
-                                                        parser.SerializeScadaModel();
+                                                        if (target.AcqValue != newAcqValue)
+                                                        {
+                                                            isChange = true;
 
-                                                        DMSClient dMSClient = new DMSClient();
-                                                        // to do
-                                                        // dMSClient.ChangeOnSCADA(target.Name, target.State);
+                                                            target.RawAcqValue = newRawAcqValue;
+                                                            target.AcqValue = newAcqValue;
+                                                            Console.WriteLine(" CHANGE! Analog variable {0}, AcqValue: {1}", target.Name, target.AcqValue);
+
+                                                            // DMSClient dMSClient = new DMSClient();
+                                                            // to do
+                                                            // dMSClient.ChangeOnSCADA(target.Name, target.State);
+                                                        }
+                                                    }
+                                                    catch
+                                                    {
+                                                        // Console.WriteLine("Digital variable {0}, state: INVALID", target.Name);
                                                     }
                                                 }
-                                                catch
-                                                {
-                                                    // Console.WriteLine("Digital variable {0}, state: INVALID", target.Name);
-                                                }
+                                            }
+                                            if (isChange)
+                                            {
+                                                ScadaModelParser parser = new ScadaModelParser();
+                                                parser.SerializeScadaModel();
                                             }
                                         }
 
@@ -362,10 +740,7 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
                                 break;
                         }
                     }
-                    else
-                    {
-                        Console.WriteLine("Answer disposed. Process Controller with name ={0} does not exit.", answer.ProcessControllerName);
-                    }
+
                 }
 
                 Thread.Sleep(100);
@@ -383,7 +758,6 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
             parser.SerializeScadaModel();
         }
 
-       // private static void OnAnalogAddedEvent(object sender, EventArgs e)
         private void OnAnalogAddedEvent(object sender, EventArgs e)
         {
             Console.WriteLine("OnAnalogEventAdded started");
@@ -473,7 +847,7 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
             //while (!Database.IsConfigurationRunning)
             //    Thread.Sleep(100);
 
-            List<ProcessVariable> pvs = dbContext.GetAllProcessVariables();
+            List<ProcessVariable> pvs = dbContext.GetProcessVariable().ToList();
 
             OMSSCADACommon.Responses.Response response = new OMSSCADACommon.Responses.Response();
 
@@ -483,7 +857,7 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
                 {
                     case VariableTypes.DIGITAL:
                         Digital digital = (Digital)pv;
-                        response.Variables.Add(new DigitalVariable() { VariableType=ResponseType.Digital, Id = digital.Name, State = (OMSSCADACommon.States)digital.State });
+                        response.Variables.Add(new DigitalVariable() { VariableType = ResponseType.Digital, Id = digital.Name, State = (OMSSCADACommon.States)digital.State });
                         break;
 
                     case VariableTypes.ANALOG:
