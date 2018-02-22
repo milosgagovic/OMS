@@ -1607,6 +1607,21 @@ namespace DispatcherApp.ViewModel
                     this.BottomTabControlVisibility = Visibility.Collapsed;
                 }
             }
+            else
+            {
+                int i = 0;
+
+                for (i = 0; i < CenterTabControlTabs.Count; i++)
+                {
+                    if ((string)CenterTabControlTabs[i].Header == (string)parameter)
+                    {
+                        CenterTabControlTabs[i].Content = null;
+                        CenterTabControlTabs[i].Visibility = Visibility.Collapsed;
+                        CenterTabControlTabs.RemoveAt(i);
+                        break;
+                    }
+                }
+            }
         }
         #endregion
 

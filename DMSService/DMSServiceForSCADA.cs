@@ -84,6 +84,7 @@ namespace DMSService
 
                     sw.Marker = false;
                     sw.State = SwitchState.Open;
+                    sw.Incident = true;
                     networkChange.Add(new SCADAUpdateModel(sw.ElementGID, false, OMSSCADACommon.States.OPENED));
                     Node n = (Node)DMSService.Instance.Tree.Data[sw.End2];
                     n.Marker = false;

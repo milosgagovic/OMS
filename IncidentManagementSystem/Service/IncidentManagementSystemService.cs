@@ -44,12 +44,12 @@ namespace IncidentManagementSystem.Service
         private void LoadCrews()
         {
             List<Crew> crews = new List<Crew>();
-            Crew c1 = new Crew() { Id = "1", CrewName = "Crew_Inv_1", Type = CrewType.Investigation };
-            Crew c2 = new Crew() { Id = "2", CrewName = "Crew_Inv_2", Type = CrewType.Investigation };
-            Crew c3 = new Crew() { Id = "3", CrewName = "Crew_Inv_3", Type = CrewType.Investigation };
-            Crew c4 = new Crew() { Id = "4", CrewName = "Crew_Rep_1", Type = CrewType.Repair };
-            Crew c5 = new Crew() { Id = "5", CrewName = "Crew_Rep_2", Type = CrewType.Repair };
-            Crew c6 = new Crew() { Id = "6", CrewName = "Crew_Rep_3", Type = CrewType.Repair };
+            Crew c1 = new Crew() { Id = "1", CrewName = "Adam Smith", Type = CrewType.Investigation };
+            Crew c2 = new Crew() { Id = "2", CrewName = "Danny Phillips", Type = CrewType.Investigation };
+            Crew c3 = new Crew() { Id = "3", CrewName = "Anna Davis", Type = CrewType.Investigation };
+            Crew c4 = new Crew() { Id = "4", CrewName = "Mark Crow ", Type = CrewType.Repair };
+            Crew c5 = new Crew() { Id = "5", CrewName = "Jullie Stephenson", Type = CrewType.Repair };
+            Crew c6 = new Crew() { Id = "6", CrewName = "David Phill", Type = CrewType.Repair };
             crews.Add(c1);
             crews.Add(c2);
             crews.Add(c3);

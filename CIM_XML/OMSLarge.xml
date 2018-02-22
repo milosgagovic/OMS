@@ -831,14 +831,14 @@
 	</cim:Terminal>
 	
 	<cim:Terminal rdf:ID="TERM_69">
-		<cim:Terminal.ConductingEquipment rdf:resource="#ACLS_14"/>
+		<cim:Terminal.ConductingEquipment rdf:resource="#BR_13"/>
 		<cim:Terminal.ConnectivityNode rdf:resource="#CN_22"/>
 		<cim:IdentifiedObject.mRID>TERM_69</cim:IdentifiedObject.mRID>
 		<cim:IdentifiedObject.name>Terminal_69</cim:IdentifiedObject.name>
 	</cim:Terminal>
 	
 	<cim:Terminal rdf:ID="TERM_70">
-		<cim:Terminal.ConductingEquipment rdf:resource="#ACLS_14"/>
+		<cim:Terminal.ConductingEquipment rdf:resource="#BR_13"/>
 		<cim:Terminal.ConnectivityNode rdf:resource="#CN_23"/>
 		<cim:IdentifiedObject.mRID>TERM_70</cim:IdentifiedObject.mRID>
 		<cim:IdentifiedObject.name>Terminal_70</cim:IdentifiedObject.name>
@@ -859,14 +859,14 @@
 	</cim:Terminal>
 	
 	<cim:Terminal rdf:ID="TERM_73">
-		<cim:Terminal.ConductingEquipment rdf:resource="#ACLS_15"/>
+		<cim:Terminal.ConductingEquipment rdf:resource="#BR_14"/>
 		<cim:Terminal.ConnectivityNode rdf:resource="#CN_20"/>
 		<cim:IdentifiedObject.mRID>TERM_73</cim:IdentifiedObject.mRID>
 		<cim:IdentifiedObject.name>Terminal_73</cim:IdentifiedObject.name>
 	</cim:Terminal>
 	
 	<cim:Terminal rdf:ID="TERM_74">
-		<cim:Terminal.ConductingEquipment rdf:resource="#ACLS_15"/>
+		<cim:Terminal.ConductingEquipment rdf:resource="#BR_14"/>
 		<cim:Terminal.ConnectivityNode rdf:resource="#CN_24"/>
 		<cim:IdentifiedObject.mRID>TERM_74</cim:IdentifiedObject.mRID>
 		<cim:IdentifiedObject.name>Terminal_74</cim:IdentifiedObject.name>
@@ -1026,12 +1026,12 @@
 		<cim:IdentifiedObject.name>ACLineSegment_13</cim:IdentifiedObject.name>
 	</cim:ACLineSegment>
 	
-	<cim:ACLineSegment rdf:ID="ACLS_14">
-		<cim:Conductor.length></cim:Conductor.length>
-		<cim:Equipment.normallyInService>true</cim:Equipment.normallyInService>
-		<cim:IdentifiedObject.mRID>ACLS_14</cim:IdentifiedObject.mRID>
-		<cim:IdentifiedObject.name>ACLineSegment_14</cim:IdentifiedObject.name>
-	</cim:ACLineSegment>
+	<!-- <cim:ACLineSegment rdf:ID="ACLS_14"> -->
+		<!-- <cim:Conductor.length></cim:Conductor.length> -->
+		<!-- <cim:Equipment.normallyInService>true</cim:Equipment.normallyInService> -->
+		<!-- <cim:IdentifiedObject.mRID>ACLS_14</cim:IdentifiedObject.mRID> -->
+		<!-- <cim:IdentifiedObject.name>ACLineSegment_14</cim:IdentifiedObject.name> -->
+	<!-- </cim:ACLineSegment> -->
 	
 	<cim:ACLineSegment rdf:ID="ACLS_15">
 		<cim:Conductor.length></cim:Conductor.length>
@@ -1131,6 +1131,24 @@
 		<cim:IdentifiedObject.name>Breaker_10</cim:IdentifiedObject.name>
 	</cim:Breaker> 
 	
+	<cim:Breaker rdf:id="BR_13">
+		<cim:Switch.normalOpen>false</cim:Switch.normalOpen>
+		<cim:Switch.switchOnCount></cim:Switch.switchOnCount>
+		<cim:Switch.switchOnDate></cim:Switch.switchOnDate>
+		<cim:Equipment.normallyInService>true</cim:Equipment.normallyInService>
+		<cim:IdentifiedObject.mRID>BR_13</cim:IdentifiedObject.mRID>
+		<cim:IdentifiedObject.name>Breaker_13</cim:IdentifiedObject.name>
+	</cim:Breaker> 
+	
+	<cim:Breaker rdf:id="BR_14">
+		<cim:Switch.normalOpen>false</cim:Switch.normalOpen>
+		<cim:Switch.switchOnCount></cim:Switch.switchOnCount>
+		<cim:Switch.switchOnDate></cim:Switch.switchOnDate>
+		<cim:Equipment.normallyInService>true</cim:Equipment.normallyInService>
+		<cim:IdentifiedObject.mRID>BR_14</cim:IdentifiedObject.mRID>
+		<cim:IdentifiedObject.name>Breaker_14</cim:IdentifiedObject.name>
+	</cim:Breaker> 
+	
 	<cim:Discrete rdf:ID="MEAS_D_1">
 		<cim:Discrete.maxValue>1</cim:Discrete.maxValue>
 		<cim:Discrete.minValue>0</cim:Discrete.minValue>
@@ -1154,10 +1172,10 @@
 		<cim:Discrete.minValue>0</cim:Discrete.minValue>
 		<cim:Discrete.normalValue>1</cim:Discrete.normalValue>
 		<cim:Discrete.validCommands>
-		Open
+		Open Close
 		</cim:Discrete.validCommands>
 		<cim:Discrete.validStates>
-		Closed Opened
+		Opened Closed
 		</cim:Discrete.validStates>
 		<cim:Measurement.direction>ReadWrite</cim:Measurement.direction>
 		<cim:Measurement.measurementType></cim:Measurement.measurementType>
@@ -1167,34 +1185,34 @@
 		<cim:IdentifiedObject.name>DiscreteMeasurement_2</cim:IdentifiedObject.name>
 	</cim:Discrete>
 
-	<cim:Discrete rdf:ID="MEAS_D_3">
-		<cim:Discrete.maxValue>1</cim:Discrete.maxValue>
-		<cim:Discrete.minValue>0</cim:Discrete.minValue>
-		<cim:Discrete.normalValue>1</cim:Discrete.normalValue>
-		<cim:Discrete.validStates>
+	<!-- <cim:Discrete rdf:ID="MEAS_D_3"> -->
+		<!-- <cim:Discrete.maxValue>1</cim:Discrete.maxValue> -->
+		<!-- <cim:Discrete.minValue>0</cim:Discrete.minValue> -->
+		<!-- <cim:Discrete.normalValue>1</cim:Discrete.normalValue> -->
+		<!-- <cim:Discrete.validStates> -->
 		
-		</cim:Discrete.validStates>
-		<cim:Discrete.validCommands>
-			Open Close
-		</cim:Discrete.validCommands>
-		<cim:Measurement.direction>ReadWrite</cim:Measurement.direction>
-		<cim:Measurement.measurementType></cim:Measurement.measurementType>
-		<cim:Measurement.PowerSystemResource rdf:resource="#BR_3"/>
-		<cim:Measurement.unitSymbol>none</cim:Measurement.unitSymbol>
-		<cim:IdentifiedObject.mRID>MEAS_D_3</cim:IdentifiedObject.mRID>
-		<cim:IdentifiedObject.name>DiscreteMeasurement_3</cim:IdentifiedObject.name>
-	</cim:Discrete>
+		<!-- </cim:Discrete.validStates> -->
+		<!-- <cim:Discrete.validCommands> -->
+			<!-- Open Close -->
+		<!-- </cim:Discrete.validCommands> -->
+		<!-- <cim:Measurement.direction>ReadWrite</cim:Measurement.direction> -->
+		<!-- <cim:Measurement.measurementType></cim:Measurement.measurementType> -->
+		<!-- <cim:Measurement.PowerSystemResource rdf:resource="#BR_3"/> -->
+		<!-- <cim:Measurement.unitSymbol>none</cim:Measurement.unitSymbol> -->
+		<!-- <cim:IdentifiedObject.mRID>MEAS_D_3</cim:IdentifiedObject.mRID> -->
+		<!-- <cim:IdentifiedObject.name>DiscreteMeasurement_3</cim:IdentifiedObject.name> -->
+	<!-- </cim:Discrete> -->
 	
 	<cim:Discrete rdf:ID="MEAS_D_4">
 		<cim:Discrete.maxValue>1</cim:Discrete.maxValue>
 		<cim:Discrete.minValue>0</cim:Discrete.minValue>
 		<cim:Discrete.normalValue>1</cim:Discrete.normalValue>
-		<cim:Discrete.validStates>
-		
-		</cim:Discrete.validStates>
 		<cim:Discrete.validCommands>
-			Open Close
+		Open Close
 		</cim:Discrete.validCommands>
+		<cim:Discrete.validStates>
+		Opened Closed
+		</cim:Discrete.validStates>
 		<cim:Measurement.direction>ReadWrite</cim:Measurement.direction>
 		<cim:Measurement.measurementType></cim:Measurement.measurementType>
 		<cim:Measurement.PowerSystemResource rdf:resource="#BR_4"/>
@@ -1203,41 +1221,41 @@
 		<cim:IdentifiedObject.name>DiscreteMeasurement_4</cim:IdentifiedObject.name>
 	</cim:Discrete>
 	
-	<!-- <cim:Discrete rdf:ID="MEAS_D_5"> -->
-		<!-- <cim:Discrete.maxValue>1</cim:Discrete.maxValue> -->
-		<!-- <cim:Discrete.minValue>0</cim:Discrete.minValue> -->
-		<!-- <cim:Discrete.normalValue>1</cim:Discrete.normalValue> -->
-		<!-- <cim:Discrete.validStates> -->
-		
-		<!-- </cim:Discrete.validStates> -->
-		<!-- <cim:Discrete.validCommands> -->
-			<!-- Open Close -->
-		<!-- </cim:Discrete.validCommands> -->
-		<!-- <cim:Measurement.direction>ReadWrite</cim:Measurement.direction> -->
-		<!-- <cim:Measurement.measurementType></cim:Measurement.measurementType> -->
-		<!-- <cim:Measurement.PowerSystemResource rdf:resource="#BR_5"/> -->
-		<!-- <cim:Measurement.unitSymbol>none</cim:Measurement.unitSymbol> -->
-		<!-- <cim:IdentifiedObject.mRID>MEAS_D_5</cim:IdentifiedObject.mRID> -->
-		<!-- <cim:IdentifiedObject.name>DiscreteMeasurement_5</cim:IdentifiedObject.name> -->
-	<!-- </cim:Discrete> -->
+	<cim:Discrete rdf:ID="MEAS_D_5">
+		<cim:Discrete.maxValue>1</cim:Discrete.maxValue>
+		<cim:Discrete.minValue>0</cim:Discrete.minValue>
+		<cim:Discrete.normalValue>1</cim:Discrete.normalValue>
+		<cim:Discrete.validStates>
+		Opened Closed
+		</cim:Discrete.validStates>
+		<cim:Discrete.validCommands>
+		Open Clos
+		</cim:Discrete.validCommands>
+		<cim:Measurement.direction>ReadWrite</cim:Measurement.direction>
+		<cim:Measurement.measurementType></cim:Measurement.measurementType>
+		<cim:Measurement.PowerSystemResource rdf:resource="#BR_5"/>
+		<cim:Measurement.unitSymbol>none</cim:Measurement.unitSymbol>
+		<cim:IdentifiedObject.mRID>MEAS_D_5</cim:IdentifiedObject.mRID>
+		<cim:IdentifiedObject.name>DiscreteMeasurement_5</cim:IdentifiedObject.name>
+	</cim:Discrete>
 	
-	<!-- <cim:Discrete rdf:ID="MEAS_D_6"> -->
-		<!-- <cim:Discrete.maxValue>1</cim:Discrete.maxValue> -->
-		<!-- <cim:Discrete.minValue>0</cim:Discrete.minValue> -->
-		<!-- <cim:Discrete.normalValue>1</cim:Discrete.normalValue> -->
-		<!-- <cim:Discrete.validStates> -->
-		
-		<!-- </cim:Discrete.validStates> -->
-		<!-- <cim:Discrete.validCommands> -->
-			<!-- Open Close -->
-		<!-- </cim:Discrete.validCommands> -->
-		<!-- <cim:Measurement.direction>ReadWrite</cim:Measurement.direction> -->
-		<!-- <cim:Measurement.measurementType></cim:Measurement.measurementType> -->
-		<!-- <cim:Measurement.PowerSystemResource rdf:resource="#BR_6"/> -->
-		<!-- <cim:Measurement.unitSymbol>none</cim:Measurement.unitSymbol> -->
-		<!-- <cim:IdentifiedObject.mRID>MEAS_D_6</cim:IdentifiedObject.mRID> -->
-		<!-- <cim:IdentifiedObject.name>DiscreteMeasurement_6</cim:IdentifiedObject.name> -->
-	<!-- </cim:Discrete> -->
+	<cim:Discrete rdf:ID="MEAS_D_6">
+		<cim:Discrete.maxValue>1</cim:Discrete.maxValue>
+		<cim:Discrete.minValue>0</cim:Discrete.minValue>
+		<cim:Discrete.normalValue>1</cim:Discrete.normalValue>
+		<cim:Discrete.validStates>
+		Opened Closed
+		</cim:Discrete.validStates>
+		<cim:Discrete.validCommands>
+		Open Close
+		</cim:Discrete.validCommands>
+		<cim:Measurement.direction>ReadWrite</cim:Measurement.direction>
+		<cim:Measurement.measurementType></cim:Measurement.measurementType>
+		<cim:Measurement.PowerSystemResource rdf:resource="#BR_6"/>
+		<cim:Measurement.unitSymbol>none</cim:Measurement.unitSymbol>
+		<cim:IdentifiedObject.mRID>MEAS_D_6</cim:IdentifiedObject.mRID>
+		<cim:IdentifiedObject.name>DiscreteMeasurement_6</cim:IdentifiedObject.name>
+	</cim:Discrete>
 	
 	<!-- <cim:Discrete rdf:ID="MEAS_D_7"> -->
 		<!-- <cim:Discrete.maxValue>1</cim:Discrete.maxValue> -->
@@ -1257,25 +1275,7 @@
 		<!-- <cim:IdentifiedObject.name>DiscreteMeasurement_7</cim:IdentifiedObject.name> -->
 	<!-- </cim:Discrete> -->
 	
-	<cim:Discrete rdf:ID="MEAS_D_8">
-		<cim:Discrete.maxValue>1</cim:Discrete.maxValue>
-		<cim:Discrete.minValue>0</cim:Discrete.minValue>
-		<cim:Discrete.normalValue>1</cim:Discrete.normalValue>
-		<cim:Discrete.validStates>
-		
-		</cim:Discrete.validStates>
-		<cim:Discrete.validCommands>
-			Open Close
-		</cim:Discrete.validCommands>
-		<cim:Measurement.direction>ReadWrite</cim:Measurement.direction>
-		<cim:Measurement.measurementType></cim:Measurement.measurementType>
-		<cim:Measurement.PowerSystemResource rdf:resource="#BR_8"/>
-		<cim:Measurement.unitSymbol>none</cim:Measurement.unitSymbol>
-		<cim:IdentifiedObject.mRID>MEAS_D_8</cim:IdentifiedObject.mRID>
-		<cim:IdentifiedObject.name>DiscreteMeasurement_8</cim:IdentifiedObject.name>
-	</cim:Discrete>
-	
-	<!-- <cim:Discrete rdf:ID="MEAS_D_9"> -->
+	<!-- <cim:Discrete rdf:ID="MEAS_D_8"> -->
 		<!-- <cim:Discrete.maxValue>1</cim:Discrete.maxValue> -->
 		<!-- <cim:Discrete.minValue>0</cim:Discrete.minValue> -->
 		<!-- <cim:Discrete.normalValue>1</cim:Discrete.normalValue> -->
@@ -1287,11 +1287,29 @@
 		<!-- </cim:Discrete.validCommands> -->
 		<!-- <cim:Measurement.direction>ReadWrite</cim:Measurement.direction> -->
 		<!-- <cim:Measurement.measurementType></cim:Measurement.measurementType> -->
-		<!-- <cim:Measurement.PowerSystemResource rdf:resource="#BR_9"/> -->
+		<!-- <cim:Measurement.PowerSystemResource rdf:resource="#BR_8"/> -->
 		<!-- <cim:Measurement.unitSymbol>none</cim:Measurement.unitSymbol> -->
-		<!-- <cim:IdentifiedObject.mRID>MEAS_D_9</cim:IdentifiedObject.mRID> -->
-		<!-- <cim:IdentifiedObject.name>DiscreteMeasurement_9</cim:IdentifiedObject.name> -->
+		<!-- <cim:IdentifiedObject.mRID>MEAS_D_8</cim:IdentifiedObject.mRID> -->
+		<!-- <cim:IdentifiedObject.name>DiscreteMeasurement_8</cim:IdentifiedObject.name> -->
 	<!-- </cim:Discrete> -->
+	
+	<cim:Discrete rdf:ID="MEAS_D_9">
+		<cim:Discrete.maxValue>1</cim:Discrete.maxValue>
+		<cim:Discrete.minValue>0</cim:Discrete.minValue>
+		<cim:Discrete.normalValue>1</cim:Discrete.normalValue>
+		<cim:Discrete.validStates>
+		Opened Closed
+		</cim:Discrete.validStates>
+		<cim:Discrete.validCommands>
+		Open Close
+		</cim:Discrete.validCommands>
+		<cim:Measurement.direction>ReadWrite</cim:Measurement.direction>
+		<cim:Measurement.measurementType></cim:Measurement.measurementType>
+		<cim:Measurement.PowerSystemResource rdf:resource="#BR_9"/>
+		<cim:Measurement.unitSymbol>none</cim:Measurement.unitSymbol>
+		<cim:IdentifiedObject.mRID>MEAS_D_9</cim:IdentifiedObject.mRID>
+		<cim:IdentifiedObject.name>DiscreteMeasurement_9</cim:IdentifiedObject.name>
+	</cim:Discrete>
 	
 	<!-- <cim:Discrete rdf:ID="MEAS_D_10"> -->
 		<!-- <cim:Discrete.maxValue>1</cim:Discrete.maxValue> -->

@@ -75,6 +75,7 @@ namespace DispatcherApp.View.CustomControls
             this.ColumnDefinitions.Add(buttonCol);
             this.ColumnDefinitions.Add(space1Col);
             this.ColumnDefinitions.Add(canvas1Col);
+            this.ColumnDefinitions.Add(space2Col);
             this.ColumnDefinitions.Add(canvas2Col);
 
             RowDefinition mainRow = new RowDefinition();
@@ -86,9 +87,9 @@ namespace DispatcherApp.View.CustomControls
             this.Children.Add(this.ButtonCanvas);
             Grid.SetColumn(this.ButtonCanvas, 2);
             this.Children.Add(this.Canvas2);
-            Grid.SetColumn(this.Canvas2, 3);
-            this.Children.Add(this.Canvas3);
-            Grid.SetColumn(this.Canvas3, 5);
+            Grid.SetColumn(this.Canvas2, 4);
+            //this.Children.Add(this.Canvas3);
+            //Grid.SetColumn(this.Canvas3, 5);
 
             this.Canvas1.Background = new ImageBrush(new BitmapImage(new Uri(Directory.GetCurrentDirectory() + "/../../View/Resources/Images/incident.png")));
             this.Canvas2.Background = new ImageBrush(new BitmapImage(new Uri(Directory.GetCurrentDirectory() + "/../../View/Resources/Images/crew.png")));
