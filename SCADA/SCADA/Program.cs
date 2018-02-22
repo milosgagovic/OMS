@@ -22,32 +22,9 @@ namespace SCADA
             string fullPcConfig = Path.Combine(Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).Parent.Parent.Parent.FullName, "RtuConfiguration.xml");
             string basePath = Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).Parent.Parent.Parent.FullName;
 
-            // ovo dole ipak ne funkcionise ako stavis x64 ...videti sta sa ovom konfiguracijom
-
-            //if (IntPtr.Size == 8)
-            //{
-            //    Console.WriteLine("size==8");
-            //    // 64 bit machine
-            //    acqComConfigPath = Path.Combine(Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).Parent.Parent.Parent.FullName, "ScadaModel.xml");
-            //    pcConfig = "RtuConfiguration.xml";
-            //    fullPcConfig = Path.Combine(Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).Parent.Parent.Parent.FullName, "RtuConfiguration.xml");
-            //    basePath = Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).Parent.Parent.Parent.FullName;
-            //}
-            //else if (IntPtr.Size == 4)
-            //{
-            //    Console.WriteLine("size==4");
-            //    // 32 bit machine
-            //    acqComConfigPath = Path.Combine(Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).Parent.Parent.Parent.Parent.FullName, "ScadaModel.xml");
-            //    pcConfig = "RtuConfiguration.xml";
-            //    fullPcConfig = Path.Combine(Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).Parent.Parent.Parent.Parent.FullName, "RtuConfiguration.xml");
-            //    basePath = Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).Parent.Parent.Parent.Parent.FullName;
-            //}
-            //else
-            //{
-            //    Console.WriteLine("aaaa");
-            //}
-
             // to do: use cancellation tokens and TPL
+
+            Task requestsConsumer, answersConsumer, acqRequestsProducer;
 
             PCCommunicationEngine PCCommEng;
             while (true)
@@ -63,28 +40,33 @@ namespace SCADA
                 break;
             }
 
-
             CommAcqEngine AcqEngine = new CommAcqEngine();
             if (AcqEngine.Configure(acqComConfigPath))
             {
-                // stavlja zahteve za icijalno komandovanje u red 
                 AcqEngine.InitializeSimulator();
+              
+                // Thread processingRequestsFromQueue = new Thread(PCCommEng.ProcessRequestsFromQueue);
+                // to do: for IO bound operatin you <await an operation which returns a task inside of an async method>
+                // await yields control to the caller of the method thet performed await
+                requestsConsumer = Task.Factory.StartNew(() => PCCommEng.ProcessRequestsFromQueue(),
+                   TaskCreationOptions.LongRunning);
 
-                // uzimanje zahteva iz reda, i slanje zahteva MDBU-u. dobijanje MDB odgovora i stavljanje u red
-                Thread processingRequestsFromQueue = new Thread(PCCommEng.ProcessRequestsFromQueue);
+                // Thread processingAnswersFromQueue = new Thread(AcqEngine.ProcessPCAnwers);
+                answersConsumer = Task.Factory.StartNew(() => AcqEngine.ProcessPCAnwers(),
+                   TaskCreationOptions.LongRunning);
 
-                // uzimanje odgovora iz reda
-                Thread processingAnswersFromQueue = new Thread(AcqEngine.ProcessPCAnwers);
+                //Thread producingAcquisitonRequests = new Thread(AcqEngine.StartAcquisition);
 
-                // stavljanje zahteva za akviziju u red
-                Thread producingAcquisitonRequests = new Thread(AcqEngine.StartAcquisition);
-
-                processingRequestsFromQueue.Start();
-                processingAnswersFromQueue.Start();
+                // processingRequestsFromQueue.Start();
+                // processingAnswersFromQueue.Start();
 
                 // give simulator some time, and when everything is ready start acquisition
-                Thread.Sleep(1000);
-                producingAcquisitonRequests.Start();
+                Thread.Sleep(3000);
+
+                // producingAcquisitonRequests.Start();
+                //AcqEngine.StartAcquisition();
+                acqRequestsProducer = Task.Factory.StartNew(() => AcqEngine.Acquisition());
+
 
                 try
                 {
@@ -100,6 +82,7 @@ namespace SCADA
                     Console.ReadLine();
                     return;
                 }
+
             }
             else
             {
@@ -107,9 +90,9 @@ namespace SCADA
             }
 
             Console.WriteLine("Press <Enter> to stop the service.");
-
             Console.ReadKey();
 
+            // wait tasks
             AcqEngine.Stop();
             PCCommEng.Stop();
         }

@@ -41,40 +41,49 @@ namespace ModbusTCPDriver
             Buffer.BlockCopy(data, 7, responseData, 0, length - 7);
 
             // OBRATITI PAZNJU NA KONFIGURACIONE FAJLOVE SIMULATORA AKO OVDE PUKNE! 
-            switch ((FunctionCodes)responseData[0])
+            if ((responseData[0] & 0x80) != 1) // check for exception
             {
-                case FunctionCodes.WriteSingleCoil:
-                case FunctionCodes.WriteSingleRegister:
+                switch ((FunctionCodes)responseData[0])
+                {
+                    case FunctionCodes.WriteSingleCoil:
+                    case FunctionCodes.WriteSingleRegister:
 
-                    Response = new WriteResponse();
-                    Response.GetObjectResponse(responseData);
-                    break;
+                        Response = new WriteResponse();
+                        Response.GetObjectResponse(responseData);
+                        break;
 
-                case FunctionCodes.ReadCoils:
-                case FunctionCodes.ReadDiscreteInput:
+                    case FunctionCodes.ReadCoils:
+                    case FunctionCodes.ReadDiscreteInput:
 
-                    Response = new BitReadResponse();
-                    Response.GetObjectResponse(responseData);
+                        Response = new BitReadResponse();
+                        Response.GetObjectResponse(responseData);
 
-                    //Console.WriteLine("ReadDiscreteInput Response");
-                    //Console.WriteLine(BitConverter.ToString(data, 0, length));
-                    break;
+                        //Console.WriteLine("ReadDiscreteInput Response");
+                        //Console.WriteLine(BitConverter.ToString(data, 0, length));
+                        break;
 
-                case FunctionCodes.ReadHoldingRegisters:
-                case FunctionCodes.ReadInputRegisters:
+                    case FunctionCodes.ReadHoldingRegisters:
+                    case FunctionCodes.ReadInputRegisters:
 
-                    Response = new RegisterReadResponse();
-                    Response.GetObjectResponse(responseData);
+                        Response = new RegisterReadResponse();
+                        Response.GetObjectResponse(responseData);
 
-                    //Console.WriteLine("ReadHoldingRegisters Response");
-                    //Console.WriteLine(BitConverter.ToString(data, 0, length));
-                    break;
+                        //Console.WriteLine("ReadHoldingRegisters Response");
+                        //Console.WriteLine(BitConverter.ToString(data, 0, length));
+                        break;
 
-                default:
-                    // obrati paznju na konfig fajlove ako ovvde pukne
-                    Console.WriteLine("Error!!!!!");
-                    break;
+                    default:
+                        // obrati paznju na konfig fajlove ako ovvde pukne
+                        Console.WriteLine("Error!!!!!");
+                        break;
+                }
             }
+            else
+            {
+                //Console.WriteLine("Something went wrong. Slave can not process request.");
+                throw new Exception("Something went wrong.Slave can not process request.");
+            }
+
         }
     }
 }
