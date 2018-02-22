@@ -22,7 +22,6 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
         private static bool isShutdown;
         private int timerMsc;
 
-
         private DBContext dbContext = null;
 
         public CommAcqEngine()
@@ -237,51 +236,7 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
                 }
             }
         }
-
-        /// <summary>
-        /// Producing IORB requests for automatic data acquistion
-        /// </summary>
-        public void StartAcquisition()
-        {
-            DBContext.OnAnalogAdded += OnAnalogAddedEvent;
-
-            // toArray -> snapshot. ne mora to ovde, mozda je pametnije bez toga, kopiranje kosta.
-            // ovde  nije skupo jer nema puno rtuova
-            var rtusSnapshot = dbContext.GettAllRTUs();
-
-            // prebaciti na taskove
-            List<Thread> acqThreads = new List<Thread>();
-            foreach (var rtu in rtusSnapshot)
-            {
-                Thread t = new Thread(() => RtuAcquisition(rtu));
-                acqThreads.Add(t);
-            }
-            foreach (var t in acqThreads)
-                t.Start();
-
-            foreach (var t in acqThreads)
-                t.Join();
-
-            // sporno to do:
-            //    //while (!Database.IsConfigurationRunning)
-
-
-            Console.WriteLine("StartAcq.shutdown=true");
-            return;
-        }
-
-        public async Task RunAcq(Action<string> action, TimeSpan period, string rtuName, CancellationToken cancellationToken)
-        {
-            while (!cancellationToken.IsCancellationRequested)
-            {
-                Console.WriteLine("before task.delay");
-                await Task.Delay(period, cancellationToken);
-
-                if (!cancellationToken.IsCancellationRequested)
-                    action(rtuName);
-            }
-        }
-
+      
         public async Task AsyncRtuAcquisition(Action<string> action, TimeSpan period, string rtuName, CancellationToken token = default(CancellationToken))
         {
             while (!token.IsCancellationRequested)
@@ -300,6 +255,9 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
             }
         }
 
+        /// <summary>
+        /// Producing IORB requests for automatic data acquistion
+        /// </summary>
         public Task Acquisition()
         {
             Task retVal;
@@ -473,155 +431,15 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
             Console.WriteLine("RtuAcquistion Action Finished Thread id = {0} ", Thread.CurrentThread.ManagedThreadId);
         };
 
-        public void RtuAcquisition(KeyValuePair<string, RTU> rtuPair)
-        {
-            IIndustryProtocolHandler IProtHandler = null;
-            Console.WriteLine("RtuAcquistion Thread id = {0} started", Thread.CurrentThread.ManagedThreadId);
-
-            while (!isShutdown)
-            {
-                RTU rtu = dbContext.GetRTUByName(rtuPair.Key);
-                if (rtu != null)
-                {
-                    switch (rtu.Protocol)
-                    {
-                        case IndustryProtocols.ModbusTCP:
-                            IProtHandler = new ModbusHandler()
-                            {
-                                Header = new ModbusApplicationHeader
-                                {
-                                    TransactionId = 0,
-                                    ProtocolId = (ushort)IndustryProtocols.ModbusTCP,
-                                    DeviceAddress = rtu.Address,
-                                    Length = 5
-                                },
-                                Request = new ReadRequest()
-                            };
-                            break;
-                    }
-
-                    //-------------analogs---------------
-
-                    IORequestBlock iorbAnalogs = new IORequestBlock()
-                    {
-                        RequestType = RequestType.SEND_RECV,
-                        ProcessControllerName = rtuPair.Key
-                    };
-                    var analogs = dbContext.GetProcessVariable().Where(pv => pv.Type == VariableTypes.ANALOG && pv.IsInit == true &&
-                                                                        pv.ProcContrName.Equals(rtuPair.Key)).OrderBy(pv => pv.RelativeAddress);
-                    int requestCount = analogs.ToList().Count();
-                    if (requestCount != 0)
-                    {
-                        ProcessVariable firstPV = analogs.FirstOrDefault();
-                        iorbAnalogs.ReqAddress = (ushort)rtu.GetAcqAddress(firstPV);
-
-
-                        if (IProtHandler != null)
-                        {
-                            switch (rtu.Protocol)
-                            {
-                                case IndustryProtocols.ModbusTCP:
-
-                                    ((ReadRequest)((ModbusHandler)IProtHandler).Request).FunCode = FunctionCodes.ReadInputRegisters;
-                                    ((ReadRequest)((ModbusHandler)IProtHandler).Request).Quantity = (ushort)requestCount;
-                                    ((ReadRequest)((ModbusHandler)IProtHandler).Request).StartAddr = iorbAnalogs.ReqAddress;
-                                    break;
-                            }
-
-                            iorbAnalogs.Flags = requestCount;
-                            iorbAnalogs.SendBuff = IProtHandler.PackData();
-                            iorbAnalogs.SendMsgLength = iorbAnalogs.SendBuff.Length;
-                            IORequests.EnqueueRequest(iorbAnalogs);
-                        }
-                    }
-
-                    //-------------digitals---------------(to do: add init flag...)
-                    IORequestBlock iorbDigitals = new IORequestBlock()
-                    {
-                        RequestType = RequestType.SEND_RECV,
-                        ProcessControllerName = rtuPair.Key
-                    };
-                    var digitals = dbContext.GetProcessVariable().Where(pv => pv.Type == VariableTypes.DIGITAL &&
-                                                                        pv.ProcContrName.Equals(rtuPair.Key)).OrderBy(pv => pv.RelativeAddress);
-                    requestCount = digitals.ToList().Count();
-                    if (requestCount != 0)
-                    {
-                        ProcessVariable firstPV = digitals.FirstOrDefault();
-                        iorbDigitals.ReqAddress = (ushort)rtu.GetAcqAddress(firstPV);
-
-                        if (IProtHandler != null)
-                        {
-                            switch (rtu.Protocol)
-                            {
-                                case IndustryProtocols.ModbusTCP:
-
-                                    ((ReadRequest)((ModbusHandler)IProtHandler).Request).FunCode = FunctionCodes.ReadDiscreteInput;
-                                    ((ReadRequest)((ModbusHandler)IProtHandler).Request).Quantity = (ushort)requestCount;
-                                    ((ReadRequest)((ModbusHandler)IProtHandler).Request).StartAddr = iorbDigitals.ReqAddress;
-                                    break;
-                            }
-
-                            iorbDigitals.Flags = requestCount;
-                            iorbDigitals.SendBuff = IProtHandler.PackData();
-                            iorbDigitals.SendMsgLength = iorbDigitals.SendBuff.Length;
-                            IORequests.EnqueueRequest(iorbDigitals);
-                        }
-                    }
-
-                    // not implemented yet
-                    //-------------counters---------------(to do: add init flag...)
-                    IORequestBlock iorbCounters = new IORequestBlock()
-                    {
-                        RequestType = RequestType.SEND_RECV,
-                        ProcessControllerName = rtuPair.Key
-                    };
-                    var counters = dbContext.GetProcessVariable().Where(pv => pv.Type == VariableTypes.COUNTER &&
-                                                                        pv.ProcContrName.Equals(rtuPair.Key)).OrderBy(pv => pv.RelativeAddress);
-                    requestCount = counters.ToList().Count();
-                    if (requestCount != 0)
-                    {
-                        ProcessVariable firstPV = counters.FirstOrDefault();
-                        iorbCounters.ReqAddress = (ushort)rtu.GetAcqAddress(firstPV);
-
-                        if (IProtHandler != null)
-                        {
-                            switch (rtu.Protocol)
-                            {
-                                case IndustryProtocols.ModbusTCP:
-
-                                    ((ReadRequest)((ModbusHandler)IProtHandler).Request).FunCode = FunctionCodes.ReadInputRegisters;
-                                    ((ReadRequest)((ModbusHandler)IProtHandler).Request).Quantity = (ushort)requestCount;
-                                    ((ReadRequest)((ModbusHandler)IProtHandler).Request).StartAddr = iorbCounters.ReqAddress;
-                                    break;
-                            }
-                            iorbCounters.Flags = requestCount;
-                            iorbCounters.SendBuff = IProtHandler.PackData();
-                            iorbCounters.SendMsgLength = iorbCounters.SendBuff.Length;
-                            IORequests.EnqueueRequest(iorbCounters);
-                        }
-                    }
-                }
-
-                else
-                {
-                    Console.WriteLine("Returning thread id = {0}", Thread.CurrentThread.ManagedThreadId);
-                    return;
-                }
-
-                // ovde staviti da spava acqPeriod za taj odredjeni rtu
-                Thread.Sleep(timerMsc);
-            }
-        }
-
         /// <summary>
         /// Processing answers from Simulator - Process Controller
         /// </summary>
-        public void ProcessPCAnwers()
+        public void ProcessPCAnwers(TimeSpan timeout, CancellationToken token)
         {
-            while (!isShutdown)
+            while (!token.IsCancellationRequested)
             {
                 bool isSuccessful;
-                IORequestBlock answer = IORequests.DequeueAnswer(out isSuccessful);
+                IORequestBlock answer = IORequests.DequeueAnswer(out isSuccessful, timeout);
 
                 if (isSuccessful)
                 {
@@ -629,7 +447,7 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
                     RTU rtu;
                     // sporno
                     //while (!Database.IsConfigurationRunning)
-                    //    Thread.Sleep(100);
+
                     if ((rtu = dbContext.GetRTUByName(answer.ProcessControllerName)) != null)
                     {
                         switch (rtu.Protocol)
@@ -660,7 +478,7 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
 
                                                     try
                                                     {
- //bool isOpened = boolArrayResponse[i];
+                                                        //bool isOpened = boolArrayResponse[i];
                                                         bool isOpened = response.BitValues[i];
                                                         if (target.State != target.ValidStates[isOpened ? 1 : 0])
                                                         {
@@ -742,8 +560,6 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
                     }
 
                 }
-
-                Thread.Sleep(100);
             }
 
             Console.WriteLine("ProcessPCAnswers.shutdown=true");
@@ -890,7 +706,7 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
 
             // to do:
             //while (!Database.IsConfigurationRunning)
-            //    Thread.Sleep(100);
+
 
             // getting PV from db
             ProcessVariable pv;
@@ -972,9 +788,8 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
             Digital digital = null;
             OMSSCADACommon.Responses.Response response = new OMSSCADACommon.Responses.Response();
 
+            // sporno
             //while (!Database.IsConfigurationRunning)
-            //    Thread.Sleep(100);
-
 
             // getting PV from db
             ProcessVariable pv;
