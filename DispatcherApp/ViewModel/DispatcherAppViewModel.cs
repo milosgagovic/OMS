@@ -355,6 +355,16 @@ namespace DispatcherApp.ViewModel
                             Switch breaker = element as Switch;
                             this.Breakers.Add(element);
                             BreakerProperties properties = new BreakerProperties() { IsEnergized = element.Marker, IsUnderScada = element.UnderSCADA, Incident = element.Incident, CanCommand = breaker.CanCommand };
+
+                            if (breaker.State == SwitchState.Open)
+                            {
+                                properties.State = OMSSCADACommon.States.OPENED;
+                            }
+                            else if (breaker.State == SwitchState.Closed)
+                            {
+                                properties.State = OMSSCADACommon.States.CLOSED;
+                            }
+
                             properties.ValidCommands.Add(CommandTypes.CLOSE);
                             this.CommandIndex = 0;
 
@@ -421,6 +431,27 @@ namespace DispatcherApp.ViewModel
                             DigitalMeasurement measurement = new DigitalMeasurement();
                             measurement.ReadFromResourceDescription(meas);
 
+                            Element element = null;
+                            Network.TryGetValue(psr, out element);
+
+                            Switch breaker = null;
+                            if (element != null)
+                            {
+                                breaker = element as Switch;
+
+                                if (breaker != null)
+                                {
+                                    if (breaker.State == SwitchState.Open)
+                                    {
+                                        measurement.State = OMSSCADACommon.States.OPENED;
+                                    }
+                                    else if (breaker.State == SwitchState.Closed)
+                                    {
+                                        measurement.State = OMSSCADACommon.States.CLOSED;
+                                    }
+                                }
+                            }
+
                             ElementProperties properties;
                             Properties.TryGetValue(psr, out properties);
 
@@ -428,7 +459,7 @@ namespace DispatcherApp.ViewModel
                             {
                                 properties.Measurements.Add(measurement);
                             }
-                            
+
                             this.Measurements.Add(measurement.GID, measurement);
                         }
                         else if (type == DMSType.ENERGCONSUMER)
@@ -2018,6 +2049,8 @@ namespace DispatcherApp.ViewModel
 
                         if (property is BreakerProperties && i == 0)
                         {
+                            BreakerProperties breakerProperties = property as BreakerProperties;
+                            breakerProperties.State = sum.State;
                             Measurement measurement;
                             DigitalMeasurement digitalMeasurement;
                             try
@@ -2034,6 +2067,11 @@ namespace DispatcherApp.ViewModel
                             {
                                 digitalMeasurement.State = sum.State;
                             }
+                        }
+                        if (property is EnergyConsumerProperties)
+                        {
+                            EnergyConsumerProperties energyConsumerProperties = property as EnergyConsumerProperties;
+                            energyConsumerProperties.Call = false;
                         }
                     }
                     i++;
@@ -2094,7 +2132,10 @@ namespace DispatcherApp.ViewModel
                 if (report.IncidentState == IncidentState.REPAIRED)
                 {
                     element.Incident = false;
-                    element.CanCommand = true;
+                    if (element.IsUnderScada)
+                    {
+                        element.CanCommand = true;
+                    }
                 }
                 else
                 {
@@ -2109,11 +2150,16 @@ namespace DispatcherApp.ViewModel
         {
             ElementProperties property;
             properties.TryGetValue(call.Gid, out property);
-            if (property != null)
+
+            EnergyConsumerProperties consumerProperties = property as EnergyConsumerProperties;
+
+            if (consumerProperties != null)
             {
-                property.IsEnergized = call.IsEnergized;
+                consumerProperties.IsEnergized = call.IsEnergized;
+                consumerProperties.Call = true;
             }
         }
+
         private void SearchForIncident(bool isIncident, long incidentBreaker)
         {
 

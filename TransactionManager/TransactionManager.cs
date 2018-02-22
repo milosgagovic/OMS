@@ -42,6 +42,8 @@ namespace TransactionManager
                 binding.OpenTimeout = TimeSpan.FromMinutes(10);
                 binding.ReceiveTimeout = TimeSpan.FromMinutes(10);
                 binding.SendTimeout = TimeSpan.FromMinutes(10);
+                binding.MaxReceivedMessageSize = Int32.MaxValue;
+
                 if (scadaClient == null)
                 {
                     scadaClient = new SCADAClient(new EndpointAddress("net.tcp://localhost:4000/SCADAService"), binding);
@@ -261,7 +263,12 @@ namespace TransactionManager
         public TMSAnswerToClient GetNetwork()
         {
             // ako se ne podignu svi servisi na DMSu, ovde pada
-            List<Element> listOfDMSElement = proxyToDispatcherDMS.GetAllElements();
+            List<Element> listOfDMSElement = new List<Element>();
+            try
+            {
+                listOfDMSElement = proxyToDispatcherDMS.GetAllElements();
+            }
+            catch(Exception e) { }
 
             List<ResourceDescription> resourceDescriptionFromNMS = new List<ResourceDescription>();
             List<ResourceDescription> descMeas = new List<ResourceDescription>();
@@ -326,6 +333,7 @@ namespace TransactionManager
                         binding.OpenTimeout = TimeSpan.FromMinutes(10);
                         binding.ReceiveTimeout = TimeSpan.FromMinutes(10);
                         binding.SendTimeout = TimeSpan.FromMinutes(10);
+                        binding.MaxReceivedMessageSize = Int32.MaxValue;
                         if (ScadaClient.State == CommunicationState.Faulted)
                             ScadaClient = new SCADAClient(new EndpointAddress("net.tcp://localhost:4000/SCADAService"), binding);
                     }

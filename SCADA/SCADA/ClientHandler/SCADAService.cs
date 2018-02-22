@@ -25,6 +25,7 @@ namespace SCADA.ClientHandler
             binding.OpenTimeout = new TimeSpan(1, 0, 0, 0);
             binding.ReceiveTimeout = new TimeSpan(1, 0, 0, 0);
             binding.SendTimeout = new TimeSpan(1, 0, 0, 0);
+            binding.MaxReceivedMessageSize = Int32.MaxValue;
 
             hosts = new List<ServiceHost>();
 

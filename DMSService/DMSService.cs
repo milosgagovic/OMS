@@ -47,6 +47,7 @@ namespace DMSService
                 binding.OpenTimeout = TimeSpan.FromMinutes(10);
                 binding.ReceiveTimeout = TimeSpan.FromMinutes(10);
                 binding.SendTimeout = TimeSpan.FromMinutes(10);
+                binding.MaxReceivedMessageSize = Int32.MaxValue;
                 if (scadaClient == null)
                 {
                     scadaClient = new SCADAClient(new EndpointAddress("net.tcp://localhost:4000/SCADAService"), binding);
@@ -214,6 +215,7 @@ namespace DMSService
                     binding.OpenTimeout = TimeSpan.FromMinutes(10);
                     binding.ReceiveTimeout = TimeSpan.FromMinutes(10);
                     binding.SendTimeout = TimeSpan.FromMinutes(10);
+                    binding.MaxReceivedMessageSize = Int32.MaxValue;
                     if (ScadaClient.State == CommunicationState.Faulted)
                         ScadaClient = new SCADAClient(new EndpointAddress("net.tcp://localhost:4000/SCADAService"), binding);
                 }
@@ -246,7 +248,9 @@ namespace DMSService
                 }
                 Thread.Sleep(100);
             } while (!isImsAvailable);
+
             List<IncidentReport> reports = imsClient.GetAllReports();
+            List<ElementStateReport> elementStates = imsClient.GetAllElementStateReports();
 
             // if there is no insert operations it means it is system initialization,
             // and DMS should obtain the static data from NMS           
@@ -500,7 +504,16 @@ namespace DMSService
                             }
                             else
                             {
-                                sw.UnderSCADA = false;
+                                ElementStateReport elementStateReport = elementStates.Where(s => s.MrID == sw.MRID).LastOrDefault();
+
+                                if (elementStateReport != null)
+                                {
+                                    sw = new Switch(branch, mrid, (SwitchState)elementStateReport.State) { UnderSCADA = false };
+                                }
+                                else
+                                {
+                                    sw = new Switch(branch, mrid, SwitchState.Closed) { UnderSCADA = false };
+                                }
                             }
                         }
                         else
@@ -747,6 +760,7 @@ namespace DMSService
             binding.ReceiveTimeout = TimeSpan.FromMinutes(10);
             binding.SendTimeout = TimeSpan.FromMinutes(10);
             binding.TransactionFlow = true;
+            binding.MaxReceivedMessageSize = Int32.MaxValue;
 
             hosts = new List<ServiceHost>();
             ServiceHost transactionHost = new ServiceHost(typeof(DMSTransactionService));

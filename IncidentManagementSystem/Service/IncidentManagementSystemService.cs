@@ -21,7 +21,12 @@ namespace IncidentManagementSystem.Service
             LoadCrews();
 
             svc = new ServiceHost(typeof(IMSService));
-            var binding = new NetTcpBinding();
+            NetTcpBinding binding = new NetTcpBinding();
+            binding.CloseTimeout = TimeSpan.FromMinutes(10);
+            binding.OpenTimeout = TimeSpan.FromMinutes(10);
+            binding.ReceiveTimeout = TimeSpan.FromMinutes(10);
+            binding.SendTimeout = TimeSpan.FromMinutes(10);
+            binding.MaxReceivedMessageSize = Int32.MaxValue;
             svc.AddServiceEndpoint(typeof(IIMSContract),
                 binding,
                 new Uri("net.tcp://localhost:6090/IncidentManagementSystemService"));

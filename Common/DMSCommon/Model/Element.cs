@@ -60,6 +60,7 @@ namespace DMSCommon.Model
             get { return _mRID; }
             set { _mRID = value; }
         }
+
         public Element() { }
         public Element(long gid)
         {

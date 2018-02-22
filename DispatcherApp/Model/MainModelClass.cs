@@ -21,6 +21,7 @@ namespace DispatcherApp.Model
             binding.OpenTimeout = new TimeSpan(1, 0, 0, 0);
             binding.ReceiveTimeout = new TimeSpan(1, 0, 0, 0);
             binding.SendTimeout = new TimeSpan(1, 0, 0, 0);
+            binding.MaxReceivedMessageSize = Int32.MaxValue;
 
             ChannelFactory<IOMSClient> factoryToTMS = new ChannelFactory<IOMSClient>(binding,
                 new EndpointAddress("net.tcp://localhost:6080/TransactionManagerService"));

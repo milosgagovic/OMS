@@ -271,8 +271,37 @@ namespace DMSService
                         if (item.MRID == report.MrID)
                         {
                             sw = (Switch)item;
-                            sw.CanCommand = true;
-                            break;
+
+                            if (item.UnderSCADA)
+                            {
+                                sw.CanCommand = true;
+                                break;
+                            }
+                            else
+                            {
+                                sw.State = SwitchState.Closed;
+                                ElementStateReport elementStateReport = new ElementStateReport() { MrID = sw.MRID, Time = DateTime.UtcNow, State = 0 };
+                                IMSClient.AddElementStateReport(elementStateReport);
+
+                                List<SCADAUpdateModel> networkChange = new List<SCADAUpdateModel>();
+                                if (EnergizationAlgorithm.TraceUp((Node)DMSService.Instance.Tree.Data[sw.End1], DMSService.Instance.Tree))
+                                {
+                                    networkChange.Add(new SCADAUpdateModel(sw.ElementGID, true, OMSSCADACommon.States.CLOSED));
+                                    sw.Marker = true;
+                                    Node n = (Node)DMSService.Instance.Tree.Data[sw.End2];
+                                    n.Marker = true;
+                                    networkChange.Add(new SCADAUpdateModel(n.ElementGID, true));
+                                    networkChange = EnergizationAlgorithm.TraceDown(n, networkChange, true, false, DMSService.Instance.Tree);
+                                }
+                                else
+                                {
+                                    networkChange.Add(new SCADAUpdateModel(sw.ElementGID, false, OMSSCADACommon.States.CLOSED));
+                                }
+
+                                Publisher publisher1 = new Publisher();
+                                publisher1.PublishUpdate(networkChange);
+                                break;
+                            }
                         }
                     }
                 }

@@ -41,18 +41,28 @@ namespace PubSubscribeService
         private static void HostPublishService()
         {
             publishServiceHost = new ServiceHost(typeof(PublishingService));
-            NetTcpBinding tcpBindingPublish = new NetTcpBinding();
+            NetTcpBinding binding = new NetTcpBinding();
+            binding.CloseTimeout = TimeSpan.FromMinutes(10);
+            binding.OpenTimeout = TimeSpan.FromMinutes(10);
+            binding.ReceiveTimeout = TimeSpan.FromMinutes(10);
+            binding.SendTimeout = TimeSpan.FromMinutes(10);
+            binding.MaxReceivedMessageSize = Int32.MaxValue;
 
-            publishServiceHost.AddServiceEndpoint(typeof(IPublishing), tcpBindingPublish, "net.tcp://localhost:7001/Pub");
+            publishServiceHost.AddServiceEndpoint(typeof(IPublishing), binding, "net.tcp://localhost:7001/Pub");
             publishServiceHost.Open();
         }
 
         private static void HostSubscribeService()
         {
             subscribeServiceHost = new ServiceHost(typeof(SubscriptionService));
-            NetTcpBinding tcpBindingSubscribe = new NetTcpBinding();
+            NetTcpBinding binding = new NetTcpBinding();
+            binding.CloseTimeout = TimeSpan.FromMinutes(10);
+            binding.OpenTimeout = TimeSpan.FromMinutes(10);
+            binding.ReceiveTimeout = TimeSpan.FromMinutes(10);
+            binding.SendTimeout = TimeSpan.FromMinutes(10);
+            binding.MaxReceivedMessageSize = Int32.MaxValue;
 
-            subscribeServiceHost.AddServiceEndpoint(typeof(ISubscription), tcpBindingSubscribe, "net.tcp://localhost:7002/Sub");
+            subscribeServiceHost.AddServiceEndpoint(typeof(ISubscription), binding, "net.tcp://localhost:7002/Sub");
             subscribeServiceHost.Open();
         }
     }

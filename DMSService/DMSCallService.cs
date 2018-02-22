@@ -164,14 +164,12 @@ namespace DMSService
                         //publishujes incident
                         string mrid = DMSService.Instance.Tree.Data[(long)incidentBreaker].MRID;
                         IncidentReport incident = new IncidentReport() { MrID = mrid };
-
-                        Random rand = new Random();
-                        Array values = Enum.GetValues(typeof(CrewType));
-                        incident.Crewtype = (CrewType)values.GetValue(rand.Next(0, values.Length));
+                        incident.Crewtype = CrewType.Investigation;
 
                         // to do: BUG -> ovo state opened srediti
-                        ElementStateReport elementStateReport = new ElementStateReport() { MrID = mrid, Time = DateTime.UtcNow, State = 0 };
-                        //ElementStateReport elementStateReport = new ElementStateReport() { MrID = mrid, Time = DateTime.UtcNow, State = "OPENED" };                        IMSClient.AddReport(incident);
+                        ElementStateReport elementStateReport = new ElementStateReport() { MrID = mrid, Time = DateTime.UtcNow, State = 1 };
+                        //ElementStateReport elementStateReport = new ElementStateReport() { MrID = mrid, Time = DateTime.UtcNow, State = "OPENED" };                        
+                        IMSClient.AddReport(incident);
                         IMSClient.AddElementStateReport(elementStateReport);
 
                         pub.PublishUIBreaker(true, (long)incidentBreaker);

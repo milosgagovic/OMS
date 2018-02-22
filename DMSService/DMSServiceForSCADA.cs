@@ -51,10 +51,6 @@ namespace DMSService
 
                 bool isIncident = false;
                 IncidentReport incident = new IncidentReport() { MrID = sw.MRID };
-
-                //Random rand = new Random();
-                //Array crews = Enum.GetValues(typeof(CrewType));
-                //incident.Crewtype = (CrewType)crews.GetValue(rand.Next(0, crews.Length));
                 incident.Crewtype = CrewType.Investigation;
 
                 ElementStateReport elementStateReport = new ElementStateReport() { MrID = sw.MRID, Time = DateTime.UtcNow, State = (int)state };
