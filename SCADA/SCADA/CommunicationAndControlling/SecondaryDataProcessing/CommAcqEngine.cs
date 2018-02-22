@@ -282,14 +282,15 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
             }
         }
 
-        public async Task AsyncRtuAcq(Action<string> action, TimeSpan period, string rtuName, CancellationToken token = default(CancellationToken))
+        public async Task AsyncRtuAcquisition(Action<string> action, TimeSpan period, string rtuName, CancellationToken token = default(CancellationToken))
         {
             while (!token.IsCancellationRequested)
             {
-                //this.DoMyMethod();
                 action(rtuName);
                 try
                 {
+                    // await suspends calling method of await (AsyncRtuAcquisition in our case), and yields control back to 
+                    // the caller (Acquisition in out case) of the methof that performed await, until the awaitable task is complete
                     await Task.Delay(period, token);
                 }
                 catch (TaskCanceledException)
@@ -301,6 +302,7 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
 
         public Task Acquisition()
         {
+            Task retVal;
             Console.WriteLine("Task Aqcquistion");
             DBContext.OnAnalogAdded += OnAnalogAddedEvent;
 
@@ -311,11 +313,31 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
             foreach (var rtu in rtus)
             {
                 //acqTasks.Add(RunAcq(rtuAcquisitonAction, TimeSpan.FromMilliseconds(5000), rtu.Key, token));
-                acqTasks.Add(AsyncRtuAcq(rtuAcquisitonAction, TimeSpan.FromMilliseconds(5000), rtu.Key, token));
+                acqTasks.Add(AsyncRtuAcquisition(rtuAcquisitonAction, TimeSpan.FromMilliseconds(3000), rtu.Key, token));
                 Console.WriteLine("task added");
+
+                // do i need to call task.Start()?
             }
             Console.WriteLine("Task acquistion before return");
-            return Task.WhenAll(acqTasks);
+            foreach (Task t in acqTasks)
+                Console.WriteLine("Task {0} Status: {1}", t.Id, t.Status);
+
+            try
+            {
+                retVal = Task.WhenAll(acqTasks);
+            }
+            catch (AggregateException e)
+            {
+                //retVal = default(Task);
+                retVal = Task.FromResult(false);
+
+                Console.WriteLine("\nThe following exceptions have been thrown by WaitAll(): (THIS WAS EXPECTED)");
+                for (int j = 0; j < e.InnerExceptions.Count; j++)
+                {
+                    Console.WriteLine("\n-------------------------------------------------\n{0}", e.InnerExceptions[j].ToString());
+                }
+            }
+            return retVal;
         }
 
         public Action<string> rtuAcquisitonAction = rtuName =>
@@ -356,6 +378,7 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
                 int requestCount = analogs.ToList().Count();
                 if (requestCount != 0)
                 {
+                    Console.WriteLine("acq analogs");
                     ProcessVariable firstPV = analogs.FirstOrDefault();
                     iorbAnalogs.ReqAddress = (ushort)rtu.GetAcqAddress(firstPV);
 
@@ -390,6 +413,7 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
                 requestCount = digitals.ToList().Count();
                 if (requestCount != 0)
                 {
+                    Console.WriteLine("acq digitals");
                     ProcessVariable firstPV = digitals.FirstOrDefault();
                     iorbDigitals.ReqAddress = (ushort)rtu.GetAcqAddress(firstPV);
 
@@ -424,6 +448,7 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
                 requestCount = counters.ToList().Count();
                 if (requestCount != 0)
                 {
+                    Console.WriteLine("acq coutners");
                     ProcessVariable firstPV = counters.FirstOrDefault();
                     iorbCounters.ReqAddress = (ushort)rtu.GetAcqAddress(firstPV);
 
@@ -448,9 +473,6 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
             Console.WriteLine("RtuAcquistion Action Finished Thread id = {0} ", Thread.CurrentThread.ManagedThreadId);
         };
 
-
-        // zaseban thread da bi mogla da kasnije imas acq period na nivou rtu-a, i da ti lakse bude kad budes prebacivala na TPL
-        // mozda da ne radis sa pair, nego samo string i onda iz baze uzimas taj rtu...
         public void RtuAcquisition(KeyValuePair<string, RTU> rtuPair)
         {
             IIndustryProtocolHandler IProtHandler = null;
@@ -737,7 +759,6 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
             parser.SerializeScadaModel();
         }
 
-        // private static void OnAnalogAddedEvent(object sender, EventArgs e)
         private void OnAnalogAddedEvent(object sender, EventArgs e)
         {
             Console.WriteLine("OnAnalogEventAdded started");
