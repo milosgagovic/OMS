@@ -446,6 +446,17 @@
       <RelativeAddress>28</RelativeAddress>
       <UnitSymbol>VA</UnitSymbol>
     </Analog>
+    <Analog>
+      <Name>MEAS_A_30</Name>
+      <NumOfRegisters>1</NumOfRegisters>
+      <AcqValue>250</AcqValue>
+      <CommValue>250</CommValue>
+      <MaxValue>500</MaxValue>
+      <MinValue>50</MinValue>
+      <ProcContrName>RTU-1</ProcContrName>
+      <RelativeAddress>29</RelativeAddress>
+      <UnitSymbol>VA</UnitSymbol>
+    </Analog>
   </Analogs>
   <Counters />
 </ScadaModel>
