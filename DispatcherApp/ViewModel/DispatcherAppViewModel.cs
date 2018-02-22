@@ -2175,6 +2175,7 @@ namespace DispatcherApp.ViewModel
                         CancellationToken token = tokenSource.Token;
 
                         blinkTask = Task.Factory.StartNew(() => Blink(propBr, token), token);
+                        propBr.IsCandidate = true;
                     }
                     else if (isIncident)
                     {

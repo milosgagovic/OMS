@@ -132,7 +132,14 @@ namespace DMSService
                         if (allBrekersUp.Count > 0)
                         {
                             List<long> pom = new List<long>();
-                            allBrekersUp.ForEach(x => pom.Add(x));
+                            foreach (var item in allBrekersUp)
+                            {
+                                Switch s = (Switch)DMSService.Instance.Tree.Data[item];
+                                if(s.UnderSCADA == false)
+                                {
+                                    pom.Add(s.ElementGID);
+                                }
+                            }
                             possibleBreakers.Add(pom);
                             allBrekersUp.Clear();
                         }
