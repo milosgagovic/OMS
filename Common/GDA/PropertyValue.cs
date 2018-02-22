@@ -7,6 +7,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Xml.Serialization;
 using System.ServiceModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace FTN.Common
 {
@@ -17,7 +18,8 @@ namespace FTN.Common
         List<long> longValues = new List<long>();
         List<float> floatValues = new List<float>();
         List<string> stringValues = new List<string>();
-
+        [Key]
+        public int Id { get; set; }
         public PropertyValue()
         {
         }

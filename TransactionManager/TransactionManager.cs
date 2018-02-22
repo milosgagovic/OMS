@@ -1,4 +1,5 @@
-﻿using DMSCommon.Model;
+﻿
+using DMSCommon.Model;
 using DMSContract;
 using FTN.Common;
 using FTN.ServiceContracts;
@@ -36,9 +37,16 @@ namespace TransactionManager
         {
             get
             {
+                NetTcpBinding binding = new NetTcpBinding();
+                binding.CloseTimeout = TimeSpan.FromMinutes(10);
+                binding.OpenTimeout = TimeSpan.FromMinutes(10);
+                binding.ReceiveTimeout = TimeSpan.FromMinutes(10);
+                binding.SendTimeout = TimeSpan.FromMinutes(10);
+                binding.MaxReceivedMessageSize = Int32.MaxValue;
+
                 if (scadaClient == null)
                 {
-                    scadaClient = new SCADAClient(new EndpointAddress("net.tcp://localhost:4000/SCADAService"));
+                    scadaClient = new SCADAClient(new EndpointAddress("net.tcp://localhost:4000/SCADAService"), binding);
                 }
                 return scadaClient;
             }
@@ -234,6 +242,20 @@ namespace TransactionManager
             return true;
         }
 
+        public void ClearNMSDB()
+        {
+            using (NMSAdoNet ctx = new NMSAdoNet())
+            {
+                var tableNames = ctx.Database.SqlQuery<string>("SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME NOT LIKE '%Migration%'").ToList();
+                foreach (var tableName in tableNames)
+                {
+                    ctx.Database.ExecuteSqlCommand(string.Format("DELETE FROM {0}", tableName));
+                }
+
+                ctx.SaveChanges();
+            }
+        }
+
         #endregion
 
         #region  IOMSClient DispatcherApp Methods
@@ -241,7 +263,12 @@ namespace TransactionManager
         public TMSAnswerToClient GetNetwork()
         {
             // ako se ne podignu svi servisi na DMSu, ovde pada
-            List<Element> listOfDMSElement = proxyToDispatcherDMS.GetAllElements();
+            List<Element> listOfDMSElement = new List<Element>();
+            try
+            {
+                listOfDMSElement = proxyToDispatcherDMS.GetAllElements();
+            }
+            catch(Exception e) { }
 
             List<ResourceDescription> resourceDescriptionFromNMS = new List<ResourceDescription>();
             List<ResourceDescription> descMeas = new List<ResourceDescription>();
@@ -301,8 +328,14 @@ namespace TransactionManager
                     {
                         //Console.WriteLine(e);
                         Console.WriteLine("GetNetwork() -> SCADA is not available yet.");
+                        NetTcpBinding binding = new NetTcpBinding();
+                        binding.CloseTimeout = TimeSpan.FromMinutes(10);
+                        binding.OpenTimeout = TimeSpan.FromMinutes(10);
+                        binding.ReceiveTimeout = TimeSpan.FromMinutes(10);
+                        binding.SendTimeout = TimeSpan.FromMinutes(10);
+                        binding.MaxReceivedMessageSize = Int32.MaxValue;
                         if (ScadaClient.State == CommunicationState.Faulted)
-                            ScadaClient = new SCADAClient(new EndpointAddress("net.tcp://localhost:4000/SCADAService"));
+                            ScadaClient = new SCADAClient(new EndpointAddress("net.tcp://localhost:4000/SCADAService"), binding);
                     }
                     Thread.Sleep(500);
                 } while (true);
@@ -403,7 +436,7 @@ namespace TransactionManager
                     string type = rd.GetProperty(ModelCode.MEASUREMENT_TYPE).ToString();
                     if (type == "Analog")
                     {
-                        element.Type = DeviceTypes.ANALOG;                       
+                        element.Type = DeviceTypes.ANALOG;
                         element.UnitSymbol = ((UnitSymbol)rd.GetProperty(ModelCode.MEASUREMENT_UNITSYMB).AsEnum()).ToString();
                         element.WorkPoint = rd.GetProperty(ModelCode.ANALOG_NORMVAL).AsFloat();
                     }

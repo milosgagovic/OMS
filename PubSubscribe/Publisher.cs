@@ -76,8 +76,13 @@ namespace PubSubscribe
             {
                 address = "net.tcp://localhost:7001/Pub";
                 EndpointAddress endpointAddress = new EndpointAddress(address);
-                NetTcpBinding netTcpBinding = new NetTcpBinding();
-                proxy = ChannelFactory<IPublishing>.CreateChannel(netTcpBinding, endpointAddress);
+                NetTcpBinding binding = new NetTcpBinding();
+                binding.CloseTimeout = TimeSpan.FromMinutes(10);
+                binding.OpenTimeout = TimeSpan.FromMinutes(10);
+                binding.ReceiveTimeout = TimeSpan.FromMinutes(10);
+                binding.SendTimeout = TimeSpan.FromMinutes(10);
+                binding.MaxReceivedMessageSize = Int32.MaxValue;
+                proxy = ChannelFactory<IPublishing>.CreateChannel(binding, endpointAddress);
             }
             catch (Exception e)
             {

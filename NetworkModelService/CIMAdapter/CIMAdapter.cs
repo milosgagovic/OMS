@@ -35,6 +35,7 @@ namespace FTN.ESI.SIMES.CIM.CIMAdapter
                     binding.ReceiveTimeout = TimeSpan.FromMinutes(10);
                     binding.SendTimeout = TimeSpan.FromMinutes(10);
                     binding.TransactionFlow = true;
+                    binding.MaxReceivedMessageSize = Int32.MaxValue;
 
                     factoryToTMS = new ChannelFactory<IOMSClient>(binding, new EndpointAddress("net.tcp://localhost:6080/TransactionManagerService"));
 					proxyToTransactionManager = factoryToTMS.CreateChannel();
@@ -185,6 +186,18 @@ namespace FTN.ESI.SIMES.CIM.CIMAdapter
 				return false;
 			}
 		}
+        public void ClearDataBaseOnNMS()
+        {
+            NetTcpBinding binding = new NetTcpBinding();
+            binding.CloseTimeout = TimeSpan.FromMinutes(10);
+            binding.OpenTimeout = TimeSpan.FromMinutes(10);
+            binding.ReceiveTimeout = TimeSpan.FromMinutes(10);
+            binding.SendTimeout = TimeSpan.FromMinutes(10);
+            binding.MaxReceivedMessageSize = Int32.MaxValue;
+            ChannelFactory<IOMSClient>  factoryToTMS = new ChannelFactory<IOMSClient>(binding, new EndpointAddress("net.tcp://localhost:6080/TransactionManagerService"));
+            proxyToTransactionManager = factoryToTMS.CreateChannel();
+            proxyToTransactionManager.ClearNMSDB();
+        }
 
 	}
 }

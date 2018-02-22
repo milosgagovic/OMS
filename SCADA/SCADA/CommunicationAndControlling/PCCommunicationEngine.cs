@@ -22,7 +22,7 @@ namespace SCADA.CommunicationAndControlling
             IORequests = IORequestsQueue.GetQueue();
 
             isShutdown = false;
-            timerMsc = 200;
+            timerMsc = 100;
 
             processControllers = new Dictionary<string, ProcessController>();
             TcpChannels = new Dictionary<string, TcpClient>();

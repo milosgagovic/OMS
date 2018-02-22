@@ -1,16 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.Serialization;
-using System.Text;
-
 namespace FTN.Common
 {
-	/// <summary>
-	/// An enumeration that defines property types
-	/// </summary>	
-	public enum PropertyType : short
+    /// <summary>
+    /// An enumeration that defines property types
+    /// </summary>	
+    public enum PropertyType : short
 	{
 		Empty = 0,
 
@@ -57,11 +55,16 @@ namespace FTN.Common
 		/// Current value of the property
 		/// </summary>
 		private PropertyValue value;
+        [Key]
+        public int IdDB { get; set; }
 
-		/// <summary>
-		/// Initializes a new instance of the Property class
-		/// </summary>
-		public Property()
+        /// <summary>
+        /// Initializes a new instance of the Property class
+        /// </summary>
+        [ForeignKey("ResourceDescription")]
+        public int ResourceDescription_Id { get; set; }
+        public virtual ResourceDescription ResourceDescription { get; set; }
+        public Property()
 		{
 		}
 
@@ -223,7 +226,7 @@ namespace FTN.Common
 			get { return value; }
 			set { this.value = value; }
 		}
-
+        
 		public PropertyType Type
 		{
 			get

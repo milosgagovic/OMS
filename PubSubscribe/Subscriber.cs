@@ -39,10 +39,15 @@ namespace PubSubscribe
         {
             try
             {  //***git
-                NetTcpBinding netTcpbinding = new NetTcpBinding();
+                NetTcpBinding binding = new NetTcpBinding();
+                binding.CloseTimeout = TimeSpan.FromMinutes(10);
+                binding.OpenTimeout = TimeSpan.FromMinutes(10);
+                binding.ReceiveTimeout = TimeSpan.FromMinutes(10);
+                binding.SendTimeout = TimeSpan.FromMinutes(10);
+                binding.MaxReceivedMessageSize = Int32.MaxValue;
                 EndpointAddress endpointAddress = new EndpointAddress("net.tcp://localhost:7002/Sub");
                 InstanceContext callback = new InstanceContext(this);
-                DuplexChannelFactory<ISubscription> channelFactory = new DuplexChannelFactory<ISubscription>(callback, netTcpbinding, endpointAddress);
+                DuplexChannelFactory<ISubscription> channelFactory = new DuplexChannelFactory<ISubscription>(callback, binding, endpointAddress);
                 subscriptionProxy = channelFactory.CreateChannel();
             }
             catch (Exception e)

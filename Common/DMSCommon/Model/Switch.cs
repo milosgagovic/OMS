@@ -13,6 +13,7 @@ namespace DMSCommon.Model
         private SwitchState _state;
         private bool _canCommand;
 
+        [DataMember]
         public SwitchState State
         {
             get

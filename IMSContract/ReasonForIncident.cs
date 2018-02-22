@@ -9,8 +9,8 @@ namespace IMSContract
     public enum ReasonForIncident
     {
         Unknown = 0,
-        ShortCircuit,
-        GroundFault,
+        Short_Circuit,
+        Ground_Fault,
         Overload
     }
 }

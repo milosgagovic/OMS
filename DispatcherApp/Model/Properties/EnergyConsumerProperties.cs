@@ -8,6 +8,21 @@ namespace DispatcherApp.Model.Properties
 {
     public class EnergyConsumerProperties : ElementProperties
     {
+        private bool call;
+
+        public bool Call
+        {
+            get
+            {
+                return call;
+            }
+            set
+            {
+                call = value;
+                RaisePropertyChanged("Call");
+            }
+        }
+
         public new void ReadFromResourceDescription(ResourceDescription rd)
         {
             base.ReadFromResourceDescription(rd);

@@ -90,5 +90,9 @@ namespace FTN.ServiceContracts
 
         [OperationContract]
         Delta GetFixedDelta(Delta d);
+        [OperationContract]
+        bool Ping();
+        [OperationContract]
+        void ClearDataBaseOnNMS();
     }
 }

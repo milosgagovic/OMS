@@ -154,7 +154,7 @@ namespace DMSService
                 {
                     pub.PublishUIBreaker(false, (long)incidentBreaker);
 
-                    Thread.Sleep(19000);
+                    Thread.Sleep(27000);
                 }
 
                 lock (sync)
@@ -164,18 +164,39 @@ namespace DMSService
                         //publishujes incident
                         string mrid = DMSService.Instance.Tree.Data[(long)incidentBreaker].MRID;
                         IncidentReport incident = new IncidentReport() { MrID = mrid };
-
-                        Random rand = new Random();
-                        Array values = Enum.GetValues(typeof(CrewType));
-                        incident.Crewtype = (CrewType)values.GetValue(rand.Next(0, values.Length));
+                        incident.Crewtype = CrewType.Investigation;
 
                         // to do: BUG -> ovo state opened srediti
-                        ElementStateReport elementStateReport = new ElementStateReport() { MrID = mrid, Time = DateTime.UtcNow, State = 0 };
-                        //ElementStateReport elementStateReport = new ElementStateReport() { MrID = mrid, Time = DateTime.UtcNow, State = "OPENED" };                        IMSClient.AddReport(incident);
+                        ElementStateReport elementStateReport = new ElementStateReport() { MrID = mrid, Time = DateTime.UtcNow, State = 1 };
+                        //ElementStateReport elementStateReport = new ElementStateReport() { MrID = mrid, Time = DateTime.UtcNow, State = "OPENED" };                        
+                        IMSClient.AddReport(incident);
                         IMSClient.AddElementStateReport(elementStateReport);
 
-                        pub.PublishUIBreaker(true,(long)incidentBreaker);
+                        pub.PublishUIBreaker(true, (long)incidentBreaker);
                         pub.PublishIncident(incident);
+
+                        List<SCADAUpdateModel> networkChange = new List<SCADAUpdateModel>();
+                        Switch sw;
+                        try
+                        {
+                             sw = (Switch)DMSService.Instance.Tree.Data[(long)incidentBreaker];
+                        }
+                        catch (Exception)
+                        {
+                            return;
+                        }
+                        sw.Marker = false;
+                        sw.State = SwitchState.Open;
+                        networkChange.Add(new SCADAUpdateModel(sw.ElementGID, false, OMSSCADACommon.States.OPENED));
+                        Node n = (Node)DMSService.Instance.Tree.Data[sw.End2];
+                        n.Marker = false;
+                        networkChange.Add(new SCADAUpdateModel(n.ElementGID, false));
+                        networkChange = EnergizationAlgorithm.TraceDown(n, networkChange, false, false, DMSService.Instance.Tree);
+
+                        Source s = (Source)DMSService.Instance.Tree.Data[DMSService.Instance.Tree.Roots[0]];
+                        networkChange.Add(new SCADAUpdateModel(s.ElementGID, true));
+                        Thread.Sleep(3000);
+                        pub.PublishUpdate(networkChange);
 
                         clientsCall.Clear();
                         return;

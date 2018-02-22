@@ -15,7 +15,7 @@ namespace DispatcherApp.View.Resources.Converters
         {
             if (value == null) return null;
 
-            if ((IncidentState)value == IncidentState.UNRESOLVED || (IncidentState)value == IncidentState.FAILED_TO_REPAIR)
+            if ((IncidentState)value == IncidentState.UNRESOLVED || (IncidentState)value == IncidentState.READY_FOR_REPAIR)
             {
                 return true;
             }

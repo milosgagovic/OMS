@@ -11,7 +11,13 @@ namespace SCADA.ClientHandler
 
         public DMSClient()
         {
-            proxy = new DMSToSCADAProxy(new NetTcpBinding(), new EndpointAddress("net.tcp://localhost:8039/IDMSToSCADAContract"));
+            NetTcpBinding binding = new NetTcpBinding();
+            binding.CloseTimeout = TimeSpan.FromMinutes(10);
+            binding.OpenTimeout = TimeSpan.FromMinutes(10);
+            binding.ReceiveTimeout = TimeSpan.FromMinutes(10);
+            binding.SendTimeout = TimeSpan.FromMinutes(10);
+            binding.MaxReceivedMessageSize = Int32.MaxValue;
+            proxy = new DMSToSCADAProxy(binding, new EndpointAddress("net.tcp://localhost:8039/IDMSToSCADAContract"));
         }
 
         public void ChangeOnSCADA(string mrID, States state)

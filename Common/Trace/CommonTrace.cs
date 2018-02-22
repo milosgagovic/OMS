@@ -57,7 +57,7 @@ namespace FTN.Common
 
 		public static void WriteTrace(bool doTrace, string message, object arg1)
 		{
-			Trace.WriteLineIf(doTrace, string.Format("{0} : {1}", DateTime.Now, string.Format(message, arg1)));
+			//Trace.WriteLineIf(doTrace, string.Format("{0} : {1}", DateTime.Now, string.Format(message, arg1)));
 		}
 
 		public static void WriteTrace(bool doTrace, string message, object arg1, object arg2)

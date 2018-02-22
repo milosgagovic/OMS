@@ -207,6 +207,10 @@ namespace DMSCommon.Model
             return resultIds;
         }
 
+        public bool Ping()
+        {
+            return GdaQueryProxy.Ping();
+        }
         #endregion GDAQueryService
 
         #region Test Methods

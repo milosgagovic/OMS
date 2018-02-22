@@ -23,6 +23,7 @@ namespace TransactionManager
             binding.ReceiveTimeout = TimeSpan.FromMinutes(10);
             binding.SendTimeout = TimeSpan.FromMinutes(10);
             binding.TransactionFlow = true;
+            binding.MaxReceivedMessageSize = Int32.MaxValue;
 
             svc.AddServiceEndpoint(typeof(IOMSClient),
                                     binding,

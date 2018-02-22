@@ -660,12 +660,11 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
 
                                                     try
                                                     {
-                                                        //bool isOpened = boolArrayResponse[i];
+ //bool isOpened = boolArrayResponse[i];
                                                         bool isOpened = response.BitValues[i];
                                                         if (target.State != target.ValidStates[isOpened ? 1 : 0])
                                                         {
                                                             isChange = true;
-
                                                             target.State = target.ValidStates[isOpened ? 1 : 0];
                                                             Console.WriteLine(" CHANGE! Digital variable {0}, state: {1}", target.Name, target.State);
 
