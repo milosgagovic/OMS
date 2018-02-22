@@ -176,11 +176,9 @@ namespace DMSService
                         // to do: BUG -> ovo state opened srediti
                         ElementStateReport elementStateReport = new ElementStateReport() { MrID = mrid, Time = DateTime.UtcNow, State = 1 };
                         //ElementStateReport elementStateReport = new ElementStateReport() { MrID = mrid, Time = DateTime.UtcNow, State = "OPENED" };                        
-                        IMSClient.AddReport(incident);
+                        
                         IMSClient.AddElementStateReport(elementStateReport);
-
                         pub.PublishUIBreaker(true, (long)incidentBreaker);
-                        pub.PublishIncident(incident);
 
                         List<SCADAUpdateModel> networkChange = new List<SCADAUpdateModel>();
                         Switch sw;
@@ -203,8 +201,22 @@ namespace DMSService
 
                         Source s = (Source)DMSService.Instance.Tree.Data[DMSService.Instance.Tree.Roots[0]];
                         networkChange.Add(new SCADAUpdateModel(s.ElementGID, true));
+                        
+
+                        List<long> gids = new List<long>();
+                        networkChange.ForEach(x => gids.Add(x.Gid));
+                        List<long> listOfConsumersWithoutPower = gids.Where(x => (DMSType)ModelCodeHelper.ExtractTypeFromGlobalId(x) == DMSType.ENERGCONSUMER).ToList();
+                        foreach (long gid in listOfConsumersWithoutPower)
+                        {
+                            ResourceDescription resDes = DMSService.Instance.Gda.GetValues(gid);
+                            incident.LostPower += resDes.GetProperty(ModelCode.ENERGCONSUMER_PFIXED).AsFloat();
+                        }
+                        IMSClient.AddReport(incident);
+
                         Thread.Sleep(3000);
+
                         pub.PublishUpdate(networkChange);
+                        pub.PublishIncident(incident);
 
                         clientsCall.Clear();
                         return;
