@@ -37,7 +37,7 @@ namespace ConsoleApp1
 					List<ElementStateReport> reports = new List<ElementStateReport>(); // = IMSClient.GetAllReports();
 					if (odg2 == "1")
 					{
-						reports = proxyToTransactionManager.GetAllElementStateReports();
+						//reports = proxyToTransactionManager.GetAllElementStateReports();
 					}
 					else if (odg2 == "2")
 					{
@@ -54,7 +54,7 @@ namespace ConsoleApp1
 						Console.WriteLine("EndTime:");
 						string endTime = Console.ReadLine();
 						DateTime endDateTime = DateTime.Parse(endTime);
-						reports = proxyToTransactionManager.GetElementStateReportsForSpecificTimeInterval(startDateTime, endDateTime);
+						//reports = proxyToTransactionManager.GetElementStateReportsForSpecificTimeInterval(startDateTime, endDateTime);
 
 					}
 					else if (odg2 == "4")
@@ -68,17 +68,17 @@ namespace ConsoleApp1
 						Console.WriteLine("EndTime:");
 						string endTime2 = Console.ReadLine();
 						DateTime endDateTime2 = DateTime.Parse(endTime2);
-						reports = proxyToTransactionManager.GetElementStateReportsForSpecificMrIDAndSpecificTimeInterval(mrid3, startDateTime2, endDateTime2);
+						//reports = proxyToTransactionManager.GetElementStateReportsForSpecificMrIDAndSpecificTimeInterval(mrid3, startDateTime2, endDateTime2);
 
 					}
 					else if (odg2 == "5")
 					{
 
-						List<Crew> crews = proxyToTransactionManager.GetCrews();
-						foreach (Crew cr in crews)
-						{
-							Console.WriteLine("Crew: " + cr.CrewName);
-						}
+						////List<Crew> crews = proxyToTransactionManager.GetCrews();
+						//foreach (Crew cr in crews)
+						//{
+						//	Console.WriteLine("Crew: " + cr.CrewName);
+						//}
 					}
 					// reports = IMSClient.GetAllReports();
 					foreach (ElementStateReport ir in reports)
@@ -96,7 +96,7 @@ namespace ConsoleApp1
 					crew.Id = id;
 					crew.CrewName = ekipa;
 
-					proxyToTransactionManager.AddCrew(crew);
+					//proxyToTransactionManager.AddCrew(crew);
 				}
 				else
 				{

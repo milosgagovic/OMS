@@ -28,23 +28,24 @@ namespace IncidentManagementSystem.Service
                         Console.WriteLine("Added crew: " + c.CrewName + ", crew id: " + c.Id);
                     }
                     ctx.SaveChanges();
-                    using (var ctxCloud = new IncidentCloudContext())
-                    {
-                        try
-                        {
-                            ctxCloud.Crews.Add(crew);
-                            foreach (Crew c in ctx.Crews)
-                            {
-                                Console.WriteLine("Added crew: " + c.CrewName + ", crew id: " + c.Id);
-                            }
-                            ctxCloud.SaveChanges();
-                            return true;
-                        }
-                        catch (Exception e)
-                        {
-                            return false;
-                        }
-                    }
+                    return true;
+                    //using (var ctxCloud = new IncidentCloudContext())
+                    //{
+                    //    try
+                    //    {
+                    //        ctxCloud.Crews.Add(crew);
+                    //        foreach (Crew c in ctx.Crews)
+                    //        {
+                    //            Console.WriteLine("Added crew: " + c.CrewName + ", crew id: " + c.Id);
+                    //        }
+                    //        ctxCloud.SaveChanges();
+                    //        return true;
+                    //    }
+                    //    catch (Exception e)
+                    //    {
+                    //        return false;
+                    //    }
+                    //}
                 }
                 catch (Exception e)
                 {
@@ -62,12 +63,12 @@ namespace IncidentManagementSystem.Service
                 ctx.SaveChanges();
                 Console.WriteLine("Upisano:\n MRID: " + report.MrID + ", Date Time: " + report.Time + ", State: " + report.State);
             }
-            using (var ctxCloud = new IncidentCloudContext())
-            {
-                ctxCloud.ElementStateReports.Add(report);
-                ctxCloud.SaveChanges();
-                Console.WriteLine("Upisano:\n MRID: " + report.MrID + ", Date Time: " + report.Time + ", State: " + report.State);
-            }
+            //using (var ctxCloud = new IncidentCloudContext())
+            //{
+            //    ctxCloud.ElementStateReports.Add(report);
+            //    ctxCloud.SaveChanges();
+            //    Console.WriteLine("Upisano:\n MRID: " + report.MrID + ", Date Time: " + report.Time + ", State: " + report.State);
+            //}
         }
 
         public void AddReport(IncidentReport report)
@@ -77,11 +78,11 @@ namespace IncidentManagementSystem.Service
                 ctx.IncidentReports.Add(report);
                 ctx.SaveChanges();
             }
-            using (var ctxCloud = new IncidentCloudContext())
-            {
-                ctxCloud.IncidentReports.Add(report);
-                ctxCloud.SaveChanges();
-            }
+            //using (var ctxCloud = new IncidentCloudContext())
+            //{
+            //    ctxCloud.IncidentReports.Add(report);
+            //    ctxCloud.SaveChanges();
+            //}
         }
 
         public List<ElementStateReport> GetAllElementStateReports()
@@ -452,7 +453,10 @@ namespace IncidentManagementSystem.Service
 
             foreach (IncidentReport report in temp)
             {
-                reportsByBreaker[report.MrID].Add(report); ;
+                if (reportsByBreaker.ContainsKey(report.MrID))
+                {
+                    reportsByBreaker[report.MrID].Add(report);
+                }
             }
 
             int i = 0;
