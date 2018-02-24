@@ -19,11 +19,17 @@ namespace SCADA.ClientHandler
             binding.MaxReceivedMessageSize = Int32.MaxValue;
             proxy = new ScadaToDMSProxy(binding, new EndpointAddress("net.tcp://localhost:8039/IDMSToSCADAContract"));
         }
-
-        public void ChangeOnSCADA(string mrID, States state)
+     
+        public void ChangeOnSCADADigital(string mrID, States state)
         {
-            proxy.ChangeOnSCADA(mrID, state);
-            Console.WriteLine("Scada changed time {0}", DateTime.Now.ToLongTimeString());
+            proxy.ChangeOnSCADADigital(mrID, state);
+            Console.WriteLine("Scada - Digital changed time {0}", DateTime.Now.ToLongTimeString());
+        }
+
+        public void ChangeOnSCADAAnalog(string mrID, float value)
+        {
+            ((IDMSToSCADAContract)proxy).ChangeOnSCADAAnalog(mrID, value);
+            Console.WriteLine("Scada - Analog changed time {0}", DateTime.Now.ToLongTimeString());
         }
     }
 }

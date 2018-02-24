@@ -122,9 +122,9 @@
       <Project>{F680D34F-C148-4314-8914-B2DF3E7B17AF}</Project>
       <Name>CIMAdapter</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Common\Common.csproj">
+    <ProjectReference Include="..\..\Common\NMSCommon.csproj">
       <Project>{892CBE15-9ED7-4540-81FA-0EAABA592138}</Project>
-      <Name>Common</Name>
+      <Name>NMSCommon</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\ServiceContracts\NetworkModelQueryContract\NetworkModelGDAContract.csproj">
       <Project>{B726FB71-D295-41EE-9644-B2B0B1BC8911}</Project>

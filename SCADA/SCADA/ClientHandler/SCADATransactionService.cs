@@ -25,7 +25,7 @@ namespace SCADA.ClientHandler
         }
 
         /// <summary>
-        /// Check if there is ANY free space in controller; at this point we do not know if delta will contain 1 or 10 measurements
+        /// Check if there is ANY free space in controller; at this point we do not know if delta will contain 1 or 10 measurements (analog or/and digital)
         /// so we only check if is it possible to add minimal memory occupying element
         /// </summary>
         public void Enlist()

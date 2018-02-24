@@ -110,9 +110,9 @@
     <Compile Include="GDA\ResourceIterator.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Common\Common.csproj">
+    <ProjectReference Include="..\Common\NMSCommon.csproj">
       <Project>{892CBE15-9ED7-4540-81FA-0EAABA592138}</Project>
-      <Name>Common</Name>
+      <Name>NMSCommon</Name>
     </ProjectReference>
     <ProjectReference Include="..\PubSubscribe\PubSubscribe.csproj">
       <Project>{36299CC7-43BA-4F75-AF82-96A54DD3D0E9}</Project>

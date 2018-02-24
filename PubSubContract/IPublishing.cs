@@ -13,7 +13,10 @@ namespace PubSubContract
     public interface IPublishing
     {
         [OperationContract(IsOneWay = true)]
-        void Publish(List<SCADAUpdateModel> update);
+        void PublishDigitalUpdate(List<SCADAUpdateModel> update);
+
+        [OperationContract(IsOneWay = true)]
+        void PublishAnalogUpdate(List<SCADAUpdateModel> update);
 
         [OperationContract(IsOneWay = true)]
         void PublishCrewUpdate(SCADAUpdateModel update);

@@ -21,10 +21,10 @@ namespace SCADA
             string fullPcConfig = Path.Combine(Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).Parent.Parent.Parent.FullName, "RtuConfiguration.xml");
             string basePath = Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).Parent.Parent.Parent.FullName;
 
-            CancellationTokenSource cancellationTokenSource;
+            CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
             CancellationToken cancellationToken;
             Task requestsConsumer, answersConsumer, acqRequestsProducer;
-            
+
             // videti stanje taskova sad pre nego sto ih pokrenes
             PCCommunicationEngine PCCommEng;
             while (true)
@@ -44,18 +44,16 @@ namespace SCADA
             if (AcqEngine.Configure(acqComConfigPath))
             {
                 AcqEngine.InitializeSimulator();
-
-                cancellationTokenSource = new CancellationTokenSource();
                 cancellationToken = cancellationTokenSource.Token;
 
                 // to do: for IO bound operation you <await an operation which returns a task inside of an async method>
                 // await yields control to the caller of the method thet performed await
 
                 TimeSpan consumeReqTime = TimeSpan.FromMilliseconds(10000); // it should be at least twice than acquisition timeout
-                requestsConsumer = Task.Factory.StartNew(() => PCCommEng.ProcessRequestsFromQueue(consumeReqTime,cancellationToken),
+                requestsConsumer = Task.Factory.StartNew(() => PCCommEng.ProcessRequestsFromQueue(consumeReqTime, cancellationToken),
                    TaskCreationOptions.LongRunning);
 
-                TimeSpan consumeAnswTime = TimeSpan.FromMilliseconds(10000); 
+                TimeSpan consumeAnswTime = TimeSpan.FromMilliseconds(10000);
                 answersConsumer = Task.Factory.StartNew(() => AcqEngine.ProcessPCAnwers(consumeReqTime, cancellationToken),
                    TaskCreationOptions.LongRunning);
 
@@ -87,7 +85,12 @@ namespace SCADA
 
             Console.WriteLine("Press <Enter> to stop the service.");
             Console.ReadKey();
+            if (cancellationToken.CanBeCanceled)
+            {
+                cancellationTokenSource.Cancel();
+            }
 
+            // to do:
             // wait tasks
             AcqEngine.Stop();
             PCCommEng.Stop();

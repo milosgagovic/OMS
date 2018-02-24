@@ -30,7 +30,7 @@ namespace PCCommon
 
         /* request parameters*/
 
-        // to do: for future implemtation
+        // to do: for future implementation
         // public int MaxRepeat { get; set; }
 
         /// <summary>Request length</summary>
@@ -52,7 +52,7 @@ namespace PCCommon
         // setovati ga kod init sim na 0 ili -1
 
         /// <summary>Has different roles, based on request type and request content.
-        /// currently, used for indicating count of variables for which request was sent</summary>
+        /// Currently, used for indicating count of variables for which request was sent</summary>
         public int Flags { get; set; }
     }
 }

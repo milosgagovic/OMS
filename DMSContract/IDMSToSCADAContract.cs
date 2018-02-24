@@ -11,6 +11,9 @@ namespace DMSContract
     public interface IDMSToSCADAContract
     {
         [OperationContract]
-        void ChangeOnSCADA(string mrID, States state);
+        void ChangeOnSCADADigital(string mrID, States state);
+
+        [OperationContract]
+        void ChangeOnSCADAAnalog(string mrID, float value);
     }
 }

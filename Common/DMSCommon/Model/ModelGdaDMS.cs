@@ -2,14 +2,11 @@
 using FTN.ServiceContracts;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace DMSCommon.Model
 {
    public class ModelGdaDMS : IDisposable
     {
-
         private ModelResourcesDesc modelResourcesDesc = new ModelResourcesDesc();
 
         private NetworkModelGDAProxy gdaQueryProxy = null;
@@ -64,53 +61,6 @@ namespace DMSCommon.Model
             return rd;
         }
 
-        public List<long> GetExtentValues(ModelCode modelCode)
-        {
-            string message = "Getting extent values method started.";
-           // Console.WriteLine(message);
-            CommonTrace.WriteTrace(CommonTrace.TraceError, message);
-            int iteratorId = 0;
-            List<long> ids = new List<long>();
-
-            try
-            {
-                int numberOfResources = 50;
-                int resourcesLeft = 0;
-
-                List<ModelCode> properties = modelResourcesDesc.GetAllPropertyIds(modelCode);
-
-                iteratorId = GdaQueryProxy.GetExtentValues(modelCode, properties);
-                resourcesLeft = GdaQueryProxy.IteratorResourcesLeft(iteratorId);
-
-                while (resourcesLeft > 0)
-                {
-                    List<ResourceDescription> rds = GdaQueryProxy.IteratorNext(numberOfResources, iteratorId);
-
-                    for (int i = 0; i < rds.Count; i++)
-                    {
-                        ids.Add(rds[i].Id);
-                    }
-
-                    resourcesLeft = GdaQueryProxy.IteratorResourcesLeft(iteratorId);
-                }
-
-                GdaQueryProxy.IteratorClose(iteratorId);
-
-                message = "Getting extent values method successfully finished.";
-                //Console.WriteLine(message);
-                CommonTrace.WriteTrace(CommonTrace.TraceError, message);
-
-            }
-            catch (Exception e)
-            {
-                message = string.Format("Getting extent values method failed for {0}.\n\t{1}", modelCode, e.Message);
-               // Console.WriteLine(message);
-                CommonTrace.WriteTrace(CommonTrace.TraceError, message);
-            }
-
-            return ids;
-        }
-
         public List<ResourceDescription> GetExtentValuesExtended(ModelCode modelCode)
         {
             string message = "Getting extent values extended method started.";
@@ -161,118 +111,9 @@ namespace DMSCommon.Model
             return resourceDescriptions;
         }
 
-        public List<long> GetRelatedValues(long sourceGlobalId, Association association)
-        {
-            string message = "Getting related values method started.";
-            //Console.WriteLine(message);
-            CommonTrace.WriteTrace(CommonTrace.TraceError, message);
-
-            List<long> resultIds = new List<long>();
-            int numberOfResources = 50;
-
-            try
-            {
-                List<ModelCode> properties = new List<ModelCode>();
-                properties.Add(ModelCode.IDOBJ_MRID);
-                properties.Add(ModelCode.IDOBJ_NAME);
-
-                int iteratorId = GdaQueryProxy.GetRelatedValues(sourceGlobalId, properties, association);
-                int resourcesLeft = GdaQueryProxy.IteratorResourcesLeft(iteratorId);
-
-                while (resourcesLeft > 0)
-                {
-                    List<ResourceDescription> rds = GdaQueryProxy.IteratorNext(numberOfResources, iteratorId);
-
-                    for (int i = 0; i < rds.Count; i++)
-                    {
-                        resultIds.Add(rds[i].Id);
-                    }
-
-                    resourcesLeft = GdaQueryProxy.IteratorResourcesLeft(iteratorId);
-                }
-
-                GdaQueryProxy.IteratorClose(iteratorId);
-
-                message = "Getting related values method successfully finished.";
-               // Console.WriteLine(message);
-                CommonTrace.WriteTrace(CommonTrace.TraceError, message);
-            }
-            catch (Exception e)
-            {
-                message = string.Format("Getting related values method  failed for sourceGlobalId = {0} and association (propertyId = {1}, type = {2}). Reason: {3}", sourceGlobalId, association.PropertyId, association.Type, e.Message);
-                Console.WriteLine(message);
-                CommonTrace.WriteTrace(CommonTrace.TraceError, message);
-            }
-
-            return resultIds;
-        }
-
-        public bool Ping()
-        {
-            return GdaQueryProxy.Ping();
-        }
         #endregion GDAQueryService
 
         #region Test Methods
-
-        public List<long> TestGetExtentValuesAllTypes()
-        {
-            string message = "Getting extent values for all DMS types started.";
-            Console.WriteLine(message);
-            CommonTrace.WriteTrace(CommonTrace.TraceInfo, message);
-
-            List<ModelCode> properties = new List<ModelCode>();
-            List<long> ids = new List<long>();
-
-            int iteratorId = 0;
-            int numberOfResources = 1000;
-            DMSType currType = 0;
-            try
-            {
-                foreach (DMSType type in Enum.GetValues(typeof(DMSType)))
-                {
-                    currType = type;
-                    properties = modelResourcesDesc.GetAllPropertyIds(type);
-
-                    iteratorId = GdaQueryProxy.GetExtentValues(modelResourcesDesc.GetModelCodeFromType(type), properties);
-                    int count = GdaQueryProxy.IteratorResourcesLeft(iteratorId);
-
-                    while (count > 0)
-                    {
-                        List<ResourceDescription> rds = GdaQueryProxy.IteratorNext(numberOfResources, iteratorId);
-
-                        for (int i = 0; i < rds.Count; i++)
-                        {
-                            ids.Add(rds[i].Id);
-                        }
-
-                        count = GdaQueryProxy.IteratorResourcesLeft(iteratorId);
-                    }
-
-                    bool ok = GdaQueryProxy.IteratorClose(iteratorId);
-
-                    message = string.Format("Number of {0} in model {1}.", type, ids.Count);
-                    Console.WriteLine(message);
-                    CommonTrace.WriteTrace(CommonTrace.TraceInfo, message);
-                }
-
-
-                message = "Getting extent values for all DMS types successfully ended.";
-                Console.WriteLine(message);
-                CommonTrace.WriteTrace(CommonTrace.TraceInfo, message);
-            }
-
-            catch (Exception e)
-            {
-                message = string.Format("Getting extent values for all DMS types failed for type {0}.\n\t{1}", currType, e.Message);
-                Console.WriteLine(message);
-                CommonTrace.WriteTrace(CommonTrace.TraceInfo, message);
-
-                throw;
-            }
-
-            return ids;
-        }
 
         #region GDAUpdate Service
 
@@ -397,75 +238,6 @@ namespace DMSCommon.Model
             }
 
             return updateResult;
-        }
-
-        public UpdateResult TestApplyDeltaInsertUpdateDelete()
-        {
-            UpdateResult updateResult = null;
-
-            try
-            {
-                updateResult = TestApplyDeltaInsert();
-
-                if (updateResult != null && updateResult.Result == ResultType.Succeeded)
-                {
-                    List<long> gids = new List<long>();
-                    foreach (KeyValuePair<long, long> kvp in updateResult.GlobalIdPairs)
-                    {
-                        gids.Add(kvp.Value);
-                    }
-
-                    updateResult = TestApplyDeltaUpdate(gids);
-
-                    updateResult = TestApplyDeltaDelete(gids);
-                }
-            }
-            catch (Exception ex)
-            {
-                string message = string.Format("Test apply delta: Insert - Update - Delete failed.\t{0}", ex.Message);
-
-                if (updateResult != null)
-                {
-                    message += updateResult.ToString();
-                }
-
-                Console.WriteLine(message);
-                CommonTrace.WriteTrace(CommonTrace.TraceError, message);
-            }
-
-            return updateResult;
-        }
-
-        public void TestApplyDeltaInsertUpdate(long modelVersionId)
-        {
-            UpdateResult updateResult = null;
-            try
-            {
-                updateResult = TestApplyDeltaInsert();
-
-                if (updateResult != null && updateResult.Result == ResultType.Succeeded)
-                {
-                    List<long> gids = new List<long>();
-                    foreach (KeyValuePair<long, long> kvp in updateResult.GlobalIdPairs)
-                    {
-                        gids.Add(kvp.Value);
-                    }
-
-                    updateResult = TestApplyDeltaUpdate(gids);
-                }
-            }
-            catch (Exception ex)
-            {
-                string message = string.Format("Test apply delta: Insert - Update failed.\t{0}", ex.Message);
-
-                if (updateResult != null)
-                {
-                    message += updateResult.ToString();
-                }
-
-                Console.WriteLine(message);
-                CommonTrace.WriteTrace(CommonTrace.TraceError, message);
-            }
         }
 
         private Dictionary<DMSType, ResourceDescription> CreateResourcesToInsert()
@@ -696,7 +468,6 @@ namespace DMSCommon.Model
 
             return updates;
         }
-
 
         #endregion GDAUpdate Service
 

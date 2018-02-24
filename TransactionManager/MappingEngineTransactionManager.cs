@@ -39,7 +39,7 @@ namespace TransactionManager
 
                 switch (rv.VariableType)
                 {
-                    case ResponseType.Analog:
+                    case ResponseVarType.Analog:
                         AnalogVariable av = rv as AnalogVariable;
                         UnitSymbol unitSymbolValue = UnitSymbol.none;
                         try
@@ -57,7 +57,7 @@ namespace TransactionManager
 
                         break;
 
-                    case ResponseType.Digital:
+                    case ResponseVarType.Digital:
 
                         DigitalVariable dv = rv as DigitalVariable;
 
@@ -73,7 +73,7 @@ namespace TransactionManager
                         }
                         break;
 
-                    case ResponseType.Counter:
+                    case ResponseVarType.Counter:
                         break;
                 }
 

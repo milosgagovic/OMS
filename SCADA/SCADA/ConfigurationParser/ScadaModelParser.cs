@@ -85,11 +85,11 @@ namespace SCADA.ConfigurationParser
                             int anaOutStartAddr = (int)rtu.Element("AnaOutStartAddr");
                             int counterStartAddr = (int)rtu.Element("CounterStartAddr");
 
-                            int digOutCount = (int)rtu.Element("DigOutCount");
-                            int digInCount = (int)rtu.Element("DigInCount");
-                            int anaInCount = (int)rtu.Element("AnaInCount");
-                            int anaOutCount = (int)rtu.Element("AnaOutCount");
-                            int counterCount = (int)rtu.Element("CounterCount");
+                            int digOutCount = (int)rtu.Element("NoDigOut");
+                            int digInCount = (int)rtu.Element("NoDigIn");
+                            int anaInCount = (int)rtu.Element("NoAnaIn");
+                            int anaOutCount = (int)rtu.Element("NoAnaOut");
+                            int counterCount = (int)rtu.Element("NoCnt");
 
                             ushort anaInRawMin = (ushort)(int)rtu.Element("AnaInRawMin");
                             ushort anaInRawMax = (ushort)(int)rtu.Element("AnaInRawMax");
@@ -117,11 +117,11 @@ namespace SCADA.ConfigurationParser
                                 AnaOutStartAddr = anaOutStartAddr,
                                 CounterStartAddr = counterStartAddr,
 
-                                DigOutCount = digOutCount,
-                                DigInCount = digInCount,
-                                AnaInCount = anaInCount,
-                                AnaOutCount = anaOutCount,
-                                CounterCount = counterCount,
+                                NoDigOut = digOutCount,
+                                NoDigIn = digInCount,
+                                NoAnaIn = anaInCount,
+                                NoAnaOut = anaOutCount,
+                                NoCnt = counterCount,
 
                                 AnaInRawMin = anaInRawMin,
                                 AnaInRawMax = anaInRawMax,
@@ -133,7 +133,7 @@ namespace SCADA.ConfigurationParser
                         }
                         else
                         {
-                            // to do: bacati exception
+                            // to do: bacati exception mozda
                             message = string.Format("Invalid config: There is multiple RTUs with Name={0}!", uniqueName);
                             Console.WriteLine(message);
                             return false;
@@ -301,14 +301,14 @@ namespace SCADA.ConfigurationParser
                                 ushort commValue = (ushort)(float)a.Element("CommValue");
                                 newAnalog.CommValue = commValue;
 
-                                // SETTING MaxValue
-                                float maxValue = (float)a.Element("MaxValue");
-                                newAnalog.MaxValue = maxValue;
-
                                 // SETTING MinValue
                                 float minValue = (float)a.Element("MinValue");
                                 newAnalog.MinValue = minValue;
 
+                                // SETTING MaxValue
+                                float maxValue = (float)a.Element("MaxValue");
+                                newAnalog.MaxValue = maxValue;
+                              
                                 // SETTING UnitSymbol                             
                                 string stringUnitSymbol = (string)a.Element("UnitSymbol");
                                 UnitSymbol unitSymbolValue = (UnitSymbol)Enum.Parse(typeof(UnitSymbol), stringUnitSymbol, true);
@@ -416,11 +416,11 @@ namespace SCADA.ConfigurationParser
                      new XElement("AnaOutStartAddr", rtu.Value.AnaOutStartAddr),
                      new XElement("AnaInStartAddr", rtu.Value.AnaInStartAddr),
                      new XElement("CounterStartAddr", rtu.Value.CounterStartAddr),
-                     new XElement("DigOutCount", rtu.Value.DigOutCount),
-                     new XElement("DigInCount", rtu.Value.DigInCount),
-                     new XElement("AnaInCount", rtu.Value.AnaInCount),
-                     new XElement("AnaOutCount", rtu.Value.AnaOutCount),
-                     new XElement("CounterCount", rtu.Value.CounterCount),
+                     new XElement("NoDigOut", rtu.Value.NoDigOut),
+                     new XElement("NoDigIn", rtu.Value.NoDigIn),
+                     new XElement("NoAnaIn", rtu.Value.NoAnaIn),
+                     new XElement("NoAnaOut", rtu.Value.NoAnaOut),
+                     new XElement("NoCnt", rtu.Value.NoCnt),
                      new XElement("AnaInRawMin", rtu.Value.AnaInRawMin),
                      new XElement("AnaInRawMax", rtu.Value.AnaInRawMax),
                      new XElement("AnaOutRawMin", rtu.Value.AnaOutRawMin),
@@ -487,7 +487,6 @@ namespace SCADA.ConfigurationParser
                         analogs.Add(anEl);
 
                         break;
-
                 }
             }
 

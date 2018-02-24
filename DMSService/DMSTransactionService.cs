@@ -38,7 +38,7 @@ namespace DMSService
                 Source s = (Source)DMSService.Instance.Tree.Data[DMSService.Instance.Tree.Roots[0]];
                 update.Add(new SCADAUpdateModel(true, s.ElementGID));
 
-                publisher.PublishUpdate(update);
+                publisher.PublishUpdateDigital(update);
             }
 
 

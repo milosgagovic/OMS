@@ -215,7 +215,7 @@ namespace DMSService
 
                         Thread.Sleep(3000);
 
-                        pub.PublishUpdate(networkChange);
+                        pub.PublishUpdateDigital(networkChange);
                         pub.PublishIncident(incident);
 
                         clientsCall.Clear();

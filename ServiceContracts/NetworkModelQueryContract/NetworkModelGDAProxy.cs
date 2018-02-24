@@ -62,6 +62,7 @@ namespace FTN.ServiceContracts
             return Channel.IteratorRewind(id);
         }
 
+        // unused
         public bool Ping()
         {
             return Channel.Ping();

@@ -161,7 +161,6 @@ namespace TransactionManager
             Console.WriteLine("Transaction Manager calling prepare");
 
             ScadaDelta deltaForScada = GetDeltaForSCADA(deltaForNMS);
-            //Delta fixedGuidDeltaForDMS = ProxyToNMSService.GetFixedDelta(deltaForNMS);
             Delta fixedGuidDeltaForDMS = gdaTMS.GetFixedDelta(deltaForNMS);
 
             ProxyTransactionNMS.Prepare(deltaForNMS);
@@ -266,31 +265,6 @@ namespace TransactionManager
             {
                 Command c = MappingEngineTransactionManager.Instance.MappCommand(TypeOfSCADACommand.ReadAll, "", 0, 0);
 
-                //bool isScadaAvailable = false;
-                //do
-                //{
-                //    Console.WriteLine("scada not available");
-                //    try
-                //    {
-                //        if (ScadaClient.State == CommunicationState.Created)
-                //        {
-                //            ScadaClient.Open();
-                //        }
-
-                //        isScadaAvailable = ScadaClient.Ping();
-                //    }
-                //    catch (Exception e)
-                //    {
-                //        //Console.WriteLine(e);
-                //        Console.WriteLine("InitializeNetwork() -> SCADA is not available yet.");
-                //        if (ScadaClient.State == CommunicationState.Faulted)
-                //            ScadaClient = new SCADAClient(new EndpointAddress("net.tcp://localhost:4000/SCADAService"));
-                //    }
-                //    Thread.Sleep(500);
-                //} while (!isScadaAvailable);
-
-
-
                 do
                 {
                     try
@@ -305,7 +279,6 @@ namespace TransactionManager
                     }
                     catch (Exception e)
                     {
-                        //Console.WriteLine(e);
                         Console.WriteLine("GetNetwork() -> SCADA is not available yet.");
                         NetTcpBinding binding = new NetTcpBinding();
                         binding.CloseTimeout = TimeSpan.FromMinutes(10);
@@ -316,10 +289,10 @@ namespace TransactionManager
                         if (ScadaClient.State == CommunicationState.Faulted)
                             ScadaClient = new SCADAClient(new EndpointAddress("net.tcp://localhost:4000/SCADAService"), binding);
                     }
+
                     Thread.Sleep(500);
                 } while (true);
                 Console.WriteLine("GetNetwork() -> SCADA is available.");
-
 
                 Response r = ScadaClient.ExecuteCommand(c);
                 descMeas = MappingEngineTransactionManager.Instance.MappResult(r);
@@ -329,7 +302,6 @@ namespace TransactionManager
                 Console.WriteLine(e.Message);
             }
 
-            bool isImsAvailable = false;
             do
             {
                 try
@@ -339,17 +311,17 @@ namespace TransactionManager
                         IMSClient.Open();
                     }
 
-                    isImsAvailable = IMSClient.Ping();
+                    if (IMSClient.Ping())
+                        break;
                 }
                 catch (Exception e)
                 {
-                    //Console.WriteLine(e);
                     Console.WriteLine("GetNetwork() -> IMS is not available yet.");
                     if (IMSClient.State == CommunicationState.Faulted)
                         IMSClient = new IMSClient(new EndpointAddress("net.tcp://localhost:6090/IncidentManagementSystemService"));
                 }
-                Thread.Sleep(2000);
-            } while (!isImsAvailable);
+                Thread.Sleep(1000);
+            } while (true);
 
             var crews = IMSClient.GetCrews();
             var incidentReports = IMSClient.GetAllReports();

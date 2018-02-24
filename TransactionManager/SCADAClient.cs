@@ -9,21 +9,6 @@ using System.Text;
 
 namespace TransactionManager
 {
-    //public class SCADAClient : ChannelFactory<ISCADAContract>, ISCADAContract, IDisposable
-    //{
-    //    SCADAProxy proxy;
-
-    //    public SCADAClient()
-    //    {
-    //        proxy = new SCADAProxy(new NetTcpBinding(), new EndpointAddress("net.tcp://localhost:4000/SCADAService"));
-    //    }
-
-    //    public Response ExecuteCommand(Command command)
-    //    {
-    //        return proxy.ExecuteCommand(command);
-    //    }
-    //}
-
     public class SCADAClient : ClientBase<ISCADAContract>, ISCADAContract
     {
         public SCADAClient(string endpointName, NetTcpBinding binding) : base(binding, new EndpointAddress(endpointName))

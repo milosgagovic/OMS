@@ -23,11 +23,20 @@ namespace PubSubscribe
             CreateProxy();
         }
 
-        public void PublishUpdate(List<SCADAUpdateModel> update)
+        public void PublishUpdateDigital(List<SCADAUpdateModel> update)
         {
             try
             {
-                proxy.Publish(update);
+                proxy.PublishDigitalUpdate(update);
+            }
+            catch { }
+        }
+
+        public void PublishUpdateAnalog(List<SCADAUpdateModel> update)
+        {
+            try
+            {
+                proxy.PublishAnalogUpdate(update);
             }
             catch { }
         }

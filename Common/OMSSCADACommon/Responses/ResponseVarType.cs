@@ -5,7 +5,7 @@ using System.Text;
 
 namespace OMSSCADACommon.Responses
 {
-    public enum ResponseType
+    public enum ResponseVarType
     {
         Analog=0,
         Digital,
