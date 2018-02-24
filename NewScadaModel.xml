@@ -95,7 +95,7 @@
     </Digital>
     <Digital>
       <Name>MEAS_D_5</Name>
-      <State>OPENED</State>
+      <State>CLOSED</State>
       <Command>CLOSE</Command>
       <ProcContrName>RTU-1</ProcContrName>
       <RelativeAddress>3</RelativeAddress>
@@ -127,7 +127,7 @@
     </Digital>
     <Digital>
       <Name>MEAS_D_9</Name>
-      <State>OPENED</State>
+      <State>CLOSED</State>
       <Command>CLOSE</Command>
       <ProcContrName>RTU-1</ProcContrName>
       <RelativeAddress>5</RelativeAddress>

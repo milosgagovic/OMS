@@ -31,7 +31,7 @@ namespace SCADA.CommunicationAndControlling
         #region Establishing communication 
 
         /// <summary>
-        /// Reading communication paremeters from configPath,
+        /// Reading communication parameters from configPath,
         /// and establishing communication links with Process Controllers
         /// </summary>
         /// <param name="configPath"></param>

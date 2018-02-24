@@ -1,7 +1,9 @@
 ﻿
 namespace PCCommon
 {
-    // Generic description of Process Controller (communication endoint)
+    /// <summary>
+    /// Generic description of Process Controller (communication endoint)
+    /// </summary>
     public class ProcessController
     {
         public int DeviceAddress { get; set; }

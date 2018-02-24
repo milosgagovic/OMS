@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Runtime.Serialization;
 
 namespace DMSCommon.Model
 {
@@ -16,7 +11,6 @@ namespace DMSCommon.Model
     [KnownType(typeof(Node))]
     public class Element
     {
-
         private long _elementGID;
 
         private bool _marker;
@@ -54,6 +48,7 @@ namespace DMSCommon.Model
             get { return _incident; }
             set { _incident = value; }
         }
+
         [DataMember]
         public string MRID
         {
@@ -62,19 +57,18 @@ namespace DMSCommon.Model
         }
 
         public Element() { }
+
         public Element(long gid)
         {
             ElementGID = gid;
             Marker = true;
         }
 
-        public Element(long gid,string mrid)
+        public Element(long gid, string mrid)
         {
             ElementGID = gid;
             MRID = mrid;
             Marker = true;
         }
-
     }
-
 }

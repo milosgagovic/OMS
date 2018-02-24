@@ -2,9 +2,6 @@
 using FTN.ServiceContracts;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TransactionManager
 {
@@ -23,7 +20,7 @@ namespace TransactionManager
                     gdaQueryProxy = null;
                 }
 
-                gdaQueryProxy = new NetworkModelGDAProxy("NetworkModelGDAEndpoint"); 
+                gdaQueryProxy = new NetworkModelGDAProxy("NetworkModelGDAEndpoint");
                 gdaQueryProxy.Open();
 
                 return gdaQueryProxy;
@@ -36,6 +33,12 @@ namespace TransactionManager
 
         #region GDAQueryService
 
+        public Delta GetFixedDelta(Delta d)
+        {
+            return GdaQueryProxy.GetFixedDelta(d);
+        }
+
+        // unused
         public ResourceDescription GetValues(long globalId)
         {
             string message = "Getting values method started.";
@@ -113,6 +116,7 @@ namespace TransactionManager
             return resourceDescriptions;
         }
 
+        // unused
         public List<long> GetRelatedValues(long sourceGlobalId, Association association)
         {
             string message = "Getting related values method started.";
@@ -163,6 +167,7 @@ namespace TransactionManager
 
         #region Test Methods
 
+        // unused
         public List<long> TestGetExtentValuesAllTypes()
         {
             string message = "Getting extent values for all DMS types started.";
@@ -347,6 +352,7 @@ namespace TransactionManager
             return updateResult;
         }
 
+        // unused
         public UpdateResult TestApplyDeltaInsertUpdateDelete()
         {
             UpdateResult updateResult = null;
@@ -644,7 +650,6 @@ namespace TransactionManager
 
             return updates;
         }
-
 
         #endregion GDAUpdate Service
 

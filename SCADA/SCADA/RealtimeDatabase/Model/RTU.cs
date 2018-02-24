@@ -20,6 +20,7 @@ namespace SCADA.RealtimeDatabase.Model
 
         public bool FreeSpaceForDigitals { get; set; }
         public bool FreeSpaceForAnalogs { get; set; }
+        // to do: add "free space" for counters...
 
         // controller pI/O starting Addresses
         public int DigOutStartAddr { get; set; }
@@ -28,6 +29,7 @@ namespace SCADA.RealtimeDatabase.Model
         public int AnaOutStartAddr { get; set; }
         public int CounterStartAddr { get; set; }
 
+        // promeniti ove nayive da budu kao u dscadi
         // number of pI/O (max number of process variables of certain type)
         public int DigOutCount { get; set; }
         public int DigInCount { get; set; }

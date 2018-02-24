@@ -236,7 +236,7 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
                 }
             }
         }
-      
+
         public async Task AsyncRtuAcquisition(Action<string> action, TimeSpan period, string rtuName, CancellationToken token = default(CancellationToken))
         {
             while (!token.IsCancellationRequested)
@@ -455,106 +455,112 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
                             case IndustryProtocols.ModbusTCP:
 
                                 ModbusHandler mdbHandler = new ModbusHandler();
-                                mdbHandler.UnpackData(answer.RcvBuff, answer.RcvMsgLength);
-
-                                switch (mdbHandler.Response.FunCode)
+                                try
                                 {
-                                    case FunctionCodes.ReadDiscreteInput:
-                                        {
-                                            BitReadResponse response = (BitReadResponse)mdbHandler.Response;
-                                            var responsePVCount = answer.Flags;
-                                            // bool[] boolArrayResponse = new bool[response.BitValues.Count];
-                                            // response.BitValues.CopyTo(boolArrayResponse, 0);
-
-                                            ushort varAddr = answer.ReqAddress;
-                                            for (int i = 0; i < responsePVCount; i++, varAddr++)
+                                    mdbHandler.UnpackData(answer.RcvBuff, answer.RcvMsgLength);
+                                    switch (mdbHandler.Response.FunCode)
+                                    {
+                                        case FunctionCodes.ReadDiscreteInput:
                                             {
-                                                ProcessVariable pv;
-                                                //ushort varAddr = answer.ReqAddress++;
+                                                BitReadResponse response = (BitReadResponse)mdbHandler.Response;
+                                                var responsePVCount = answer.Flags;
+                                                // bool[] boolArrayResponse = new bool[response.BitValues.Count];
+                                                // response.BitValues.CopyTo(boolArrayResponse, 0);
 
-                                                if (rtu.GetProcessVariableByAddress(varAddr, out pv))
+                                                ushort varAddr = answer.ReqAddress;
+                                                for (int i = 0; i < responsePVCount; i++, varAddr++)
                                                 {
-                                                    Digital target = (Digital)pv;
+                                                    ProcessVariable pv;
+                                                    //ushort varAddr = answer.ReqAddress++;
 
-                                                    try
+                                                    if (rtu.GetProcessVariableByAddress(varAddr, out pv))
                                                     {
-                                                        //bool isOpened = boolArrayResponse[i];
-                                                        bool isOpened = response.BitValues[i];
-                                                        if (target.State != target.ValidStates[isOpened ? 1 : 0])
-                                                        {
-                                                            isChange = true;
-                                                            target.State = target.ValidStates[isOpened ? 1 : 0];
-                                                            Console.WriteLine(" CHANGE! Digital variable {0}, state: {1}", target.Name, target.State);
+                                                        Digital target = (Digital)pv;
 
-                                                            DMSClient dMSClient = new DMSClient();
-                                                            dMSClient.ChangeOnSCADA(target.Name, target.State);
+                                                        try
+                                                        {
+                                                            //bool isOpened = boolArrayResponse[i];
+                                                            bool isOpened = response.BitValues[i];
+                                                            if (target.State != target.ValidStates[isOpened ? 1 : 0])
+                                                            {
+                                                                isChange = true;
+                                                                target.State = target.ValidStates[isOpened ? 1 : 0];
+                                                                Console.WriteLine(" CHANGE! Digital variable {0}, state: {1}", target.Name, target.State);
+
+                                                                DMSClient dMSClient = new DMSClient();
+                                                                dMSClient.ChangeOnSCADA(target.Name, target.State);
+                                                            }
+                                                        }
+                                                        catch
+                                                        {
+                                                            Console.WriteLine("Digital variable {0}, state: INVALID", target.Name);
                                                         }
                                                     }
-                                                    catch
-                                                    {
-                                                        Console.WriteLine("Digital variable {0}, state: INVALID", target.Name);
-                                                    }
                                                 }
-                                            }
-                                            if (isChange)
-                                            {
-                                                ScadaModelParser parser = new ScadaModelParser();
-                                                parser.SerializeScadaModel();
-                                            }
-
-                                        }
-
-                                        break;
-
-                                    case FunctionCodes.ReadInputRegisters:
-                                        {
-                                            RegisterReadResponse response = (RegisterReadResponse)mdbHandler.Response;
-                                            var responsePVCount = answer.Flags;
-
-                                            ushort varAddr = answer.ReqAddress;
-                                            for (int i = 0; i < responsePVCount; i++, varAddr++)
-                                            {
-                                                ProcessVariable pv;
-
-                                                if (rtu.GetProcessVariableByAddress(varAddr, out pv))
+                                                if (isChange)
                                                 {
-                                                    Analog target = (Analog)pv;
+                                                    ScadaModelParser parser = new ScadaModelParser();
+                                                    parser.SerializeScadaModel();
+                                                }
 
-                                                    try
+                                            }
+
+                                            break;
+
+                                        case FunctionCodes.ReadInputRegisters:
+                                            {
+                                                RegisterReadResponse response = (RegisterReadResponse)mdbHandler.Response;
+                                                var responsePVCount = answer.Flags;
+
+                                                ushort varAddr = answer.ReqAddress;
+                                                for (int i = 0; i < responsePVCount; i++, varAddr++)
+                                                {
+                                                    ProcessVariable pv;
+
+                                                    if (rtu.GetProcessVariableByAddress(varAddr, out pv))
                                                     {
-                                                        ushort newRawAcqValue = response.RegValues[target.RelativeAddress];
-                                                        float newAcqValue;
-                                                        AnalogProcessor.RawValueToEGU(target, newRawAcqValue, out newAcqValue);
+                                                        Analog target = (Analog)pv;
 
-                                                        if (target.AcqValue != newAcqValue)
+                                                        try
                                                         {
-                                                            isChange = true;
+                                                            ushort newRawAcqValue = response.RegValues[target.RelativeAddress];
+                                                            float newAcqValue;
+                                                            AnalogProcessor.RawValueToEGU(target, newRawAcqValue, out newAcqValue);
 
-                                                            target.RawAcqValue = newRawAcqValue;
-                                                            target.AcqValue = newAcqValue;
-                                                            Console.WriteLine(" CHANGE! Analog variable {0}, AcqValue: {1}", target.Name, target.AcqValue);
+                                                            if (target.AcqValue != newAcqValue)
+                                                            {
+                                                                isChange = true;
 
-                                                            // DMSClient dMSClient = new DMSClient();
-                                                            // to do
-                                                            // dMSClient.ChangeOnSCADA(target.Name, target.State);
+                                                                target.RawAcqValue = newRawAcqValue;
+                                                                target.AcqValue = newAcqValue;
+                                                                Console.WriteLine(" CHANGE! Analog variable {0}, AcqValue: {1}", target.Name, target.AcqValue);
+
+                                                                // DMSClient dMSClient = new DMSClient();
+                                                                // to do
+                                                                // dMSClient.ChangeOnSCADA(target.Name, target.State);
+                                                            }
+                                                        }
+                                                        catch
+                                                        {
+                                                            // Console.WriteLine("Digital variable {0}, state: INVALID", target.Name);
                                                         }
                                                     }
-                                                    catch
-                                                    {
-                                                        // Console.WriteLine("Digital variable {0}, state: INVALID", target.Name);
-                                                    }
+                                                }
+                                                if (isChange)
+                                                {
+                                                    ScadaModelParser parser = new ScadaModelParser();
+                                                    parser.SerializeScadaModel();
                                                 }
                                             }
-                                            if (isChange)
-                                            {
-                                                ScadaModelParser parser = new ScadaModelParser();
-                                                parser.SerializeScadaModel();
-                                            }
-                                        }
 
-                                        break;
+                                            break;
+                                    }
                                 }
+                                catch (Exception e)
+                                {
 
+                                    Console.WriteLine(e.Message);
+                                }
                                 break;
                         }
                     }

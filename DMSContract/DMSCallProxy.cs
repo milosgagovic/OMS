@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.ServiceModel;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DMSContract
 {
+    // unused
     public class DMSCallProxy : ChannelFactory<IDMSCallContract>, IDMSCallContract, IDisposable
     {
         IDMSCallContract factory;

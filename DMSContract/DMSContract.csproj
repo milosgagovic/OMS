@@ -45,7 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DMSCallProxy.cs" />
-    <Compile Include="DMSToSCADAProxy.cs" />
+    <Compile Include="ScadaToDMSProxy.cs" />
     <Compile Include="IDMSCallContract.cs" />
     <Compile Include="IDMSContract.cs" />
     <Compile Include="IDMSToSCADAContract.cs" />

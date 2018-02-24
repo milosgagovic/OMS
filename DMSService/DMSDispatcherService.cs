@@ -131,7 +131,7 @@ namespace DMSService
 
         }
 
-        public List<Source> GetAllSource()
+        public List<Source> GetAllSources()
         {
             List<Source> pom = new List<Source>();
             try

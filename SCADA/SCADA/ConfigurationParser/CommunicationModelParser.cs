@@ -51,7 +51,7 @@ namespace SCADA.ConfigurationParser
                                 HostPort = hostPort
                             };
 
-                            // !!! samo zato sto ne koristimo druge, a ne radi dok se ne pokrenus vi konfigurisani
+                            // !!! samo zato sto trenutno ne koristimo druge, a ne radi dok se ne pokrenu svi procitani iz konfiguracije
                             if (newPc.Name.Equals("RTU-1"))
                             {
                                 processControllers.Add(newPc.Name, newPc);

@@ -1,11 +1,7 @@
 ﻿using DMSCommon.Model;
 using IMSContract;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.ServiceModel;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DMSContract
 {
@@ -16,7 +12,7 @@ namespace DMSContract
         bool IsNetworkAvailable();
 
         [OperationContract]
-        List<Source> GetAllSource();
+        List<Source> GetAllSources();
 
         [OperationContract]
         List<Consumer> GetAllConsumers();
@@ -39,6 +35,7 @@ namespace DMSContract
 
         [OperationContract]
         int GetNetworkDepth();
+
         [OperationContract]
         List<Element> GetAllElements();
 

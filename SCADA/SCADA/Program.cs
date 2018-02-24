@@ -15,7 +15,7 @@ namespace SCADA
         {
             Console.Title = "SCADA";
 
-            // ako je druga platforma npr. x86 nije dobra putanja!
+            // ako je druga platforma npr. x86 nije dobra putanja! srediti kasnije
             string acqComConfigPath = Path.Combine(Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).Parent.Parent.Parent.FullName, "ScadaModel.xml");
             string pcConfig = "RtuConfiguration.xml";
             string fullPcConfig = Path.Combine(Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).Parent.Parent.Parent.FullName, "RtuConfiguration.xml");
@@ -24,7 +24,8 @@ namespace SCADA
             CancellationTokenSource cancellationTokenSource;
             CancellationToken cancellationToken;
             Task requestsConsumer, answersConsumer, acqRequestsProducer;
-
+            
+            // videti stanje taskova sad pre nego sto ih pokrenes
             PCCommunicationEngine PCCommEng;
             while (true)
             {

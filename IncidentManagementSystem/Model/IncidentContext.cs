@@ -19,6 +19,7 @@ namespace IncidentManagementSystem.Model
         public DbSet<ElementStateReport> ElementStateReports { get; set; }
         public DbSet<Crew> Crews { get; set; }
     }
+
     public class IncidentCloudContext : DbContext
     {
         public IncidentCloudContext() : base("OMS")

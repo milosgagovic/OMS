@@ -7,7 +7,7 @@ namespace SCADA.ClientHandler
 {
     public class DMSClient : ChannelFactory<IDMSToSCADAContract>, IDMSToSCADAContract, IDisposable
     {
-        DMSToSCADAProxy proxy;
+        ScadaToDMSProxy proxy;
 
         public DMSClient()
         {
@@ -17,7 +17,7 @@ namespace SCADA.ClientHandler
             binding.ReceiveTimeout = TimeSpan.FromMinutes(10);
             binding.SendTimeout = TimeSpan.FromMinutes(10);
             binding.MaxReceivedMessageSize = Int32.MaxValue;
-            proxy = new DMSToSCADAProxy(binding, new EndpointAddress("net.tcp://localhost:8039/IDMSToSCADAContract"));
+            proxy = new ScadaToDMSProxy(binding, new EndpointAddress("net.tcp://localhost:8039/IDMSToSCADAContract"));
         }
 
         public void ChangeOnSCADA(string mrID, States state)
