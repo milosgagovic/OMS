@@ -12,44 +12,47 @@ namespace PCCommon
         DISCONNECT
     }
 
-    /* 
-     * Commanding/Acquisition request description
-     * 
-     * Request defines single (or broadcast) communication transaction
-     * between SCADA sw and process controller(s).    
-     */
+    /// <summary>
+    /// Commanding/Acquisition request description
+    /// </summary>
+    /// <remarks>Request defines single (or broadcast - in future implementations) communication transaction
+    /// between SCADA sw and process controller(s).</remarks>
     public class IORequestBlock
     {
-        // transaction type.
+        /// <summary>Transaction type</summary>
         public RequestType RequestType { get; set; }
 
-        // request address in ProcessController address map
+        /// <summary>Request address in ProcessController address map</summary>
         public ushort ReqAddress { get; set; }
 
-        // target slave device Id - RTU address
+        /// <summary>Target slave device Identification</summary>
         public string ProcessControllerName { get; set; }
 
         /* request parameters*/
 
+        // to do: for future implemtation
         // public int MaxRepeat { get; set; }
 
+        /// <summary>Request length</summary>
         public int SendMsgLength { get; set; }
 
-        // trsciever buffer 
+        /// <summary>Transmitter buffer for storing outgoing data</summary>
         public Byte[] SendBuff { get; set; }
 
 
         /* reply parameters*/
 
+        /// <summary>Transaction type</summary>
         public int RcvMsgLength { get; set; }
 
-        // receiver buffer 
+        /// <summary>Receiver buffer type</summary>
         public Byte[] RcvBuff { get; set; }
 
-        // razlicite uloge moze imati
         // to do:
         // setovati ga kod init sim na 0 ili -1
-        // trenutno govori za koliko variajbli je bio request
+
+        /// <summary>Has different roles, based on request type and request content.
+        /// currently, used for indicating count of variables for which request was sent</summary>
         public int Flags { get; set; }
     }
 }

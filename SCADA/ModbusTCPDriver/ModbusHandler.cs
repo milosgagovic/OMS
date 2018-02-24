@@ -1,26 +1,22 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
-using System.Threading.Tasks;
 using PCCommon;
-
 
 namespace ModbusTCPDriver
 {
-    // Concrete protocol handler class
+    /// <summary>
+    /// Concrete protocol handler class
+    /// </summary>
     public class ModbusHandler : IIndustryProtocolHandler
     {
         public IndustryProtocols ProtocolType { get; set; }
+
         public ModbusApplicationHeader Header { get; set; }
         public Request Request { get; set; }
         public Response Response { get; set; }
 
         public byte[] PackData()
         {
-            // message must be in big endian format
+            // message must be in big endian order
 
             var bHeader = Header.getByteHeader();
             var bRequest = Request.GetByteRequest();
@@ -35,12 +31,13 @@ namespace ModbusTCPDriver
         public void UnpackData(byte[] data, int length)
         {
             Header = new ModbusApplicationHeader();
-            Header = Header.getObjectHeader(data); // nepotrebno ipak
+            // Header = Header.getObjectHeader(data); // nepotrebno ipak
 
             byte[] responseData = new byte[length - 7];
             Buffer.BlockCopy(data, 7, responseData, 0, length - 7);
 
-            // OBRATITI PAZNJU NA KONFIGURACIONE FAJLOVE SIMULATORA AKO OVDE PUKNE! 
+            // OBRATITI PAZNJU NA KONFIGURACIONE FAJLOVE SIMULATORA AKO OVDE PUKNE!
+            // takodje, moguce je da zahtev nije bio dobro formiran...nekad u buducnosti obraditi te exceptione
             if ((responseData[0] & 0x80) != 1) // check for exception
             {
                 switch ((FunctionCodes)responseData[0])
@@ -83,7 +80,6 @@ namespace ModbusTCPDriver
                 //Console.WriteLine("Something went wrong. Slave can not process request.");
                 throw new Exception("Something went wrong.Slave can not process request.");
             }
-
         }
     }
 }

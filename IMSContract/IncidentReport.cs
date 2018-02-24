@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace IMSContract
 {
@@ -45,8 +41,8 @@ namespace IMSContract
         public TimeSpan RepairTime { get => repairTime; set { repairTime = value; RaisePropertyChanged("RepairTime"); } }
         public ReasonForIncident Reason { get => reason; set { reason = value; RaisePropertyChanged("Reason"); } }
         public CrewType Crewtype { get => type; set { type = value; RaisePropertyChanged("Crewtype"); } }
-        public Crew RepairCrew { get => repairCrew; set { repairCrew = value; RaisePropertyChanged("RepairCrew"); } }
         public Crew InvestigationCrew { get => investigationCrew; set { investigationCrew = value; RaisePropertyChanged("InvestigationCrew"); } }
+        public Crew RepairCrew { get => repairCrew; set { repairCrew = value; RaisePropertyChanged("RepairCrew"); } }
         public double MaxValue { get => maxValue; set { maxValue = value; RaisePropertyChanged("MaxValue"); } }
         public double CurrentValue { get => currentValue; set { currentValue = value; RaisePropertyChanged("CurrentValue"); } }
 

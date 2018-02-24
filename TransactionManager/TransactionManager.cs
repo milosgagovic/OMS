@@ -1,5 +1,4 @@
-﻿
-using DMSCommon.Model;
+﻿using DMSCommon.Model;
 using DMSContract;
 using FTN.Common;
 using FTN.ServiceContracts;
@@ -27,11 +26,23 @@ namespace TransactionManager
         TransactionCallback callBackTransactionNMS;
         TransactionCallback callBackTransactionDMS;
         TransactionCallback callBackTransactionSCADA;
-        NetworkModelGDAProxy ProxyToNMSService;
-
         IDMSContract proxyToDispatcherDMS;
 
         ModelGDATMS gdaTMS;
+
+        private IMSClient imsClient;
+        private IMSClient IMSClient
+        {
+            get
+            {
+                if (imsClient == null)
+                {
+                    imsClient = new IMSClient(new EndpointAddress("net.tcp://localhost:6090/IncidentManagementSystemService"));
+                }
+                return imsClient;
+            }
+            set { imsClient = value; }
+        }
         private SCADAClient scadaClient;
         private SCADAClient ScadaClient
         {
@@ -61,20 +72,6 @@ namespace TransactionManager
         public TransactionCallback CallBackTransactionNMS { get => callBackTransactionNMS; set => callBackTransactionNMS = value; }
         public TransactionCallback CallBackTransactionDMS { get => callBackTransactionDMS; set => callBackTransactionDMS = value; }
         public TransactionCallback CallBackTransactionSCADA { get => callBackTransactionSCADA; set => callBackTransactionSCADA = value; }
-
-        private IMSClient imsClient;
-        private IMSClient IMSClient
-        {
-            get
-            {
-                if (imsClient == null)
-                {
-                    imsClient = new IMSClient(new EndpointAddress("net.tcp://localhost:6090/IncidentManagementSystemService"));
-                }
-                return imsClient;
-            }
-            set { imsClient = value; }
-        }
 
         public TransactionManager()
         {
@@ -124,26 +121,12 @@ namespace TransactionManager
                                                             new EndpointAddress("net.tcp://localhost:8078/SCADATransactionService"));
             ProxyTransactionSCADA = factoryTransactionSCADA.CreateChannel();
 
-            // client channel for SCADA 
-
-
             // client channel for DMSDispatcherService
             ChannelFactory<IDMSContract> factoryDispatcherDMS = new ChannelFactory<IDMSContract>(binding, new EndpointAddress("net.tcp://localhost:8029/DMSDispatcherService"));
             proxyToDispatcherDMS = factoryDispatcherDMS.CreateChannel();
 
-
-
-            //ChannelFactory<IIMSContract> factoryToIMS = new ChannelFactory<IIMSContract>(binding, new EndpointAddress("net.tcp://localhost:6090/IncidentManagementSystemService"));
-            // proxyToIMS = factoryToIMS.CreateChannel();
-
-            ProxyToNMSService = new NetworkModelGDAProxy("NetworkModelGDAEndpoint");
-            ProxyToNMSService.Open();
-
-
-            // client channel for IMS
-            // factoryToIMS = new ChannelFactory<IIMSContract>(new NetTcpBinding(), new EndpointAddress("net.tcp://localhost:6090/IncidentManagementSystemService"));
-            //IMSClient = factoryToIMS.CreateChannel();
-
+            //ProxyToNMSService = new NetworkModelGDAProxy("NetworkModelGDAEndpoint");
+            //ProxyToNMSService.Open();
         }
 
         #region 2PC methods
@@ -173,18 +156,17 @@ namespace TransactionManager
             }
         }
 
-        public void Prepare(Delta delta)
+        public void Prepare(Delta deltaForNMS)
         {
             Console.WriteLine("Transaction Manager calling prepare");
 
+            ScadaDelta deltaForScada = GetDeltaForSCADA(deltaForNMS);
+            //Delta fixedGuidDeltaForDMS = ProxyToNMSService.GetFixedDelta(deltaForNMS);
+            Delta fixedGuidDeltaForDMS = gdaTMS.GetFixedDelta(deltaForNMS);
 
-            ScadaDelta scadaDelta = GetDeltaForSCADA(delta);
-            Delta fixedGuidDelta = ProxyToNMSService.GetFixedDelta(delta);
-
-            //TransactionProxys.ToList().ForEach(x => x.Prepare(delta));
-            ProxyTransactionNMS.Prepare(delta);
-            ProxyTransactionDMS.Prepare(fixedGuidDelta);
-            ProxyTransactionSCADA.Prepare(scadaDelta);
+            ProxyTransactionNMS.Prepare(deltaForNMS);
+            ProxyTransactionDMS.Prepare(fixedGuidDeltaForDMS);
+            ProxyTransactionSCADA.Prepare(deltaForScada);
 
             while (true)
             {
@@ -227,8 +209,6 @@ namespace TransactionManager
 
         #region IOMSClient CIMAdapter Methods
 
-        // so, in order for network to be initialized, UpdateSystem must be called first
-
         /// <summary>
         /// Called by ModelLabs(CIMAdapter) when Static data changes
         /// </summary>
@@ -238,7 +218,6 @@ namespace TransactionManager
         {
             Console.WriteLine("Update System started." + d.Id);
             Enlist(d);
-            //  Prepare(d);
             return true;
         }
 
@@ -268,7 +247,7 @@ namespace TransactionManager
             {
                 listOfDMSElement = proxyToDispatcherDMS.GetAllElements();
             }
-            catch(Exception e) { }
+            catch (Exception e) { }
 
             List<ResourceDescription> resourceDescriptionFromNMS = new List<ResourceDescription>();
             List<ResourceDescription> descMeas = new List<ResourceDescription>();
@@ -399,28 +378,7 @@ namespace TransactionManager
             proxyToDispatcherDMS.SendCrewToDms(report);
             return;
         }
-
-        // currently unused
-        public bool IsNetworkAvailable()
-        {
-            bool retVal = false;
-            try
-            {
-                retVal = proxyToDispatcherDMS.IsNetworkAvailable();
-            }
-            catch (System.ServiceModel.EndpointNotFoundException e)
-            {
-                //Console.WriteLine("DMSDispatcher is not available yet.");
-                Console.WriteLine(e.Message);
-            }
-            catch (Exception e)
-            {
-
-            }
-
-            return retVal;
-        }
-
+     
         private ScadaDelta GetDeltaForSCADA(Delta d)
         {
             // zasto je ovo bitno, da ima measurement direction?? 
@@ -459,113 +417,14 @@ namespace TransactionManager
             return scadaDelta;
         }
 
-        #endregion
-
-        // da li se ove metode ikada pozivaju?  Onaj console1 ne koristimo?
-
-        // SVUDA PRVO PROVERITI DA LI JE IMS DOSTUPAN? 
-        // tj naprviti metodu koja to radi
-        #region Unused? check this!!!
-
-        public void GetNetworkWithOutParam(out List<Element> DMSElements, out List<ResourceDescription> resourceDescriptions, out int GraphDeep)
-        {
-            List<Element> listOfDMSElement = new List<Element>();//proxyToDMS.GetAllElements();
-            List<ResourceDescription> resourceDescriptionFromNMS = new List<ResourceDescription>();
-            List<ACLine> acList = proxyToDispatcherDMS.GetAllACLines();
-            List<Node> nodeList = proxyToDispatcherDMS.GetAllNodes();
-            List<Source> sourceList = proxyToDispatcherDMS.GetAllSource();
-            List<Switch> switchList = proxyToDispatcherDMS.GetAllSwitches();
-            List<Consumer> consumerList = proxyToDispatcherDMS.GetAllConsumers();
-
-            acList.ForEach(u => listOfDMSElement.Add(u));
-            nodeList.ForEach(u => listOfDMSElement.Add(u));
-            sourceList.ForEach(u => listOfDMSElement.Add(u));
-            switchList.ForEach(u => listOfDMSElement.Add(u));
-            consumerList.ForEach(u => listOfDMSElement.Add(u));
-
-            gdaTMS.GetExtentValues(ModelCode.BREAKER).ForEach(u => resourceDescriptionFromNMS.Add(u));
-            gdaTMS.GetExtentValues(ModelCode.CONNECTNODE).ForEach(u => resourceDescriptionFromNMS.Add(u));
-            gdaTMS.GetExtentValues(ModelCode.ENERGCONSUMER).ForEach(u => resourceDescriptionFromNMS.Add(u));
-            gdaTMS.GetExtentValues(ModelCode.ENERGSOURCE).ForEach(u => resourceDescriptionFromNMS.Add(u));
-            gdaTMS.GetExtentValues(ModelCode.ACLINESEGMENT).ForEach(u => resourceDescriptionFromNMS.Add(u));
-            GraphDeep = proxyToDispatcherDMS.GetNetworkDepth();
-            TMSAnswerToClient answer = new TMSAnswerToClient(resourceDescriptionFromNMS, null, GraphDeep, null, null, null);
-            resourceDescriptions = resourceDescriptionFromNMS;
-            DMSElements = listOfDMSElement;
-            GraphDeep = proxyToDispatcherDMS.GetNetworkDepth();
-
-            // return resourceDescriptionFromNMS;
-        }
-
-        //public void AddReport(string mrID, DateTime time, string state)
-        //{
-        //    IMSClient.AddReport(mrID, time, state);
-        //}
-
         public List<List<ElementStateReport>> GetElementStateReportsForMrID(string mrID)
         {
             return IMSClient.GetElementStateReportsForMrID(mrID);
         }
 
-        public List<ElementStateReport> GetElementStateReportsForSpecificTimeInterval(DateTime startTime, DateTime endTime)
-        {
-            return IMSClient.GetElementStateReportsForSpecificTimeInterval(startTime, endTime);
-        }
-
-        public List<ElementStateReport> GetElementStateReportsForSpecificMrIDAndSpecificTimeInterval(string mrID, DateTime startTime, DateTime endTime)
-        {
-            return IMSClient.GetElementStateReportsForSpecificMrIDAndSpecificTimeInterval(mrID, startTime, endTime);
-        }
-
-        public void SendCrew(string mrid)
-        {
-            throw new NotImplementedException();
-        }
-
-        public List<Crew> GetCrews()
-        {
-            return IMSClient.GetCrews();
-        }
-
-        //public void SendCrew(string mrid)
-        //{
-        //    proxyToDispatcherDMS.SendCrewToDms(mrid);
-        //    return;
-        //}
-
-        public bool AddCrew(Crew crew)
-        {
-            return IMSClient.AddCrew(crew);
-        }
-
-        public void AddReport(IncidentReport report)
-        {
-            IMSClient.AddReport(report);
-        }
-
-        public List<IncidentReport> GetAllReports()
-        {
-            return IMSClient.GetAllReports();
-        }
-
         public List<List<IncidentReport>> GetReportsForMrID(string mrID)
         {
             return IMSClient.GetReportsForMrID(mrID);
-        }
-
-        public List<IncidentReport> GetReportsForSpecificTimeInterval(DateTime startTime, DateTime endTime)
-        {
-            return IMSClient.GetReportsForSpecificTimeInterval(startTime, endTime);
-        }
-
-        public List<IncidentReport> GetReportsForSpecificMrIDAndSpecificTimeInterval(string mrID, DateTime startTime, DateTime endTime)
-        {
-            return IMSClient.GetReportsForSpecificMrIDAndSpecificTimeInterval(mrID, startTime, endTime);
-        }
-
-        public List<ElementStateReport> GetAllElementStateReports()
-        {
-            return IMSClient.GetAllElementStateReports();
         }
 
         public List<List<IncidentReport>> GetReportsForSpecificDateSortByBreaker(List<string> mrids, DateTime date)

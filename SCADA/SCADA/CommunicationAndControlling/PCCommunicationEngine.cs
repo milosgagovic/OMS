@@ -31,7 +31,7 @@ namespace SCADA.CommunicationAndControlling
         #region Establishing communication 
 
         /// <summary>
-        /// Reading communication paremeters from configPath,
+        /// Reading communication parameters from configPath,
         /// and establishing communication links with Process Controllers
         /// </summary>
         /// <param name="configPath"></param>
@@ -131,13 +131,14 @@ namespace SCADA.CommunicationAndControlling
         /// Getting IORB requests from IORequests queue, sending it to Simulator;
         /// Receiving Simulator answers, enqueing it to IOAnswers queue.
         /// </summary>
-        public void ProcessRequestsFromQueue()
+        public void ProcessRequestsFromQueue(TimeSpan timeout, CancellationToken token)
         {
+
             Console.WriteLine("Process Request form queue thread id={0}", Thread.CurrentThread.ManagedThreadId);
-            while (!isShutdown)
+            while (!token.IsCancellationRequested)
             {
                 bool isSuccessful;
-                IORequestBlock forProcess = IORequests.DequeueRequest(out isSuccessful);
+                IORequestBlock forProcess = IORequests.DequeueRequest(out isSuccessful, timeout);
 
                 if (isSuccessful)
                 {
@@ -168,9 +169,6 @@ namespace SCADA.CommunicationAndControlling
                             forProcess.RcvMsgLength = length;
 
                             IORequests.EnqueueAnswer(forProcess);
-                            //j++;
-                            //Console.WriteLine("enqueued {0} answer", j); 
-
                         }
                         catch (Exception e)
                         {
@@ -187,7 +185,6 @@ namespace SCADA.CommunicationAndControlling
                         Console.WriteLine("\nThere is no communication link with {0} rtu. Request is disposed.", forProcess.ProcessControllerName);
                     }
                 }
-                Thread.Sleep(millisecondsTimeout: timerMsc);
             }
         }
 

@@ -15,17 +15,17 @@ namespace SCADA
         {
             Console.Title = "SCADA";
 
-            // ako je druga platforma npr. x86 nije dobra putanja!
-
+            // ako je druga platforma npr. x86 nije dobra putanja! srediti kasnije
             string acqComConfigPath = Path.Combine(Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).Parent.Parent.Parent.FullName, "ScadaModel.xml");
             string pcConfig = "RtuConfiguration.xml";
             string fullPcConfig = Path.Combine(Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).Parent.Parent.Parent.FullName, "RtuConfiguration.xml");
             string basePath = Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).Parent.Parent.Parent.FullName;
 
-            // to do: use cancellation tokens and TPL
-
+            CancellationTokenSource cancellationTokenSource;
+            CancellationToken cancellationToken;
             Task requestsConsumer, answersConsumer, acqRequestsProducer;
-
+            
+            // videti stanje taskova sad pre nego sto ih pokrenes
             PCCommunicationEngine PCCommEng;
             while (true)
             {
@@ -44,29 +44,25 @@ namespace SCADA
             if (AcqEngine.Configure(acqComConfigPath))
             {
                 AcqEngine.InitializeSimulator();
-              
-                // Thread processingRequestsFromQueue = new Thread(PCCommEng.ProcessRequestsFromQueue);
-                // to do: for IO bound operatin you <await an operation which returns a task inside of an async method>
+
+                cancellationTokenSource = new CancellationTokenSource();
+                cancellationToken = cancellationTokenSource.Token;
+
+                // to do: for IO bound operation you <await an operation which returns a task inside of an async method>
                 // await yields control to the caller of the method thet performed await
-                requestsConsumer = Task.Factory.StartNew(() => PCCommEng.ProcessRequestsFromQueue(),
+
+                TimeSpan consumeReqTime = TimeSpan.FromMilliseconds(10000); // it should be at least twice than acquisition timeout
+                requestsConsumer = Task.Factory.StartNew(() => PCCommEng.ProcessRequestsFromQueue(consumeReqTime,cancellationToken),
                    TaskCreationOptions.LongRunning);
 
-                // Thread processingAnswersFromQueue = new Thread(AcqEngine.ProcessPCAnwers);
-                answersConsumer = Task.Factory.StartNew(() => AcqEngine.ProcessPCAnwers(),
+                TimeSpan consumeAnswTime = TimeSpan.FromMilliseconds(10000); 
+                answersConsumer = Task.Factory.StartNew(() => AcqEngine.ProcessPCAnwers(consumeReqTime, cancellationToken),
                    TaskCreationOptions.LongRunning);
-
-                //Thread producingAcquisitonRequests = new Thread(AcqEngine.StartAcquisition);
-
-                // processingRequestsFromQueue.Start();
-                // processingAnswersFromQueue.Start();
 
                 // give simulator some time, and when everything is ready start acquisition
                 Thread.Sleep(3000);
 
-                // producingAcquisitonRequests.Start();
-                //AcqEngine.StartAcquisition();
                 acqRequestsProducer = Task.Factory.StartNew(() => AcqEngine.Acquisition());
-
 
                 try
                 {

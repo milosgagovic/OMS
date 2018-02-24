@@ -7,15 +7,15 @@ using System.Text;
 
 namespace DMSContract
 {
-    public class DMSToSCADAProxy : ChannelFactory<IDMSToSCADAContract>, IDMSToSCADAContract, IDisposable
+    public class ScadaToDMSProxy : ChannelFactory<IDMSToSCADAContract>, IDMSToSCADAContract, IDisposable
     {
         IDMSToSCADAContract factory;
 
-        public DMSToSCADAProxy(NetTcpBinding binding, string address) : base(binding, address)
+        public ScadaToDMSProxy(NetTcpBinding binding, string address) : base(binding, address)
         {
             factory = this.CreateChannel();
         }
-        public DMSToSCADAProxy(NetTcpBinding binding, EndpointAddress address) : base(binding, address)
+        public ScadaToDMSProxy(NetTcpBinding binding, EndpointAddress address) : base(binding, address)
         {
             factory = this.CreateChannel();
         }

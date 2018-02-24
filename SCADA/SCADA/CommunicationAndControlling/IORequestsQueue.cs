@@ -1,4 +1,5 @@
 ﻿using PCCommon;
+using System;
 using System.Collections.Concurrent;
 
 namespace SCADA.CommunicationAndControlling
@@ -11,39 +12,6 @@ namespace SCADA.CommunicationAndControlling
     {
         private static object syncObj = new object();
         private static volatile IORequestsQueue instance;
-
-        //private ConcurrentQueue<IORequestBlock> ioRequests;
-        //private ConcurrentQueue<IORequestBlock> ioAnswers;
-
-        //public ConcurrentQueue<IORequestBlock> IORequests
-        //{
-        //    get
-        //    {
-        //        return ioRequests;
-        //    }
-        //    set
-        //    {
-        //        if (value != null)
-        //        {
-        //            ioRequests = value;
-        //        }
-        //    }
-        //}
-        //public ConcurrentQueue<IORequestBlock> IOAnswers
-        //{
-        //    get
-        //    {
-        //        return ioAnswers;
-        //    }
-        //    set
-        //    {
-        //        if (value != null)
-        //        {
-        //            ioAnswers = value;
-        //        }
-        //    }
-        //}
-
 
         private BlockingCollection<IORequestBlock> ioRequests;
         private BlockingCollection<IORequestBlock> ioAnswers;
@@ -102,31 +70,43 @@ namespace SCADA.CommunicationAndControlling
         /* IORequests queue methods */
         public void EnqueueRequest(IORequestBlock iorb)
         {
-           // IORequests.Enqueue(iorb);
             IORequests.Add(iorb);
         }
-       
-        public IORequestBlock DequeueRequest(out bool isSuccessful)
+
+        //public IORequestBlock DequeueRequest(out bool isSuccessful)
+        //{
+        //    IORequestBlock req;
+        //    // try dequeue is not blocking
+        //    //isSuccessful = IORequests.TryDequeue(out req);
+        //    isSuccessful = IORequests.TryTake(out req);
+        //    return req;
+        //}
+
+        public IORequestBlock DequeueRequest(out bool isSuccessful, TimeSpan? timeout = null)
         {
+            if (timeout == null)
+                timeout = TimeSpan.FromMilliseconds(0);
+
+            TimeSpan tryTakeTimeout = (TimeSpan)timeout;
             IORequestBlock req;
-            // try dequeue is not blocking
-            //isSuccessful = IORequests.TryDequeue(out req);
-            isSuccessful = IORequests.TryTake(out req);
+            isSuccessful = IORequests.TryTake(out req, tryTakeTimeout);
             return req;
         }
 
         /* IOAnswers queue methods */
         public void EnqueueAnswer(IORequestBlock iorb)
         {
-            //IOAnswers.Enqueue(iorb);
             IOAnswers.Add(iorb);
         }
 
-        public IORequestBlock DequeueAnswer(out bool isSuccessful)
+        public IORequestBlock DequeueAnswer(out bool isSuccessful, TimeSpan? timeout = null)
         {
+            if (timeout == null)
+                timeout = TimeSpan.FromMilliseconds(0);
+
+            TimeSpan tryTakeTimeout = (TimeSpan)timeout;
             IORequestBlock answ;
-            //isSuccessful = IOAnswers.TryDequeue(out answ);
-            isSuccessful = IOAnswers.TryTake(out answ);
+            isSuccessful = IOAnswers.TryTake(out answ, tryTakeTimeout);
             return answ;
         }
     }
