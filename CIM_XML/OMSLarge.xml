@@ -1229,7 +1229,7 @@
 		Opened Closed
 		</cim:Discrete.validStates>
 		<cim:Discrete.validCommands>
-		Open Clos
+		Open Close
 		</cim:Discrete.validCommands>
 		<cim:Measurement.direction>ReadWrite</cim:Measurement.direction>
 		<cim:Measurement.measurementType></cim:Measurement.measurementType>
@@ -1330,7 +1330,7 @@
 	<!-- </cim:Discrete> -->
 	
 	<cim:EnergyConsumer rdf:ID="EC_1">
-		<cim:EnergyConsumer.pfixed></cim:EnergyConsumer.pfixed>
+		<cim:EnergyConsumer.pfixed>22.43</cim:EnergyConsumer.pfixed>
 		<cim:EnergyConsumer.qfixed></cim:EnergyConsumer.qfixed>
 		<cim:Equipment.normallyInService>true</cim:Equipment.normallyInService>
 		<cim:IdentifiedObject.mRID>EC_1</cim:IdentifiedObject.mRID>
@@ -1338,7 +1338,7 @@
 	</cim:EnergyConsumer>
 	
 	<cim:EnergyConsumer rdf:ID="EC_2">
-		<cim:EnergyConsumer.pfixed></cim:EnergyConsumer.pfixed>
+		<cim:EnergyConsumer.pfixed>47.64</cim:EnergyConsumer.pfixed>
 		<cim:EnergyConsumer.qfixed></cim:EnergyConsumer.qfixed>
 		<cim:Equipment.normallyInService>true</cim:Equipment.normallyInService>
 		<cim:IdentifiedObject.mRID>EC_2</cim:IdentifiedObject.mRID>
@@ -1346,7 +1346,7 @@
 	</cim:EnergyConsumer>
 	
 	<cim:EnergyConsumer rdf:ID="EC_3">
-		<cim:EnergyConsumer.pfixed></cim:EnergyConsumer.pfixed>
+		<cim:EnergyConsumer.pfixed>36.42</cim:EnergyConsumer.pfixed>
 		<cim:EnergyConsumer.qfixed></cim:EnergyConsumer.qfixed>
 		<cim:Equipment.normallyInService>true</cim:Equipment.normallyInService>
 		<cim:IdentifiedObject.mRID>EC_3</cim:IdentifiedObject.mRID>
@@ -1354,7 +1354,7 @@
 	</cim:EnergyConsumer>
 	
 	<cim:EnergyConsumer rdf:ID="EC_4">
-		<cim:EnergyConsumer.pfixed></cim:EnergyConsumer.pfixed>
+		<cim:EnergyConsumer.pfixed>25.62</cim:EnergyConsumer.pfixed>
 		<cim:EnergyConsumer.qfixed></cim:EnergyConsumer.qfixed>
 		<cim:Equipment.normallyInService>true</cim:Equipment.normallyInService>
 		<cim:IdentifiedObject.mRID>EC_4</cim:IdentifiedObject.mRID>
@@ -1362,7 +1362,7 @@
 	</cim:EnergyConsumer>
 	
 	<cim:EnergyConsumer rdf:ID="EC_5">
-		<cim:EnergyConsumer.pfixed></cim:EnergyConsumer.pfixed>
+		<cim:EnergyConsumer.pfixed>33.08</cim:EnergyConsumer.pfixed>
 		<cim:EnergyConsumer.qfixed></cim:EnergyConsumer.qfixed>
 		<cim:Equipment.normallyInService>true</cim:Equipment.normallyInService>
 		<cim:IdentifiedObject.mRID>EC_5</cim:IdentifiedObject.mRID>
@@ -1370,7 +1370,7 @@
 	</cim:EnergyConsumer>
 	
 	<cim:EnergyConsumer rdf:ID="EC_6">
-		<cim:EnergyConsumer.pfixed></cim:EnergyConsumer.pfixed>
+		<cim:EnergyConsumer.pfixed>44.26</cim:EnergyConsumer.pfixed>
 		<cim:EnergyConsumer.qfixed></cim:EnergyConsumer.qfixed>
 		<cim:Equipment.normallyInService>true</cim:Equipment.normallyInService>
 		<cim:IdentifiedObject.mRID>EC_6</cim:IdentifiedObject.mRID>
@@ -1378,7 +1378,7 @@
 	</cim:EnergyConsumer>
 	
 	<cim:EnergyConsumer rdf:ID="EC_7">
-		<cim:EnergyConsumer.pfixed></cim:EnergyConsumer.pfixed>
+		<cim:EnergyConsumer.pfixed>28.13</cim:EnergyConsumer.pfixed>
 		<cim:EnergyConsumer.qfixed></cim:EnergyConsumer.qfixed>
 		<cim:Equipment.normallyInService>true</cim:Equipment.normallyInService>
 		<cim:IdentifiedObject.mRID>EC_7</cim:IdentifiedObject.mRID>
@@ -1386,7 +1386,7 @@
 	</cim:EnergyConsumer>
 	
 	<cim:EnergyConsumer rdf:ID="EC_8">
-		<cim:EnergyConsumer.pfixed></cim:EnergyConsumer.pfixed>
+		<cim:EnergyConsumer.pfixed>33.02</cim:EnergyConsumer.pfixed>
 		<cim:EnergyConsumer.qfixed></cim:EnergyConsumer.qfixed>
 		<cim:Equipment.normallyInService>true</cim:Equipment.normallyInService>
 		<cim:IdentifiedObject.mRID>EC_8</cim:IdentifiedObject.mRID>
@@ -1394,7 +1394,7 @@
 	</cim:EnergyConsumer>
 	
 	<cim:EnergyConsumer rdf:ID="EC_9">
-		<cim:EnergyConsumer.pfixed></cim:EnergyConsumer.pfixed>
+		<cim:EnergyConsumer.pfixed>45.92</cim:EnergyConsumer.pfixed>
 		<cim:EnergyConsumer.qfixed></cim:EnergyConsumer.qfixed>
 		<cim:Equipment.normallyInService>true</cim:Equipment.normallyInService>
 		<cim:IdentifiedObject.mRID>EC_9</cim:IdentifiedObject.mRID>
@@ -1402,7 +1402,7 @@
 	</cim:EnergyConsumer>
 	
 	<cim:EnergyConsumer rdf:ID="EC_10">
-		<cim:EnergyConsumer.pfixed></cim:EnergyConsumer.pfixed>
+		<cim:EnergyConsumer.pfixed>26.19</cim:EnergyConsumer.pfixed>
 		<cim:EnergyConsumer.qfixed></cim:EnergyConsumer.qfixed>
 		<cim:Equipment.normallyInService>true</cim:Equipment.normallyInService>
 		<cim:IdentifiedObject.mRID>EC_10</cim:IdentifiedObject.mRID>
@@ -1410,7 +1410,7 @@
 	</cim:EnergyConsumer>
 	
 	<cim:EnergyConsumer rdf:ID="EC_11">
-		<cim:EnergyConsumer.pfixed></cim:EnergyConsumer.pfixed>
+		<cim:EnergyConsumer.pfixed>21.89</cim:EnergyConsumer.pfixed>
 		<cim:EnergyConsumer.qfixed></cim:EnergyConsumer.qfixed>
 		<cim:Equipment.normallyInService>true</cim:Equipment.normallyInService>
 		<cim:IdentifiedObject.mRID>EC_11</cim:IdentifiedObject.mRID>
@@ -1418,7 +1418,7 @@
 	</cim:EnergyConsumer>
 	
 	<cim:EnergyConsumer rdf:ID="EC_12">
-		<cim:EnergyConsumer.pfixed></cim:EnergyConsumer.pfixed>
+		<cim:EnergyConsumer.pfixed>41.45</cim:EnergyConsumer.pfixed>
 		<cim:EnergyConsumer.qfixed></cim:EnergyConsumer.qfixed>
 		<cim:Equipment.normallyInService>true</cim:Equipment.normallyInService>
 		<cim:IdentifiedObject.mRID>EC_12</cim:IdentifiedObject.mRID>
@@ -1426,7 +1426,7 @@
 	</cim:EnergyConsumer>
 	
 	<cim:EnergyConsumer rdf:ID="EC_13">
-		<cim:EnergyConsumer.pfixed></cim:EnergyConsumer.pfixed>
+		<cim:EnergyConsumer.pfixed>46.82</cim:EnergyConsumer.pfixed>
 		<cim:EnergyConsumer.qfixed></cim:EnergyConsumer.qfixed>
 		<cim:Equipment.normallyInService>true</cim:Equipment.normallyInService>
 		<cim:IdentifiedObject.mRID>EC_13</cim:IdentifiedObject.mRID>
@@ -1434,7 +1434,7 @@
 	</cim:EnergyConsumer>
 	
 	<cim:EnergyConsumer rdf:ID="EC_14">
-		<cim:EnergyConsumer.pfixed></cim:EnergyConsumer.pfixed>
+		<cim:EnergyConsumer.pfixed>34.21</cim:EnergyConsumer.pfixed>
 		<cim:EnergyConsumer.qfixed></cim:EnergyConsumer.qfixed>
 		<cim:Equipment.normallyInService>true</cim:Equipment.normallyInService>
 		<cim:IdentifiedObject.mRID>EC_14</cim:IdentifiedObject.mRID>
@@ -1442,7 +1442,7 @@
 	</cim:EnergyConsumer>
 	
 	<cim:EnergyConsumer rdf:ID="EC_15">
-		<cim:EnergyConsumer.pfixed></cim:EnergyConsumer.pfixed>
+		<cim:EnergyConsumer.pfixed>23.78</cim:EnergyConsumer.pfixed>
 		<cim:EnergyConsumer.qfixed></cim:EnergyConsumer.qfixed>
 		<cim:Equipment.normallyInService>true</cim:Equipment.normallyInService>
 		<cim:IdentifiedObject.mRID>EC_15</cim:IdentifiedObject.mRID>
@@ -1450,7 +1450,7 @@
 	</cim:EnergyConsumer>
 	
 	<cim:EnergyConsumer rdf:ID="EC_16">
-		<cim:EnergyConsumer.pfixed></cim:EnergyConsumer.pfixed>
+		<cim:EnergyConsumer.pfixed>35.28</cim:EnergyConsumer.pfixed>
 		<cim:EnergyConsumer.qfixed></cim:EnergyConsumer.qfixed>
 		<cim:Equipment.normallyInService>true</cim:Equipment.normallyInService>
 		<cim:IdentifiedObject.mRID>EC_16</cim:IdentifiedObject.mRID>
@@ -1458,7 +1458,7 @@
 	</cim:EnergyConsumer>
 	
 	<cim:EnergyConsumer rdf:ID="EC_17">
-		<cim:EnergyConsumer.pfixed></cim:EnergyConsumer.pfixed>
+		<cim:EnergyConsumer.pfixed>30.93</cim:EnergyConsumer.pfixed>
 		<cim:EnergyConsumer.qfixed></cim:EnergyConsumer.qfixed>
 		<cim:Equipment.normallyInService>true</cim:Equipment.normallyInService>
 		<cim:IdentifiedObject.mRID>EC_17</cim:IdentifiedObject.mRID>
@@ -1466,7 +1466,7 @@
 	</cim:EnergyConsumer>
 	
 	<cim:EnergyConsumer rdf:ID="EC_18">
-		<cim:EnergyConsumer.pfixed></cim:EnergyConsumer.pfixed>
+		<cim:EnergyConsumer.pfixed>37.92</cim:EnergyConsumer.pfixed>
 		<cim:EnergyConsumer.qfixed></cim:EnergyConsumer.qfixed>
 		<cim:Equipment.normallyInService>true</cim:Equipment.normallyInService>
 		<cim:IdentifiedObject.mRID>EC_18</cim:IdentifiedObject.mRID>
@@ -1474,7 +1474,7 @@
 	</cim:EnergyConsumer>
 	
 	<cim:EnergyConsumer rdf:ID="EC_19">
-		<cim:EnergyConsumer.pfixed></cim:EnergyConsumer.pfixed>
+		<cim:EnergyConsumer.pfixed>25.92</cim:EnergyConsumer.pfixed>
 		<cim:EnergyConsumer.qfixed></cim:EnergyConsumer.qfixed>
 		<cim:Equipment.normallyInService>true</cim:Equipment.normallyInService>
 		<cim:IdentifiedObject.mRID>EC_19</cim:IdentifiedObject.mRID>
@@ -1482,7 +1482,7 @@
 	</cim:EnergyConsumer>
 	
 	<cim:EnergyConsumer rdf:ID="EC_20">
-		<cim:EnergyConsumer.pfixed></cim:EnergyConsumer.pfixed>
+		<cim:EnergyConsumer.pfixed>20.84</cim:EnergyConsumer.pfixed>
 		<cim:EnergyConsumer.qfixed></cim:EnergyConsumer.qfixed>
 		<cim:Equipment.normallyInService>true</cim:Equipment.normallyInService>
 		<cim:IdentifiedObject.mRID>EC_20</cim:IdentifiedObject.mRID>
@@ -1490,7 +1490,7 @@
 	</cim:EnergyConsumer>
 	
 	<cim:EnergyConsumer rdf:ID="EC_21">
-		<cim:EnergyConsumer.pfixed></cim:EnergyConsumer.pfixed>
+		<cim:EnergyConsumer.pfixed>42.78</cim:EnergyConsumer.pfixed>
 		<cim:EnergyConsumer.qfixed></cim:EnergyConsumer.qfixed>
 		<cim:Equipment.normallyInService>true</cim:Equipment.normallyInService>
 		<cim:IdentifiedObject.mRID>EC_21</cim:IdentifiedObject.mRID>
@@ -1498,7 +1498,7 @@
 	</cim:EnergyConsumer>
 	
 	<cim:EnergyConsumer rdf:ID="EC_22">
-		<cim:EnergyConsumer.pfixed></cim:EnergyConsumer.pfixed>
+		<cim:EnergyConsumer.pfixed>36.87</cim:EnergyConsumer.pfixed>
 		<cim:EnergyConsumer.qfixed></cim:EnergyConsumer.qfixed>
 		<cim:Equipment.normallyInService>true</cim:Equipment.normallyInService>
 		<cim:IdentifiedObject.mRID>EC_22</cim:IdentifiedObject.mRID>
@@ -1506,7 +1506,7 @@
 	</cim:EnergyConsumer>
 	
 	<cim:EnergyConsumer rdf:ID="EC_23">
-		<cim:EnergyConsumer.pfixed></cim:EnergyConsumer.pfixed>
+		<cim:EnergyConsumer.pfixed>29.01</cim:EnergyConsumer.pfixed>
 		<cim:EnergyConsumer.qfixed></cim:EnergyConsumer.qfixed>
 		<cim:Equipment.normallyInService>true</cim:Equipment.normallyInService>
 		<cim:IdentifiedObject.mRID>EC_23</cim:IdentifiedObject.mRID>
@@ -1514,7 +1514,7 @@
 	</cim:EnergyConsumer>
 	
 	<cim:EnergyConsumer rdf:ID="EC_24">
-		<cim:EnergyConsumer.pfixed></cim:EnergyConsumer.pfixed>
+		<cim:EnergyConsumer.pfixed>40.45</cim:EnergyConsumer.pfixed>
 		<cim:EnergyConsumer.qfixed></cim:EnergyConsumer.qfixed>
 		<cim:Equipment.normallyInService>true</cim:Equipment.normallyInService>
 		<cim:IdentifiedObject.mRID>EC_24</cim:IdentifiedObject.mRID>
@@ -1522,7 +1522,7 @@
 	</cim:EnergyConsumer>
 	
 	<cim:EnergyConsumer rdf:ID="EC_25">
-		<cim:EnergyConsumer.pfixed></cim:EnergyConsumer.pfixed>
+		<cim:EnergyConsumer.pfixed>40.63</cim:EnergyConsumer.pfixed>
 		<cim:EnergyConsumer.qfixed></cim:EnergyConsumer.qfixed>
 		<cim:Equipment.normallyInService>true</cim:Equipment.normallyInService>
 		<cim:IdentifiedObject.mRID>EC_25</cim:IdentifiedObject.mRID>
@@ -1530,7 +1530,7 @@
 	</cim:EnergyConsumer>
 	
 	<cim:EnergyConsumer rdf:ID="EC_26">
-		<cim:EnergyConsumer.pfixed></cim:EnergyConsumer.pfixed>
+		<cim:EnergyConsumer.pfixed>31.36</cim:EnergyConsumer.pfixed>
 		<cim:EnergyConsumer.qfixed></cim:EnergyConsumer.qfixed>
 		<cim:Equipment.normallyInService>true</cim:Equipment.normallyInService>
 		<cim:IdentifiedObject.mRID>EC_26</cim:IdentifiedObject.mRID>
@@ -1538,7 +1538,7 @@
 	</cim:EnergyConsumer>
 	
 	<cim:EnergyConsumer rdf:ID="EC_27">
-		<cim:EnergyConsumer.pfixed></cim:EnergyConsumer.pfixed>
+		<cim:EnergyConsumer.pfixed>28.52</cim:EnergyConsumer.pfixed>
 		<cim:EnergyConsumer.qfixed></cim:EnergyConsumer.qfixed>
 		<cim:Equipment.normallyInService>true</cim:Equipment.normallyInService>
 		<cim:IdentifiedObject.mRID>EC_27</cim:IdentifiedObject.mRID>
@@ -1546,7 +1546,7 @@
 	</cim:EnergyConsumer>
 	
 	<cim:EnergyConsumer rdf:ID="EC_28">
-		<cim:EnergyConsumer.pfixed></cim:EnergyConsumer.pfixed>
+		<cim:EnergyConsumer.pfixed>35.74</cim:EnergyConsumer.pfixed>
 		<cim:EnergyConsumer.qfixed></cim:EnergyConsumer.qfixed>
 		<cim:Equipment.normallyInService>true</cim:Equipment.normallyInService>
 		<cim:IdentifiedObject.mRID>EC_28</cim:IdentifiedObject.mRID>
@@ -1554,7 +1554,7 @@
 	</cim:EnergyConsumer>
 	
 	<cim:EnergyConsumer rdf:ID="EC_29">
-		<cim:EnergyConsumer.pfixed></cim:EnergyConsumer.pfixed>
+		<cim:EnergyConsumer.pfixed>45.73</cim:EnergyConsumer.pfixed>
 		<cim:EnergyConsumer.qfixed></cim:EnergyConsumer.qfixed>
 		<cim:Equipment.normallyInService>true</cim:Equipment.normallyInService>
 		<cim:IdentifiedObject.mRID>EC_29</cim:IdentifiedObject.mRID>

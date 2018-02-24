@@ -79,7 +79,6 @@ namespace DMSService
 
                 if (state == OMSSCADACommon.States.OPENED)
                 {
-                    IMSClient.AddReport(incident);
                     isIncident = true;
 
                     sw.Marker = false;
@@ -131,6 +130,7 @@ namespace DMSService
                         ResourceDescription resDes = DMSService.Instance.Gda.GetValues(gid);
                         incident.LostPower += resDes.GetProperty(ModelCode.ENERGCONSUMER_PFIXED).AsFloat();
                     }
+                    IMSClient.AddReport(incident);
                     publisher.PublishIncident(incident);
                 }
             }

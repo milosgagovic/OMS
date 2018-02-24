@@ -2242,6 +2242,7 @@ namespace DispatcherApp.ViewModel
 
                 if (ct.IsCancellationRequested)
                 {
+                    sw.IsCandidate = false;
                     ct.ThrowIfCancellationRequested();
                 }
             }
@@ -2260,6 +2261,7 @@ namespace DispatcherApp.ViewModel
 
                 if (ct.IsCancellationRequested)
                 {
+                    sw.IsCandidate = false;
                     ct.ThrowIfCancellationRequested();
                 }
                 i++;
