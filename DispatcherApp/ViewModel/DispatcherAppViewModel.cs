@@ -135,7 +135,7 @@ namespace DispatcherApp.ViewModel
         #region Constructor
         public DispatcherAppViewModel()
         {
-            Thread.Sleep(5000);
+            //Thread.Sleep(5000);
 
             subscriber = new Subscriber();
             subscriber.Subscribe();
@@ -2186,6 +2186,9 @@ namespace DispatcherApp.ViewModel
                 {
                     if (isIncident == false)
                     {
+                        tokenSource.Cancel();
+                        Thread.Sleep(50);
+
                         tokenSource = new CancellationTokenSource();
                         CancellationToken token = tokenSource.Token;
 
