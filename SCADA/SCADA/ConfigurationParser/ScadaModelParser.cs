@@ -27,9 +27,8 @@ namespace SCADA.ConfigurationParser
 
         public bool DeserializeScadaModel(string deserializationSource = "ScadaModel.xml")
         {
-            // to do: ime ove promenljive imas u sveski
-            // obrnula logiku za configuration runnig, PROMENITI
-            Database.IsConfigurationRunning = false; // OVO JE BILO SPORNO KASNIJE?
+            // to do
+            Database.IsConfigurationFinished = false; // OVO JE BILO SPORNO KASNIJE?
 
             string message = string.Empty;
             string configurationName = deserializationSource;
@@ -386,7 +385,7 @@ namespace SCADA.ConfigurationParser
                 return false;
             }
 
-            Database.IsConfigurationRunning = true;
+            Database.IsConfigurationFinished = true;
             return true;
         }
 

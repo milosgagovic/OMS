@@ -1,11 +1,9 @@
 ﻿using SCADA.ClientHandler;
-using SCADA.RealtimeDatabase;
 using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using SCADA.CommunicationAndControlling;
-using SCADA.CommunicationAndControlling.SecondaryDataProcessing;
 
 namespace SCADA
 {
@@ -15,23 +13,22 @@ namespace SCADA
         {
             Console.Title = "SCADA";
 
-            // ako je druga platforma npr. x86 nije dobra putanja! srediti kasnije
-            string acqComConfigPath = Path.Combine(Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).Parent.Parent.Parent.FullName, "ScadaModel.xml");
+            // to do: srediti kasnije, staviti fajlove u neki resource folder ili slicno   
+            // ako je druga platforma npr. x86 mozda nije dobra putanja!               
             string pcConfig = "RtuConfiguration.xml";
-            string fullPcConfig = Path.Combine(Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).Parent.Parent.Parent.FullName, "RtuConfiguration.xml");
+            string scadaConfig = "ScadaModel.xml";
             string basePath = Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).Parent.Parent.Parent.FullName;
+            string acqComConfigPath = Path.Combine(basePath, scadaConfig);
 
             CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
             CancellationToken cancellationToken;
             Task requestsConsumer, answersConsumer, acqRequestsProducer;
 
-            // videti stanje taskova sad pre nego sto ih pokrenes
-            PCCommunicationEngine PCCommEng;
+            PCCommunicationEngine PCCommEng = new PCCommunicationEngine();
+
             while (true)
             {
-                PCCommEng = new PCCommunicationEngine();
-
-                if (!PCCommEng.Configure(basePath, pcConfig))
+                if (!PCCommEng.ConfigureEngine(basePath, pcConfig))
                 {
                     Console.WriteLine("\nStart the simulator then press any key to continue the application.\n");
                     Console.ReadKey();
@@ -40,8 +37,8 @@ namespace SCADA
                 break;
             }
 
-            CommAcqEngine AcqEngine = new CommAcqEngine();
-            if (AcqEngine.Configure(acqComConfigPath))
+            CommandingAcquisitionEngine AcqEngine = new CommandingAcquisitionEngine();
+            if (AcqEngine.ConfigureEngine(acqComConfigPath))
             {
                 AcqEngine.InitializeSimulator();
                 cancellationToken = cancellationTokenSource.Token;
@@ -87,6 +84,7 @@ namespace SCADA
             Console.ReadKey();
             if (cancellationToken.CanBeCanceled)
             {
+                // ako nisu bili ni pokrenuti, vrednost taskova je ovde null..
                 cancellationTokenSource.Cancel();
             }
 

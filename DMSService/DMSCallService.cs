@@ -21,7 +21,7 @@ namespace DMSService
 {
     public class DMSCallService : IDMSCallContract, IDisposable
     {
-        public Dictionary<string, Message> messagesFormClents = new Dictionary<string, Message>();
+        public Dictionary<string, Message> messagesFromClents = new Dictionary<string, Message>();
         public List<List<long>> possibleBreakers = new List<List<long>>();
         public Pop3Client client;
         public List<long> clientsCall = new List<long>();
@@ -42,11 +42,13 @@ namespace DMSService
             }
             set { imsClient = value; }
         }
+
         public DMSCallService()
         {
             Thread t = new Thread(new ThreadStart(Process));
             t.Start();
         }
+
         public void Process()
         {
             while (true)
@@ -64,7 +66,7 @@ namespace DMSService
                         {
                             message = client.GetMessage(i);
                             MessagePart mp = message.FindFirstPlainTextVersion();
-                            messagesFormClents.Add(message.Headers.MessageId, message);
+                            messagesFromClents.Add(message.Headers.MessageId, message);
                             /*
                             Console.WriteLine(mp.GetBodyAsText());
                             Pronaci ec na osnovu MRID_ja
@@ -111,6 +113,7 @@ namespace DMSService
                 Thread.Sleep(3000);
             }
         }
+       
         /// <summary>
         /// call je gid EC
         /// </summary>
@@ -165,7 +168,7 @@ namespace DMSService
                     }
                     NodeLink possibileIncident = maxDepthCheck.FirstOrDefault(x => x.Depth == maxDepthCheck.Max(y => y.Depth));
                     incidentBreaker = possibileIncident.Parent;
-                    
+
                     if (waitForMoreCalls)
                     {
                         pub.PublishUIBreaker(false, (long)incidentBreaker);
@@ -215,10 +218,11 @@ namespace DMSService
                             networkChange.Add(new SCADAUpdateModel(s.ElementGID, true));
 
 
- 						pub.PublishUpdateDigital(networkChange);
-                        pub.PublishIncident(incident);  List<long> gids = new List<long>();
+                            pub.PublishUpdateDigital(networkChange);
+                            pub.PublishIncident(incident); List<long> gids = new List<long>();
                             networkChange.ForEach(x => gids.Add(x.Gid));
                             List<long> listOfConsumersWithoutPower = gids.Where(x => (DMSType)ModelCodeHelper.ExtractTypeFromGlobalId(x) == DMSType.ENERGCONSUMER).ToList();
+
                             foreach (long gid in listOfConsumersWithoutPower)
                             {
                                 ResourceDescription resDes = DMSService.Instance.Gda.GetValues(gid);
@@ -227,7 +231,7 @@ namespace DMSService
                             IMSClient.AddReport(incident);
                             Thread.Sleep(3000);
 
-                            pub.PublishUpdate(networkChange);
+                            pub.PublishUpdateDigital(networkChange);
                             pub.PublishIncident(incident);
 
                             clientsCall.Clear();

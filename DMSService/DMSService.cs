@@ -137,8 +137,6 @@ namespace DMSService
             StartHosts();
             Tree = InitializeNetwork(new Delta());
 
-            //isNetworkInitialized = true;
-
             while (!isNetworkInitialized)
             {
                 Console.WriteLine("Not Initialized network");
@@ -671,6 +669,7 @@ namespace DMSService
             }
             return mrid;
         }
+
         private long GetConnNodeConnectedWithTerminal(long terminal)
         {
             long connNode = 0;

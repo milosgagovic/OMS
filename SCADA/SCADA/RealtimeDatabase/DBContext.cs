@@ -112,6 +112,7 @@ namespace SCADA.RealtimeDatabase
 
             List<ScadaElement> updateOperations = delta.UpdateOps;
 
+            // to do: objasniti ovo
             // this list acutally can contains update operations also. case 2. above descripted 
             // we have to segregate treal update from insert...
             List<ScadaElement> deltaOperations = delta.InsertOps;

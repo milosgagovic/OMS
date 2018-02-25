@@ -42,10 +42,10 @@ namespace PCCommon
 
         /* reply parameters*/
 
-        /// <summary>Transaction type</summary>
+        /// <summary>Reply Length</summary>
         public int RcvMsgLength { get; set; }
 
-        /// <summary>Receiver buffer type</summary>
+        /// <summary>Receiver buffer for incoming data</summary>
         public Byte[] RcvBuff { get; set; }
 
         // to do:

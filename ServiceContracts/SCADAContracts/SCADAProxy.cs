@@ -1,12 +1,7 @@
-﻿using OMSSCADACommon;
-using OMSSCADACommon.Commands;
+﻿using OMSSCADACommon.Commands;
 using OMSSCADACommon.Responses;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.ServiceModel;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SCADAContracts
 {

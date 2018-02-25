@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.ServiceModel;
-using System.Text;
-using System.Threading.Tasks;
 using OMSSCADACommon;
 using TransactionManagerContract;
 using SCADA.RealtimeDatabase;
@@ -69,6 +67,8 @@ namespace SCADA.ClientHandler
                 {
                     ScadaModelParser parser = new ScadaModelParser();
 
+                    // to do:
+                    // mozda ove serijaliyacije da budu taskovi_
                     // novu konfiguraciju cuvamo u fajlu
                     parser.SerializeScadaModel(modifiedConfigFile);
 
@@ -109,7 +109,7 @@ namespace SCADA.ClientHandler
         }
 
         /// <summary>
-        /// Returning to old config file, initialize database again (deserializng from file)
+        /// Returning to old config file, initialize database again (deserializing from file)
         /// </summary>
         public void Rollback()
         {

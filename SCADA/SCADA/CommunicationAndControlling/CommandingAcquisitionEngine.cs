@@ -9,36 +9,35 @@ using SCADA.RealtimeDatabase;
 using OMSSCADACommon;
 using OMSSCADACommon.Responses;
 using SCADA.ClientHandler;
-using SCADA.RealtimeDatabase.Catalogs;
 using SCADA.ConfigurationParser;
 using System.Linq;
+using SCADA.CommunicationAndControlling.SecondaryDataProcessing;
 
-namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
+namespace SCADA.CommunicationAndControlling
 {
     // Commanding-Acquisition Engine
-    public class CommAcqEngine : ICommandReceiver
+    public class CommandingAcquisitionEngine : ICommandReceiver
     {
         private static IORequestsQueue IORequests;
-        private static bool isShutdown;
         private int timerMsc;
 
         private DBContext dbContext = null;
 
-        public CommAcqEngine()
+        public CommandingAcquisitionEngine()
         {
             Console.WriteLine("AcqEngine Instancing()");
 
             IORequests = IORequestsQueue.GetQueue();
             dbContext = new DBContext();
-            isShutdown = false;
             timerMsc = 5000;
         }
+      
         /// <summary>
         /// Reading database data from configPath,
         /// configuring RTUs and Process Variables
         /// </summary>
         /// <param name="configPath"></param>
-        public bool Configure(string configPath)
+        public bool ConfigureEngine(string configPath)
         {
             ScadaModelParser parser = new ScadaModelParser();
             return parser.DeserializeScadaModel();
@@ -301,7 +300,7 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
         public Action<string> rtuAcquisitonAction = rtuName =>
         {
             IIndustryProtocolHandler IProtHandler = null;
-            Console.WriteLine("\nRtuAcqAction started Rtu={2}  Task id = {0} , time={1}", Task.CurrentId, DateTime.Now.ToLongTimeString(), rtuName);
+          //  Console.WriteLine("\nRtuAcqAction started Rtu={2}  Task id = {0} , time={1}", Task.CurrentId, DateTime.Now.ToLongTimeString(), rtuName);
 
             DBContext dbContext = new DBContext();
             RTU rtu = dbContext.GetRTUByName(rtuName);
@@ -324,6 +323,8 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
                         break;
                 }
 
+                // to do:
+                // mogu ovo sve biti yasebni taskovi_
                 //-------------analogs---------------
 
                 IORequestBlock iorbAnalogs = new IORequestBlock()
@@ -572,10 +573,10 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
             return;
         }
 
-        // to do: close all communication channels? dispose resources?
+        // to do: cancelaltion token use....close all communication channels? dispose resources?
         public void Stop()
         {
-            isShutdown = true;
+           // isShutdown = true;
             ScadaModelParser parser = new ScadaModelParser();
             parser.SerializeScadaModel();
         }
@@ -632,6 +633,11 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
         }
 
         #region Command Receiver methods
+
+        // u sustini, nista od ovih metoda nije implementirano jer se ne koristi nista osim readAll i writeAnalog/Digital..cak ni ne pisemo analog za sada...
+        // OMS nikad ne zanima jedna po jedna varijabla, jer je skada ta koja cima oms na svaku promenu...
+        // Znaci OMS samo inicijalno dobavi stanje i onda skada javi kad nesto otkaze
+        // ako se secate to je ono sto nam je profesor rekao da omogucimo, jer je vec komunikacija sa PK unsolicited, pa da ovde bude javljanja
         public OMSSCADACommon.Responses.Response ReadAllAnalog(OMSSCADACommon.DeviceTypes type)
         {
             throw new NotImplementedException();
@@ -666,8 +672,8 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
         {
             Console.WriteLine("Response ReadAll");
 
-            //while (!Database.IsConfigurationRunning)
-            //    Thread.Sleep(100);
+            // to do:
+            // while (!Database.IsConfigurationRunning)
 
             List<ProcessVariable> pvs = dbContext.GetProcessVariable().ToList();
 
@@ -728,7 +734,8 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
             }
 
             // to do:
-            // ovde provera opsega, alarma...bla, bla
+            // ovde analogProcessor provera opsega, alarma...bla, bla
+
 
 
             RTU rtu;

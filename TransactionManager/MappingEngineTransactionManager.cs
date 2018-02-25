@@ -1,12 +1,9 @@
-﻿using DispatcherApp.Model;
-using FTN.Common;
+﻿using FTN.Common;
 using OMSSCADACommon;
 using OMSSCADACommon.Commands;
 using OMSSCADACommon.Responses;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace TransactionManager
 {
@@ -25,7 +22,6 @@ namespace TransactionManager
         public MappingEngineTransactionManager()
         {
         }
-
 
         public List<ResourceDescription> MappResult(Response response)
         {

@@ -240,13 +240,28 @@ namespace TransactionManager
 
         public TMSAnswerToClient GetNetwork()
         {
-            // ako se ne podignu svi servisi na DMSu, ovde pada
+            Console.WriteLine("GetNetwork called");
             List<Element> listOfDMSElement = new List<Element>();
+
             try
             {
+                int maxAttemptCount = 5;
+                for (int i = 0; i < maxAttemptCount; i++)
+                {
+                    Console.WriteLine("Attempt = {0}, Trying to get network.", i);
+                    if (proxyToDispatcherDMS.IsNetworkAvailable())
+                        break;
+
+                    Thread.Sleep(1000);
+                }
+
+
                 listOfDMSElement = proxyToDispatcherDMS.GetAllElements();
             }
-            catch (Exception e) { }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
 
             List<ResourceDescription> resourceDescriptionFromNMS = new List<ResourceDescription>();
             List<ResourceDescription> descMeas = new List<ResourceDescription>();
@@ -350,7 +365,7 @@ namespace TransactionManager
             proxyToDispatcherDMS.SendCrewToDms(report);
             return;
         }
-     
+
         private ScadaDelta GetDeltaForSCADA(Delta d)
         {
             // zasto je ovo bitno, da ima measurement direction?? 

@@ -127,26 +127,10 @@
     </Digital>
     <Digital>
       <Name>MEAS_D_9</Name>
-      <State>OPENED</State>
+      <State>CLOSED</State>
       <Command>CLOSE</Command>
       <ProcContrName>RTU-1</ProcContrName>
       <RelativeAddress>5</RelativeAddress>
-      <Class>SWITCH</Class>
-      <ValidCommands>
-        <Command>CLOSE</Command>
-        <Command>OPEN</Command>
-      </ValidCommands>
-      <ValidStates>
-        <State>CLOSED</State>
-        <State>OPENED</State>
-      </ValidStates>
-    </Digital>
-    <Digital>
-      <Name>MEAS_D_12</Name>
-      <State>OPENED</State>
-      <Command>CLOSE</Command>
-      <ProcContrName>RTU-1</ProcContrName>
-      <RelativeAddress>6</RelativeAddress>
       <Class>SWITCH</Class>
       <ValidCommands>
         <Command>CLOSE</Command>
@@ -476,17 +460,6 @@
       <MinValue>50</MinValue>
       <ProcContrName>RTU-1</ProcContrName>
       <RelativeAddress>28</RelativeAddress>
-      <UnitSymbol>VA</UnitSymbol>
-    </Analog>
-    <Analog>
-      <Name>MEAS_A_30</Name>
-      <NumOfRegisters>1</NumOfRegisters>
-      <AcqValue>250</AcqValue>
-      <CommValue>250</CommValue>
-      <MaxValue>500</MaxValue>
-      <MinValue>50</MinValue>
-      <ProcContrName>RTU-1</ProcContrName>
-      <RelativeAddress>29</RelativeAddress>
       <UnitSymbol>VA</UnitSymbol>
     </Analog>
   </Analogs>

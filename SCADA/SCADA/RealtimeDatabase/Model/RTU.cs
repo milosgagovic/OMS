@@ -30,7 +30,6 @@ namespace SCADA.RealtimeDatabase.Model
 
         /* Controller pI/O starting Addresses. These are values of the second collumn of 
         the RtuCfg.txt file, and they are also in ScadaModel.xml under the corresponding names. */
-
         public int DigOutStartAddr { get; set; }
         public int DigInStartAddr { get; set; }
         public int AnaInStartAddr { get; set; }
@@ -92,6 +91,10 @@ namespace SCADA.RealtimeDatabase.Model
             analogOutAddresses = new List<int>(NoAnaOut);
             counterAddresses = new List<int>(NoCnt);
         }
+
+        // trenutno se podrazumeva da modbus NE ocekuje offset broj registra
+        // nekad u buducnosti napraviti da bude moguce i sa offsetom, odnosno
+        // da iz ako je npr. f-on code za read coils, simualtor zna koja je adresa pocetna tog bloka registara...
 
         public int GetAcqAddress(ProcessVariable variable)
         {
@@ -485,8 +488,9 @@ namespace SCADA.RealtimeDatabase.Model
             return isSuccessfull;
         }
 
-
+        // to do:
         // ova funkcija nepovratno menja vrednost mappedDig, mappedAn...
+
         /// <summary>
         /// Check if it is possible to map new variable, calculates RelativeAddress for 
         /// new variable, based on previously mapped variables.
@@ -508,6 +512,7 @@ namespace SCADA.RealtimeDatabase.Model
                     int desiredDigIn = (ushort)(Math.Floor((Math.Log(digital.ValidStates.Count, 2))));
                     int desiredDigOut = (ushort)(Math.Floor((Math.Log(digital.ValidCommands.Count, 2))));
 
+                    // to do: test
                     // mozda ovde treba < a ne <=
                     if (MappedDig + desiredDigIn <= NoDigIn &&
                         MappedDig + desiredDigOut <= NoDigOut)

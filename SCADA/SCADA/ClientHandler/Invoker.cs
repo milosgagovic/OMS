@@ -2,7 +2,6 @@
 using OMSSCADACommon.Commands;
 using OMSSCADACommon.Responses;
 using SCADAContracts;
-using System;
 using System.ServiceModel;
 
 
@@ -20,7 +19,7 @@ In addition, if the ConcurrencyMode is set to Single and a reentrant call is blo
         ICommandReceiver receiver;
         public Invoker()
         {
-            receiver = new CommunicationAndControlling.SecondaryDataProcessing.CommAcqEngine();
+            receiver = new CommunicationAndControlling.CommandingAcquisitionEngine();
         }
 
         public Response ExecuteCommand(Command command)

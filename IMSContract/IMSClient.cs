@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.ServiceModel;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace IMSContract
 {
@@ -14,6 +11,36 @@ namespace IMSContract
         //{
         //}
 
+        //// unused
+        //public bool AddCrew(Crew crew)
+        //{
+        //    return Channel.AddCrew(crew);
+        //}
+
+        //// unused
+        //public List<ElementStateReport> GetElementStateReportsForSpecificMrIDAndSpecificTimeInterval(string mrID, DateTime startTime, DateTime endTime)
+        //{
+        //    return Channel.GetElementStateReportsForSpecificMrIDAndSpecificTimeInterval(mrID, startTime, endTime);
+        //}
+
+        //// unused
+        //public List<ElementStateReport> GetElementStateReportsForSpecificTimeInterval(DateTime startTime, DateTime endTime)
+        //{
+        //    return Channel.GetElementStateReportsForSpecificTimeInterval(startTime, endTime);
+        //}
+
+        //// unused
+        //public List<IncidentReport> GetReportsForSpecificMrIDAndSpecificTimeInterval(string mrID, DateTime startTime, DateTime endTime)
+        //{
+        //    return Channel.GetReportsForSpecificMrIDAndSpecificTimeInterval(mrID, startTime, endTime);
+        //}
+
+        //// unused
+        //public List<IncidentReport> GetReportsForSpecificTimeInterval(DateTime startTime, DateTime endTime)
+        //{
+        //    return Channel.GetReportsForSpecificTimeInterval(startTime, endTime);
+        //}
+
         public IMSClient(string endpointName) : base(new NetTcpBinding(), new EndpointAddress(endpointName))
         {
             
@@ -22,11 +49,6 @@ namespace IMSContract
         public IMSClient(EndpointAddress address) : base(new NetTcpBinding(), address)
         {
 
-        }
-
-        public bool AddCrew(Crew crew)
-        {
-            return Channel.AddCrew(crew);
         }
 
         public void AddElementStateReport(ElementStateReport report)
@@ -58,17 +80,7 @@ namespace IMSContract
         {
             return Channel.GetElementStateReportsForMrID(mrID);
         }
-
-        public List<ElementStateReport> GetElementStateReportsForSpecificMrIDAndSpecificTimeInterval(string mrID, DateTime startTime, DateTime endTime)
-        {
-            return Channel.GetElementStateReportsForSpecificMrIDAndSpecificTimeInterval(mrID, startTime, endTime);
-        }
-
-        public List<ElementStateReport> GetElementStateReportsForSpecificTimeInterval(DateTime startTime, DateTime endTime)
-        {
-            return Channel.GetElementStateReportsForSpecificTimeInterval(startTime, endTime);
-        }
-
+      
         public IncidentReport GetReport(DateTime id)
         {
             return Channel.GetReport(id);
@@ -78,17 +90,7 @@ namespace IMSContract
         {
             return Channel.GetReportsForMrID(mrID);
         }
-
-        public List<IncidentReport> GetReportsForSpecificMrIDAndSpecificTimeInterval(string mrID, DateTime startTime, DateTime endTime)
-        {
-            return Channel.GetReportsForSpecificMrIDAndSpecificTimeInterval(mrID, startTime, endTime);
-        }
-
-        public List<IncidentReport> GetReportsForSpecificTimeInterval(DateTime startTime, DateTime endTime)
-        {
-            return Channel.GetReportsForSpecificTimeInterval(startTime, endTime);
-        }
-
+      
         public List<List<IncidentReport>> GetReportsForSpecificDateSortByBreaker(List<string> mrids, DateTime date)
         {
             return Channel.GetReportsForSpecificDateSortByBreaker(mrids, date);
