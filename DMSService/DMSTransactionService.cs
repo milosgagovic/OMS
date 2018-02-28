@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using TransactionManagerContract;
 using DMSCommon.Model;
 using DMSCommon.TreeGraph;
+using OMSSCADACommon;
 
 namespace DMSService
 {
@@ -38,7 +39,7 @@ namespace DMSService
                 Source s = (Source)DMSService.Instance.Tree.Data[DMSService.Instance.Tree.Roots[0]];
                 update.Add(new SCADAUpdateModel(true, s.ElementGID));
 
-                publisher.PublishUpdate(update);
+                publisher.PublishUpdateDigital(update);
             }
 
 

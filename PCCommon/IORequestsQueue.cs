@@ -1,8 +1,7 @@
-﻿using PCCommon;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 
-namespace SCADA.CommunicationAndControlling
+namespace PCCommon
 {
     /// <summary>
     /// Used for inter-thread communication
@@ -73,15 +72,6 @@ namespace SCADA.CommunicationAndControlling
             IORequests.Add(iorb);
         }
 
-        //public IORequestBlock DequeueRequest(out bool isSuccessful)
-        //{
-        //    IORequestBlock req;
-        //    // try dequeue is not blocking
-        //    //isSuccessful = IORequests.TryDequeue(out req);
-        //    isSuccessful = IORequests.TryTake(out req);
-        //    return req;
-        //}
-
         public IORequestBlock DequeueRequest(out bool isSuccessful, TimeSpan? timeout = null)
         {
             if (timeout == null)
@@ -106,6 +96,7 @@ namespace SCADA.CommunicationAndControlling
 
             TimeSpan tryTakeTimeout = (TimeSpan)timeout;
             IORequestBlock answ;
+            // to do: look TryTake implementation (events or sleep?)
             isSuccessful = IOAnswers.TryTake(out answ, tryTakeTimeout);
             return answ;
         }

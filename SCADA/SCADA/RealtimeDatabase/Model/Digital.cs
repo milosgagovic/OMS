@@ -12,6 +12,8 @@ namespace SCADA.RealtimeDatabase.Model
         public CommandTypes Command { get; set; }
         public States State { get; set; }
 
+        // to do: add previous command and stuff...
+
         public Digital()
         {
             this.Type = VariableTypes.DIGITAL;

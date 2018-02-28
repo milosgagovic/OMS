@@ -12,11 +12,11 @@
       <AnaOutStartAddr>3000</AnaOutStartAddr>
       <AnaInStartAddr>2000</AnaInStartAddr>
       <CounterStartAddr>3500</CounterStartAddr>
-      <DigOutCount>8</DigOutCount>
-      <DigInCount>8</DigInCount>
-      <AnaInCount>8</AnaInCount>
-      <AnaOutCount>8</AnaOutCount>
-      <CounterCount>2</CounterCount>
+      <NoDigOut>8</NoDigOut>
+      <NoDigIn>8</NoDigIn>
+      <NoAnaIn>8</NoAnaIn>
+      <NoAnaOut>8</NoAnaOut>
+      <NoCnt>2</NoCnt>
       <AnaInRawMin>50</AnaInRawMin>
       <AnaInRawMax>16000</AnaInRawMax>
       <AnaOutRawMin>50</AnaOutRawMin>
@@ -33,11 +33,11 @@
       <AnaOutStartAddr>3000</AnaOutStartAddr>
       <AnaInStartAddr>2000</AnaInStartAddr>
       <CounterStartAddr>3500</CounterStartAddr>
-      <DigOutCount>20</DigOutCount>
-      <DigInCount>20</DigInCount>
-      <AnaInCount>40</AnaInCount>
-      <AnaOutCount>40</AnaOutCount>
-      <CounterCount>2</CounterCount>
+      <NoDigOut>30</NoDigOut>
+      <NoDigIn>30</NoDigIn>
+      <NoAnaIn>40</NoAnaIn>
+      <NoAnaOut>40</NoAnaOut>
+      <NoCnt>2</NoCnt>
       <AnaInRawMin>150</AnaInRawMin>
       <AnaInRawMax>16000</AnaInRawMax>
       <AnaOutRawMin>150</AnaOutRawMin>
@@ -127,26 +127,10 @@
     </Digital>
     <Digital>
       <Name>MEAS_D_9</Name>
-      <State>OPENED</State>
+      <State>CLOSED</State>
       <Command>CLOSE</Command>
       <ProcContrName>RTU-1</ProcContrName>
       <RelativeAddress>5</RelativeAddress>
-      <Class>SWITCH</Class>
-      <ValidCommands>
-        <Command>CLOSE</Command>
-        <Command>OPEN</Command>
-      </ValidCommands>
-      <ValidStates>
-        <State>CLOSED</State>
-        <State>OPENED</State>
-      </ValidStates>
-    </Digital>
-    <Digital>
-      <Name>MEAS_D_12</Name>
-      <State>OPENED</State>
-      <Command>CLOSE</Command>
-      <ProcContrName>RTU-1</ProcContrName>
-      <RelativeAddress>6</RelativeAddress>
       <Class>SWITCH</Class>
       <ValidCommands>
         <Command>CLOSE</Command>

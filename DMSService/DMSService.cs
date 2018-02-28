@@ -4,6 +4,7 @@ using DMSCommon.TreeGraph.Tree;
 using DMSContract;
 using FTN.Common;
 using IMSContract;
+using OMSSCADACommon;
 using OMSSCADACommon.Commands;
 using OMSSCADACommon.Responses;
 using System;
@@ -137,8 +138,6 @@ namespace DMSService
             StartHosts();
             Tree = InitializeNetwork(new Delta());
 
-            //isNetworkInitialized = true;
-
             while (!isNetworkInitialized)
             {
                 Console.WriteLine("Not Initialized network");
@@ -183,7 +182,6 @@ namespace DMSService
                 }
                 catch (Exception e)
                 {
-                    //Console.WriteLine(e);
                     Console.WriteLine("InitializeNetwork() -> SCADA is not available yet.");
                     NetTcpBinding binding = new NetTcpBinding();
                     binding.CloseTimeout = TimeSpan.FromMinutes(10);
@@ -194,7 +192,7 @@ namespace DMSService
                     if (ScadaClient.State == CommunicationState.Faulted)
                         ScadaClient = new SCADAClient(new EndpointAddress("net.tcp://localhost:4000/SCADAService"), binding);
                 }
-                Thread.Sleep(500);
+                Thread.Sleep(300);
             } while (true);
             Console.WriteLine("InitializeNetwork() -> SCADA is available.");
 
@@ -203,7 +201,6 @@ namespace DMSService
             // get dynamic data
             response = ScadaClient.ExecuteCommand(new ReadAll());
 
-            bool isImsAvailable = false;
             do
             {
                 try
@@ -212,17 +209,17 @@ namespace DMSService
                     {
                         IMSClient.Open();
                     }
-                    isImsAvailable = IMSClient.Ping();
+                    if (IMSClient.Ping())
+                        break;
                 }
                 catch (Exception e)
                 {
-                    //Console.WriteLine(e);
                     Console.WriteLine("InitializeNetwork() -> IMS is not available yet.");
                     if (IMSClient.State == CommunicationState.Faulted)
                         IMSClient = new IMSClient(new EndpointAddress("net.tcp://localhost:6090/IncidentManagementSystemService"));
                 }
                 Thread.Sleep(100);
-            } while (!isImsAvailable);
+            } while (true);
 
             List<IncidentReport> reports = imsClient.GetAllReports();
             List<ElementStateReport> elementStates = imsClient.GetAllElementStateReports();
@@ -673,6 +670,7 @@ namespace DMSService
             }
             return mrid;
         }
+
         private long GetConnNodeConnectedWithTerminal(long terminal)
         {
             long connNode = 0;

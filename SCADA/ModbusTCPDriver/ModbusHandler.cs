@@ -36,8 +36,9 @@ namespace ModbusTCPDriver
             byte[] responseData = new byte[length - 7];
             Buffer.BlockCopy(data, 7, responseData, 0, length - 7);
 
-            // OBRATITI PAZNJU NA KONFIGURACIONE FAJLOVE SIMULATORA AKO OVDE PUKNE!
-            // takodje, moguce je da zahtev nije bio dobro formiran...nekad u buducnosti obraditi te exceptione
+            // to do: handle exceptions in future implementation
+            // if exception happens here, means that simulator could not process request. maybe request address and function code was not "aligned"
+            // also, PAY ATTENTION to configuration files (values in RtuCfg.txt and ScadaModel.xml must correspond!)          
             if ((responseData[0] & 0x80) != 1) // check for exception
             {
                 switch ((FunctionCodes)responseData[0])
@@ -71,8 +72,8 @@ namespace ModbusTCPDriver
 
                     default:
                         // obrati paznju na konfig fajlove ako ovvde pukne
-                        Console.WriteLine("Error!!!!!");
-                        break;
+                        Console.WriteLine("Error, ovo ne treeeba da se desava :O !!!!!");
+                        throw new Exception("Something went wrong.Slave can not process request.");
                 }
             }
             else

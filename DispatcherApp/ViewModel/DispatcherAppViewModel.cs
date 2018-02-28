@@ -139,7 +139,8 @@ namespace DispatcherApp.ViewModel
 
             subscriber = new Subscriber();
             subscriber.Subscribe();
-            subscriber.publishUpdateEvent += GetUpdate;
+            subscriber.publishDigitalUpdateEvent += GetDigitalUpdate;
+            subscriber.publishAnalogUpdateEvent += GetAnalogUpdate;
             subscriber.publishCrewEvent += GetCrewUpdate;
             subscriber.publishIncident += GetIncident;
             subscriber.publishCall += GetCallFromConsumers;
@@ -2022,7 +2023,7 @@ namespace DispatcherApp.ViewModel
         #endregion
 
         #region Publish methods
-        private void GetUpdate(List<SCADAUpdateModel> update)
+        private void GetDigitalUpdate(List<SCADAUpdateModel> update)
         {
             if (update != null)
             {
@@ -2091,6 +2092,14 @@ namespace DispatcherApp.ViewModel
                     }
                     i++;
                 }
+            }
+        }
+
+        private void GetAnalogUpdate(List<SCADAUpdateModel> update)
+        {
+            if (update != null)
+            {
+                // to do:
             }
         }
 

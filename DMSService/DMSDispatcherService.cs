@@ -215,7 +215,6 @@ namespace DMSService
 
         private void ProcessCrew(IncidentReport report)
         {
-            bool isImsAvailable = false;
             do
             {
                 try
@@ -225,17 +224,17 @@ namespace DMSService
                         IMSClient.Open();
                     }
 
-                    isImsAvailable = IMSClient.Ping();
+                    if (IMSClient.Ping())
+                        break;
                 }
                 catch (Exception e)
                 {
-                    //Console.WriteLine(e);
                     Console.WriteLine("ProcessCrew() -> IMS is not available yet.");
                     if (IMSClient.State == CommunicationState.Faulted)
                         IMSClient = new IMSClient(new EndpointAddress("net.tcp://localhost:6090/IncidentManagementSystemService"));
                 }
-                Thread.Sleep(2000);
-            } while (!isImsAvailable);
+                Thread.Sleep(1000);
+            } while (true);
 
             report.Id = IMSClient.GetReport(report.Time).Id;
 
@@ -259,7 +258,7 @@ namespace DMSService
                     report.IncidentState = IncidentState.READY_FOR_REPAIR;
                     report.Crewtype = CrewType.Repair;
                 }
-                else if(report.Crewtype == CrewType.Repair)
+                else if (report.Crewtype == CrewType.Repair)
                 {
                     Thread.Sleep(TimeSpan.FromSeconds(report.RepairTime.TotalMinutes / 10));
 
@@ -299,7 +298,7 @@ namespace DMSService
                                 }
 
                                 Publisher publisher1 = new Publisher();
-                                publisher1.PublishUpdate(networkChange);
+                                publisher1.PublishUpdateDigital(networkChange);
                                 break;
                             }
                         }

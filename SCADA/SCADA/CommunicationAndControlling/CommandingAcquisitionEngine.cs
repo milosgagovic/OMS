@@ -9,36 +9,35 @@ using SCADA.RealtimeDatabase;
 using OMSSCADACommon;
 using OMSSCADACommon.Responses;
 using SCADA.ClientHandler;
-using SCADA.RealtimeDatabase.Catalogs;
 using SCADA.ConfigurationParser;
 using System.Linq;
+using SCADA.CommunicationAndControlling.SecondaryDataProcessing;
 
-namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
+namespace SCADA.CommunicationAndControlling
 {
     // Commanding-Acquisition Engine
-    public class CommAcqEngine : ICommandReceiver
+    public class CommandingAcquisitionEngine : ICommandReceiver
     {
         private static IORequestsQueue IORequests;
-        private static bool isShutdown;
         private int timerMsc;
 
         private DBContext dbContext = null;
 
-        public CommAcqEngine()
+        public CommandingAcquisitionEngine()
         {
             Console.WriteLine("AcqEngine Instancing()");
 
             IORequests = IORequestsQueue.GetQueue();
             dbContext = new DBContext();
-            isShutdown = false;
             timerMsc = 5000;
         }
+      
         /// <summary>
         /// Reading database data from configPath,
         /// configuring RTUs and Process Variables
         /// </summary>
         /// <param name="configPath"></param>
-        public bool Configure(string configPath)
+        public bool ConfigureEngine(string configPath)
         {
             ScadaModelParser parser = new ScadaModelParser();
             return parser.DeserializeScadaModel();
@@ -270,11 +269,9 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
             List<Task> acqTasks = new List<Task>();
             foreach (var rtu in rtus)
             {
-                //acqTasks.Add(RunAcq(rtuAcquisitonAction, TimeSpan.FromMilliseconds(5000), rtu.Key, token));
                 acqTasks.Add(AsyncRtuAcquisition(rtuAcquisitonAction, TimeSpan.FromMilliseconds(3000), rtu.Key, token));
                 Console.WriteLine("task added");
 
-                // do i need to call task.Start()?
             }
             Console.WriteLine("Task acquistion before return");
             foreach (Task t in acqTasks)
@@ -286,7 +283,6 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
             }
             catch (AggregateException e)
             {
-                //retVal = default(Task);
                 retVal = Task.FromResult(false);
 
                 Console.WriteLine("\nThe following exceptions have been thrown by WaitAll(): (THIS WAS EXPECTED)");
@@ -301,7 +297,7 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
         public Action<string> rtuAcquisitonAction = rtuName =>
         {
             IIndustryProtocolHandler IProtHandler = null;
-            Console.WriteLine("\nRtuAcqAction started Rtu={2}  Task id = {0} , time={1}", Task.CurrentId, DateTime.Now.ToLongTimeString(), rtuName);
+            //  Console.WriteLine("\nRtuAcqAction started Rtu={2}  Task id = {0} , time={1}", Task.CurrentId, DateTime.Now.ToLongTimeString(), rtuName);
 
             DBContext dbContext = new DBContext();
             RTU rtu = dbContext.GetRTUByName(rtuName);
@@ -324,6 +320,8 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
                         break;
                 }
 
+                // to do:
+                // mogu ovo sve biti yasebni taskovi_
                 //-------------analogs---------------
 
                 IORequestBlock iorbAnalogs = new IORequestBlock()
@@ -464,14 +462,11 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
                                             {
                                                 BitReadResponse response = (BitReadResponse)mdbHandler.Response;
                                                 var responsePVCount = answer.Flags;
-                                                // bool[] boolArrayResponse = new bool[response.BitValues.Count];
-                                                // response.BitValues.CopyTo(boolArrayResponse, 0);
 
                                                 ushort varAddr = answer.ReqAddress;
                                                 for (int i = 0; i < responsePVCount; i++, varAddr++)
                                                 {
                                                     ProcessVariable pv;
-                                                    //ushort varAddr = answer.ReqAddress++;
 
                                                     if (rtu.GetProcessVariableByAddress(varAddr, out pv))
                                                     {
@@ -479,7 +474,6 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
 
                                                         try
                                                         {
-                                                            //bool isOpened = boolArrayResponse[i];
                                                             bool isOpened = response.BitValues[i];
                                                             if (target.State != target.ValidStates[isOpened ? 1 : 0])
                                                             {
@@ -488,7 +482,7 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
                                                                 Console.WriteLine(" CHANGE! Digital variable {0}, state: {1}", target.Name, target.State);
 
                                                                 DMSClient dMSClient = new DMSClient();
-                                                                dMSClient.ChangeOnSCADA(target.Name, target.State);
+                                                                dMSClient.ChangeOnSCADADigital(target.Name, target.State);
                                                             }
                                                         }
                                                         catch
@@ -507,6 +501,7 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
 
                                             break;
 
+                                            // analog input
                                         case FunctionCodes.ReadInputRegisters:
                                             {
                                                 RegisterReadResponse response = (RegisterReadResponse)mdbHandler.Response;
@@ -535,6 +530,7 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
                                                                 target.AcqValue = newAcqValue;
                                                                 Console.WriteLine(" CHANGE! Analog variable {0}, AcqValue: {1}", target.Name, target.AcqValue);
 
+                                                                // to do: propagacija analogih promena (ako se secate Pavlica je prvo rekao da nam to ne treba da samo jednom zakucamo vrednost na pocetku) xD 
                                                                 // DMSClient dMSClient = new DMSClient();
                                                                 // to do
                                                                 // dMSClient.ChangeOnSCADA(target.Name, target.State);
@@ -572,10 +568,10 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
             return;
         }
 
-        // to do: close all communication channels? dispose resources?
+        // to do: cancelaltion token use....close all communication channels? dispose resources?
         public void Stop()
         {
-            isShutdown = true;
+           // isShutdown = true;
             ScadaModelParser parser = new ScadaModelParser();
             parser.SerializeScadaModel();
         }
@@ -632,6 +628,11 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
         }
 
         #region Command Receiver methods
+
+        // u sustini, nista od ovih metoda nije implementirano jer se ne koristi nista osim readAll i writeAnalog/Digital..cak ni ne pisemo analog za sada...
+        // OMS nikad ne zanima jedna po jedna varijabla, jer je skada ta koja cima oms na svaku promenu...
+        // Znaci OMS samo inicijalno dobavi stanje i onda skada javi kad nesto otkaze
+        // ako se secate to je ono sto nam je profesor rekao da omogucimo, jer je vec komunikacija sa PK unsolicited, pa da ovde bude javljanja
         public OMSSCADACommon.Responses.Response ReadAllAnalog(OMSSCADACommon.DeviceTypes type)
         {
             throw new NotImplementedException();
@@ -666,8 +667,8 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
         {
             Console.WriteLine("Response ReadAll");
 
-            //while (!Database.IsConfigurationRunning)
-            //    Thread.Sleep(100);
+            // to do:
+            // while (!Database.IsConfigurationRunning)
 
             List<ProcessVariable> pvs = dbContext.GetProcessVariable().ToList();
 
@@ -679,19 +680,19 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
                 {
                     case VariableTypes.DIGITAL:
                         Digital digital = (Digital)pv;
-                        response.Variables.Add(new DigitalVariable() { VariableType = ResponseType.Digital, Id = digital.Name, State = (OMSSCADACommon.States)digital.State });
+                        response.Variables.Add(new DigitalVariable() { VariableType = ResponseVarType.Digital, Id = digital.Name, State = (OMSSCADACommon.States)digital.State });
                         break;
 
                     case VariableTypes.ANALOG:
                         Analog analog = (Analog)pv;
                         // to do: fix this
-                        response.Variables.Add(new AnalogVariable() { VariableType = ResponseType.Analog, Id = analog.Name, Value = analog.AcqValue, UnitSymbol = "w" });
+                        response.Variables.Add(new AnalogVariable() { VariableType = ResponseVarType.Analog, Id = analog.Name, Value = analog.AcqValue, UnitSymbol = "w" });
                         break;
 
 
                     case VariableTypes.COUNTER:
                         Counter counter = (Counter)pv;
-                        response.Variables.Add(new CounterVariable() { VariableType = ResponseType.Counter, Id = counter.Name, Value = counter.Value });
+                        response.Variables.Add(new CounterVariable() { VariableType = ResponseVarType.Counter, Id = counter.Name, Value = counter.Value });
                         break;
                 }
             }
@@ -728,7 +729,8 @@ namespace SCADA.CommunicationAndControlling.SecondaryDataProcessing
             }
 
             // to do:
-            // ovde provera opsega, alarma...bla, bla
+            // ovde analogProcessor provera opsega, alarma...bla, bla
+
 
 
             RTU rtu;

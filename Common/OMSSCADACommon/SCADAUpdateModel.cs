@@ -1,11 +1,7 @@
-﻿using OMSSCADACommon;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System;
 using System.Runtime.Serialization;
-using System.Text;
 
-namespace DMSCommon.Model
+namespace OMSSCADACommon
 {
     /// <summary>
     /// Class describes changes on SCADA, used in the 
@@ -21,6 +17,7 @@ namespace DMSCommon.Model
         private CrewResponse response;
         private bool isElementAdded;
         private bool canCommand;
+        private float anValue;
 
         [DataMember]
         public long Gid
@@ -49,10 +46,15 @@ namespace DMSCommon.Model
             get { return state; }
             set { state = value; }
         }
+
         [DataMember]
         public CrewResponse Response { get => response; set => response = value; }
+
         [DataMember]
         public bool IsElementAdded { get => isElementAdded; set => isElementAdded = value; }
+
+        [DataMember]
+        public float AnValue { get => anValue; set => value = anValue = value; }
 
         public SCADAUpdateModel()
         {
@@ -89,6 +91,12 @@ namespace DMSCommon.Model
         {
             Gid = gid;
             this.isElementAdded = isElementAdded;
+        }
+
+        public SCADAUpdateModel(string mrid, long gid, float value)
+        {
+            Gid = gid;
+            AnValue = value;
         }
     }
 }

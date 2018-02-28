@@ -30,7 +30,7 @@ namespace PCCommon
 
         /* request parameters*/
 
-        // to do: for future implemtation
+        // to do: for future implementation
         // public int MaxRepeat { get; set; }
 
         /// <summary>Request length</summary>
@@ -42,17 +42,17 @@ namespace PCCommon
 
         /* reply parameters*/
 
-        /// <summary>Transaction type</summary>
+        /// <summary>Reply Length</summary>
         public int RcvMsgLength { get; set; }
 
-        /// <summary>Receiver buffer type</summary>
+        /// <summary>Receiver buffer for incoming data</summary>
         public Byte[] RcvBuff { get; set; }
 
         // to do:
         // setovati ga kod init sim na 0 ili -1
 
         /// <summary>Has different roles, based on request type and request content.
-        /// currently, used for indicating count of variables for which request was sent</summary>
+        /// Currently, used for indicating count of variables for which request was sent</summary>
         public int Flags { get; set; }
     }
 }

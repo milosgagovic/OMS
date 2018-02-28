@@ -51,7 +51,6 @@
     <Compile Include="Model\Element.cs" />
     <Compile Include="Model\ModelGdaDMS.cs" />
     <Compile Include="Model\Node.cs" />
-    <Compile Include="Model\SCADAUpdateModel.cs" />
     <Compile Include="Model\Source.cs" />
     <Compile Include="Model\Switch.cs" />
     <Compile Include="Model\SwitchState.cs" />
@@ -65,9 +64,9 @@
       <Project>{B726FB71-D295-41EE-9644-B2B0B1BC8911}</Project>
       <Name>NetworkModelGDAContract</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Common.csproj">
+    <ProjectReference Include="..\NMSCommon.csproj">
       <Project>{892CBE15-9ED7-4540-81FA-0EAABA592138}</Project>
-      <Name>Common</Name>
+      <Name>NMSCommon</Name>
     </ProjectReference>
     <ProjectReference Include="..\OMSSCADACommon\OMSSCADACommon.csproj">
       <Project>{A7F86CA6-39F1-4B61-BF71-C01E327FA861}</Project>

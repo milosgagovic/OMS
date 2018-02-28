@@ -1,12 +1,9 @@
-﻿using DispatcherApp.Model;
-using FTN.Common;
+﻿using FTN.Common;
 using OMSSCADACommon;
 using OMSSCADACommon.Commands;
 using OMSSCADACommon.Responses;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace TransactionManager
 {
@@ -26,7 +23,6 @@ namespace TransactionManager
         {
         }
 
-
         public List<ResourceDescription> MappResult(Response response)
         {
             List<ResourceDescription> retVal = new List<ResourceDescription>();
@@ -39,7 +35,7 @@ namespace TransactionManager
 
                 switch (rv.VariableType)
                 {
-                    case ResponseType.Analog:
+                    case ResponseVarType.Analog:
                         AnalogVariable av = rv as AnalogVariable;
                         UnitSymbol unitSymbolValue = UnitSymbol.none;
                         try
@@ -57,7 +53,7 @@ namespace TransactionManager
 
                         break;
 
-                    case ResponseType.Digital:
+                    case ResponseVarType.Digital:
 
                         DigitalVariable dv = rv as DigitalVariable;
 
@@ -73,7 +69,7 @@ namespace TransactionManager
                         }
                         break;
 
-                    case ResponseType.Counter:
+                    case ResponseVarType.Counter:
                         break;
                 }
 

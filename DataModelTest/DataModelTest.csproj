@@ -64,9 +64,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Common\Common.csproj">
+    <ProjectReference Include="..\Common\NMSCommon.csproj">
       <Project>{892cbe15-9ed7-4540-81fa-0eaaba592138}</Project>
-      <Name>Common</Name>
+      <Name>NMSCommon</Name>
     </ProjectReference>
     <ProjectReference Include="..\NetworkModelService\DataModel\DataModel.csproj">
       <Project>{ade96497-7c11-40b6-ae82-57f956c9f104}</Project>

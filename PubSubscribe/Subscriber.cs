@@ -1,17 +1,15 @@
-﻿using DMSCommon.Model;
-using FTN.Common;
-using IMSContract;
+﻿using IMSContract;
+using OMSSCADACommon;
 using PubSubContract;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.ServiceModel;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace PubSubscribe
 {
-    public delegate void PublishUpdateEvent(List<SCADAUpdateModel> update);
+    public delegate void PublishDigitalUpdateEvent(List<SCADAUpdateModel> update);
+    public delegate void PublishAnalogUpdateEvent(List<SCADAUpdateModel> update);
     public delegate void PublishCrewEvent(SCADAUpdateModel update);
     public delegate void PublishReportIncident(IncidentReport report);
     public delegate void PublishCallIncident(SCADAUpdateModel call);
@@ -24,7 +22,8 @@ namespace PubSubscribe
     {
         ISubscription subscriptionProxy = null;
 
-        public event PublishUpdateEvent publishUpdateEvent;
+        public event PublishDigitalUpdateEvent publishDigitalUpdateEvent;
+        public event PublishAnalogUpdateEvent publishAnalogUpdateEvent;
         public event PublishCrewEvent publishCrewEvent;
         public event PublishReportIncident publishIncident;
         public event PublishCallIncident publishCall;
@@ -84,9 +83,14 @@ namespace PubSubscribe
             }
         }
 
-        public void Publish(List<SCADAUpdateModel> update)
+        public void PublishDigitalUpdate(List<SCADAUpdateModel> update)
         {
-            publishUpdateEvent?.Invoke(update);
+            publishDigitalUpdateEvent?.Invoke(update);
+        }
+
+        public void PublishAnalogUpdate(List<SCADAUpdateModel> update)
+        {
+            publishAnalogUpdateEvent?.Invoke(update);
         }
 
         public void PublishCrewUpdate(SCADAUpdateModel update)
@@ -98,6 +102,7 @@ namespace PubSubscribe
         {
             publishIncident?.Invoke(report);
         }
+
         public void PublishCallIncident(SCADAUpdateModel call)
         {
             publishCall?.Invoke(call);
@@ -106,6 +111,6 @@ namespace PubSubscribe
         public void PublishUIBreakers(bool IsIncident, long incidentBreaker)
         {
             publiesBreakers?.Invoke(IsIncident, incidentBreaker);
-        }
+        }       
     }
 }

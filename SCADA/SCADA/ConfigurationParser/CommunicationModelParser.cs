@@ -39,6 +39,9 @@ namespace SCADA.ConfigurationParser
                         string uniqueName = (string)pc.Element("Name");
                         if (!processControllers.ContainsKey(uniqueName))
                         {
+                            string stringTransport = (string)pc.Element("TransportHandler");
+                            TransportHandler transport = (TransportHandler)Enum.Parse(typeof(TransportHandler), stringTransport);
+
                             int devAddr = (int)pc.Element("DeviceAddress");
                             string hostName = (string)pc.Element("HostName");
                             short hostPort = (short)pc.Element("HostPort");
@@ -47,6 +50,7 @@ namespace SCADA.ConfigurationParser
                             {
                                 Name = uniqueName,
                                 DeviceAddress = devAddr,
+                                TransportHandler = transport,
                                 HostName = hostName,
                                 HostPort = hostPort
                             };

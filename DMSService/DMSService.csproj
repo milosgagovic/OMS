@@ -70,9 +70,9 @@
     <Compile Include="SCADAClient.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Common\Common.csproj">
+    <ProjectReference Include="..\Common\NMSCommon.csproj">
       <Project>{892CBE15-9ED7-4540-81FA-0EAABA592138}</Project>
-      <Name>Common</Name>
+      <Name>NMSCommon</Name>
     </ProjectReference>
     <ProjectReference Include="..\Common\DMSCommon\DMSCommon.csproj">
       <Project>{86D0FD27-8DA2-476E-A046-FCB849F12414}</Project>
