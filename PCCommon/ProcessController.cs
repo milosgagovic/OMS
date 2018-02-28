@@ -1,14 +1,6 @@
 ﻿
 namespace PCCommon
 {
-    public enum TransportHandler
-    {
-        TCP = 0
-
-        //TCP = 0,
-        //UDP,
-        //UART
-    }
 
     /// <summary>
     /// Generic description of Process Controller (communication endoint)

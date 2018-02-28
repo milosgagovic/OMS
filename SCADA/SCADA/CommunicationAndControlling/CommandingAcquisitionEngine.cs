@@ -269,11 +269,9 @@ namespace SCADA.CommunicationAndControlling
             List<Task> acqTasks = new List<Task>();
             foreach (var rtu in rtus)
             {
-                //acqTasks.Add(RunAcq(rtuAcquisitonAction, TimeSpan.FromMilliseconds(5000), rtu.Key, token));
                 acqTasks.Add(AsyncRtuAcquisition(rtuAcquisitonAction, TimeSpan.FromMilliseconds(3000), rtu.Key, token));
                 Console.WriteLine("task added");
 
-                // do i need to call task.Start()?
             }
             Console.WriteLine("Task acquistion before return");
             foreach (Task t in acqTasks)
@@ -285,7 +283,6 @@ namespace SCADA.CommunicationAndControlling
             }
             catch (AggregateException e)
             {
-                //retVal = default(Task);
                 retVal = Task.FromResult(false);
 
                 Console.WriteLine("\nThe following exceptions have been thrown by WaitAll(): (THIS WAS EXPECTED)");
@@ -300,7 +297,7 @@ namespace SCADA.CommunicationAndControlling
         public Action<string> rtuAcquisitonAction = rtuName =>
         {
             IIndustryProtocolHandler IProtHandler = null;
-          //  Console.WriteLine("\nRtuAcqAction started Rtu={2}  Task id = {0} , time={1}", Task.CurrentId, DateTime.Now.ToLongTimeString(), rtuName);
+            //  Console.WriteLine("\nRtuAcqAction started Rtu={2}  Task id = {0} , time={1}", Task.CurrentId, DateTime.Now.ToLongTimeString(), rtuName);
 
             DBContext dbContext = new DBContext();
             RTU rtu = dbContext.GetRTUByName(rtuName);
@@ -465,14 +462,11 @@ namespace SCADA.CommunicationAndControlling
                                             {
                                                 BitReadResponse response = (BitReadResponse)mdbHandler.Response;
                                                 var responsePVCount = answer.Flags;
-                                                // bool[] boolArrayResponse = new bool[response.BitValues.Count];
-                                                // response.BitValues.CopyTo(boolArrayResponse, 0);
 
                                                 ushort varAddr = answer.ReqAddress;
                                                 for (int i = 0; i < responsePVCount; i++, varAddr++)
                                                 {
                                                     ProcessVariable pv;
-                                                    //ushort varAddr = answer.ReqAddress++;
 
                                                     if (rtu.GetProcessVariableByAddress(varAddr, out pv))
                                                     {
@@ -480,7 +474,6 @@ namespace SCADA.CommunicationAndControlling
 
                                                         try
                                                         {
-                                                            //bool isOpened = boolArrayResponse[i];
                                                             bool isOpened = response.BitValues[i];
                                                             if (target.State != target.ValidStates[isOpened ? 1 : 0])
                                                             {
@@ -508,6 +501,7 @@ namespace SCADA.CommunicationAndControlling
 
                                             break;
 
+                                            // analog input
                                         case FunctionCodes.ReadInputRegisters:
                                             {
                                                 RegisterReadResponse response = (RegisterReadResponse)mdbHandler.Response;
@@ -536,6 +530,7 @@ namespace SCADA.CommunicationAndControlling
                                                                 target.AcqValue = newAcqValue;
                                                                 Console.WriteLine(" CHANGE! Analog variable {0}, AcqValue: {1}", target.Name, target.AcqValue);
 
+                                                                // to do: propagacija analogih promena (ako se secate Pavlica je prvo rekao da nam to ne treba da samo jednom zakucamo vrednost na pocetku) xD 
                                                                 // DMSClient dMSClient = new DMSClient();
                                                                 // to do
                                                                 // dMSClient.ChangeOnSCADA(target.Name, target.State);

@@ -28,7 +28,7 @@ namespace SCADA.ConfigurationParser
         public bool DeserializeScadaModel(string deserializationSource = "ScadaModel.xml")
         {
             // to do
-            Database.IsConfigurationFinished = false; // OVO JE BILO SPORNO KASNIJE?
+            Database.IsConfigurationFinished = false; 
 
             string message = string.Empty;
             string configurationName = deserializationSource;

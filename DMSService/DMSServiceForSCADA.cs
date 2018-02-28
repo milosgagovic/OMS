@@ -2,6 +2,7 @@
 using DMSContract;
 using FTN.Common;
 using IMSContract;
+using OMSSCADACommon;
 using PubSubscribe;
 using System;
 using System.Collections.Generic;

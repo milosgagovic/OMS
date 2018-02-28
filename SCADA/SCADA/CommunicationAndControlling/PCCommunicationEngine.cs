@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Threading;
 using PCCommon;
-using System.Net.Sockets;
 using SCADA.ConfigurationParser;
-using SCADA.CommunicationAndControlling.Communication;
+using PCCommon.Communication;
 
 namespace SCADA.CommunicationAndControlling
 {
@@ -127,12 +126,10 @@ namespace SCADA.CommunicationAndControlling
 
                 if (isSuccessful)
                 {
-                    // communication object.try get value
                     CommunicationObject commObj;
                     if (CommunicationManager.CommunicationObjects.TryGetValue(forProcess.ProcessControllerName, out commObj))
                     {
-                        // to dooo taskove i asinhrono
-                        //to do...nparaviti da su ovo taskovi nekad u buducnosti
+                        // to do: napraviti taskove i asinhrono
                         if (commObj.ProcessRequest(forProcess))
                         {
 
@@ -143,55 +140,11 @@ namespace SCADA.CommunicationAndControlling
                         }
 
                     }
-
-                    //TcpClient client;
-                    //if (TcpChannels.TryGetValue(forProcess.ProcessControllerName, out client))
-                    //{
-                    //    try
-                    //    {
-                    //        // to do: test this case...connection lasts forever? 
-                    //        if (!client.Connected)
-                    //        {
-                    //            processControllers.TryGetValue(forProcess.ProcessControllerName, out ProcessController rtu);
-                    //            client.Connect(rtu.HostName, rtu.HostPort);
-                    //        }
-
-                    //        NetworkStream stream = client.GetStream();
-                    //        int offset = 0;
-
-                    //        stream.Write(forProcess.SendBuff, offset, forProcess.SendMsgLength);
-
-                    //        // to do: processing big messages.  whole, or in parts?
-                    //        // ...
-                    //        // ovde dodati taski koji receieve radi
-
-                    //        forProcess.RcvBuff = new byte[client.ReceiveBufferSize];
-
-                    //        var length = stream.Read(forProcess.RcvBuff, offset, client.ReceiveBufferSize);
-                    //        forProcess.RcvMsgLength = length;
-
-                    //        IORequests.EnqueueAnswer(forProcess);
-                    //    }
-                    //    catch (Exception e)
-                    //    {
-                    //        // to do: handle this...
-                    //        Console.WriteLine(e.Message);
-                    //        //if (client.Connected)
-                    //        //  client.Close();
-
-                    //        // TcpChannels.Remove(toProcess.RtuName);
-                    //    }
-                    //}
-                    //else
-                    //{
-                    //    Console.WriteLine("\nThere is no communication link with {0} rtu. Request is disposed.", forProcess.ProcessControllerName);
-                    //}
-
                 }
             }
         }
 
-        // to do...cancelation token i communicaition maanbger da brise sve bla bla
+        // to do...cancelation token i communicaition manager da brise sve bla bla
         public void Stop()
         {
             // clear, dispose...

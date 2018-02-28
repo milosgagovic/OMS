@@ -1,8 +1,7 @@
-﻿using PCCommon;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 
-namespace SCADA.CommunicationAndControlling
+namespace PCCommon
 {
     /// <summary>
     /// Used for inter-thread communication

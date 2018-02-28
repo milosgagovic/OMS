@@ -1,5 +1,5 @@
-﻿using DMSCommon.Model;
-using IMSContract;
+﻿using IMSContract;
+using OMSSCADACommon;
 using PubSubContract;
 using System;
 using System.Collections.Generic;

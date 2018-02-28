@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using TransactionManagerContract;
 using DMSCommon.Model;
 using DMSCommon.TreeGraph;
+using OMSSCADACommon;
 
 namespace DMSService
 {

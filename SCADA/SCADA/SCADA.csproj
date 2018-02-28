@@ -81,10 +81,8 @@
     <Compile Include="ClientHandler\Invoker.cs" />
     <Compile Include="ClientHandler\SCADAService.cs" />
     <Compile Include="ClientHandler\SCADATransactionService.cs" />
-    <Compile Include="CommunicationAndControlling\PCCommunicationManager.cs" />
     <Compile Include="CommunicationAndControlling\SecondaryDataProcessing\AnalogProcessor.cs" />
     <Compile Include="CommunicationAndControlling\CommandingAcquisitionEngine.cs" />
-    <Compile Include="CommunicationAndControlling\IORequestsQueue.cs" />
     <Compile Include="CommunicationAndControlling\PCCommunicationEngine.cs" />
     <Compile Include="RealtimeDatabase\Catalogs\Unit.cs" />
     <Compile Include="RealtimeDatabase\Model\Analog.cs" />

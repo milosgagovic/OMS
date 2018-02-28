@@ -103,7 +103,9 @@ namespace SCADA.ClientHandler
             ITransactionCallback callback = OperationContext.Current.GetCallbackChannel<ITransactionCallback>();
 
             ScadaModelParser parser = new ScadaModelParser();
-            parser.SwapConfigs(currentConfigFile, modifiedConfigFile);
+
+            // to do check this
+            //parser.SwapConfigs(currentConfigFile, modifiedConfigFile);
 
             callback.CallbackCommit("Commited on SCADA");          
         }

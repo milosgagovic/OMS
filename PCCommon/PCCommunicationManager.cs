@@ -1,10 +1,8 @@
-﻿using PCCommon;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Net.Sockets;
 
-// ovo bi sve trebalo da bude u PCCommon library...hm, kasnije premestaj
-namespace SCADA.CommunicationAndControlling.Communication
+namespace PCCommon.Communication
 {
     // for udp there can be some other parameters...
     public class CommunicationParameters
@@ -28,7 +26,9 @@ namespace SCADA.CommunicationAndControlling.Communication
         }
     }
 
-    // wrapper around TcpClient or UdpClient...
+    /// <summary>
+    /// Wrapper around TcpClien, UdpClient...
+    /// </summary>
     public abstract class CommunicationObject
     {
         public TransportHandler TrHandler { get; set; }
@@ -49,7 +49,8 @@ namespace SCADA.CommunicationAndControlling.Communication
         public abstract bool Setup();
 
         public abstract bool ProcessRequest(IORequestBlock forProcess);
-    }
+  
+  }
     public abstract class CommunicationObjectFactory
     {
         public abstract CommunicationObject CreateNew();
@@ -131,8 +132,6 @@ namespace SCADA.CommunicationAndControlling.Communication
                     if (!tcpClient.Connected)
                     {
                         // to do...sredjivati ovo nekad
-                        //processControllers.TryGetValue(forProcess.ProcessControllerName, out ProcessController rtu);
-                        //client.Connect(rtu.HostName, rtu.HostPort);
                     }
 
                     NetworkStream stream = tcpClient.GetStream();
@@ -183,8 +182,6 @@ namespace SCADA.CommunicationAndControlling.Communication
             }
             catch (ArgumentNullException e)
             {
-
-                Console.WriteLine("ArgumentNullException - HRESULT = {0}", e.HResult);
                 Console.WriteLine(e.Message);
             }
             catch (ArgumentOutOfRangeException e)

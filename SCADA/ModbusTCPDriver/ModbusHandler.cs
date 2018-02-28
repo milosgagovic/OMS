@@ -36,10 +36,9 @@ namespace ModbusTCPDriver
             byte[] responseData = new byte[length - 7];
             Buffer.BlockCopy(data, 7, responseData, 0, length - 7);
 
-            // if exception happens here, means that simulator could not process request. maybe request address and function code was not "aligned"
-            // also, PAY ATTENTION to configuration files (values in RtuCfg.txt and ScadaModel.xml must correspond!)
             // to do: handle exceptions in future implementation
-
+            // if exception happens here, means that simulator could not process request. maybe request address and function code was not "aligned"
+            // also, PAY ATTENTION to configuration files (values in RtuCfg.txt and ScadaModel.xml must correspond!)          
             if ((responseData[0] & 0x80) != 1) // check for exception
             {
                 switch ((FunctionCodes)responseData[0])

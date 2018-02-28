@@ -4,6 +4,7 @@ using DMSCommon.TreeGraph.Tree;
 using DMSContract;
 using FTN.Common;
 using IMSContract;
+using OMSSCADACommon;
 using OMSSCADACommon.Commands;
 using OMSSCADACommon.Responses;
 using System;

@@ -16,6 +16,7 @@ using DMSCommon.TreeGraph.Tree;
 using IMSContract;
 using System.ServiceModel;
 using System.Threading.Tasks;
+using OMSSCADACommon;
 
 namespace DMSService
 {
