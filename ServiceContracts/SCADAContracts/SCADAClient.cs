@@ -1,13 +1,9 @@
 ﻿using OMSSCADACommon.Commands;
 using OMSSCADACommon.Responses;
 using SCADAContracts;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.ServiceModel;
-using System.Text;
 
-namespace TransactionManager
+namespace SCADAContracts
 {
     public class SCADAClient : ClientBase<ISCADAContract>, ISCADAContract
     {
@@ -31,5 +27,4 @@ namespace TransactionManager
             return Channel.Ping();
         }
     }
-
 }

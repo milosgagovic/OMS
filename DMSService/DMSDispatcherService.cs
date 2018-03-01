@@ -22,7 +22,13 @@ namespace DMSService
             {
                 if (imsClient == null)
                 {
-                    imsClient = new IMSClient(new EndpointAddress("net.tcp://localhost:6090/IncidentManagementSystemService"));
+                    NetTcpBinding binding = new NetTcpBinding();
+                    binding.CloseTimeout = TimeSpan.FromMinutes(10);
+                    binding.OpenTimeout = TimeSpan.FromMinutes(10);
+                    binding.ReceiveTimeout = TimeSpan.FromMinutes(10);
+                    binding.SendTimeout = TimeSpan.FromMinutes(10);
+                    binding.MaxReceivedMessageSize = Int32.MaxValue;
+                    imsClient = new IMSClient(new EndpointAddress("net.tcp://localhost:6090/IncidentManagementSystemService"), binding);
                 }
                 return imsClient;
             }
@@ -229,13 +235,24 @@ namespace DMSService
                 }
                 catch (Exception e)
                 {
+                    //Console.WriteLine(e);
                     Console.WriteLine("ProcessCrew() -> IMS is not available yet.");
                     if (IMSClient.State == CommunicationState.Faulted)
-                        IMSClient = new IMSClient(new EndpointAddress("net.tcp://localhost:6090/IncidentManagementSystemService"));
+                    {
+                        NetTcpBinding binding = new NetTcpBinding();
+                        binding.CloseTimeout = TimeSpan.FromMinutes(10);
+                        binding.OpenTimeout = TimeSpan.FromMinutes(10);
+                        binding.ReceiveTimeout = TimeSpan.FromMinutes(10);
+                        binding.SendTimeout = TimeSpan.FromMinutes(10);
+                        binding.MaxReceivedMessageSize = Int32.MaxValue;
+                        IMSClient = new IMSClient(new EndpointAddress("net.tcp://localhost:6090/IncidentManagementSystemService"), binding);
+                    }
                 }
+
                 Thread.Sleep(1000);
             } while (true);
 
+            Publisher publisher = new Publisher();
             report.Id = IMSClient.GetReport(report.Time).Id;
 
             if (report != null)
@@ -297,8 +314,7 @@ namespace DMSService
                                     networkChange.Add(new SCADAUpdateModel(sw.ElementGID, false, OMSSCADACommon.States.CLOSED));
                                 }
 
-                                Publisher publisher1 = new Publisher();
-                                publisher1.PublishUpdateDigital(networkChange);
+                                publisher.PublishUpdateDigital(networkChange);
                                 break;
                             }
                         }
@@ -307,7 +323,6 @@ namespace DMSService
 
                 IMSClient.UpdateReport(report);
 
-                Publisher publisher = new Publisher();
                 publisher.PublishIncident(report);
             }
         }

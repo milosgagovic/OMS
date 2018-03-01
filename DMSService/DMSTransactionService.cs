@@ -11,6 +11,7 @@ using TransactionManagerContract;
 using DMSCommon.Model;
 using DMSCommon.TreeGraph;
 using OMSSCADACommon;
+using System.Net.Mail;
 
 namespace DMSService
 {
@@ -46,7 +47,7 @@ namespace DMSService
             ITransactionCallback callback = OperationContext.Current.GetCallbackChannel<ITransactionCallback>();
             callback.CallbackCommit("Uspjesno je prosao commit na DMS-u");
         }
-      
+
         public void Prepare(Delta delta)
         {
             Console.WriteLine("Pozvan je prepare na DMS-u");
@@ -64,6 +65,7 @@ namespace DMSService
                 callback.CallbackPrepare(false);
             }
         }
+
         public void Rollback()
         {
             Console.WriteLine("Pozvan je RollBack na DMSu");

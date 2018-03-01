@@ -7,6 +7,7 @@ using IMSContract;
 using OMSSCADACommon;
 using OMSSCADACommon.Commands;
 using OMSSCADACommon.Responses;
+using SCADAContracts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -73,7 +74,13 @@ namespace DMSService
             {
                 if (imsClient == null)
                 {
-                    imsClient = new IMSClient(new EndpointAddress("net.tcp://localhost:6090/IncidentManagementSystemService"));
+                    NetTcpBinding binding = new NetTcpBinding();
+                    binding.CloseTimeout = TimeSpan.FromMinutes(10);
+                    binding.OpenTimeout = TimeSpan.FromMinutes(10);
+                    binding.ReceiveTimeout = TimeSpan.FromMinutes(10);
+                    binding.SendTimeout = TimeSpan.FromMinutes(10);
+                    binding.MaxReceivedMessageSize = Int32.MaxValue;
+                    imsClient = new IMSClient(new EndpointAddress("net.tcp://localhost:6090/IncidentManagementSystemService"), binding);
                 }
                 return imsClient;
             }
@@ -138,6 +145,8 @@ namespace DMSService
             StartHosts();
             Tree = InitializeNetwork(new Delta());
 
+            //isNetworkInitialized = true;
+
             while (!isNetworkInitialized)
             {
                 Console.WriteLine("Not Initialized network");
@@ -182,6 +191,7 @@ namespace DMSService
                 }
                 catch (Exception e)
                 {
+                    //Console.WriteLine(e);
                     Console.WriteLine("InitializeNetwork() -> SCADA is not available yet.");
                     NetTcpBinding binding = new NetTcpBinding();
                     binding.CloseTimeout = TimeSpan.FromMinutes(10);
@@ -196,7 +206,6 @@ namespace DMSService
             } while (true);
             Console.WriteLine("InitializeNetwork() -> SCADA is available.");
 
-
             Response response = null;
             // get dynamic data
             response = ScadaClient.ExecuteCommand(new ReadAll());
@@ -209,16 +218,27 @@ namespace DMSService
                     {
                         IMSClient.Open();
                     }
+
                     if (IMSClient.Ping())
                         break;
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine("InitializeNetwork() -> IMS is not available yet.");
+                    //Console.WriteLine(e);
+                    Console.WriteLine("ProcessCrew() -> IMS is not available yet.");
                     if (IMSClient.State == CommunicationState.Faulted)
-                        IMSClient = new IMSClient(new EndpointAddress("net.tcp://localhost:6090/IncidentManagementSystemService"));
+                    {
+                        NetTcpBinding binding = new NetTcpBinding();
+                        binding.CloseTimeout = TimeSpan.FromMinutes(10);
+                        binding.OpenTimeout = TimeSpan.FromMinutes(10);
+                        binding.ReceiveTimeout = TimeSpan.FromMinutes(10);
+                        binding.SendTimeout = TimeSpan.FromMinutes(10);
+                        binding.MaxReceivedMessageSize = Int32.MaxValue;
+                        IMSClient = new IMSClient(new EndpointAddress("net.tcp://localhost:6090/IncidentManagementSystemService"), binding);
+                    }
                 }
-                Thread.Sleep(100);
+
+                Thread.Sleep(1000);
             } while (true);
 
             List<IncidentReport> reports = imsClient.GetAllReports();
@@ -456,23 +476,19 @@ namespace DMSService
                     }
                     else if (mc.Equals(DMSType.BREAKER))
                     {
-                        Console.WriteLine("mc equas breaker");
                         Switch sw = new Switch(branch, mrid);
 
                         if (response != null)
                         {
-                            Console.WriteLine("response != null");
                             var psr = SwitchesRD.Where(m => m.GetProperty(ModelCode.IDOBJ_MRID).AsString() == mrid).FirstOrDefault();
                             var meas = DiscreteMeasurementsRD.Where(m => m.GetProperty(ModelCode.MEASUREMENT_PSR).AsLong() == psr.Id).FirstOrDefault();
 
                             if (meas != null)
                             {
-                                Console.WriteLine("meas != null");
                                 var res = (DigitalVariable)response.Variables.Where(v => v.Id == meas.GetProperty(ModelCode.IDOBJ_MRID).AsString()).FirstOrDefault();
 
                                 if (res != null)
                                 {
-                                    Console.WriteLine("res != null");
                                     if (res.State == OMSSCADACommon.States.OPENED)
                                     {
                                         sw = new Switch(branch, mrid, SwitchState.Open) { UnderSCADA = true };
@@ -501,31 +517,44 @@ namespace DMSService
                         }
                         else
                         {
-                            // to do: fix this, repsonse will not be null
-                            Console.WriteLine("response == null");
                             sw.UnderSCADA = false;
-                        }
 
-                        Console.WriteLine("Doslo dovde");
+                            ElementStateReport elementStateReport = elementStates.Where(s => s.MrID == sw.MRID).LastOrDefault();
+
+                            if (elementStateReport != null)
+                            {
+                                sw = new Switch(branch, mrid, (SwitchState)elementStateReport.State) { UnderSCADA = false };
+                            }
+                            else
+                            {
+                                sw = new Switch(branch, mrid, SwitchState.Closed) { UnderSCADA = false };
+                            }
+                        }
 
                         foreach (IncidentReport report in reports)
                         {
                             if (report.MrID == sw.MRID && report.IncidentState != IncidentState.REPAIRED)
                             {
                                 sw.Incident = true;
-                                sw.CanCommand = false;
+
+                                if (sw.UnderSCADA)
+                                {
+                                    sw.CanCommand = false;
+                                }
+
                                 break;
                             }
                             else if (report.MrID == sw.MRID && report.IncidentState == IncidentState.REPAIRED)
                             {
                                 if (sw.State == SwitchState.Open)
                                 {
-                                    sw.CanCommand = true;
+                                    if (sw.UnderSCADA)
+                                    {
+                                        sw.CanCommand = true;
+                                    }
                                 }
                             }
                         }
-
-                        Console.WriteLine("Doslo dovde1");
 
                         sw.End1 = n.ElementGID;
                         n.Children.Add(sw.ElementGID);
@@ -542,7 +571,6 @@ namespace DMSService
                     }
                     else if (mc.Equals(DMSType.ENERGCONSUMER))
                     {
-                        Console.WriteLine("equals energyconsumer");
                         Consumer consumer = new Consumer(branch, mrid);
                         consumer.End1 = n.ElementGID;
                         n.Children.Add(consumer.ElementGID);
@@ -559,8 +587,6 @@ namespace DMSService
 
             watch.Stop();
             updatesCount += 1;
-
-            Console.WriteLine("Doslo dovde3");
 
             if (retVal.Roots.Count > 0)
             {
@@ -670,7 +696,6 @@ namespace DMSService
             }
             return mrid;
         }
-
         private long GetConnNodeConnectedWithTerminal(long terminal)
         {
             long connNode = 0;

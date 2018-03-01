@@ -6,6 +6,7 @@ using IMSContract;
 using OMSSCADACommon;
 using OMSSCADACommon.Commands;
 using OMSSCADACommon.Responses;
+using SCADAContracts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -37,12 +38,19 @@ namespace TransactionManager
             {
                 if (imsClient == null)
                 {
-                    imsClient = new IMSClient(new EndpointAddress("net.tcp://localhost:6090/IncidentManagementSystemService"));
+                    NetTcpBinding binding = new NetTcpBinding();
+                    binding.CloseTimeout = TimeSpan.FromMinutes(10);
+                    binding.OpenTimeout = TimeSpan.FromMinutes(10);
+                    binding.ReceiveTimeout = TimeSpan.FromMinutes(10);
+                    binding.SendTimeout = TimeSpan.FromMinutes(10);
+                    binding.MaxReceivedMessageSize = Int32.MaxValue;
+                    imsClient = new IMSClient(new EndpointAddress("net.tcp://localhost:6090/IncidentManagementSystemService"), binding);
                 }
                 return imsClient;
             }
             set { imsClient = value; }
         }
+
         private SCADAClient scadaClient;
         private SCADAClient ScadaClient
         {
@@ -161,6 +169,7 @@ namespace TransactionManager
             Console.WriteLine("Transaction Manager calling prepare");
 
             ScadaDelta deltaForScada = GetDeltaForSCADA(deltaForNMS);
+            //Delta fixedGuidDeltaForDMS = ProxyToNMSService.GetFixedDelta(deltaForNMS);
             Delta fixedGuidDeltaForDMS = gdaTMS.GetFixedDelta(deltaForNMS);
 
             ProxyTransactionNMS.Prepare(deltaForNMS);
@@ -240,28 +249,13 @@ namespace TransactionManager
 
         public TMSAnswerToClient GetNetwork()
         {
-            Console.WriteLine("GetNetwork called");
+            // ako se ne podignu svi servisi na DMSu, ovde pada
             List<Element> listOfDMSElement = new List<Element>();
-
             try
             {
-                int maxAttemptCount = 5;
-                for (int i = 0; i < maxAttemptCount; i++)
-                {
-                    Console.WriteLine("Attempt = {0}, Trying to get network.", i);
-                    if (proxyToDispatcherDMS.IsNetworkAvailable())
-                        break;
-
-                    Thread.Sleep(1000);
-                }
-
-
                 listOfDMSElement = proxyToDispatcherDMS.GetAllElements();
             }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-            }
+            catch (Exception e) { }
 
             List<ResourceDescription> resourceDescriptionFromNMS = new List<ResourceDescription>();
             List<ResourceDescription> descMeas = new List<ResourceDescription>();
@@ -294,6 +288,7 @@ namespace TransactionManager
                     }
                     catch (Exception e)
                     {
+                        //Console.WriteLine(e);
                         Console.WriteLine("GetNetwork() -> SCADA is not available yet.");
                         NetTcpBinding binding = new NetTcpBinding();
                         binding.CloseTimeout = TimeSpan.FromMinutes(10);
@@ -304,7 +299,6 @@ namespace TransactionManager
                         if (ScadaClient.State == CommunicationState.Faulted)
                             ScadaClient = new SCADAClient(new EndpointAddress("net.tcp://localhost:4000/SCADAService"), binding);
                     }
-
                     Thread.Sleep(500);
                 } while (true);
                 Console.WriteLine("GetNetwork() -> SCADA is available.");
@@ -331,9 +325,18 @@ namespace TransactionManager
                 }
                 catch (Exception e)
                 {
+                    //Console.WriteLine(e);
                     Console.WriteLine("GetNetwork() -> IMS is not available yet.");
                     if (IMSClient.State == CommunicationState.Faulted)
-                        IMSClient = new IMSClient(new EndpointAddress("net.tcp://localhost:6090/IncidentManagementSystemService"));
+                    {
+                        NetTcpBinding binding = new NetTcpBinding();
+                        binding.CloseTimeout = TimeSpan.FromMinutes(10);
+                        binding.OpenTimeout = TimeSpan.FromMinutes(10);
+                        binding.ReceiveTimeout = TimeSpan.FromMinutes(10);
+                        binding.SendTimeout = TimeSpan.FromMinutes(10);
+                        binding.MaxReceivedMessageSize = Int32.MaxValue;
+                        IMSClient = new IMSClient(new EndpointAddress("net.tcp://localhost:6090/IncidentManagementSystemService"), binding);
+                    }
                 }
                 Thread.Sleep(1000);
             } while (true);

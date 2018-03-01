@@ -22,7 +22,13 @@ namespace DMSService
             {
                 if (imsClient == null)
                 {
-                    imsClient = new IMSClient(new EndpointAddress("net.tcp://localhost:6090/IncidentManagementSystemService"));
+                    NetTcpBinding binding = new NetTcpBinding();
+                    binding.CloseTimeout = TimeSpan.FromMinutes(10);
+                    binding.OpenTimeout = TimeSpan.FromMinutes(10);
+                    binding.ReceiveTimeout = TimeSpan.FromMinutes(10);
+                    binding.SendTimeout = TimeSpan.FromMinutes(10);
+                    binding.MaxReceivedMessageSize = Int32.MaxValue;
+                    imsClient = new IMSClient(new EndpointAddress("net.tcp://localhost:6090/IncidentManagementSystemService"), binding);
                 }
                 return imsClient;
             }
@@ -109,11 +115,21 @@ namespace DMSService
                         }
                         catch (Exception e)
                         {
-                            Console.WriteLine("ChangeOnScada() -> IMS is not available yet.");
+                            //Console.WriteLine(e);
+                            Console.WriteLine("ProcessCrew() -> IMS is not available yet.");
                             if (IMSClient.State == CommunicationState.Faulted)
-                                IMSClient = new IMSClient(new EndpointAddress("net.tcp://localhost:6090/IncidentManagementSystemService"));
+                            {
+                                NetTcpBinding binding = new NetTcpBinding();
+                                binding.CloseTimeout = TimeSpan.FromMinutes(10);
+                                binding.OpenTimeout = TimeSpan.FromMinutes(10);
+                                binding.ReceiveTimeout = TimeSpan.FromMinutes(10);
+                                binding.SendTimeout = TimeSpan.FromMinutes(10);
+                                binding.MaxReceivedMessageSize = Int32.MaxValue;
+                                IMSClient = new IMSClient(new EndpointAddress("net.tcp://localhost:6090/IncidentManagementSystemService"), binding);
+                            }
                         }
-                        Thread.Sleep(500);
+
+                        Thread.Sleep(1000);
                     } while (true);
 
                     // report changed state of the element
@@ -136,7 +152,7 @@ namespace DMSService
                         foreach (long gid in listOfConsumersWithoutPower)
                         {
                             ResourceDescription resDes = DMSService.Instance.Gda.GetValues(gid);
-                            incident.LostPower += resDes.GetProperty(ModelCode.ENERGCONSUMER_PFIXED).AsFloat();
+                            try { incident.LostPower += resDes.GetProperty(ModelCode.ENERGCONSUMER_PFIXED).AsFloat(); } catch { }
                         }
                         IMSClient.AddReport(incident);
                         publisher.PublishIncident(incident);

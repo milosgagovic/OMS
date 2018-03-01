@@ -11,6 +11,16 @@ namespace IMSContract
         //{
         //}
 
+        public IMSClient(string endpointName, NetTcpBinding binding) : base(binding, new EndpointAddress(endpointName))
+        {
+
+        }
+
+        public IMSClient(EndpointAddress address, NetTcpBinding binding) : base(binding, address)
+        {
+
+        }
+
         //// unused
         //public bool AddCrew(Crew crew)
         //{
@@ -40,16 +50,6 @@ namespace IMSContract
         //{
         //    return Channel.GetReportsForSpecificTimeInterval(startTime, endTime);
         //}
-
-        public IMSClient(string endpointName) : base(new NetTcpBinding(), new EndpointAddress(endpointName))
-        {
-            
-        }
-
-        public IMSClient(EndpointAddress address) : base(new NetTcpBinding(), address)
-        {
-
-        }
 
         public void AddElementStateReport(ElementStateReport report)
         {

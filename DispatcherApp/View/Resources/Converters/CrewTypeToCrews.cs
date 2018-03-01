@@ -27,12 +27,6 @@ namespace DispatcherApp.View.Resources.Converters
             }
             catch { return null; }
 
-            //if (report.Crew != null)
-            //{
-            //    res.Add(report.Crew);
-            //    return res;
-            //}
-
             foreach (Crew crew in crews)
             {
                 if (type == crew.Type && !crew.Working)
@@ -40,12 +34,6 @@ namespace DispatcherApp.View.Resources.Converters
                     res.Add(crew);
                 }
             }
-
-            //if (res.Count == 0)
-            //{
-            //    report.IncidentState = IncidentState.NO_FREE_CREWS;
-            //    return res;
-            //}
 
             return res;
         }
