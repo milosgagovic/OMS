@@ -32,6 +32,7 @@ using OMSSCADACommon;
 using System.Threading.Tasks;
 using DispatcherApp.View.CustomControls.TabContentControls;
 using GravityAppsMandelkowMetroCharts;
+using DMSCommon;
 
 namespace DispatcherApp.ViewModel
 {
@@ -377,32 +378,29 @@ namespace DispatcherApp.ViewModel
 
                 foreach (ElementProperties properties in this.properties.Values)
                 {
-                    if (properties is BreakerProperties)
+                    Element element = null;
+                    this.Network.TryGetValue(properties.GID, out element);
+
+                    if (element != null && element is Branch)
                     {
-                        Element element = null;
-                        this.Network.TryGetValue(properties.GID, out element);
+                        Element node = null;
+                        Branch currentBranch = (Branch)element;
+                        this.Network.TryGetValue(currentBranch.End1, out node);
 
-                        if (element != null)
+                        if (node != null)
                         {
-                            Element node = null;
-                            Switch breaker = (Switch)element;
-                            this.Network.TryGetValue(breaker.End1, out node);
+                            Element branch = null;
+                            Node parent = (Node)node;
+                            this.Network.TryGetValue(parent.Parent, out branch);
 
-                            if (node != null)
+                            if (branch != null)
                             {
-                                Element branch = null;
-                                Node parent = (Node)node;
-                                this.Network.TryGetValue(parent.Parent, out branch);
+                                ElementProperties parentProperties = null;
+                                this.properties.TryGetValue(branch.ElementGID, out parentProperties);
 
-                                if (branch != null)
+                                if (parentProperties != null)
                                 {
-                                    ElementProperties parentProperties = null;
-                                    this.properties.TryGetValue(branch.ElementGID, out parentProperties);
-
-                                    if (parentProperties != null)
-                                    {
-                                        properties.Parent = parentProperties;
-                                    }
+                                    properties.Parent = parentProperties;
                                 }
                             }
                         }
@@ -847,7 +845,7 @@ namespace DispatcherApp.ViewModel
                         Style style1 = new Style();
                         Setter setter1 = new Setter() { Property = Polyline.StrokeProperty, Value = (SolidColorBrush)frameworkElement.FindResource("SwitchColorClosed") };
 
-                        DataTrigger trigger1 = new DataTrigger() { Binding = new Binding("IsEnergized"), Value = false };
+                        DataTrigger trigger1 = new DataTrigger() { Binding = new Binding("Parent.IsEnergized"), Value = false };
                         Setter setter2 = new Setter() { Property = Polyline.StrokeProperty, Value = Brushes.Blue };
 
                         trigger1.Setters.Add(setter2);
@@ -2023,7 +2021,7 @@ namespace DispatcherApp.ViewModel
         #endregion
 
         #region Publish methods
-        private void GetDigitalUpdate(List<SCADAUpdateModel> update)
+        private void GetDigitalUpdate(List<UIUpdateModel> update)
         {
             if (update != null)
             {
@@ -2055,7 +2053,7 @@ namespace DispatcherApp.ViewModel
                 }
 
                 int i = 0;
-                foreach (SCADAUpdateModel sum in update)
+                foreach (UIUpdateModel sum in update)
                 {
                     ElementProperties property;
                     properties.TryGetValue(sum.Gid, out property);
@@ -2095,15 +2093,20 @@ namespace DispatcherApp.ViewModel
             }
         }
 
-        private void GetAnalogUpdate(List<SCADAUpdateModel> update)
+        private void GetAnalogUpdate(List<UIUpdateModel> update)
         {
             if (update != null)
             {
-                // to do:
+                AnalogMeasurement analogMeasurement =  (AnalogMeasurement)this.Measurements.Where(meas => meas.Value.GID == update[0].Gid).FirstOrDefault().Value;
+
+                if (analogMeasurement != null)
+                {
+                    analogMeasurement.Value = update[0].AnValue;
+                }
             }
         }
 
-        private void GetCrewUpdate(SCADAUpdateModel update)
+        private void GetCrewUpdate(UIUpdateModel update)
         {
             Console.WriteLine(update.Response.ToString());
         }
@@ -2170,7 +2173,7 @@ namespace DispatcherApp.ViewModel
             catch { }
         }
 
-        private void GetCallFromConsumers(SCADAUpdateModel call)
+        private void GetCallFromConsumers(UIUpdateModel call)
         {
             ElementProperties property;
             properties.TryGetValue(call.Gid, out property);

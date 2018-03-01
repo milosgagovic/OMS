@@ -58,6 +58,7 @@
     <Compile Include="TreeGraph\NodeLink.cs" />
     <Compile Include="TreeGraph\Tree.cs" />
     <Compile Include="TreeGraph\TreeNode.cs" />
+    <Compile Include="UIUpdateModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\ServiceContracts\NetworkModelQueryContract\NetworkModelGDAContract.csproj">

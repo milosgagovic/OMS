@@ -1,4 +1,5 @@
-﻿using IMSContract;
+﻿using DMSCommon;
+using IMSContract;
 using OMSSCADACommon;
 using PubSubContract;
 using System;
@@ -8,11 +9,11 @@ using System.ServiceModel;
 
 namespace PubSubscribe
 {
-    public delegate void PublishDigitalUpdateEvent(List<SCADAUpdateModel> update);
-    public delegate void PublishAnalogUpdateEvent(List<SCADAUpdateModel> update);
-    public delegate void PublishCrewEvent(SCADAUpdateModel update);
+    public delegate void PublishDigitalUpdateEvent(List<UIUpdateModel> update);
+    public delegate void PublishAnalogUpdateEvent(List<UIUpdateModel> update);
+    public delegate void PublishCrewEvent(UIUpdateModel update);
     public delegate void PublishReportIncident(IncidentReport report);
-    public delegate void PublishCallIncident(SCADAUpdateModel call);
+    public delegate void PublishCallIncident(UIUpdateModel call);
     public delegate void PublishUIBreakers(bool IsIncident,long incidentBreaker);
 
     /// <summary>
@@ -83,17 +84,17 @@ namespace PubSubscribe
             }
         }
 
-        public void PublishDigitalUpdate(List<SCADAUpdateModel> update)
+        public void PublishDigitalUpdate(List<UIUpdateModel> update)
         {
             publishDigitalUpdateEvent?.Invoke(update);
         }
 
-        public void PublishAnalogUpdate(List<SCADAUpdateModel> update)
+        public void PublishAnalogUpdate(List<UIUpdateModel> update)
         {
             publishAnalogUpdateEvent?.Invoke(update);
         }
 
-        public void PublishCrewUpdate(SCADAUpdateModel update)
+        public void PublishCrewUpdate(UIUpdateModel update)
         {
             publishCrewEvent?.Invoke(update);
         }
@@ -103,7 +104,7 @@ namespace PubSubscribe
             publishIncident?.Invoke(report);
         }
 
-        public void PublishCallIncident(SCADAUpdateModel call)
+        public void PublishCallIncident(UIUpdateModel call)
         {
             publishCall?.Invoke(call);
         }

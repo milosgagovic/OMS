@@ -8,18 +8,16 @@
     <Grid HorizontalAlignment="Stretch" Background="{StaticResource DarkestColor}" >
         <StackPanel Height="Auto" Width="Auto" Background="{StaticResource DarkestColor}" Margin="0, 10, 0, 0">
             <Menu Background="{StaticResource DarkestColor}" Foreground="White">
-                <!--<MenuItem Header="File" Margin="0, 2, 0, 2"/>
-                <MenuItem Header="Edit" Margin="0, 2, 0, 2"/>-->
-                <MenuItem Header="View" Margin="0, 2, 0, 2">
-                    <MenuItem Header="Network Explorer" Foreground="Black" 
+                <MenuItem Header="View" Margin="0, 2, 0, 2" Template="{StaticResource MenuItemHeaderTemplate}" Foreground="White">
+                    <MenuItem Header="Network Explorer" Foreground="LightGray"
                          Command="{Binding OpenControlCommand}" CommandParameter="Network Explorer"/>
-                    <MenuItem Header="Properties" Foreground="Black"
+                    <MenuItem Header="Properties" Foreground="LightGray"
                               Command="{Binding OpenControlCommand}" CommandParameter="Properties"/>
-                    <MenuItem Header="Incident Explorer" Foreground="Black"
+                    <MenuItem Header="Incident Explorer" Foreground="LightGray"
                               Command="{Binding OpenControlCommand}" CommandParameter="Incident Explorer"/>
-                    <MenuItem Header="Report Explorer" Foreground="Black"
+                    <MenuItem Header="Report Explorer" Foreground="LightGray"
                               Command="{Binding OpenControlCommand}" CommandParameter="Report Explorer"/>
-                    <MenuItem Header="Output" Foreground="Black"
+                    <MenuItem Header="Output" Foreground="LightGray"
                               Command="{Binding OpenControlCommand}" CommandParameter="Output"/>
                 </MenuItem>
             </Menu>

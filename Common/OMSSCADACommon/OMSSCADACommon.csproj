@@ -61,7 +61,6 @@
     <Compile Include="DeviceTypes.cs" />
     <Compile Include="ScadaDelta.cs" />
     <Compile Include="ScadaElement.cs" />
-    <Compile Include="SCADAUpdateModel.cs" />
     <Compile Include="States.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

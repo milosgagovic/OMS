@@ -1,7 +1,8 @@
-﻿using System;
+﻿using OMSSCADACommon;
+using System;
 using System.Runtime.Serialization;
 
-namespace OMSSCADACommon
+namespace DMSCommon
 {
     /// <summary>
     /// Class describes changes on SCADA, used in the 
@@ -9,7 +10,7 @@ namespace OMSSCADACommon
     /// </summary>
     [Serializable]
     [DataContract]
-    public class SCADAUpdateModel
+    public class UIUpdateModel
     {
         private long gid;
         private bool isEnergized;
@@ -56,23 +57,23 @@ namespace OMSSCADACommon
         [DataMember]
         public float AnValue { get => anValue; set => value = anValue = value; }
 
-        public SCADAUpdateModel()
+        public UIUpdateModel()
         {
             gid = -1;
         }
 
-        public SCADAUpdateModel(long gid, bool isEnergized)
+        public UIUpdateModel(long gid, bool isEnergized)
         {
             Gid = gid;
             IsEnergized = isEnergized;
         }
-        public SCADAUpdateModel(long gid, bool isEnergized, States state)
+        public UIUpdateModel(long gid, bool isEnergized, States state)
         {
             Gid = gid;
             IsEnergized = isEnergized;
             State = state;
         }
-        public SCADAUpdateModel(long gid, bool isEnergised, CrewResponse response)
+        public UIUpdateModel(long gid, bool isEnergised, CrewResponse response)
         {
             Gid = gid;
             IsEnergized = isEnergised;
@@ -87,16 +88,10 @@ namespace OMSSCADACommon
             isElementAdded = false;
         }
 
-        public SCADAUpdateModel(bool isElementAdded, long gid)
+        public UIUpdateModel(bool isElementAdded, long gid)
         {
             Gid = gid;
             this.isElementAdded = isElementAdded;
-        }
-
-        public SCADAUpdateModel(string mrid, long gid, float value)
-        {
-            Gid = gid;
-            AnValue = value;
         }
     }
 }

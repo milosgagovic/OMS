@@ -1,4 +1,5 @@
-﻿using DMSCommon.Model;
+﻿using DMSCommon;
+using DMSCommon.Model;
 using DMSContract;
 using FTN.Common;
 using IMSContract;
@@ -48,7 +49,7 @@ namespace DMSService
                 // find PSR element associated with measurement
                 long rdAssociatedPSR = rdDMeasurement.GetProperty(ModelCode.MEASUREMENT_PSR).AsLong();
 
-                List<SCADAUpdateModel> networkChange = new List<SCADAUpdateModel>();
+                List<UIUpdateModel> networkChange = new List<UIUpdateModel>();
 
                 Element DMSElementWithMeas;
                 Console.WriteLine("Change on scada Digital Instance.Tree");
@@ -70,13 +71,13 @@ namespace DMSService
                         sw.Incident = true;
                         sw.State = SwitchState.Open;
                         sw.Marker = false;
-                        networkChange.Add(new SCADAUpdateModel(sw.ElementGID, false, OMSSCADACommon.States.OPENED));
+                        networkChange.Add(new UIUpdateModel(sw.ElementGID, false, OMSSCADACommon.States.OPENED));
 
                         // treba mi objasnjenje sta se ovde radi? ne kotnam ove ScadaupdateModele sta se kad gde dodaje, sta je sta
                         // uopste, summary iznad tih propertija u dms modelu
                         Node n = (Node)DMSService.Instance.Tree.Data[sw.End2];
                         n.Marker = false;
-                        networkChange.Add(new SCADAUpdateModel(n.ElementGID, false));
+                        networkChange.Add(new UIUpdateModel(n.ElementGID, false));
                         // pojasnjenje mi treba, komentari u ovom algoritmu i slicno, da ne debagujem sve redom, nemam vremena sad za to xD 
                         networkChange = EnergizationAlgorithm.TraceDown(n, networkChange, false, false, DMSService.Instance.Tree);
                     }
@@ -87,17 +88,17 @@ namespace DMSService
                         // i ovde takodje pojasnjenje
                         if (EnergizationAlgorithm.TraceUp((Node)DMSService.Instance.Tree.Data[sw.End1], DMSService.Instance.Tree))
                         {
-                            networkChange.Add(new SCADAUpdateModel(sw.ElementGID, true, OMSSCADACommon.States.CLOSED));
+                            networkChange.Add(new UIUpdateModel(sw.ElementGID, true, OMSSCADACommon.States.CLOSED));
                             sw.Marker = true;
 
                             Node n = (Node)DMSService.Instance.Tree.Data[sw.End2];
                             n.Marker = true;
-                            networkChange.Add(new SCADAUpdateModel(n.ElementGID, true));
+                            networkChange.Add(new UIUpdateModel(n.ElementGID, true));
                             networkChange = EnergizationAlgorithm.TraceDown(n, networkChange, true, false, DMSService.Instance.Tree);
                         }
                         else
                         {
-                            networkChange.Add(new SCADAUpdateModel(sw.ElementGID, false, OMSSCADACommon.States.CLOSED));
+                            networkChange.Add(new UIUpdateModel(sw.ElementGID, false, OMSSCADACommon.States.CLOSED));
                         }
                     }
 
@@ -137,7 +138,7 @@ namespace DMSService
 
                     // ni ovo ne kontam, tj. nemam vremena da kontam previse xD
                     Source s = (Source)DMSService.Instance.Tree.Data[DMSService.Instance.Tree.Roots[0]];
-                    networkChange.Add(new SCADAUpdateModel(s.ElementGID, true));
+                    networkChange.Add(new UIUpdateModel(s.ElementGID, true));
 
                     Publisher publisher = new Publisher();
                     if (networkChange.Count > 0)
@@ -175,34 +176,23 @@ namespace DMSService
             // if measurement exists here! if result is null it exists only on scada, but not in .data
             if (rdDMeasurement != null)
             {
-                // find PSR element associated with measurement
-                long rdAssociatedPSR = rdDMeasurement.GetProperty(ModelCode.MEASUREMENT_PSR).AsLong();
+                long measGid = rdDMeasurement.GetProperty(ModelCode.IDOBJ_GID).AsLong();
 
-                List<SCADAUpdateModel> networkChange = new List<SCADAUpdateModel>();
 
-                Element DMSElementWithMeas;
-                Console.WriteLine("Change on scada Analog Instance.Tree");
-                DMSService.Instance.Tree.Data.TryGetValue(rdAssociatedPSR, out DMSElementWithMeas);
+                // to do: cuvanje u bazi promene za analogne, bla bla. Inicijalno uopste nije bilo planirano da se propagiraju promene za analogne,
+                // receno je da te vrednosti samo zakucamo :D, zato tu implementaciju ostavljam za svetlu buducnost! 
 
-                Consumer ecs = DMSElementWithMeas as Consumer;
-                if (ecs != null)
+                // ovde sad mogu neke kalkulacije opasne da se racunaju, kao ako je ta neka vrednost to se npr. ne uklapa sa 
+                // izracunatom vrednoscu za taj customer..ma bla bla...to nama ne treba xD
+                
+                List<UIUpdateModel> networkChange = new List<UIUpdateModel>();
+                networkChange.Add(new UIUpdateModel() { Gid = measGid, AnValue = value });
+
+                Publisher publisher = new Publisher();
+                if (networkChange.Count > 0)
                 {
-                    // to do: cuvanje u bazi promene za analogne, bla bla. Inicijalno uopste nije bilo planirano da se propagiraju promene za analogne,
-                    // receno je da te vrednosti samo zakucamo :D, zato tu implementaciju ostavljam za svetlu buducnost! 
-
-                    // ovde sad mogu neke kalkulacije opasne da se racunaju, kao ako je ta neka vrednost to se npr. ne uklapa sa 
-                    // izracunatom vrednoscu za taj customer..ma bla bla...to nama ne treba xD
-
-                    // eto ti i mrid i gid i value xD 
-                    networkChange.Add(new SCADAUpdateModel(mrID, ecs.ElementGID, value));
-
-                    Publisher publisher = new Publisher();
-                    if (networkChange.Count > 0)
-                    {
-                        publisher.PublishUpdateDigital(networkChange);
-                    }
+                    publisher.PublishUpdateAnalog(networkChange);
                 }
-
             }
             else
             {

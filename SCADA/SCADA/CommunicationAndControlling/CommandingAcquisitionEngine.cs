@@ -530,10 +530,9 @@ namespace SCADA.CommunicationAndControlling
                                                                 target.AcqValue = newAcqValue;
                                                                 Console.WriteLine(" CHANGE! Analog variable {0}, AcqValue: {1}", target.Name, target.AcqValue);
 
-                                                                // to do: propagacija analogih promena (ako se secate Pavlica je prvo rekao da nam to ne treba da samo jednom zakucamo vrednost na pocetku) xD 
-                                                                // DMSClient dMSClient = new DMSClient();
-                                                                // to do
-                                                                // dMSClient.ChangeOnSCADA(target.Name, target.State);
+                                                                //to do: propagacija analogih promena(ako se secate Pavlica je prvo rekao da nam to ne treba da samo jednom zakucamo vrednost na pocetku) xD
+                                                                DMSClient dMSClient = new DMSClient();
+                                                                dMSClient.ChangeOnSCADAAnalog(target.Name, target.AcqValue);
                                                             }
                                                         }
                                                         catch

@@ -1,4 +1,5 @@
-﻿using IMSContract;
+﻿using DMSCommon;
+using IMSContract;
 using OMSSCADACommon;
 using PubSubContract;
 using System;
@@ -22,7 +23,7 @@ namespace PubSubscribe
             CreateProxy();
         }
 
-        public void PublishUpdateDigital(List<SCADAUpdateModel> update)
+        public void PublishUpdateDigital(List<UIUpdateModel> update)
         {
             try
             {
@@ -31,7 +32,7 @@ namespace PubSubscribe
             catch { }
         }
 
-        public void PublishUpdateAnalog(List<SCADAUpdateModel> update)
+        public void PublishUpdateAnalog(List<UIUpdateModel> update)
         {
             try
             {
@@ -41,7 +42,7 @@ namespace PubSubscribe
         }
 
         // not used
-        public void PublishCrew(SCADAUpdateModel update)
+        public void PublishCrew(UIUpdateModel update)
         {
             try
             {
@@ -59,7 +60,7 @@ namespace PubSubscribe
             catch { }
         }
 
-        public void PublishCallIncident(SCADAUpdateModel call)
+        public void PublishCallIncident(UIUpdateModel call)
         {
             try
             {

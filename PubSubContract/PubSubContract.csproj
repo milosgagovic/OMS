@@ -49,6 +49,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Common\DMSCommon\DMSCommon.csproj">
+      <Project>{86D0FD27-8DA2-476E-A046-FCB849F12414}</Project>
+      <Name>DMSCommon</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Common\NMSCommon.csproj">
       <Project>{892CBE15-9ED7-4540-81FA-0EAABA592138}</Project>
       <Name>NMSCommon</Name>

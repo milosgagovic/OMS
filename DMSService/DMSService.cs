@@ -1,4 +1,5 @@
-﻿using DMSCommon.Model;
+﻿using DMSCommon;
+using DMSCommon.Model;
 using DMSCommon.TreeGraph;
 using DMSCommon.TreeGraph.Tree;
 using DMSContract;
@@ -599,7 +600,7 @@ namespace DMSService
 
                     if (node != null)
                     {
-                        EnergizationAlgorithm.TraceDown(node, new List<SCADAUpdateModel>(), true, true, retVal);
+                        EnergizationAlgorithm.TraceDown(node, new List<UIUpdateModel>(), true, true, retVal);
                     }
                 }
             }

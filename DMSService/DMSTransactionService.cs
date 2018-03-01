@@ -12,6 +12,7 @@ using DMSCommon.Model;
 using DMSCommon.TreeGraph;
 using OMSSCADACommon;
 using System.Net.Mail;
+using DMSCommon;
 
 namespace DMSService
 {
@@ -36,9 +37,9 @@ namespace DMSService
             if (DMSService.updatesCount >= 2)
             {
                 Publisher publisher = new Publisher();
-                List<SCADAUpdateModel> update = new List<SCADAUpdateModel>();
+                List<UIUpdateModel> update = new List<UIUpdateModel>();
                 Source s = (Source)DMSService.Instance.Tree.Data[DMSService.Instance.Tree.Roots[0]];
-                update.Add(new SCADAUpdateModel(true, s.ElementGID));
+                update.Add(new UIUpdateModel(true, s.ElementGID));
 
                 publisher.PublishUpdateDigital(update);
             }

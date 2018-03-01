@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using OMSSCADACommon;
+using DMSCommon;
 
 namespace PubSubscribeService.Services
 {
@@ -13,7 +14,7 @@ namespace PubSubscribeService.Services
         {
         }
 
-        public void PublishDigitalUpdate(List<SCADAUpdateModel> deltaUpdateDigital)
+        public void PublishDigitalUpdate(List<UIUpdateModel> deltaUpdateDigital)
         {
             foreach (IPublishing subscriber in PubSubscribeDB.Subscribers)
             {
@@ -24,7 +25,7 @@ namespace PubSubscribeService.Services
             }
         }
 
-        public void PublishAnalogUpdate(List<SCADAUpdateModel> deltaUpdateAnalog)
+        public void PublishAnalogUpdate(List<UIUpdateModel> deltaUpdateAnalog)
         {
             foreach (IPublishing subscriber in PubSubscribeDB.Subscribers)
             {
@@ -35,7 +36,7 @@ namespace PubSubscribeService.Services
             }
         }
 
-        public void PublishCrewUpdate(SCADAUpdateModel update)
+        public void PublishCrewUpdate(UIUpdateModel update)
         {
             foreach (IPublishing subscriber in PubSubscribeDB.Subscribers)
             {
@@ -57,7 +58,7 @@ namespace PubSubscribeService.Services
             }
         }
 
-        public void PublishCallIncident(SCADAUpdateModel call)
+        public void PublishCallIncident(UIUpdateModel call)
         {
             foreach (IPublishing subscriber in PubSubscribeDB.Subscribers)
             {
@@ -84,16 +85,16 @@ namespace PubSubscribeService.Services
     {
         private IPublishing subscriber;
 
-        private List<SCADAUpdateModel> digitalDeltaUpdate;
-        private List<SCADAUpdateModel> analogDeltaUpdate;
-        private SCADAUpdateModel crewUpdate;
+        private List<UIUpdateModel> digitalDeltaUpdate;
+        private List<UIUpdateModel> analogDeltaUpdate;
+        private UIUpdateModel crewUpdate;
         private IncidentReport report;
-        private SCADAUpdateModel call;
+        private UIUpdateModel call;
         private bool Isincident;
         private long incidentBreaker;
 
         // for publishing digital, and analog delta
-        public PublishThreadData(IPublishing subscriber, List<SCADAUpdateModel> deltaUpdate, bool isDigital)
+        public PublishThreadData(IPublishing subscriber, List<UIUpdateModel> deltaUpdate, bool isDigital)
         {
             this.subscriber = subscriber;
             if (isDigital)
@@ -103,7 +104,7 @@ namespace PubSubscribeService.Services
         }
 
         // for publishing crew update
-        public PublishThreadData(IPublishing subscriber, SCADAUpdateModel update)
+        public PublishThreadData(IPublishing subscriber, UIUpdateModel update)
         {
             this.subscriber = subscriber;
             this.crewUpdate = update;
@@ -117,7 +118,7 @@ namespace PubSubscribeService.Services
         }
 
         // for publishing call incident
-        public PublishThreadData(IPublishing subscriber, SCADAUpdateModel call, bool isCall)
+        public PublishThreadData(IPublishing subscriber, UIUpdateModel call, bool isCall)
         {
             this.subscriber = subscriber;
             this.call = call;
@@ -144,7 +145,7 @@ namespace PubSubscribeService.Services
             }
         }
 
-        public List<SCADAUpdateModel> DigitalDeltaUpdate
+        public List<UIUpdateModel> DigitalDeltaUpdate
         {
             get
             {
@@ -156,7 +157,7 @@ namespace PubSubscribeService.Services
                 digitalDeltaUpdate = value;
             }
         }
-        public List<SCADAUpdateModel> AnalogDeltaUpdate
+        public List<UIUpdateModel> AnalogDeltaUpdate
         {
             get
             {
@@ -168,9 +169,9 @@ namespace PubSubscribeService.Services
                 analogDeltaUpdate = value;
             }
         }
-        public SCADAUpdateModel CrewUpdate { get => crewUpdate; set => crewUpdate = value; }
+        public UIUpdateModel CrewUpdate { get => crewUpdate; set => crewUpdate = value; }
         public IncidentReport Report { get => report; set => report = value; }
-        public SCADAUpdateModel Call { get => call; set => call = value; }
+        public UIUpdateModel Call { get => call; set => call = value; }
         public bool IsIncident { get => Isincident; set => Isincident = value; }
         public long IncidentBreaker { get => incidentBreaker; set => incidentBreaker = value; }
 
