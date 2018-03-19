@@ -156,6 +156,11 @@ namespace TransactionManager
                     Thread.Sleep(1000);
                     continue;
                 }
+                else if (TransactionCallbacks.Where(u => u.AnswerForPrepare == TransactionAnswer.Unprepared).Count() > 0)
+                {
+                    Rollback();
+                    break;
+                }
                 else
                 {
                     Prepare(d);
@@ -373,7 +378,8 @@ namespace TransactionManager
         {
             // zasto je ovo bitno, da ima measurement direction?? 
             // po tome odvajas measuremente od ostatka?
-            List<ResourceDescription> rescDesc = d.InsertOperations.Where(u => u.ContainsProperty(ModelCode.MEASUREMENT_DIRECTION)).ToList();
+            //DMSType type = (DMSType)ModelCodeHelper.ExtractTypeFromGlobalId(d.);
+            List<ResourceDescription> rescDesc = d.InsertOperations.Where(u => (DMSType)ModelCodeHelper.ExtractTypeFromGlobalId(u.Id) == DMSType.ANALOG || (DMSType)ModelCodeHelper.ExtractTypeFromGlobalId(u.Id) == DMSType.DISCRETE).ToList();
             ScadaDelta scadaDelta = new ScadaDelta();
 
             foreach (ResourceDescription rd in rescDesc)
@@ -394,8 +400,44 @@ namespace TransactionManager
                     }
                 }
 
-                element.ValidCommands = new List<CommandTypes>() { CommandTypes.CLOSE, CommandTypes.OPEN };
-                element.ValidStates = new List<OMSSCADACommon.States>() { OMSSCADACommon.States.CLOSED, OMSSCADACommon.States.OPENED };
+                
+                if(rd.ContainsProperty(ModelCode.DISCRETE_VALIDCOMMANDS))
+                {
+                    element.ValidCommands = new List<CommandTypes>();
+                    foreach( long value in rd.GetProperty(ModelCode.DISCRETE_VALIDCOMMANDS).PropertyValue.LongValues)
+                    {
+                        if(value == 1)
+                        {
+                            element.ValidCommands.Add(CommandTypes.OPEN);
+                        }
+                        else if(value == 0)
+                        {
+                            element.ValidCommands.Add(CommandTypes.CLOSE);
+                        }
+                    }
+                  
+                }
+
+                if (rd.ContainsProperty(ModelCode.DISCRETE_VALIDSTATES))
+                {
+                    element.ValidStates = new List<OMSSCADACommon.States>();
+                    foreach (long value in rd.GetProperty(ModelCode.DISCRETE_VALIDSTATES).PropertyValue.LongValues)
+                    {
+                        if (value == 1)
+                        {
+                            element.ValidStates.Add(OMSSCADACommon.States.OPENED);
+                        }
+                        else if (value == 0)
+                        {
+                            element.ValidStates.Add(OMSSCADACommon.States.CLOSED);
+                        }
+                        else
+                        {
+                            element.ValidStates.Add(OMSSCADACommon.States.UNKNOWN);
+                        }
+                    }
+
+                }
 
                 if (rd.ContainsProperty(ModelCode.IDOBJ_MRID))
                 {
