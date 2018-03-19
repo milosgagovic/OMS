@@ -28,7 +28,7 @@ namespace TransactionManagerContract
         void SendCommandToSCADA(TypeOfSCADACommand command, string mrid, OMSSCADACommon.CommandTypes commandtype, float value);
 
         [OperationContract]
-        void SendCrew(IncidentReport report);
+        void SendCrew(IncidentReport report, Crew crew);
 
         [OperationContract]
         List<List<IncidentReport>> GetReportsForMrID(string mrID);

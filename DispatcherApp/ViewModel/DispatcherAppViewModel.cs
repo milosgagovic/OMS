@@ -811,7 +811,8 @@ namespace DispatcherApp.ViewModel
                         Setter setter1 = new Setter() { Property = Polyline.StrokeProperty, Value = (SolidColorBrush)frameworkElement.FindResource("SwitchColorClosed") };
 
                         DataTrigger trigger1 = new DataTrigger() { Binding = new Binding("IsEnergized"), Value = false };
-                        Setter setter2 = new Setter() { Property = Polyline.StrokeProperty, Value = Brushes.Blue };
+                        Setter setter2 = new Setter() { Property = Polyline.StrokeProperty, Value = (SolidColorBrush)frameworkElement.FindResource("SwitchColorClosedDeenergized")
+                    };
 
                         trigger1.Setters.Add(setter2);
 
@@ -846,7 +847,8 @@ namespace DispatcherApp.ViewModel
                         Setter setter1 = new Setter() { Property = Polyline.StrokeProperty, Value = (SolidColorBrush)frameworkElement.FindResource("SwitchColorClosed") };
 
                         DataTrigger trigger1 = new DataTrigger() { Binding = new Binding("Parent.IsEnergized"), Value = false };
-                        Setter setter2 = new Setter() { Property = Polyline.StrokeProperty, Value = Brushes.Blue };
+                        Setter setter2 = new Setter() { Property = Polyline.StrokeProperty, Value = (SolidColorBrush)frameworkElement.FindResource("SwitchColorClosedDeenergized")
+                    };
 
                         trigger1.Setters.Add(setter2);
 
@@ -909,8 +911,8 @@ namespace DispatcherApp.ViewModel
         private void PlaceGridLines(int i, double cellHeight)
         {
             Line line = new Line();
-            line.Stroke = Brushes.Gray;
-            line.StrokeThickness = 0.5;
+            line.Stroke = (SolidColorBrush)frameworkElement.FindResource("MediumDarkColor");
+            line.StrokeThickness = 0.3;
             line.X1 = 0;
             line.X2 = mainCanvas.Width;
             line.Y1 = i * cellHeight;
@@ -1257,46 +1259,45 @@ namespace DispatcherApp.ViewModel
                     break;
                 }
             }
-
            
-            report.CrewSent = true;
+            //report.CrewSent = true;
 
-            crew.Working = true;
+            //crew.Working = true;
             RaisePropertyChanged("Crews");
 
             if (report.IncidentState == IncidentState.UNRESOLVED)
             {
-                report.InvestigationCrew = crew;
-                report.CurrentValue = 0;
-                report.MaxValue = investigationMax;
+                //report.InvestigationCrew = crew;
+                //report.CurrentValue = 0;
+                //report.MaxValue = investigationMax;
 
-                tokenSource = new CancellationTokenSource();
-                CancellationToken token = tokenSource.Token;
-                Task.Factory.StartNew(() => ProgressBarChange(report, token), token);
+                //tokenSource = new CancellationTokenSource();
+                //CancellationToken token = tokenSource.Token;
+                //Task.Factory.StartNew(() => ProgressBarChange(report, token), token);
 
-                report.IncidentState = IncidentState.INVESTIGATING;
+                //report.IncidentState = IncidentState.INVESTIGATING;
             }
             else if(report.IncidentState == IncidentState.READY_FOR_REPAIR)
             {
-                report.RepairCrew = crew;
-                report.CurrentValue = 0;
-                report.MaxValue = report.RepairTime.TotalMinutes/10;
+                //report.RepairCrew = crew;
+                //report.CurrentValue = 0;
+                //report.MaxValue = report.RepairTime.TotalMinutes/10;
 
-                tokenSource = new CancellationTokenSource();
-                CancellationToken token = tokenSource.Token;
-                Task.Factory.StartNew(() => ProgressBarChange(report, token), token);
+                //tokenSource = new CancellationTokenSource();
+                //CancellationToken token = tokenSource.Token;
+                //Task.Factory.StartNew(() => ProgressBarChange(report, token), token);
 
-                report.IncidentState = IncidentState.REPAIRING;
+                //report.IncidentState = IncidentState.REPAIRING;
             }
 
-            ProxyToTransactionManager.SendCrew(report);
+            ProxyToTransactionManager.SendCrew(report, crew);
 
-            try
-            {
-                ElementProperties element = Properties.Where(p => p.Value.MRID == report.MrID).FirstOrDefault().Value;
-                element.CrewSent = true;
-            }
-            catch {  }
+            //try
+            //{
+            //    ElementProperties element = Properties.Where(p => p.Value.MRID == report.MrID).FirstOrDefault().Value;
+            //    element.CrewSent = true;
+            //}
+            //catch {  }
         }
 
         private void ExecutePropertiesCommand(object parameter)
@@ -2065,6 +2066,12 @@ namespace DispatcherApp.ViewModel
                         {
                             BreakerProperties breakerProperties = property as BreakerProperties;
                             breakerProperties.State = sum.State;
+
+                            if (sum.State == OMSSCADACommon.States.CLOSED)
+                            {
+                                breakerProperties.CanCommand = false;
+                            }
+                            
                             Measurement measurement;
                             DigitalMeasurement digitalMeasurement;
                             try
@@ -2130,23 +2137,38 @@ namespace DispatcherApp.ViewModel
                 temp.RepairTime = report.RepairTime;
                 temp.IncidentState = report.IncidentState;
                 temp.Crewtype = report.Crewtype;
+                temp.MaxValue = report.MaxValue;
+                temp.CurrentValue = report.CurrentValue;
 
-                if (temp.IncidentState == IncidentState.READY_FOR_REPAIR)
+                if (report.InvestigationCrew != null && report.InvestigationCrew.CrewName != null)
                 {
-                    if (temp.InvestigationCrew != null)
-                    {
-                        temp.InvestigationCrew.Working = false;
-                        RaisePropertyChanged("Crews");
-                    }
+                    temp.InvestigationCrew = this.Crews.Where(c => c.CrewName == report.InvestigationCrew.CrewName).FirstOrDefault();
+                    temp.InvestigationCrew.Working = report.InvestigationCrew.Working;
                 }
-                else if (temp.IncidentState == IncidentState.REPAIRED)
+                if (report.RepairCrew != null && report.RepairCrew.CrewName != null)
                 {
-                    if (temp.RepairCrew != null)
-                    {
-                        temp.RepairCrew.Working = false;
-                        RaisePropertyChanged("Crews");
-                    }
+                    temp.RepairCrew = this.Crews.Where(c => c.CrewName == report.RepairCrew.CrewName).FirstOrDefault();
+                    temp.RepairCrew.Working = report.RepairCrew.Working;
                 }
+                
+                RaisePropertyChanged("Crews");
+
+                //if (temp.IncidentState == IncidentState.READY_FOR_REPAIR)
+                //{
+                //    if (temp.InvestigationCrew != null)
+                //    {
+                //        temp.InvestigationCrew.Working = false;
+                //        RaisePropertyChanged("Crews");
+                //    }
+                //}
+                //else if (temp.IncidentState == IncidentState.REPAIRED)
+                //{
+                //    if (temp.RepairCrew != null)
+                //    {
+                //        temp.RepairCrew.Working = false;
+                //        RaisePropertyChanged("Crews");
+                //    }
+                //}
             }
             else
             {
@@ -2168,7 +2190,19 @@ namespace DispatcherApp.ViewModel
                 {
                     element.Incident = true;
                 }
-                element.CrewSent = false;
+
+                if (report.IncidentState == IncidentState.INVESTIGATING || report.IncidentState == IncidentState.REPAIRING)
+                {
+                    element.CrewSent = true;
+
+                    tokenSource = new CancellationTokenSource();
+                    CancellationToken token = tokenSource.Token;
+                    Task.Factory.StartNew(() => ProgressBarChange(temp, token), token);
+                }
+                else
+                {
+                    element.CrewSent = false;
+                }
             }
             catch { }
         }
@@ -2189,7 +2223,6 @@ namespace DispatcherApp.ViewModel
 
         private void SearchForIncident(bool isIncident, long incidentBreaker)
         {
-
             ElementProperties propBr;
             properties.TryGetValue(incidentBreaker, out propBr);
             if (propBr != null)

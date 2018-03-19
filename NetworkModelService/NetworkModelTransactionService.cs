@@ -41,14 +41,14 @@ namespace FTN.Services.NetworkModelService
                 }
                 else
                 {
-                    Rollback();
+                    //Rollback();
                     callback.CallbackPrepare(false);
                 }
             }
             catch (Exception ex)
             {
-                Rollback();
-                callback.CallbackPrepare(false);
+                //Rollback();
+                callback.CallbackPrepare(false); // problematicno ako se desi exception u pozivu, nece se uhvatiti
                 Console.WriteLine(ex.Message);
             }
         }

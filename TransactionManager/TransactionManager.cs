@@ -363,9 +363,9 @@ namespace TransactionManager
             { }
         }
 
-        public void SendCrew(IncidentReport report)
+        public void SendCrew(IncidentReport report, Crew crew)
         {
-            proxyToDispatcherDMS.SendCrewToDms(report);
+            proxyToDispatcherDMS.SendCrewToDms(report, crew);
             return;
         }
 

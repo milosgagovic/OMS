@@ -56,8 +56,6 @@ namespace DMSCommon.TreeGraph
             {
                 var parentLink = Links[(long)parentId];
 
-                
-
                 if (parentLink.Child != null)
                 {
                     link.Next = parentLink.Child;

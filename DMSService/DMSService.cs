@@ -40,6 +40,7 @@ namespace DMSService
 
         private ModelResourcesDesc modelResourcesDesc = new ModelResourcesDesc();
         private ModelGdaDMS gda = new ModelGdaDMS();
+
         private SCADAClient scadaClient;
         private SCADAClient ScadaClient
         {
@@ -99,6 +100,7 @@ namespace DMSService
                 return instance;
             }
         }
+
         public static int updatesCount = 0;
 
         private DMSService()
@@ -483,7 +485,7 @@ namespace DMSService
                         {
                             var psr = SwitchesRD.Where(m => m.GetProperty(ModelCode.IDOBJ_MRID).AsString() == mrid).FirstOrDefault();
                             var meas = DiscreteMeasurementsRD.Where(m => m.GetProperty(ModelCode.MEASUREMENT_PSR).AsLong() == psr.Id).FirstOrDefault();
-
+                            
                             if (meas != null)
                             {
                                 var res = (DigitalVariable)response.Variables.Where(v => v.Id == meas.GetProperty(ModelCode.IDOBJ_MRID).AsString()).FirstOrDefault();

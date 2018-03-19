@@ -131,7 +131,7 @@ namespace DMSService
                     if (e is Consumer)
                     {
                         e.Marker = currentNode.Marker;
-                        networkChange.Add(new UIUpdateModel(e.ElementGID, isEnergized));
+                        networkChange.Add(new UIUpdateModel(e.ElementGID, isEnergized)); // mali bug koji se ne ispoljava, treba currentNode.Marker
                     }
                     else if (e is Switch)
                     {

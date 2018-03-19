@@ -39,6 +39,6 @@ namespace DMSContract
         List<Element> GetAllElements();
 
         [OperationContract]
-        void SendCrewToDms(IncidentReport report);
+        void SendCrewToDms(IncidentReport report, Crew crew);
     }
 }
