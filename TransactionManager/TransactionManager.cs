@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.ServiceModel;
 using System.Threading;
+using System.Threading.Tasks;
 using TransactionManagerContract;
 
 namespace TransactionManager
@@ -141,14 +142,20 @@ namespace TransactionManager
 
         public void Enlist(Delta d)
         {
+            Task[] tasks = new Task[TransactionCallbacks.Count];
             Console.WriteLine("Transaction Manager calling enlist");
-            foreach (ITransaction svc in TransactionProxys)
+            for(int i =0; i< TransactionProxys.Count; i++)
             {
-                svc.Enlist();
+                int x = i;
+                tasks[x] = new Task(() =>TransactionProxys[x].Enlist());
+                tasks[x].Start();
             }
 
-            ProxyTransactionSCADA.Enlist();
+            tasks[TransactionCallbacks.Count-1] = new Task(() => ProxyTransactionSCADA.Enlist());
+            tasks[TransactionCallbacks.Count-1].Start();
 
+
+            Task.WaitAll(tasks);
             while (true)
             {
                 if (TransactionCallbacks.Where(k => k.AnswerForEnlist == TransactionAnswer.Unanswered).Count() > 0)
@@ -156,7 +163,7 @@ namespace TransactionManager
                     Thread.Sleep(1000);
                     continue;
                 }
-                else if (TransactionCallbacks.Where(u => u.AnswerForPrepare == TransactionAnswer.Unprepared).Count() > 0)
+                else if (TransactionCallbacks.Where(u => u.AnswerForEnlist == TransactionAnswer.Unprepared).Count() > 0)
                 {
                     Rollback();
                     break;
@@ -172,50 +179,93 @@ namespace TransactionManager
         public void Prepare(Delta deltaForNMS)
         {
             Console.WriteLine("Transaction Manager calling prepare");
-
             ScadaDelta deltaForScada = GetDeltaForSCADA(deltaForNMS);
-            //Delta fixedGuidDeltaForDMS = ProxyToNMSService.GetFixedDelta(deltaForNMS);
             Delta fixedGuidDeltaForDMS = gdaTMS.GetFixedDelta(deltaForNMS);
+            Task[] tasks = new Task[TransactionCallbacks.Count-1]; //-1 zato sto se ceka da nms bude spreman
 
             ProxyTransactionNMS.Prepare(deltaForNMS);
-            ProxyTransactionDMS.Prepare(fixedGuidDeltaForDMS);
-            ProxyTransactionSCADA.Prepare(deltaForScada);
-
-            while (true)
+            //prvo pozovi nms
+            do
             {
-                if (TransactionCallbacks.Where(k => k.AnswerForPrepare == TransactionAnswer.Unanswered).Count() > 0)
+                Thread.Sleep(50);
+            } while (CallBackTransactionNMS.AnswerForPrepare == TransactionAnswer.Unanswered); //cekaj dok ne odgovori
+
+            if (CallBackTransactionNMS.AnswerForPrepare == TransactionAnswer.Prepared) //ukoliko je prosao na nms-u
+            {
+                tasks[0] = new Task(() => ProxyTransactionDMS.Prepare(fixedGuidDeltaForDMS));
+                tasks[0].Start();
+
+                tasks[1] = new Task(() => ProxyTransactionSCADA.Prepare(deltaForScada));
+                tasks[1].Start();
+                Task.WaitAll(tasks);
+
+                while (true)
                 {
-                    Thread.Sleep(1000);
-                    continue;
-                }
-                else if (TransactionCallbacks.Where(u => u.AnswerForPrepare == TransactionAnswer.Unprepared).Count() > 0)
-                {
-                    Rollback();
+                    if (TransactionCallbacks.Where(k => k.AnswerForPrepare == TransactionAnswer.Unanswered).Count() > 0)
+                    {
+                        Thread.Sleep(1000);
+                        continue;
+                    }
+                    else if (TransactionCallbacks.Where(u => u.AnswerForPrepare == TransactionAnswer.Unprepared).Count() > 0)
+                    {
+                        Rollback();
+                        break;
+                    }
+                    Commit();
                     break;
                 }
-                Commit();
-                break;
             }
         }
 
         private void Commit()
         {
+            Task[] tasks = new Task[TransactionCallbacks.Count];
             Console.WriteLine("Transaction Manager calling commit");
-            foreach (ITransaction svc in TransactionProxys)
+            for (int i = 0; i < TransactionProxys.Count; i++)
             {
-                svc.Commit();
+                int x = i;
+                tasks[x] = new Task(() => TransactionProxys[x].Commit());
+                tasks[x].Start();
             }
-            ProxyTransactionSCADA.Commit();
+
+            tasks[TransactionCallbacks.Count - 1] = new Task(() => ProxyTransactionSCADA.Commit());
+            tasks[TransactionCallbacks.Count - 1].Start();
+
+
+            Task.WaitAll(tasks);
+
+           
+            //foreach (ITransaction svc in TransactionProxys)
+            //{
+            //    svc.Commit();
+            //}
+            //ProxyTransactionSCADA.Commit();
         }
 
         public void Rollback()
         {
+            Task[] tasks = new Task[TransactionCallbacks.Count];
             Console.WriteLine("Transaction Manager calling rollback");
-            foreach (ITransaction svc in TransactionProxys)
+            for (int i = 0; i < TransactionProxys.Count; i++)
             {
-                svc.Rollback();
+                int x = i;
+                tasks[x] = new Task(() => TransactionProxys[x].Rollback());
+                tasks[x].Start();
             }
-            ProxyTransactionSCADA.Rollback();
+
+            tasks[TransactionCallbacks.Count - 1] = new Task(() => ProxyTransactionSCADA.Rollback());
+            tasks[TransactionCallbacks.Count - 1].Start();
+
+
+            Task.WaitAll(tasks);
+
+
+           
+            //foreach (ITransaction svc in TransactionProxys)
+            //{
+            //    svc.Rollback();
+            //}
+            //ProxyTransactionSCADA.Rollback();
         }
 
         #endregion
